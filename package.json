@@ -1,0 +1,21 @@
+{
+  "name": "wabac_ext",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Ilya Kreymer <ikreymer@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "memory-streams": "^0.1.3",
+    "node-warc": "https://github.com/ikreymer/node-warc.git#write-work"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "build-dev": "webpack --mode development",
+    "start-dev": "webpack-dev-server --mode development --open"
+  }
+}

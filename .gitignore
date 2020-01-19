@@ -1,0 +1,5 @@
+*.har
+*.warc
+*.warc.gz
+!examples/*.warc
+**/node_modules

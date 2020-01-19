@@ -1,0 +1,19 @@
+{
+  "name": "Webrecorder Archiving",
+  "description": "SW Capture & Replay",
+  "version": "0.1",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "permissions": ["contextMenus", "tabs", "debugger", "history", "activeTab", "unlimitedStorage", "downloads", "<all_urls>"],
+  "browser_action": {},
+  "background": { 
+    "scripts": ["bg.js", "rec.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "manifest_version": 2
+}

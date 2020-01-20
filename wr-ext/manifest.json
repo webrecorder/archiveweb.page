@@ -1,6 +1,6 @@
 {
-  "name": "Webrecorder Archiving",
-  "description": "SW Capture & Replay",
+  "name": "Webrecorder Recording Extension",
+  "description": "Webrecorder Recording Extension",
   "version": "0.1",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": ["contextMenus", "tabs", "debugger", "history", "activeTab", "unlimitedStorage", "downloads", "<all_urls>"],

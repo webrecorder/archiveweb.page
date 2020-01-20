@@ -8,7 +8,7 @@ module.exports = {
     'rec': './src/recorder.js',
   },
   output: {
-    path: path.join(__dirname, 'ext'),
+    path: path.join(__dirname, 'wr-ext'),
     filename: '[name].js',
     libraryTarget: 'global',
     globalObject: 'self'

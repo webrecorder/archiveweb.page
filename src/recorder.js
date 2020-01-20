@@ -2,27 +2,23 @@
 
 import { WARCWriterBase } from 'node-warc';
 import { CDPRequestInfo } from 'node-warc/lib/requestCapturers';
-import { WritableStream } from 'memory-streams';
+//import { WritableStream } from 'memory-streams';
 import { STATUS_CODES } from 'http';
+
+import { Rewriter } from 'wabac.js/src/rewrite';
+
+import { Writable } from 'stream';
 
 self.recorders = {};
 
-let detachListener = false;
-
 function initCDP(tabId) {
-  self.recorders[tabId] = new Recorder(tabId);
-  self.recorders[tabId].attach();
-
-  if (!detachListener) {
-    chrome.debugger.onDetach.addListener((source, reason) => {
-        console.log('Canceled.. Download WARC?');
-        if (self.recorders[source.tabId]) {
-          self.recorders[source.tabId].download();
-        }
-      });
-
-    detachListener = true;
+  if (!self.recorders[tabId]) {
+    self.recorders[tabId] = new Recorder(tabId);
+  } else {
+    console.log('Resuming Recording on: ' + tabId);
   }
+
+  self.recorders[tabId].attach();
 }
 
 
@@ -36,20 +32,63 @@ class Recorder {
     chrome.debugger.attach({tabId: this.tabId}, '1.3', () => {
       this.start();
     });
-  }
+
+    this._onDetach = (tab, reason) => {
+      if (this.tabId !== tab.tabId) {
+        console.log('wrong tab: ' + tab.tabId);
+        console.log(params);
+        return;
+      }
+      console.log('Canceled.. Download WARC?');
+      chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
+      this.download();
+      
+      chrome.debugger.onDetach.removeListener(this._onDetach);
+      chrome.debugger.onEvent.removeListener(this._onEvent);
+      chrome.tabs.onUpdated.removeListener(this._onTabChanged);
+      clearInterval(this._updateId);
+    }
+
+    chrome.debugger.onDetach.addListener(this._onDetach);
+
+    //this._onMessageFromTab = (request, sender, sendResponse) => {
+    //  if (request.
+    //}
+
+    //chrome.runtime.onMessage.addListener(this._onMessageFromTab);
+
+    this._onTabChanged = (tabId, changeInfo, tab) => {
+      if (this.tabId === tabId && changeInfo.status === "complete") {
+        console.log('Send Start Record');
+        chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": this.writer.getLength()});
+      }
+    }
+
+    chrome.tabs.onUpdated.addListener(this._onTabChanged);
+
+    this._updateId = setInterval(() => chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": this.writer.getLength()}), 1000);
+  };
+
 
   download() {
     const blob = new Blob([this.writer._warcOutStream.toBuffer()], {"type": "application/octet-stream"});
     const url = URL.createObjectURL(blob);
     console.log(url);
     chrome.downloads.download({"url": url, "filename": "wabacext.warc", "conflictAction": "overwrite", "saveAs": false});
+    URL.revokeObjectURL(blob);
   }
 
   async start() {
     await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]});
     await this.send("Network.setCacheDisabled", {cacheDisabled: true});
 
-    chrome.debugger.onEvent.addListener(async (dId, message, params) => {
+    this._onEvent = async (tab, message, params) => {
+      if (this.tabId !== tab.tabId) {
+        console.log('wrong tab: ' + tab.tabId);
+        console.log(params);
+        return;
+      }
+
       switch (message) {
         case "Fetch.requestPaused":
           try {
@@ -59,17 +98,83 @@ class Recorder {
           }
 
           try {
-            await this.send("Fetch.continueRequest", {requestId: params.requestId});
+            const rw = await this.rewriteResponse(params);
+
+            if (!rw) {
+              await this.send("Fetch.continueRequest", {requestId: params.requestId});
+            }
           } catch (e) {
-            console.log("Continue failed for: " + params.url);
+            console.log("Continue failed for: " + params.request.url);
             console.log(e);
           }
           break;
       }
-    });
+    };
+
+    chrome.debugger.onEvent.addListener(this._onEvent);
 
     await this.send("Runtime.evaluate", {expression: "window.location.reload()"});
     //chrome.tabs.executeScript(this.tabId, {code: 'window.location.refresh()'});
+  }
+
+  async rewriteResponse(params) {
+    if (params.request.url.indexOf("youtube.com") < 0) {
+      return false;
+    }
+
+    const ct = this._getContentType(params.responseHeaders);
+
+    if (ct !== "text/html") {
+      return false;
+    }
+
+    const string = params.payload.toString("utf8");
+
+    if (!string.length) {
+      return false;
+    }
+
+    function ruleReplace(string) {
+      return x => string.replace('{0}', x);
+    }
+
+    const youtubeRules = [
+      [/ytplayer.load\(\);/, ruleReplace('ytplayer.config.args.dash = "0"; ytplayer.config.args.dashmpd = ""; {0}')],
+      [/yt\.setConfig.*PLAYER_CONFIG.*args":\s*{/, ruleReplace('{0} "dash": "0", dashmpd: "", ')],
+      [/"player":.*"args":{/, ruleReplace('{0}"dash":"0","dashmpd":"",')],
+    ];
+
+    const rw = new BaseRewriter(youtubeRules);
+
+    const newString = rw.rewrite(string);
+
+    const base64Str = new Buffer(newString).toString("base64");
+
+    try {
+      await this.send("Fetch.fulfillRequest",
+        {"requestId": params.requestId,
+         "responseCode": params.responseStatusCode,
+         "responseHeaders": params.responseHeaders,
+         "body": base64Str
+        });
+      console.log("Replace succeeded? for: " + params.request.url);
+      return true;
+    } catch (e) {
+      console.log("Fulfill Failed for: " + params.request.url + " " + e);
+    }
+
+    return false;
+
+  }
+
+  _getContentType(headers) {
+    for (let header of headers) {
+      if (header.name === "content-type") {
+        return header.value.split(";")[0];
+      }
+    }
+
+    return null;
   }
 
   noResponseForStatus(status) {
@@ -84,7 +189,10 @@ class Recorder {
     let payload = null;
 
     if (reqresp.status === 206) {
-      chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": params.request});
+      setTimeout(() => {
+        console.log('Start Async Fetch For: ' + params.request.url);
+        chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": params.request});
+      }, 500);
       return;
     }
 
@@ -128,6 +236,11 @@ class Recorder {
         data: payload
       }
     );
+
+    console.log("Total: " + this.writer.getLength());
+    //chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": this.writer.getLength()});
+
+    params.payload = payload;
   }
 
   _serializeResponseHeaders(reqresp) {
@@ -200,16 +313,100 @@ class BlobWriter extends WARCWriterBase {
     let now = new Date().toISOString()
     this._now = now.substr(0, now.indexOf('.')) + 'Z'
   }
+
+  getLength() {
+    return this._warcOutStream.length;
+  }
 }
 
+
 // ======================================================
-class WARCOutStream
-{
-  write(data) {
-    console.log(data);
+class WritableStream extends Writable {
+  constructor() {
+    super();
+    this.length = 0;
   }
-  on() {}
+
+  write(chunk, encoding, callback) {
+    const res = super.write(chunk, encoding, callback);
+
+    this.length += chunk.length;
+
+    if (!res) {
+      this.emit('drain');
+    }
+
+    return res;
+  }
+
+  _write(chunk, encoding, callback) {
+    return this.write(chunk, encoding, callback);
+  }
+
+  end(chunk, encoding, callback) {
+    const res = super.end(chunk, encoding, callback);
+    this.emit('finish');
+    return res;
+  }
+
+  toBuffer() {
+    let buffers = [];
+
+    for (let buffer of this._writableState.buffer) {
+      buffers.push(buffer.chunk);
+    }
+  
+    return Buffer.concat(buffers);
+  }
 }
+
+
+
+// ======================================================
+class BaseRewriter
+{
+  constructor(rules) {
+    this.rules = rules;
+    this.compileRules();
+  }
+
+  compileRules() {
+    let rxBuff = '';
+
+    for (let rule of this.rules) {
+      if (rxBuff) {
+        rxBuff += "|";
+      }
+      rxBuff += `(${rule[0].source})`;
+    }
+
+    const rxString = `(?:${rxBuff})`;
+
+    this.rx = new RegExp(rxString, 'gm');
+  }
+
+  doReplace(params) {
+    const offset = params[params.length - 2];
+    const string = params[params.length - 1];
+
+    for (let i = 0; i < this.rules.length; i++) {
+      const curr = params[i];
+      if (!curr) {
+        continue;
+      }
+
+      const result = this.rules[i][1].call(this, curr, offset, string);
+      if (result) {
+        return result;
+      }
+    }
+  }
+
+  rewrite(text) {
+    return text.replace(this.rx, (match, ...params) => this.doReplace(params));
+  }
+}
+
 
 
 export { initCDP };

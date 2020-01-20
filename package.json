@@ -6,7 +6,8 @@
   "license": "MIT",
   "dependencies": {
     "memory-streams": "^0.1.3",
-    "node-warc": "https://github.com/ikreymer/node-warc.git#write-work"
+    "node-warc": "https://github.com/ikreymer/node-warc.git#write-work",
+    "wabac.js": "https://github.com/ikreymer/wabac.js-private.git"
   },
   "devDependencies": {
     "webpack": "^4.41.5",

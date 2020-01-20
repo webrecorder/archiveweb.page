@@ -5,8 +5,6 @@ import { CDPRequestInfo } from 'node-warc/lib/requestCapturers';
 //import { WritableStream } from 'memory-streams';
 import { STATUS_CODES } from 'http';
 
-import { Rewriter } from 'wabac.js/src/rewrite';
-
 import { Writable } from 'stream';
 
 self.recorders = {};
@@ -74,7 +72,7 @@ class Recorder {
     const blob = new Blob([this.writer._warcOutStream.toBuffer()], {"type": "application/octet-stream"});
     const url = URL.createObjectURL(blob);
     console.log(url);
-    chrome.downloads.download({"url": url, "filename": "wabacext.warc", "conflictAction": "overwrite", "saveAs": false});
+    chrome.downloads.download({"url": url, "filename": "wr-ext.warc", "conflictAction": "overwrite", "saveAs": false});
     URL.revokeObjectURL(blob);
   }
 

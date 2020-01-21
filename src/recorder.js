@@ -9,7 +9,37 @@ import { Writable } from 'stream';
 import prettyBytes from 'pretty-bytes';
 
 self.recorders = {};
+
 const DEBUG = false;
+
+function ruleReplace(string) {
+  return x => string.replace('{0}', x);
+}
+
+function repl(string) {
+  return x => string;
+}
+
+const RW_RULES = [
+  {
+    contains: "youtube.com",
+    rxRules: [
+      [/ytplayer.load\(\);/, ruleReplace('ytplayer.config.args.dash = "0"; ytplayer.config.args.dashmpd = ""; {0}')],
+      [/yt\.setConfig.*PLAYER_CONFIG.*args":\s*{/, ruleReplace('{0} "dash": "0", dashmpd: "", ')],
+      [/"player":.*"args":{/, ruleReplace('{0}"dash":"0","dashmpd":"",')],
+    ]
+  },
+  {
+    contains: "vimeo.com/video",
+    rxRules: [
+      [/\"dash\"[:]/, repl('"__dash":')],
+      [/\"hls\"[:]/, repl('"__hls":')],
+    ]
+  }
+];
+
+
+
 
 function initCDP(tabId) {
   if (!self.recorders[tabId]) {
@@ -229,7 +259,16 @@ class Recorder {
   }
 
   async rewriteResponse(params, sessions) {
-    if (params.request.url.indexOf("youtube.com") < 0) {
+    let rxRules = null;
+
+    for (let rule of RW_RULES) {
+      if (params.request.url.indexOf(rule.contains) >= 0) {
+        rxRules = rule.rxRules;
+        break;
+      }
+    }
+
+    if (!rxRules) {
       return false;
     }
 
@@ -245,17 +284,7 @@ class Recorder {
       return false;
     }
 
-    function ruleReplace(string) {
-      return x => string.replace('{0}', x);
-    }
-
-    const youtubeRules = [
-      [/ytplayer.load\(\);/, ruleReplace('ytplayer.config.args.dash = "0"; ytplayer.config.args.dashmpd = ""; {0}')],
-      [/yt\.setConfig.*PLAYER_CONFIG.*args":\s*{/, ruleReplace('{0} "dash": "0", dashmpd: "", ')],
-      [/"player":.*"args":{/, ruleReplace('{0}"dash":"0","dashmpd":"",')],
-    ];
-
-    const rw = new BaseRewriter(youtubeRules);
+    const rw = new BaseRewriter(rxRules);
 
     const newString = rw.rewrite(string);
 
@@ -280,7 +309,7 @@ class Recorder {
 
   _getContentType(headers) {
     for (let header of headers) {
-      if (header.name === "content-type") {
+      if (header.name.toLowerCase() === "content-type") {
         return header.value.split(";")[0];
       }
     }
@@ -353,9 +382,11 @@ class Recorder {
       }
     }
 
+    const url = reqresp.url.split("#")[0];
+
     if (reqresp.method && reqresp._getReqHeaderObj()) {
       this.writer.writeRequestResponseRecords(
-        reqresp.url, 
+        url, 
         {
           headers: reqresp.serializeRequestHeaders(),
           data: reqresp.postData
@@ -368,7 +399,7 @@ class Recorder {
       );
     } else {
       this.writer.writeResponseRecord(
-        reqresp.url,
+        url,
         this._serializeResponseHeaders(reqresp, networkId),
         payload
       ); 

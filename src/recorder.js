@@ -6,12 +6,14 @@ import { CDPRequestInfo } from 'node-warc/lib/requestCapturers';
 import { STATUS_CODES } from 'http';
 
 import { Writable } from 'stream';
+import prettyBytes from 'pretty-bytes';
 
 self.recorders = {};
+const DEBUG = false;
 
 function initCDP(tabId) {
   if (!self.recorders[tabId]) {
-    self.recorders[tabId] = new Recorder(tabId);
+    self.recorders[tabId] = new Recorder({"tabId": tabId});
   } else {
     console.log('Resuming Recording on: ' + tabId);
   }
@@ -19,25 +21,32 @@ function initCDP(tabId) {
   self.recorders[tabId].attach();
 }
 
-
+// ===========================================================================
 class Recorder {
-  constructor(tabId) {
-    this.tabId = tabId;
+  constructor(debuggee, tabId) {
+    this.debuggee = debuggee;
+    this.tabId = debuggee.tabId || tabId;
     this.writer = new BlobWriter();
+    this.pendingRequests = null;
+
+    this._promises = {};
+    this.id = 1;
+
+    this.sessions = {};
   }
 
   attach() {
-    chrome.debugger.attach({tabId: this.tabId}, '1.3', () => {
+    console.log('chrome.debugger: Attempting attach to: ' + JSON.stringify(this.debuggee));
+    chrome.debugger.attach(this.debuggee, '1.3', () => {
       this.start();
     });
 
     this._onDetach = (tab, reason) => {
-      if (this.tabId !== tab.tabId) {
+      if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
         console.log('wrong tab: ' + tab.tabId);
-        console.log(params);
         return;
       }
-      console.log('Canceled.. Download WARC?');
+      console.log('Canceled... Download WARC?');
       chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
       this.download();
       
@@ -45,7 +54,10 @@ class Recorder {
       chrome.debugger.onEvent.removeListener(this._onEvent);
       chrome.tabs.onUpdated.removeListener(this._onTabChanged);
       clearInterval(this._updateId);
+      this.pendingRequests = null;
     }
+
+    this.pendingRequests = {};
 
     chrome.debugger.onDetach.addListener(this._onDetach);
 
@@ -57,65 +69,166 @@ class Recorder {
 
     this._onTabChanged = (tabId, changeInfo, tab) => {
       if (this.tabId === tabId && changeInfo.status === "complete") {
-        console.log('Send Start Record');
-        chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": this.writer.getLength()});
+        chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": prettyBytes(this.writer.getLength())});
       }
     }
 
     chrome.tabs.onUpdated.addListener(this._onTabChanged);
 
-    this._updateId = setInterval(() => chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": this.writer.getLength()}), 1000);
+    this._updateId = setInterval(() => chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": prettyBytes(this.writer.getLength())}), 3000);
   };
 
 
   download() {
     const blob = new Blob([this.writer._warcOutStream.toBuffer()], {"type": "application/octet-stream"});
     const url = URL.createObjectURL(blob);
-    console.log(url);
+    //console.log(url);
     chrome.downloads.download({"url": url, "filename": "wr-ext.warc", "conflictAction": "overwrite", "saveAs": false});
     URL.revokeObjectURL(blob);
   }
 
   async start() {
-    await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]});
-    await this.send("Network.setCacheDisabled", {cacheDisabled: true});
-
+    console.log('chrome.debugger attached to: ' + JSON.stringify(this.debuggee));
     this._onEvent = async (tab, message, params) => {
-      if (this.tabId !== tab.tabId) {
+      if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
         console.log('wrong tab: ' + tab.tabId);
         console.log(params);
         return;
       }
 
-      switch (message) {
-        case "Fetch.requestPaused":
-          try {
-            await this.handleResponse(params);
-          } catch (e) {
-            console.log(e);
-          }
-
-          try {
-            const rw = await this.rewriteResponse(params);
-
-            if (!rw) {
-              await this.send("Fetch.continueRequest", {requestId: params.requestId});
-            }
-          } catch (e) {
-            console.log("Continue failed for: " + params.request.url);
-            console.log(e);
-          }
-          break;
-      }
+      await this.processMessage(message, params, []);
     };
 
     chrome.debugger.onEvent.addListener(this._onEvent);
 
+    await this.sessionInit(null);
+
     await this.send("Runtime.evaluate", {expression: "window.location.reload()"});
-    //chrome.tabs.executeScript(this.tabId, {code: 'window.location.refresh()'});
   }
 
-  async rewriteResponse(params) {
+  async sessionInit(sessions) {
+    try {
+      //await this.send("ServiceWorker.stopAllWorkers", null, sessions);
+      await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: false }, sessions);
+      await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
+      await this.send("Network.enable", null, sessions);
+      await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
+    } catch (e) {
+      console.log("Session Init Error: " + e);
+    }
+  }
+
+  async processMessage(method, params, sessions) {
+    switch (method) {
+      case "Target.attachedToTarget":
+        sessions.push(params.sessionId);
+        console.log("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url);
+        this.sessions[params.sessionId] = {"id": 1, "type": params.targetInfo.type};
+        //self.recorders[params.targetInfo.targetId] = new Recorder({targetId: params.targetInfo.targetId}, this.tabId);
+        //self.recorders[params.targetInfo.targetId].attach();
+        
+
+        await this.sessionInit(sessions);
+        await this.send('Runtime.runIfWaitingForDebugger', null, sessions);
+        break;
+
+      case "Target.detachedFromTarget":
+        delete this.sessions[params.sessionId];
+        break;
+
+      case "Target.receivedMessageFromTarget":
+        if (!this.sessions[params.sessionId]) {
+          console.log("no such session: " + params.sessionId);
+          console.log(params);
+          return;
+        }
+        sessions.push(params.sessionId);
+        this.receiveMessageFromTarget(params, sessions);
+        break;
+
+      case "Network.responseReceived":
+        if (params.response && params.response.fromServiceWorker) {
+
+          if (!this.pendingRequests[params.requestId]) {
+            this.pendingRequests[params.requestId] = {};
+          }
+
+          const pending = this.pendingRequests[params.requestId];
+
+          pending.reqresp = CDPRequestInfo.fromResponse(params);
+
+          console.log("Network.responseReceived: " + params.response.url + " " + sessions.length);
+        }
+        break;
+
+      case "Network.loadingFinished":
+        this.handleLoadingFinished(params);
+        break;
+
+      case "Network.responseReceivedExtraInfo":
+        if (!this.pendingRequests[params.requestId]) {
+          this.pendingRequests[params.requestId] = {};
+        }
+
+        if (params.headersText) {
+          this.pendingRequests[params.requestId].headersText = params.headersText;
+        } else if (params.headers) {
+          this.pendingRequests[params.requestId].headers = params.headers
+        }
+        break;
+
+      case "Fetch.requestPaused":
+        console.log('Fetch.requestPaused: ' + params.request.url);
+        this.handlePaused(params, sessions);
+        break;
+
+      default:
+        //console.log("Unhandled: " + method);
+    }
+  }
+
+  receiveMessageFromTarget(params, sessions) {
+    const nestedParams = JSON.parse(params.message);
+
+    if (nestedParams.id != undefined) {
+      const promise = this._promises[nestedParams.id];
+      if (promise) {
+        if (DEBUG) {
+          console.log("RECV " + promise.method + " " + params.message);
+        }
+        if (nestedParams.error) {
+          promise.reject(nestedParams.error);
+        } else {
+          promise.resolve(nestedParams.result);
+        }
+        delete this._promises[nestedParams.id];
+      }
+    } else if (nestedParams.params != undefined) {
+      //console.log("RECV MSG " + nestedParams.method + " " + nestedParams.message);
+      this.processMessage(nestedParams.method, nestedParams.params, sessions);
+    }
+  }
+
+  async handlePaused(params, sessions) {
+    try {
+      await this.handleFetchResponse(params, sessions);
+    } catch (e) {
+      console.log(e);
+    }
+
+    try {
+      const rw = await this.rewriteResponse(params, sessions);
+
+      if (!rw) {
+        await this.send("Fetch.continueRequest", {requestId: params.requestId}, sessions);
+      }
+    } catch (e) {
+      console.log("Continue failed for: " + params.request.url);
+      console.log(e);
+    }
+  }
+
+  async rewriteResponse(params, sessions) {
     if (params.request.url.indexOf("youtube.com") < 0) {
       return false;
     }
@@ -154,7 +267,7 @@ class Recorder {
          "responseCode": params.responseStatusCode,
          "responseHeaders": params.responseHeaders,
          "body": base64Str
-        });
+        }, sessions);
       console.log("Replace succeeded? for: " + params.request.url);
       return true;
     } catch (e) {
@@ -179,12 +292,20 @@ class Recorder {
     return (status === 204 || (status >= 300 && status < 400));
   }
 
-  async handleResponse(params) {
+  async handleLoadingFinished(params, sessions) {
+    const pending = this.pendingRequests[params.requestId];
+
+    if (!pending || !pending.reqresp) {
+      return;
+    }
+
+    await this.commitRecords(params, pending.reqresp, sessions, false);
+  }
+
+  async handleFetchResponse(params, sessions) {
     const reqresp = CDPRequestInfo.fromRequest(params);
     reqresp.status = params.responseStatusCode;
-    reqresp.responseHeaders = params.responseHeaders;
-
-    let payload = null;
+    reqresp.responseHeadersList = params.responseHeaders;
 
     if (reqresp.status === 206) {
       setTimeout(() => {
@@ -194,9 +315,18 @@ class Recorder {
       return;
     }
 
+    params.payload = await this.commitRecords(params, reqresp, sessions, true);
+  }
+
+  async commitRecords(params, reqresp, sessions, isFetch) {
+    let payload = null;
+
+    const networkId = isFetch ? params.networkId : params.requestId;
+
     if (!this.noResponseForStatus(reqresp.status)) {
       try {
-        payload = await this.send("Fetch.getResponseBody", {requestId: params.requestId});
+        const method = isFetch ? "Fetch.getResponseBody" : "Network.getResponseBody"; 
+        payload = await this.send(method, {requestId: params.requestId}, sessions);
 
         if (payload.base64Encoded) {
           payload = Buffer.from(payload.body, 'base64')
@@ -205,6 +335,7 @@ class Recorder {
         }
 
       } catch (e) {
+        console.log(e);
         console.log('no buffer for: ' + reqresp.url + " " + reqresp.status);
       }
     }
@@ -215,47 +346,75 @@ class Recorder {
 
     if (reqresp.hasPostData && !reqresp.postData) {
       try {
-        let postRes = await this.send('Network.getRequestPostData', {requestId: reqresp.requestId});
+        let postRes = await this.send('Network.getRequestPostData', {requestId: reqresp.requestId}, sessions);
         reqresp.postData = Buffer.from(postRes.postData, 'utf8');
       } catch(e) {
         console.log("Error getting POST data: " + e);
       }
     }
 
-    this.writer.writeRequestResponseRecords(
-      reqresp.url, 
-      {
-        headers: reqresp.serializeRequestHeaders(),
-        data: reqresp.postData
-      },
+    if (reqresp.method && reqresp._getReqHeaderObj()) {
+      this.writer.writeRequestResponseRecords(
+        reqresp.url, 
+        {
+          headers: reqresp.serializeRequestHeaders(),
+          data: reqresp.postData
+        },
 
-      {
-        headers: this._serializeResponseHeaders(reqresp),
-        data: payload
-      }
-    );
+        {
+          headers: this._serializeResponseHeaders(reqresp, networkId),
+          data: payload
+        }
+      );
+    } else {
+      this.writer.writeResponseRecord(
+        reqresp.url,
+        this._serializeResponseHeaders(reqresp, networkId),
+        payload
+      ); 
+    }
 
     console.log("Total: " + this.writer.getLength());
     //chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": this.writer.getLength()});
-
-    params.payload = payload;
+    return payload;
   }
 
-  _serializeResponseHeaders(reqresp) {
+  _serializeResponseHeaders(reqresp, networkId) {
+    const pending = this.pendingRequests[networkId];
+
+    if (pending) {
+      delete this.pendingRequests[networkId];
+      if (pending.responseHeadersText) {
+        // condense any headers containing newlines
+        return pending.responseHeadersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ")});
+      }
+      if (pending.responseHeaders) {
+        reqresp.responseHeaders = pending.responseHeaders;
+        return reqresp.serializeResponseHeaders();
+      }
+    }
+
+    if (reqresp.responseHeaders) {
+      return reqresp.serializeResponseHeaders();
+    }
+
+    //console.log('no pending for: ' + reqresp.url + " " + networkId);
+    //console.log(pending);
+
     const statusMsg = STATUS_CODES[reqresp.status];
 
     let headers = `HTTP/1.1 ${reqresp.status} ${statusMsg}\r\n`;
 
     let hadCE = false;
 
-    for (let header of reqresp.responseHeaders) {
+    for (let header of reqresp.responseHeadersList) {
       if (header.name === "content-encoding") {
         hadCE = true;
         break;
       }
     }
 
-    for (let header of reqresp.responseHeaders) {
+    for (let header of reqresp.responseHeadersList) {
       switch (header.name) {
         case "status":
           continue;
@@ -281,26 +440,62 @@ class Recorder {
     return headers;
   }
 
-  async send(command, params) {
-    return new Promise((resolve, reject) => {
+  send(method, params, sessions) {
+    let promise = null;
 
-      const callback = (res) => {
-        if (res) {
-          resolve(res);
-        } else {
-          reject(chrome.runtime.lastError.message);
-        }
+    params = params || null;
+    sessions = sessions || [];
+
+    for (let i = sessions.length - 1; i >= 0; i--) {
+      //const id = this.sessions[sessionId].id++;
+      const id = this.id++;
+
+      const p = new Promise((resolve, reject) => {
+        this._promises[id] = {resolve, reject, method};
+      });
+
+      if (!promise) {
+        promise = p;
       }
 
-      params = params || null;
+      //let message = params ? {id, method, params} : {id, method};
+      const message = JSON.stringify({id, method, params});
 
-      chrome.debugger.sendCommand({tabId: this.tabId}, command, params, callback);
+      //const sessionId = sessions[sessions.length - 1 - i];
+      const sessionId = sessions[i];
+
+      params = {sessionId, message};
+      method = 'Target.sendMessageToTarget';
+    }
+
+    let prr;
+    const p = new Promise((resolve, reject) => {
+      prr = {resolve, reject, method};
     });
+
+    if (!promise) {
+      promise = p;
+    }
+
+    const callback = (res) => {
+      if (res) {
+        prr.resolve(res);
+      } else {
+        prr.reject(chrome.runtime.lastError.message);
+      }
+    }
+
+    if (DEBUG) {
+      console.log("SEND " + JSON.stringify({command: method, params}));
+    }
+
+    chrome.debugger.sendCommand(this.debuggee, method, params, callback);
+    return promise;
   }
 }
 
 
-// ======================================================
+// ===========================================================================
 class BlobWriter extends WARCWriterBase {
   constructor() {
     super();
@@ -318,7 +513,7 @@ class BlobWriter extends WARCWriterBase {
 }
 
 
-// ======================================================
+// ===========================================================================
 class WritableStream extends Writable {
   constructor() {
     super();
@@ -359,8 +554,7 @@ class WritableStream extends Writable {
 }
 
 
-
-// ======================================================
+// ===========================================================================
 class BaseRewriter
 {
   constructor(rules) {

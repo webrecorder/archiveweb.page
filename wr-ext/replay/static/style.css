@@ -1,0 +1,171 @@
+    body { 
+        background-color: white;
+        color: black;
+        font-family: 'HKGrotesk';
+        /*font-family: sans-serif;*/
+    }
+
+    input {
+        font-size: 1.2rem;
+        margin-bottom: 4px;
+    }
+
+    button {
+        font-size: 1rem;
+        color: #fff;
+        background-color: #0000ee;
+        border-radius: 8px;
+        padding: 6px 12px 6px 12px;
+    }
+
+    #open {
+        font-size: 18px;
+    }
+
+    .container {
+        width: 100%;
+    }
+    #error {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+        text-align: center;
+        color: darkred;
+    }
+    #loading {
+        font-size: 1.2rem;
+    }
+    #loading img {
+        margin: 0px 5px 0px 10px;
+        width: 20px;
+    }
+    .wabac {
+        /*font-family: fantasy;*/
+    }
+    .header {
+        font-size: 4.0rem;
+        line-height: 4.0rem;
+        color: #0000ee;
+        margin: 20px 0 0 0;
+        text-align: center;
+    }
+    .tagline {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+        text-align: center;
+        display: block;
+    }
+    .tagline a {
+        font-size: smaller;
+        line-height: 2.5rem;
+        font-variant-caps: all-small-caps;
+    }
+    .tagline i {
+        font-size: 1.0rem;
+    }
+    .sectionhead {
+        font-family: sans-serif;
+        margin-top: 50px;
+    }
+    .collDiv {
+        background-color: aliceblue;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+    .addDiv {
+        background-color: skyblue;
+        border-radius: 12px;
+        padding: 20px;
+    }
+    .collDiv .collHead {
+        background-color: lightblue;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 12px;
+        font-weight: normal;
+        font-size: 1.2rem;
+    }
+    .collName {
+        font-weight: bold;
+    }
+    .sourceDisplay {
+        font-style: italic;
+        margin-left: 20px;
+    }
+    .sourceDisplay span {
+        font-weight: bold;
+        color: darkblue;
+    }
+    .removeColl {
+        float: right;
+        text-decoration: none;
+    }
+    .formSearch {
+        padding: 0 12px 0 12px;
+        display: inline-block;
+        vertical-align: top;
+    }
+    .pageList {
+        display: block;
+        padding: 0 12px 0 12px;
+
+    }
+    .pageList li {
+
+    }
+    .collUrl {
+        width: 100%;
+    }
+    .collTs {
+        width: 50%;
+    }
+    label {
+        margin-right: 8px;
+        font-weight: bold;
+        font-size:  1.0rem;
+        width: 200px;
+    }
+    .formdiv {
+        width: 1000px;
+        margin-left: calc(50% - 500px);
+        margin-bottom: 20px;
+    }
+    footer {
+        margin-top: 40px;
+        font-size: 1.0rem;
+        text-align: center;
+    }
+    footer .wr {
+        font-family: 'InknutAntiqua';
+        line-height: 1.5em;
+        letter-spacing: -0.03rem;
+    }
+
+    @font-face {
+        font-family: 'InknutAntiqua';
+        src: url('InknutAntiqua-Regular.woff2') format('woff2');
+    }
+
+    @font-face {
+        font-family: 'HKGrotesk';
+        src: url('HKGrotesk-Regular.woff2') format('woff2');
+    }
+
+    @font-face {
+        font-family: 'HKGrotesk';
+        font-weight: bold;
+        src: url('HKGrotesk-Bold.woff2') format('woff2');
+    }
+
+    @font-face {
+        font-family: 'HKGrotesk';
+        font-weight: bold;
+        font-style: italic;
+        src: url('HKGrotesk-BoldItalic.woff2') format('woff2');
+    }
+
+    @font-face {
+        font-family: 'HKGrotesk';
+        font-style: italic;
+        src: url('HKGrotesk-LightItalic.woff2') format('woff2');
+    }

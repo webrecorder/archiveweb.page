@@ -1,9 +1,9 @@
 {
-  "name": "Webrecorder Recording Extension",
-  "description": "Webrecorder Recording Extension",
+  "name": "Webrecorder",
+  "description": "Webrecorder",
   "version": "0.1",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["contextMenus", "tabs", "debugger", "history", "activeTab", "unlimitedStorage", "downloads", "<all_urls>"],
+  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "storage", "unlimitedStorage", "downloads", "<all_urls>"],
   "browser_action": {},
   "background": { 
     "scripts": ["bg.js", "rec.js"],

@@ -1,0 +1,37 @@
+<html>
+<head>
+<script src="./sw.js"></script>
+<script src="./wr.js"></script>
+<style>
+body {
+  font-size: initial;
+  font-family: sans-serif;
+  padding: 20px 200px 20px 200px;
+}
+.center {
+  text-align: center;
+}
+li b {
+ font-size: larger;
+ padding-left: 20px;
+}
+
+</style>
+</head>
+<body>
+<div class="center"><h2>Webrecorder Personal Archive</h2></div>
+
+<p>Archive Size: <b id="size"></b></p>
+<p>Your archive contains the following pages: </p>
+<div id="pages"></div>
+
+<p style="font-size: larger">
+<a id="download" href="#">Download Archive (WARC)</a>
+</p>
+
+<p style="font-size: smaller">
+<a id="delete" href="#">Delete Archive</a>
+</p>
+
+</body>
+</html>

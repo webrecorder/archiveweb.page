@@ -12,12 +12,10 @@ self.recorders = {};
 
 const DEBUG = false;
 
+
+// ===========================================================================
 function ruleReplace(string) {
   return x => string.replace('{0}', x);
-}
-
-function repl(string) {
-  return x => string;
 }
 
 const RW_RULES = [
@@ -32,15 +30,15 @@ const RW_RULES = [
   {
     contains: "vimeo.com/video",
     rxRules: [
-      [/\"dash\"[:]/, repl('"__dash":')],
-      [/\"hls\"[:]/, repl('"__hls":')],
+      [/\"dash\"[:]/, ruleReplace('"__dash":')],
+      [/\"hls\"[:]/, ruleReplace('"__hls":')],
     ]
   }
 ];
 
 
 
-
+// ===========================================================================
 function initCDP(tabId) {
   if (!self.recorders[tabId]) {
     self.recorders[tabId] = new Recorder({"tabId": tabId});
@@ -59,17 +57,33 @@ class Recorder {
     this.writer = new BlobWriter();
     this.pendingRequests = null;
 
-    this._promises = {};
-    this.id = 1;
+    this.running = false;
 
+    this.pages = null;
+
+    this._promises = {};
+
+    this.id = 1;
     this.sessions = {};
   }
 
   attach() {
-    console.log('chrome.debugger: Attempting attach to: ' + JSON.stringify(this.debuggee));
-    chrome.debugger.attach(this.debuggee, '1.3', () => {
-      this.start();
-    });
+
+    let lastTitle;
+
+    this._onTabChanged = (tabId, changeInfo, tab) => {
+      if (this.tabId === tabId && changeInfo.status === "complete" && this.running) {
+
+        if (tab.title !== lastTitle) {
+          this.pages.push({url: tab.url, title: tab.title, date: new Date().toISOString()});
+          lastTitle = tab.title;
+
+          chrome.storage.local.set({"pages": this.pages});
+        }
+
+        chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": prettyBytes(this.writer.getLength())});
+      }
+    }
 
     this._onDetach = (tab, reason) => {
       if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
@@ -78,32 +92,29 @@ class Recorder {
       }
       console.log('Canceled... Download WARC?');
       chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
-      this.download();
+      //this.download();
       
       chrome.debugger.onDetach.removeListener(this._onDetach);
       chrome.debugger.onEvent.removeListener(this._onEvent);
       chrome.tabs.onUpdated.removeListener(this._onTabChanged);
+
       clearInterval(this._updateId);
       this.pendingRequests = null;
+
+      this.running = false;
     }
+
+    this.running = true;
 
     this.pendingRequests = {};
 
     chrome.debugger.onDetach.addListener(this._onDetach);
 
-    //this._onMessageFromTab = (request, sender, sendResponse) => {
-    //  if (request.
-    //}
-
-    //chrome.runtime.onMessage.addListener(this._onMessageFromTab);
-
-    this._onTabChanged = (tabId, changeInfo, tab) => {
-      if (this.tabId === tabId && changeInfo.status === "complete") {
-        chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": prettyBytes(this.writer.getLength())});
-      }
-    }
-
     chrome.tabs.onUpdated.addListener(this._onTabChanged);
+
+    chrome.debugger.attach(this.debuggee, '1.3', () => {
+      this.start();
+    });
 
     this._updateId = setInterval(() => chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": prettyBytes(this.writer.getLength())}), 3000);
   };
@@ -118,7 +129,8 @@ class Recorder {
   }
 
   async start() {
-    console.log('chrome.debugger attached to: ' + JSON.stringify(this.debuggee));
+    this.pages = await this._loadPages();
+
     this._onEvent = async (tab, message, params) => {
       if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
         console.log('wrong tab: ' + tab.tabId);
@@ -131,9 +143,21 @@ class Recorder {
 
     chrome.debugger.onEvent.addListener(this._onEvent);
 
-    await this.sessionInit(null);
+    await this.sessionInit([]);
 
     await this.send("Runtime.evaluate", {expression: "window.location.reload()"});
+  }
+
+  _loadPages() {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get(["pages"], (result) => {
+        if (result.pages === undefined) {
+          result.pages = [];
+          chrome.storage.local.set(result);
+        }
+        resolve(result.pages);
+      });
+    });
   }
 
   async sessionInit(sessions) {
@@ -142,7 +166,8 @@ class Recorder {
       await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: false }, sessions);
       await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
       await this.send("Network.enable", null, sessions);
-      await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
+      //await this.send("Page.enable", null, sessions);
+      //await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
     } catch (e) {
       console.log("Session Init Error: " + e);
     }
@@ -178,7 +203,6 @@ class Recorder {
 
       case "Network.responseReceived":
         if (params.response && params.response.fromServiceWorker) {
-
           if (!this.pendingRequests[params.requestId]) {
             this.pendingRequests[params.requestId] = {};
           }
@@ -187,7 +211,7 @@ class Recorder {
 
           pending.reqresp = CDPRequestInfo.fromResponse(params);
 
-          console.log("Network.responseReceived: " + params.response.url + " " + sessions.length);
+          //console.log("Network.responseReceived: " + params.response.url + " " + sessions.length);
         }
         break;
 
@@ -208,12 +232,12 @@ class Recorder {
         break;
 
       case "Fetch.requestPaused":
-        console.log('Fetch.requestPaused: ' + params.request.url);
+        //console.log('Fetch.requestPaused: ' + params.request.url);
         this.handlePaused(params, sessions);
         break;
 
       default:
-        //console.log("Unhandled: " + method);
+        //console.log(method);
     }
   }
 
@@ -340,6 +364,8 @@ class Recorder {
       setTimeout(() => {
         console.log('Start Async Fetch For: ' + params.request.url);
         chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": params.request});
+        delete this.pendingRequests[params.networkId];
+
       }, 500);
       return;
     }
@@ -531,7 +557,7 @@ class BlobWriter extends WARCWriterBase {
   constructor() {
     super();
     //this._warcOutStream = new WARCOutStream();
-    this._warcOutStream = new WritableStream();
+    this._warcOutStream = new VirtWritableStream();
     this.opts = {"gzip": true, "appending": false}
 
     let now = new Date().toISOString()
@@ -539,10 +565,61 @@ class BlobWriter extends WARCWriterBase {
   }
 
   getLength() {
-    return this._warcOutStream.length;
+    return this._warcOutStream.getLength();
   }
 }
 
+
+// ===========================================================================
+class VirtWritableStream extends Writable {
+  constructor() {
+    super();
+    this.chunks = [];
+
+    this.writer = window.virtualWriter;
+
+    this.writer.addEventListener("writeend", () => {
+      this._writeNext();
+    });
+
+    this.writer.addEventListener("error", (err) => {
+      console.warn("Wrtier Err: " + err);
+    });
+  }
+
+  getLength() {
+    return this.writer.length;
+  }
+
+  write(chunk, encoding, callback) {
+    this.chunks.push(chunk);
+    this._writeNext();
+    return true;
+  }
+
+  _writeNext() {
+    if (this.writer.readyState === this.writer.WRITING) {
+      return;
+    }
+
+    if (!this.chunks.length) {
+      this.emit('drain');
+      return;
+    }
+
+    const chunk = this.chunks.shift();
+
+    const res = this.writer.write(new Blob([chunk], {type: "application/octet-stream"}));
+
+    this.emit('drain');
+  }
+
+  end(chunk, encoding, callback) {
+    this.write(chunk, encoding, callback);
+    this.emit('finish');
+    return this;
+  }
+}
 
 // ===========================================================================
 class WritableStream extends Writable {

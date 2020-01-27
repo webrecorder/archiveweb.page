@@ -41,7 +41,20 @@ function init() {
         break;
     }
   });
+
+  registerSW();
+}
+
+async function registerSW() {
+  const scriptPath = "replay/sw.js?replayPrefix=wabac&stats=true&cacheColl=archive:wr-ext.cache"
+
+  const scriptURL = chrome.runtime.getURL(scriptPath);
+
+  if (!navigator.serviceWorker.controller || navigator.serverWorker.controller.scriptURL !== scriptURL) {
+    await navigator.serviceWorker.register(scriptURL, {scope: chrome.runtime.getURL("replay/")});
+  }
 }
 
 chrome.runtime.onInstalled.addListener(init);
 
+chrome.runtime.onStartup.addListener(init);

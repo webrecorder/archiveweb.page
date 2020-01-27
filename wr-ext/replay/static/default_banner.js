@@ -1,22 +1,3 @@
-/*
-Copyright(c) 2013-2018 Rhizome and Ilya Kreymer. Released under the GNU General Public License.
-
-This file is part of pywb, https://github.com/webrecorder/pywb
-
-    pywb is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    pywb is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with pywb.  If not, see <http://www.gnu.org/licenses/>.
-   
-*/
 
 // Creates the default pywb banner.
 
@@ -142,8 +123,8 @@ This file is part of pywb, https://github.com/webrecorder/pywb
      */
     DefaultBanner.prototype.createBanner = function (bid) {
         this.banner = document.createElement("wb_div", true);
-        this.banner.innerHTML += '<span class="left-nav"><span class="caret"></span><a href="' + window.home + '/replay.html">Back to Index</a></span>';
-        this.banner.innerHTML += '<span class="right-nav"><a href="https://github.com/webrecorder/wabac.js" target="_blank">A project by<br/><span class="title">Webrecorder</span></a></span>';
+        this.banner.innerHTML += '<span class="left-nav"><span class="caret"></span><a href="' + window.home + '">Back</a></span>';
+        this.banner.innerHTML += '<span class="right-nav"><a href="https://github.com/ikreymer/wabac.js" target="_blank">Powered by wabac.js</a></span>';
         this.banner.setAttribute("id", bid);
         this.banner.setAttribute("lang", "en");
         this.captureInfo = document.createElement('span');
@@ -215,10 +196,10 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         capture_str += `<span id='archived_on'>${this.archivedOn}</span>`;
 
         if (is_live) {
-            title_str = " WABAC Live: " + title_str;
+            title_str = " wabac.js Live: " + title_str;
             //capture_str += "<i>Live on&nbsp;</i>";
         } else {
-            title_str = " WR WABAC: " + title_str;
+            title_str = " wabac.js: " + title_str;
             //capture_str += "<i>Archived on&nbsp;</i>";
         }
 

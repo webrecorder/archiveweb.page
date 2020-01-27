@@ -1,6 +1,8 @@
 var fetchUrls = {};
 var banner = null;
 
+window.addEventListener("beforeunload", function() {});
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   switch (msg.msg) {
     case "asyncFetch":

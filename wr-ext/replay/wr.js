@@ -57,6 +57,7 @@ async function init() {
   });
 
   document.querySelector("#delete").addEventListener("click", (event) => {
+    self.caches.delete("wr-ext.cache").then((res) => console.log("deleted: " + res));
     chrome.runtime.sendMessage({"msg": "truncate"}, (response) => {
       console.log('truncated!');
       window.location.reload();
@@ -65,7 +66,8 @@ async function init() {
     return false;
   });
 
-  navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", files: warcFiles });
+  //navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", files: warcFiles });
+  navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", cache: "wr-ext.cache" });
 }
 
 function renderColl(name, pageList) {

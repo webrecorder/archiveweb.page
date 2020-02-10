@@ -1,0 +1,3 @@
+[submodule "wabac-replay"]
+	path = wabac-replay
+	url = https://github.com/ikreymer/wabac.js

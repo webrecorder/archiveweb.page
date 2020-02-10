@@ -13,7 +13,7 @@ function init() {
   chrome.contextMenus.create({"id": "wr", "title": "View Recordings", "contexts": ["all"]});
 
   chrome.contextMenus.onClicked.addListener((info, tab) => {
-    chrome.tabs.create({ url: chrome.runtime.getURL("replay/replay.html") });
+    chrome.tabs.create({ url: chrome.runtime.getURL("replay/index.html") });
   });
 
 

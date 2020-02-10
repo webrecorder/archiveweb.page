@@ -1,7 +1,5 @@
 "use strict";
 
-import { STATUS_CODES } from 'http';
-
 import { fuzzyMatcher } from 'wabac/src/fuzzymatcher';
 
 
@@ -17,28 +15,31 @@ class CacheWriter {
     return this.length;
   }
 
-  async processRequestResponse(url, reqresp, pending, payload) {
-    const responseHeaders = responseHeadersToHeaders(reqresp, pending);
+  async processRequestResponse(reqresp, payload) {
+    const responseHeaders = reqresp.getResponseHeadersDict();
 
-    if (reqresp.method && reqresp._getReqHeaderObj()) {
-      const requestHeaders = new Headers(reqresp._getReqHeaderObj());
+    if (reqresp.hasRequest()) {
+      const requestHeaders = new Headers(reqresp.getRequestHeadersDict());
       const cookie = requestHeaders.get("cookie");
 
       if (cookie) {
-        responseHeaders.set("x-wabac-preset-cookie", cookie);
+        responseHeaders.headers.set("x-wabac-preset-cookie", cookie);
       }
     }
 
     try {
-      const statusText = STATUS_CODES[reqresp.status];
       const status = reqresp.status;
-      const headers = responseHeaders;
+      const statusText = reqresp.statusText;
+      const headers = responseHeaders.headers;
       //let type = responseHeaders.get("Content-Type") || "application/octet-stream";
       //type = type.split(";")[0];
 
       if (payload) {
         this.length += payload.length;
       }
+
+
+      const url = reqresp.url;
 
       try {
         await this.cache.put(url, new Response(payload, {status, statusText, headers}));
@@ -59,49 +60,5 @@ class CacheWriter {
     }
   }
 }
-
-// ===========================================================================
-function responseHeadersToHeaders(reqresp, pending) {
-  let headersDict = null;
-  if (pending && pending.responseHeaders) {
-    headersDict = pending.responseHeaders;
-  } else {
-    headersDict = reqresp.responseHeaders;
-  }
-
-  if (!headersDict) {
-    headersDict = {};
-
-    for (let header of reqresp.responseHeadersList) {
-      headersDict[header.name] = header.value.replace('\n', ', ');
-    }
-  }
-
-  let headers = null;
-
-  try {
-    headers = new Headers(headersDict);
-  } catch (e) {
-    for (let key of Object.keys(headersDict)) {
-      headersDict[key] = headersDict[key].replace('\n', ', ');
-    }
-    headers = new Headers(headersDict);
-  }
-
-
-
-  try {
-    headers.delete("transfer-encoding");
-  } catch (e) {}
-
-  try {
-    headers.delete("content-encoding");
-    headers.delete("content-length");
-  } catch (e) {}
-
-  return headers;
-}
-
-
 
 export { CacheWriter };

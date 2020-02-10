@@ -20,29 +20,17 @@ function humanFileSize(size) {
 };
 
 async function init() {
-  if (!self.__wabacEmbeds) {
-    console.log("no sw init");
-  }
-  
-  await self.__wabacEmbeds;
+  chrome.storage.local.get("archiveSize", (result) => {
+    let size = 0;
 
-  const file = await getFile();
-
-  const fileURL = URL.createObjectURL(file);
-
-  document.querySelector("#size").innerText = humanFileSize(file.size);
-
-  const warcFiles = [{"name": file.name, "url": fileURL}];
-
-/*
-  navigator.serviceWorker.addEventListener("message", (event) => {
-    switch (event.data.msg_type) {
-      case "listAll":
-        renderColl(event.data.colls);
-        break;
+    try {
+      size = humanFileSize(Number(result.archiveSize || 0));
+    } catch (e) {
+      size = "Unknown";
     }
+
+    document.querySelector("#size").innerText = size;
   });
-*/
 
   chrome.storage.local.get("pages", (result) => {
     renderColl("archive", result.pages);
@@ -58,6 +46,7 @@ async function init() {
 
   document.querySelector("#delete").addEventListener("click", (event) => {
     self.caches.delete("wr-ext.cache").then((res) => console.log("deleted: " + res));
+    chrome.storage.local.set({"archiveSize": 0});
     chrome.runtime.sendMessage({"msg": "truncate"}, (response) => {
       console.log('truncated!');
       window.location.reload();
@@ -95,5 +84,6 @@ function renderColl(name, pageList) {
 
 //window.addEventListener("swready", init);
 
-init();
+window.addEventListener("load", init);
+//init();
 

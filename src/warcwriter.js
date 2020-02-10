@@ -2,8 +2,6 @@
 
 import { WARCWriterBase } from 'node-warc';
 
-import { STATUS_CODES } from 'http';
-
 import { Writable } from 'stream';
 
 
@@ -23,18 +21,19 @@ class WARCWriter extends WARCWriterBase {
     return this._warcOutStream.getLength();
   }
 
-  processRequestResponse(url, reqresp, pending, payload) {
-    const responseHeaders = responseHeadersToText(reqresp, pending);
+  processRequestResponse(reqresp, payload) {
+    const url = reqresp.url;
+    const responseHeaders = reqresp.getResponseHeadersText()
 
     if (!payload) {
       payload = Buffer.from([]);
     }
 
-    if (reqresp.method && reqresp._getReqHeaderObj()) {
+    if (reqresp.hasRequest()) {
       this.writeRequestResponseRecords(
         url, 
         {
-          headers: reqresp.serializeRequestHeaders(),
+          headers: reqresp.getRequestHeadersText(),
           data: reqresp.postData
         },
 
@@ -144,34 +143,6 @@ class BufferWritableStream extends Writable {
   
     return Buffer.concat(buffers);
   }
-}
-
-// ===========================================================================
-function responseHeadersToText(reqresp, pending) {
-  if (pending) {
-    if (pending.responseHeadersText) {
-      // condense any headers containing newlines
-      return pending.responseHeadersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ")});
-    }
-    if (pending.responseHeaders) {
-      reqresp.responseHeaders = pending.responseHeaders;
-      return reqresp.serializeResponseHeaders();
-    }
-  }
-
-  if (reqresp.responseHeaders) {
-    return reqresp.serializeResponseHeaders();
-  }
-
-  const statusMsg = STATUS_CODES[reqresp.status];
-
-  let headers = `HTTP/1.1 ${reqresp.status} ${statusMsg}\r\n`;
-
-  for (let header of reqresp.responseHeadersList) {
-     headers += `${header.name}: ${header.value.replace('\n', ', ')}\r\n`;
-  }
-  headers += `\r\n`;
-  return headers;
 }
 
 

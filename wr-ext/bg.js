@@ -7,7 +7,7 @@
 function init() {
   chrome.browserAction.onClicked.addListener((tab) => {
     //chrome.tabs.sendMessage(tab.id, {"show": true});
-    initCDP(tab.id);
+    Recorder.startRecorder(tab.id);
   });
 
   chrome.contextMenus.create({"id": "wr", "title": "View Recordings", "contexts": ["all"]});
@@ -22,7 +22,6 @@ function init() {
       filesystem.root.getFile('test.warc', {create: true}, function(entry) {
         entry.createWriter(function(writer) {
           window.virtualWriter = writer;
-          //writer.truncate(0);
 
         }, function(fileError) {
           console.log(fileError);

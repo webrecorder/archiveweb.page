@@ -1,16 +1,13 @@
 "use strict";
 
-import { WARCWriterBase } from 'node-warc';
 import { CDPRequestInfo } from 'node-warc/lib/requestCapturers';
 
-import { STATUS_CODES } from 'http';
-
-import { Writable } from 'stream';
 import prettyBytes from 'pretty-bytes';
 
-import { fuzzyMatcher } from 'wabac/src/fuzzymatcher';
-
 import { baseRules as baseDSRules } from 'wabac/src/rewrite'; 
+
+import { CacheWriter } from './cachewriter';
+import { WARCWriter } from './warcwriter';
 
 
 // ===========================================================================
@@ -20,23 +17,21 @@ const DEBUG = false;
 
 
 // ===========================================================================
-function initCDP(tabId) {
-  if (!self.recorders[tabId]) {
-    self.recorders[tabId] = new Recorder({"tabId": tabId});
-  } else {
-    //console.log('Resuming Recording on: ' + tabId);
+class Recorder {
+  static startRecorder(tabId) {
+    if (!self.recorders[tabId]) {
+      self.recorders[tabId] = new Recorder({"tabId": tabId});
+    } else {
+      //console.log('Resuming Recording on: ' + tabId);
+    }
+
+    self.recorders[tabId].attach();
   }
 
-  self.recorders[tabId].attach();
-}
-
-
-// ===========================================================================
-class Recorder {
   constructor(debuggee, tabId) {
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId || tabId;
-    this.writer = new BlobWriter();
+    //this.writer = new BlobWriter();
     this.writer = new CacheWriter("wr-ext.cache");
     this.pendingRequests = null;
 
@@ -56,6 +51,11 @@ class Recorder {
 
   attach() {
     let lastTitle;
+
+    if (this.running) {
+      console.warn("Already Attached!");
+      return;
+    }
 
     this._onTabChanged = (tabId, changeInfo, tab) => {
       if (this.tabId === tabId && changeInfo.status === "complete" && this.running) {
@@ -525,325 +525,11 @@ class Recorder {
   }
 }
 
-
-// ===========================================================================
-class BlobWriter extends WARCWriterBase {
-  constructor() {
-    super();
-    //this._warcOutStream = new WARCOutStream();
-    this._warcOutStream = new VirtWritableStream();
-    this.opts = {"gzip": true, "appending": false}
-
-    let now = new Date().toISOString()
-    this._now = now.substr(0, now.indexOf('.')) + 'Z'
-  }
-
-  getLength() {
-    return this._warcOutStream.getLength();
-  }
-
-  processRequestResponse(url, reqresp, pending, payload) {
-    const responseHeaders = responseHeadersToText(reqresp, pending);
-
-    if (!payload) {
-      payload = Buffer.from([]);
-    }
-
-    if (reqresp.method && reqresp._getReqHeaderObj()) {
-      this.writeRequestResponseRecords(
-        url, 
-        {
-          headers: reqresp.serializeRequestHeaders(),
-          data: reqresp.postData
-        },
-
-        {
-          headers: responseHeaders,
-          data: payload
-        }
-      );
-    } else {
-      this.writeResponseRecord(
-        url,
-        responseHeaders,
-        payload
-      ); 
-    }
-  }
-}
-
-
-// ===========================================================================
-class CacheWriter {
-  constructor(name) {
-    this.length = 0;
-    this.cache = null;
-    self.caches.open(name).then(cache => this.cache = cache);   
-  }
-
-  getLength() {
-    return this.length;
-  }
-
-  async processRequestResponse(url, reqresp, pending, payload) {
-    const responseHeaders = responseHeadersToHeaders(reqresp, pending);
-
-    if (reqresp.method && reqresp._getReqHeaderObj()) {
-      const requestHeaders = new Headers(reqresp._getReqHeaderObj());
-      const cookie = requestHeaders.get("cookie");
-
-      if (cookie) {
-        responseHeaders.set("x-wabac-preset-cookie", cookie);
-      }
-    }
-
-    try {
-      const statusText = STATUS_CODES[reqresp.status];
-      const status = reqresp.status;
-      const headers = responseHeaders;
-      //let type = responseHeaders.get("Content-Type") || "application/octet-stream";
-      //type = type.split(";")[0];
-
-      if (payload) {
-        this.length += payload.length;
-      }
-
-      try {
-        await this.cache.put(url, new Response(payload, {status, statusText, headers}));
-      } catch(e) {
-        console.error(e);
-      }
-
-      console.log('cached: ' + url);
-
-      for (let fuzzyUrl of fuzzyMatcher.fuzzyUrls(url)) {
-        if (url === fuzzyUrl) {
-          continue;
-        }
-        await this.cache.put(fuzzyUrl, new Response(null, {status: 307, headers: {"x-wabac-fuzzy-match": "true", "content-location": url}}));
-      }
-
-    } catch(e) {
-      console.warn("cache put fail for: " + url + " " + reqresp.status);
-      console.warn(e);
-    }
-  }
-}
-
-
-// ===========================================================================
-class VirtWritableStream extends Writable {
-  constructor() {
-    super();
-    this.chunks = [];
-
-    this.writer = window.virtualWriter;
-
-    this.writer.addEventListener("writeend", () => {
-      this._writeNext();
-    });
-
-    this.writer.addEventListener("error", (err) => {
-      console.warn("Wrtier Err: " + err);
-    });
-  }
-
-  getLength() {
-    return this.writer.length;
-  }
-
-  write(chunk, encoding, callback) {
-    this.chunks.push(chunk);
-    this._writeNext();
-    return true;
-  }
-
-  _writeNext() {
-    if (this.writer.readyState === this.writer.WRITING) {
-      return;
-    }
-
-    if (!this.chunks.length) {
-      this.emit('drain');
-      return;
-    }
-
-    const chunk = this.chunks.shift();
-
-    const res = this.writer.write(new Blob([chunk], {type: "application/octet-stream"}));
-
-    this.emit('drain');
-  }
-
-  end(chunk, encoding, callback) {
-    this.write(chunk, encoding, callback);
-    this.emit('finish');
-    return this;
-  }
-}
-
-// ===========================================================================
-class WritableStream extends Writable {
-  constructor() {
-    super();
-    this.length = 0;
-  }
-
-  write(chunk, encoding, callback) {
-    const res = super.write(chunk, encoding, callback);
-
-    this.length += chunk.length;
-
-    if (!res) {
-      this.emit('drain');
-    }
-
-    return res;
-  }
-
-  _write(chunk, encoding, callback) {
-    return this.write(chunk, encoding, callback);
-  }
-
-  end(chunk, encoding, callback) {
-    const res = super.end(chunk, encoding, callback);
-    this.emit('finish');
-    return res;
-  }
-
-  toBuffer() {
-    let buffers = [];
-
-    for (let buffer of this._writableState.buffer) {
-      buffers.push(buffer.chunk);
-    }
-  
-    return Buffer.concat(buffers);
-  }
-}
-
-
-// ===========================================================================
-class BaseRewriter
-{
-  constructor(rules) {
-    this.rules = rules;
-    this.compileRules();
-  }
-
-  compileRules() {
-    let rxBuff = '';
-
-    for (let rule of this.rules) {
-      if (rxBuff) {
-        rxBuff += "|";
-      }
-      rxBuff += `(${rule[0].source})`;
-    }
-
-    const rxString = `(?:${rxBuff})`;
-
-    this.rx = new RegExp(rxString, 'gm');
-  }
-
-  doReplace(params) {
-    const offset = params[params.length - 2];
-    const string = params[params.length - 1];
-
-    for (let i = 0; i < this.rules.length; i++) {
-      const curr = params[i];
-      if (!curr) {
-        continue;
-      }
-
-      const result = this.rules[i][1].call(this, curr, offset, string);
-      if (result) {
-        return result;
-      }
-    }
-  }
-
-  rewrite(text) {
-    return text.replace(this.rx, (match, ...params) => this.doReplace(params));
-  }
-}
-
-
 // ===========================================================================
 function sleep(time) {
   return new Promise((resolve) => setTimeout(() => resolve(), time));
 }
 
-// ===========================================================================
-function responseHeadersToText(reqresp, pending) {
-  if (pending) {
-    if (pending.responseHeadersText) {
-      // condense any headers containing newlines
-      return pending.responseHeadersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ")});
-    }
-    if (pending.responseHeaders) {
-      reqresp.responseHeaders = pending.responseHeaders;
-      return reqresp.serializeResponseHeaders();
-    }
-  }
-
-  if (reqresp.responseHeaders) {
-    return reqresp.serializeResponseHeaders();
-  }
-
-  const statusMsg = STATUS_CODES[reqresp.status];
-
-  let headers = `HTTP/1.1 ${reqresp.status} ${statusMsg}\r\n`;
-
-  for (let header of reqresp.responseHeadersList) {
-     headers += `${header.name}: ${header.value.replace('\n', ', ')}\r\n`;
-  }
-  headers += `\r\n`;
-  return headers;
-}
-
-// ===========================================================================
-function responseHeadersToHeaders(reqresp, pending) {
-  let headersDict = null;
-  if (pending && pending.responseHeaders) {
-    headersDict = pending.responseHeaders;
-  } else {
-    headersDict = reqresp.responseHeaders;
-  }
-
-  if (!headersDict) {
-    headersDict = {};
-
-    for (let header of reqresp.responseHeadersList) {
-      headersDict[header.name] = header.value.replace('\n', ', ');
-    }
-  }
-
-  let headers = null;
-
-  try {
-    headers = new Headers(headersDict);
-  } catch (e) {
-    for (let key of Object.keys(headersDict)) {
-      headersDict[key] = headersDict[key].replace('\n', ', ');
-    }
-    headers = new Headers(headersDict);
-  }
 
 
-
-  try {
-    headers.delete("transfer-encoding");
-  } catch (e) {}
-
-  try {
-    headers.delete("content-encoding");
-    headers.delete("content-length");
-  } catch (e) {}
-
-  return headers;
-}
-
-
-
-export { initCDP };
+export { Recorder };

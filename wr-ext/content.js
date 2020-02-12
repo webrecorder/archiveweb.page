@@ -24,15 +24,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 function doStart(msg) {
-  console.log("Record Start");
-  if (!banner) {
+  if (document && document.body && !banner) {
+    console.log("Record Start");
     banner = document.createElement("banner-div");
     banner.style.cssText = "top: 0px; left: 0px; position: fixed; width: 100%; padding: 4px 0px 4px 8px; color: white; background-color: dodgerblue; font-family: sans-serif; font-size: 14px; z-index: 1000000";
-    doUpdateStatus(msg);
     document.body.appendChild(banner);
   } else {
     banner.style.display = "";
   }
+  doUpdateStatus(msg);
 }
 
 function doStop() {

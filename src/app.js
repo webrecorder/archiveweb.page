@@ -1,3 +1,7 @@
+"use strict";
+
+import { openDB } from 'idb/with-async-ittr.js';
+import prettyBytes from 'pretty-bytes';
 
 
 function getFile(name, size) {
@@ -13,18 +17,12 @@ function getFile(name, size) {
   });
 }
 
-function humanFileSize(size) {
-    if (size === 0) return 0;
-    var i = Math.floor( Math.log(size) / Math.log(1000) );
-    return ( size / Math.pow(1000, i) ).toFixed(0) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-};
-
 async function init() {
   chrome.storage.local.get("archiveSize", (result) => {
     let size = 0;
 
     try {
-      size = humanFileSize(Number(result.archiveSize || 0));
+      size = prettyBytes(Number(result.archiveSize || 0));
     } catch (e) {
       size = "Unknown";
     }
@@ -45,18 +43,30 @@ async function init() {
   });
 
   document.querySelector("#delete").addEventListener("click", (event) => {
-    self.caches.delete("wr-ext.cache").then((res) => console.log("deleted: " + res));
-    chrome.storage.local.set({"archiveSize": 0});
-    chrome.runtime.sendMessage({"msg": "truncate"}, (response) => {
-      console.log('truncated!');
-      window.location.reload();
-    });
+    deleteAll();
+
     event.preventDefault();
     return false;
   });
 
   //navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", files: warcFiles });
-  navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", cache: "wr-ext.cache" });
+  navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", db: "wr-ext.cache" });
+}
+
+async function deleteAll() {
+  try {
+    await self.caches.delete("wr-ext.cache");
+  } catch(e) {}
+
+  chrome.storage.local.set({"pages": []});
+  chrome.storage.local.set({"archiveSize": 0});
+
+  const db = await openDB('wr-ext.cache');
+  await db.clear("urls");
+  await db.clear("pages");
+  await db.delete();
+
+  window.location.reload();
 }
 
 function renderColl(name, pageList) {

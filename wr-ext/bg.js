@@ -45,7 +45,7 @@ function init() {
 }
 
 async function registerSW() {
-  const scriptPath = "replay/sw.js?replayPrefix=wabac&stats=true&cacheColl=archive:wr-ext.cache"
+  const scriptPath = "replay/sw.js?replayPrefix=wabac&stats=true&dbColl=archive:wr-ext.cache"
 
   const scriptURL = chrome.runtime.getURL(scriptPath);
 

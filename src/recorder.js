@@ -6,6 +6,7 @@ import { STATUS_CODES } from 'http';
 
 import { baseRules as baseDSRules } from 'wabac/src/rewrite'; 
 
+import { DBWriter } from './dbwriter';
 import { CacheWriter } from './cachewriter';
 import { WARCWriter } from './warcwriter';
 
@@ -14,6 +15,8 @@ import { WARCWriter } from './warcwriter';
 self.recorders = {};
 
 const DEBUG = false;
+
+const dbWriter = new DBWriter("wr-ext.cache");
 
 
 // ===========================================================================
@@ -31,14 +34,19 @@ class Recorder {
   constructor(debuggee, tabId) {
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId || tabId;
+
     //this.writer = new BlobWriter();
-    this.writer = new CacheWriter("wr-ext.cache");
+    //this.writer = new CacheWriter("wr-ext.cache");
+    this.writer = dbWriter;
+
+    this.size = 0;
     this.pendingRequests = null;
 
     this.running = false;
 
     this.frameId = null;
     this.frameUrl = null;
+
     this.historyMap = {};
 
     this.pages = null;
@@ -115,8 +123,7 @@ class Recorder {
   }
 
   async updateFileSize() {
-    const size = this.writer.getLength();
-    chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": prettyBytes(size)});
+    chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": prettyBytes(this.size)});
   }
 
   async start() {
@@ -146,6 +153,8 @@ class Recorder {
       //await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}, {urlPattern: "*", requestStage: "Request"}]}, sessions);
       await this.send("Network.enable", null, sessions);
 
+      await this.send("Page.addScriptToEvaluateOnNewDocument", {source: "window.devicePixelRatio = 1;"}, sessions);
+
       if (!sessions.length) {
         await this.send("Page.enable");
 
@@ -155,7 +164,8 @@ class Recorder {
       }
       //await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
     } catch (e) {
-      console.warn("Session Init Error: " + e);
+      console.warn("Session Init Error: ");
+      console.log(e);
     }
   }
 
@@ -203,7 +213,7 @@ class Recorder {
         break;
 
       case "Network.responseReceived":
-        //console.warn("Network Response: " + params.response.url);
+        //console.log("Network Response: " + params.response.url);
         if (params.response) {
           this.pendingReqResp(params.requestId).fillResponseReceived(params);
         }
@@ -242,7 +252,7 @@ class Recorder {
 
       case "Page.frameNavigated":
         if (!params.frame.parentId) {
-          //console.log("New Page: " + params.frame.url + " " + params.frame.id);
+          //console.log("Page.frameNavigated: " + params.frame.url + " " + params.frame.id);
           if (this.frameId != params.frame.id) {
             this.historyMap = {};
           }
@@ -254,15 +264,12 @@ class Recorder {
         }
         break;
 
-      case "Page.loadEventFired":
-        break;
-
       case "Page.navigatedWithinDocument":
         if (!sessions.length) {
           const result = await this.send("Page.getNavigationHistory", null, sessions);
           const id = result.currentIndex;
           if (id === result.entries.length - 1 && this.historyMap[id] !== result.entries[id].url) {
-            console.log("New History Entry: " + JSON.stringify(result.entries[id]));
+            //console.log("New History Entry: " + JSON.stringify(result.entries[id]));
             this.historyMap[id] = result.entries[id].url;
           }
         }
@@ -310,7 +317,7 @@ class Recorder {
     }
   }
 
-  async initPage(params) {
+  async initPage() {
     // New Pagee Setup WIP
     const result = await this.send("Page.getNavigationHistory");
     const id = result.currentIndex;
@@ -465,10 +472,15 @@ class Recorder {
     }
 
     // TODO: this should be atomic!
-    const currSize = (await chromeStoreLoad("archiveSize")) || 0;
-    chromeStoreSet("archiveSize", currSize + payload.length);
+    if (payload) {
+      const currSize = (await chromeStoreLoad("archiveSize")) || 0;
+      chromeStoreSet("archiveSize", currSize + payload.length);
+
+      this.size += payload.length;
+    }
 
     this.writer.processRequestResponse(reqresp, payload, this.sessionId);
+
 
     //console.log("Total: " + this.writer.getLength());
     //chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": this.writer.getLength()});
@@ -535,7 +547,7 @@ class RequestResponseInfo
   constructor(requestId) {
     this.requestId = requestId;
 
-    this.date = null;
+    this.datetime = null;
 
     // request data
     this.method = null;
@@ -558,11 +570,13 @@ class RequestResponseInfo
 
     this.payload = null;
 
+    this.fromServiceWorker = false;
+
     this.fetch = false;
   }
 
   fillRequest(params) {
-    //if (this.url) return;
+    this.datetime = new Date().getTime();
 
     this.url = params.request.url;
     this.method = params.request.method;
@@ -594,6 +608,8 @@ class RequestResponseInfo
 
     this.responseHeaders = params.response.headers;
     this.responseHeadersText = params.response.headersText;
+
+    this.fromServiceWorker = params.response.fromServiceWorker;
   }
 
   fillResponseReceivedExtraInfo(params) {
@@ -624,7 +640,7 @@ class RequestResponseInfo
     let headers = `${this.protocol} ${this.status} ${this.statusText}\r\n`;
 
     for (let header of this.responseHeadersList) {
-       headers += `${header.name}: ${header.value.replace('\n', ', ')}\r\n`;
+       headers += `${header.name}: ${header.value.replace(/\n/g, ', ')}\r\n`;
     }
     headers += `\r\n`;
     return headers;
@@ -643,19 +659,28 @@ class RequestResponseInfo
       headersDict = {};
 
       for (let header of headersList) {
-        headersDict[header.name] = header.value.replace('\n', ', ');
+        headersDict[header.name] = header.value.replace(/\n/g, ', ');
       }
     }
 
     let headers = null;
 
+    if (!headersDict) {
+      return {headers: new Headers(), headersDict: {}};
+    }
+
     try {
       headers = new Headers(headersDict);
     } catch (e) {
       for (let key of Object.keys(headersDict)) {
-        headersDict[key] = headersDict[key].replace('\n', ', ');
+        headersDict[key] = headersDict[key].replace(/\n/g, ', ');
       }
-      headers = new Headers(headersDict);
+      try {
+        headers = new Headers(headersDict);
+      } catch (e) {
+        console.warn(e);
+        headers = new Headers();
+      }
     }
 
     return {headers, headersDict};

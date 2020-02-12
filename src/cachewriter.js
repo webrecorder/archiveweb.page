@@ -34,11 +34,6 @@ class CacheWriter {
       //let type = responseHeaders.get("Content-Type") || "application/octet-stream";
       //type = type.split(";")[0];
 
-      if (payload) {
-        this.length += payload.length;
-      }
-
-
       const url = reqresp.url;
 
       try {

@@ -6,6 +6,7 @@ module.exports = {
   target: "web",
   entry: {
     'rec': './src/recorder.js',
+    'app': './src/app.js',
   },
   output: {
     path: path.join(__dirname, 'wr-ext'),

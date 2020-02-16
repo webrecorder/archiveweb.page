@@ -2,13 +2,18 @@
 
 import prettyBytes from 'pretty-bytes';
 
-import { STATUS_CODES } from 'http';
+import { RequestResponseInfo } from './requestresponseinfo.js';
 
 import { baseRules as baseDSRules } from 'wabac/src/rewrite'; 
+import { rewriteDASH, rewriteHLS } from 'wabac/src/rewrite/rewriteVideo'; 
 
 import { DBWriter } from './dbwriter';
-import { CacheWriter } from './cachewriter';
-import { WARCWriter } from './warcwriter';
+
+import { FullTextFlex as FullText, parseTextFromDom } from './fulltext';
+
+
+//import { CacheWriter } from './cachewriter';
+//import { WARCWriter } from './warcwriter';
 
 
 // ===========================================================================
@@ -45,11 +50,11 @@ class Recorder {
     this.running = false;
 
     this.frameId = null;
-    this.frameUrl = null;
+    this.pageInfo = {};
 
     this.historyMap = {};
 
-    this.pages = null;
+    //this.pages = null;
 
     this._promises = {};
 
@@ -65,32 +70,35 @@ class Recorder {
       return;
     }
 
+/*
     this._onTabChanged = (tabId, changeInfo, tab) => {
       if (this.tabId === tabId && changeInfo.status === "complete" && this.running) {
 
         if (tab.title !== lastTitle) {
-          this.pages.push({url: tab.url, title: tab.title, date: new Date().toISOString()});
-          lastTitle = tab.title;
+          console.log("onTabChanged: " + tab.title);
+          //this.pages.push({url: tab.url, title: tab.title, date: new Date().toISOString()});
+          //lastTitle = tab.title;
 
-          chromeStoreSet("pages", this.pages);
+          //chromeStoreSet("pages", this.pages);
         }
 
-        this.updateFileSize();
+        //this.updateFileSize();
       }
     }
-
+*/
     this._onDetach = (tab, reason) => {
       if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
         console.warn('wrong tab: ' + tab.tabId);
         return;
       }
+
       //console.log('Canceled... Download WARC?');
       chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
       //this.download();
       
       chrome.debugger.onDetach.removeListener(this._onDetach);
       chrome.debugger.onEvent.removeListener(this._onEvent);
-      chrome.tabs.onUpdated.removeListener(this._onTabChanged);
+      //chrome.tabs.onUpdated.removeListener(this._onTabChanged);
 
       clearInterval(this._updateId);
       this.pendingRequests = null;
@@ -104,7 +112,7 @@ class Recorder {
 
     chrome.debugger.onDetach.addListener(this._onDetach);
 
-    chrome.tabs.onUpdated.addListener(this._onTabChanged);
+    //chrome.tabs.onUpdated.addListener(this._onTabChanged);
 
     chrome.debugger.attach(this.debuggee, '1.3', () => {
       this.start();
@@ -127,7 +135,12 @@ class Recorder {
   }
 
   async start() {
-    this.pages = (await chromeStoreLoad("pages")) || [];
+    //this.pages = (await chromeStoreLoad("pages")) || [];
+    //const pages = await this.writer.getAllPages();
+
+    this.fulltext = new FullText("wr-ext.text");
+
+    self.fulltext = this.fulltext;
 
     this._onEvent = async (tab, message, params) => {
       if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
@@ -149,18 +162,24 @@ class Recorder {
   async sessionInit(sessions) {
     try {
       await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: false }, sessions);
-      await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
+
+      try {
+        await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
+      } catch(e) {
+        console.log('No Fetch Available');
+      }
+
       //await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}, {urlPattern: "*", requestStage: "Request"}]}, sessions);
       await this.send("Network.enable", null, sessions);
-
-      await this.send("Page.addScriptToEvaluateOnNewDocument", {source: "window.devicePixelRatio = 1;"}, sessions);
 
       if (!sessions.length) {
         await this.send("Page.enable");
 
-        //await this.send("Debugger.enable");
+        await this.send("Debugger.enable");
         //await this.send("DOM.enable");
-        //await this.send("DOMDebugger.setEventListenerBreakpoint", {'eventName': 'beforeunload'});
+        await this.send("DOMDebugger.setEventListenerBreakpoint", {'eventName': 'beforeunload'});
+
+        await this.send("Page.addScriptToEvaluateOnNewDocument", {source: "window.devicePixelRatio = 1;"}, sessions);
       }
       //await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
     } catch (e) {
@@ -251,47 +270,51 @@ class Recorder {
         break;
 
       case "Page.frameNavigated":
-        if (!params.frame.parentId) {
-          //console.log("Page.frameNavigated: " + params.frame.url + " " + params.frame.id);
-          if (this.frameId != params.frame.id) {
-            this.historyMap = {};
-          }
+        this.initPage(params);
+        break;
 
-          this.frameId = params.frame.id;
-          this.frameUrl = params.frame.url;
-
-          this.initPage(params);
-        }
+      case "Page.loadEventFired":
+        await this.updatePage();
         break;
 
       case "Page.navigatedWithinDocument":
-        if (!sessions.length) {
-          const result = await this.send("Page.getNavigationHistory", null, sessions);
-          const id = result.currentIndex;
-          if (id === result.entries.length - 1 && this.historyMap[id] !== result.entries[id].url) {
-            //console.log("New History Entry: " + JSON.stringify(result.entries[id]));
-            this.historyMap[id] = result.entries[id].url;
-          }
-        }
+        await this.updateHistory();
         break;
 
       case "Debugger.paused":
-        console.log("Paused for full text!");
-
-        try {
-          const domText = await this.send('DOM.getDocument', {'depth': -1, 'pierce': true});
-          console.log(JSON.stringify(domText).length);
-        } catch(e) {
-          console.log(e);
-        }
-
-        await this.send("Debugger.resume", null, sessions);
+        this.addText(true);
         break;
 
       default:
         //if (!method.startsWith("Network.")) {
         //  console.log(method);
         //}
+    }
+  }
+
+  async addText(paused) {
+    //console.log("Paused for full text!");
+    let domNodes = null;
+
+    if (this.pageInfo && this.pageInfo.url) {
+      try {
+        const startTime = new Date().getTime();
+        domNodes = await this.send('DOM.getDocument', {'depth': -1, 'pierce': true});
+        console.log(`Time getting text for ${this.pageInfo.id}: ${(new Date().getTime() - startTime)}`);
+      } catch(e) {
+        console.log(e);
+      }
+    }
+
+    if (paused) {
+      await this.send("Debugger.resume");
+    }
+
+    if (domNodes) {
+      this.pageInfo.text = parseTextFromDom(domNodes);
+      if (paused) {
+        this.fulltext.addPageText(this.pageInfo);
+      }
     }
   }
 
@@ -317,7 +340,33 @@ class Recorder {
     }
   }
 
-  async initPage() {
+  async initPage(params) {
+    if (params.frame.parentId) {
+      return;
+    }
+
+    //console.log("Page.frameNavigated: " + params.frame.url + " " + params.frame.id);
+    if (this.frameId != params.frame.id) {
+      this.historyMap = {};
+      //this.pageCount = 0;
+    }
+
+    this.frameId = params.frame.id;
+
+    this.pageInfo = {
+      //id: this.frameId + "-" + (this.pageCount++),
+      url: params.frame.url,
+      date: "",
+      title: "",
+      text: "",
+    };
+  }
+
+  async updatePage() {
+    if (!this.pageInfo) {
+      console.warn("no page info!");
+    }
+
     // New Pagee Setup WIP
     const result = await this.send("Page.getNavigationHistory");
     const id = result.currentIndex;
@@ -327,12 +376,34 @@ class Recorder {
     //  return;
     //}
 
-    //console.log("New Page: " + JSON.stringify(result.entries[id]));
+    //await this.addText(false);
 
     this.historyMap[id] = result.entries[id].url;
-    this.sessionId = this.frameId + "-" + result.entries[id].id;
-    //this.pageUrl = result.entries[id].url;
-    this.pageDate = new Date();
+
+    this.pageInfo.title = result.entries[id].title || result.entries[id].url;
+
+    //this.pages.push(this.pageInfo);
+    //await this._pagePromise;
+
+    //this.writer.updatePage(this.pageInfo);
+    this.pageInfo.id = await this.writer.addPage(this.pageInfo);
+
+    //console.log("Adding Page: " + JSON.stringify(this.pageInfo));
+
+    //chromeStoreSet("pages", this.pages);
+  }
+
+  async updateHistory() {
+    if (sessions.length) {
+      return;
+    }
+
+    const result = await this.send("Page.getNavigationHistory", null, sessions);
+    const id = result.currentIndex;
+    if (id === result.entries.length - 1 && this.historyMap[id] !== result.entries[id].url) {
+      //console.log("New History Entry: " + JSON.stringify(result.entries[id]));
+      this.historyMap[id] = result.entries[id].url;
+    }
   }
 
   async handlePaused(params, sessions) {
@@ -359,27 +430,40 @@ class Recorder {
       return false;
     }
 
-    const rw = baseDSRules.getRewriter(params.request.url);
-
-    if (rw === baseDSRules.defaultRewriter) {
-      return false;
-    }
-
-    const ct = this._getContentType(params.responseHeaders);
-
-    if (ct !== "text/html") {
-      return false;
-    }
-
     const string = payload.toString("utf-8");
 
     if (!string.length) {
       return false;
     }
 
-    console.log("Rewrite Response for: " + params.request.url);
+    let newString = null;
 
-    const newString = rw.rewrite(string);
+    const ct = this._getContentType(params.responseHeaders);
+
+    switch (ct) {
+      case "application/x-mpegURL":
+      case "application/vnd.apple.mpegurl":
+        newString = rewriteHLS(string);
+        break;
+
+      case "application/dash+xml":
+        newString = rewriteDASH(string);
+        break;
+
+      case "text/html":
+        const rw = baseDSRules.getRewriter(params.request.url);
+
+        if (rw !== baseDSRules.defaultRewriter) {
+          newString = rw.rewrite(string);
+        }
+        break;
+    }
+
+    if (!newString) {
+      return false;
+    }
+
+    console.log("Rewritten Response for: " + params.request.url);
 
     const base64Str = new Buffer(newString).toString("base64");
 
@@ -415,24 +499,38 @@ class Recorder {
 
   async handleLoadingFinished(params, sessions) {
     const reqresp = this.removeReqResp(params.requestId);
-    if (!reqresp || reqresp.fetch) {
+    if (!reqresp) {
       return;
     }
 
-    return await this.commitRecords(params, reqresp, sessions,
-              "Network.getResponseBody");
+    reqresp.datetime = new Date().getTime();
+
+    //console.log("Finished: " + reqresp.url);
+    let payload = reqresp.payload;
+
+    if (!reqresp.fetch) {
+      payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
+    }
+
+    if (payload) {
+      const currSize = (await chromeStoreLoad("archiveSize")) || 0;
+      chromeStoreSet("archiveSize", currSize + payload.length);
+
+      this.size += payload.length;
+    }
+
+    this.writer.processRequestResponse(reqresp, payload, this.pageInfo);
   }
 
   async handleFetchResponse(params, sessions) {
     const reqresp = this.pendingReqResp(params.networkId);
     reqresp.fillFetchRequestPaused(params);
 
-    return await this.commitRecords(params, reqresp, sessions,
-              "Fetch.getResponseBody");
+    return await this.fetchPayloads(params, reqresp, sessions, "Fetch.getResponseBody");
   }
 
-  async commitRecords(params, reqresp, sessions, method) {
-    let payload = null;
+  async fetchPayloads(params, reqresp, sessions, method) {
+    let payload;
 
     if (!reqresp.url.startsWith("https:") && !reqresp.url.startsWith("http:")) {
       return null;
@@ -471,19 +569,9 @@ class Recorder {
       }
     }
 
-    // TODO: this should be atomic!
-    if (payload) {
-      const currSize = (await chromeStoreLoad("archiveSize")) || 0;
-      chromeStoreSet("archiveSize", currSize + payload.length);
-
-      this.size += payload.length;
-    }
-
-    this.writer.processRequestResponse(reqresp, payload, this.sessionId);
-
-
     //console.log("Total: " + this.writer.getLength());
     //chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": this.writer.getLength()});
+    reqresp.payload = payload;
     return payload;
   }
 
@@ -541,152 +629,6 @@ class Recorder {
   }
 }
 
-// ===========================================================================
-class RequestResponseInfo
-{
-  constructor(requestId) {
-    this.requestId = requestId;
-
-    this.datetime = null;
-
-    // request data
-    this.method = null;
-    this.url = null;
-    this.protocol = "HTTP/1.1";
-
-    this.requestHeaders = null;
-    this.requestHeadersText = null;
-
-    this.postData = null;
-    this.hasPostData = false;
-
-    // response data
-    this.status = 0;
-    this.statusText = null;
-
-    this.responseHeaders = null;
-    this.responseHeadersList = null;
-    this.responseHeadersText = null;
-
-    this.payload = null;
-
-    this.fromServiceWorker = false;
-
-    this.fetch = false;
-  }
-
-  fillRequest(params) {
-    this.datetime = new Date().getTime();
-
-    this.url = params.request.url;
-    this.method = params.request.method;
-    this.requestHeaders = params.request.headers;
-    this.postData = params.request.postData;
-    this.hasPostData = params.request.hasPostData;
-  }
-
-  fillFetchRequestPaused(params) {
-    this.fillRequest(params);
-
-    this.status = params.responseStatusCode;
-    this.statusText = STATUS_CODES[this.status];
-
-    this.responseHeadersList = params.responseHeaders;
-
-    this.fetch = true;
-  }
-
-  fillResponseReceived(params) {
-    this.url = params.response.url.split("#")[0];
-
-    this.status = params.response.status;
-    this.statusText = params.response.statusText;
-    this.protocol = params.response.protocol;
-
-    this.requestHeaders = params.response.requestHeaders;
-    this.requestHeadersText = params.response.requestHeadersText;
-
-    this.responseHeaders = params.response.headers;
-    this.responseHeadersText = params.response.headersText;
-
-    this.fromServiceWorker = params.response.fromServiceWorker;
-  }
-
-  fillResponseReceivedExtraInfo(params) {
-    this.responseHeaders = params.headers
-    if (params.headersText) {
-      this.responseHeadersText = params.headersText;
-    }
-  }
-
-  hasRequest() {
-    return this.method && (this.requestHeaders || this.requestHeadersText);
-  }
-
-  getResponseHeadersText() {
-    return this._getHeadersText(this.responseHeaders, this.responseHeadersText);
-  }
-
-  getRequestHeadersText() {
-    return this._getHeadersText(this.requestHeaders, this.requestHeadersText);
-  }
-
-  _getHeadersText(headersDict, headersText) {
-    if (headersText) {
-      // condense any headers containing newlines
-      return pending.responseHeadersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ")});
-    }
-
-    let headers = `${this.protocol} ${this.status} ${this.statusText}\r\n`;
-
-    for (let header of this.responseHeadersList) {
-       headers += `${header.name}: ${header.value.replace(/\n/g, ', ')}\r\n`;
-    }
-    headers += `\r\n`;
-    return headers;
-  }
-
-  getRequestHeadersDict() {
-    return this._getHeadersDict(this.requestHeaders, null);
-  }
-
-  getResponseHeadersDict() {
-    return this._getHeadersDict(this.responseHeaders, this.responseHeadersList);
-  }
-
-  _getHeadersDict(headersDict, headersList) {
-    if (!headersDict && headersList) {
-      headersDict = {};
-
-      for (let header of headersList) {
-        headersDict[header.name] = header.value.replace(/\n/g, ', ');
-      }
-    }
-
-    let headers = null;
-
-    if (!headersDict) {
-      return {headers: new Headers(), headersDict: {}};
-    }
-
-    try {
-      headers = new Headers(headersDict);
-    } catch (e) {
-      for (let key of Object.keys(headersDict)) {
-        headersDict[key] = headersDict[key].replace(/\n/g, ', ');
-      }
-      try {
-        headers = new Headers(headersDict);
-      } catch (e) {
-        console.warn(e);
-        headers = new Headers();
-      }
-    }
-
-    return {headers, headersDict};
-  }
-}
-
 
 // ===========================================================================
 function sleep(time) {
@@ -707,7 +649,5 @@ function chromeStoreSet(prop, value) {
   set[prop] = value;
   return chrome.storage.local.set(set, (e) => { if (e) console.log(e); });
 }
-
-
 
 export { Recorder };

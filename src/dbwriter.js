@@ -1,6 +1,7 @@
 "use strict";
 
-import { DBIndex } from 'wabac/src/collIndex';
+import { ArchiveDB } from 'wabac/src/archivedb';
+
 import { getTS } from 'wabac/src/utils';
 import { fuzzyMatcher } from 'wabac/src/fuzzymatcher';
 
@@ -8,11 +9,20 @@ import { fuzzyMatcher } from 'wabac/src/fuzzymatcher';
 // ===========================================================================
 class DBWriter {
   constructor(name) {
-    this.db = new DBIndex(name);
-    this.db.init();
+    this.db = new ArchiveDB(name);
   }
 
-  async processRequestResponse(reqresp, payload, session) {
+  addPage(pageInfo) {
+    console.log("Add Page: " + JSON.stringify(pageInfo));
+    return this.db.addPage(pageInfo);
+  }
+
+  updatePage(pageInfo) {
+    console.log("Update Page: " + JSON.stringify(pageInfo));
+    this.db.addPage(pageInfo);
+  }
+
+  async processRequestResponse(reqresp, payload, pageInfo) {
 
     if (reqresp.method === "OPTIONS") {
       //console.log("Skipping: " + reqresp.method + " for " + reqresp.url);
@@ -23,9 +33,20 @@ class DBWriter {
       payload = Buffer.from([]);
     }
 
+    const ts = reqresp.datetime;
+
+    const url = reqresp.url;
+
+    if (url === pageInfo.url) {
+      pageInfo.date = new Date(ts).toISOString();
+    }
+
+    const session = pageInfo.id;
+
     const respHeaders = reqresp.getResponseHeadersDict();
     const reqHeaders = reqresp.getRequestHeadersDict();
 
+    const mime = respHeaders.headers.get("content-type");
     const cookie = reqHeaders.headers.get("cookie");
 
     //if (!cookie && reqresp.url === pageUrl && pageCookie.cookie) {
@@ -38,12 +59,6 @@ class DBWriter {
       //if
       //  pageCookie.cookie = cookie;
       //}
-
-    const mime = respHeaders.headers.get("content-type");
-
-    const ts = reqresp.datetime;
-
-    const url = reqresp.url;
 
     const status = reqresp.status;
     const statusText = reqresp.statusText;
@@ -70,7 +85,7 @@ class DBWriter {
       try {
         await this.db.addUrl({url: fuzzyUrl, ts, mime: "fuzzy", original: data.url});
       } catch (e) {
-        consloe.warn(`Fuzzy Add Error: ${fuzzyUrl}`);
+        console.warn(`Fuzzy Add Error: ${fuzzyUrl}`);
       }
     }
   }

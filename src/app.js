@@ -30,9 +30,14 @@ async function init() {
     document.querySelector("#size").innerText = size;
   });
 
-  chrome.storage.local.get("pages", (result) => {
-    renderColl("archive", result.pages);
-  });
+  //chrome.storage.local.get("pages", (result) => {
+  //  renderColl("archive", result.pages);
+  //});
+  const db = await openDB('wr-ext.cache');
+  const result = await db.getAll("pages");
+  console.log(result);
+  renderColl("archive", result);
+
 
   document.querySelector("#download").addEventListener("click", (event) => {
     const blob = new Blob([file], {"type": "application/octet-stream"});
@@ -50,7 +55,7 @@ async function init() {
   });
 
   //navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", files: warcFiles });
-  navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", db: "wr-ext.cache" });
+  navigator.serviceWorker.controller.postMessage({ "msg_type": "addColl", name: "archive", type: "db", data: "wr-ext.cache" });
 }
 
 async function deleteAll() {
@@ -58,13 +63,16 @@ async function deleteAll() {
     await self.caches.delete("wr-ext.cache");
   } catch(e) {}
 
-  chrome.storage.local.set({"pages": []});
-  chrome.storage.local.set({"archiveSize": 0});
+  chrome.storage.local.set({"pages": [], "archiveSize": 0, "wr-ext.text": null});
 
-  const db = await openDB('wr-ext.cache');
-  await db.clear("urls");
-  await db.clear("pages");
-  await db.delete();
+  try {
+    const db = await openDB('wr-ext.cache');
+
+    await db.clear("urls");
+    await db.clear("pages");
+ 
+    await db.delete();
+  } catch (e) {}
 
   window.location.reload();
 }

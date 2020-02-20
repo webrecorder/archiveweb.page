@@ -57,10 +57,16 @@ class RequestResponseInfo
   }
 
   fillResponseReceived(params) {
+    // if initial fetch was a 200, but now replacing with 304, don't!
+    if (params.response.status == 304 && this.status && this.status != 304 && this.url) {
+      return;
+    }
+
     this.url = params.response.url.split("#")[0];
 
     this.status = params.response.status;
-    this.statusText = params.response.statusText;
+    this.statusText = params.response.statusText || STATUS_CODES[this.status];
+
     this.protocol = params.response.protocol;
 
     this.requestHeaders = params.response.requestHeaders;

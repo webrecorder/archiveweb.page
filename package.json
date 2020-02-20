@@ -6,6 +6,8 @@
   "license": "MIT",
   "dependencies": {
     "flexsearch": "^0.6.32",
+    "keyword-mark-element": "^0.1.2",
+    "lit-element": "^2.2.1",
     "node-warc": "https://github.com/ikreymer/node-warc.git#write-work",
     "pretty-bytes": "^5.3.0",
     "wabac": "https://github.com/ikreymer/wabac.js.git"

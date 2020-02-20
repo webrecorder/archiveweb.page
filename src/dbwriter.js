@@ -5,28 +5,42 @@ import { ArchiveDB } from 'wabac/src/archivedb';
 import { getTS } from 'wabac/src/utils';
 import { fuzzyMatcher } from 'wabac/src/fuzzymatcher';
 
+import { setArchiveSize, incrArchiveSize, MAIN_DB_KEY } from './utils';
+
 
 // ===========================================================================
 class DBWriter {
   constructor(name) {
-    this.db = new ArchiveDB(name);
+    this.db = new ArchiveDBExt(name);
   }
 
   addPage(pageInfo) {
-    console.log("Add Page: " + JSON.stringify(pageInfo));
+    if (!pageInfo.url) {
+      console.warn("Empty Page, Skipping");
+      return;
+    }
     return this.db.addPage(pageInfo);
-  }
-
-  updatePage(pageInfo) {
-    console.log("Update Page: " + JSON.stringify(pageInfo));
-    this.db.addPage(pageInfo);
   }
 
   async processRequestResponse(reqresp, payload, pageInfo) {
 
     if (reqresp.method === "OPTIONS") {
       //console.log("Skipping: " + reqresp.method + " for " + reqresp.url);
-      return;
+      return false;
+    }
+
+    // don't save 304 (todo: turn into 'revisit' style entry?)
+    if (reqresp.status == 304) {
+      return false;
+    }
+
+    const url = reqresp.url;
+
+    const pageId = pageInfo.id || 0;
+
+    if (pageId === 0) {
+      console.log("Skipping No Page Id for: " + url);
+      return false;
     }
 
     if (!payload) {
@@ -35,13 +49,9 @@ class DBWriter {
 
     const ts = reqresp.datetime;
 
-    const url = reqresp.url;
-
     if (url === pageInfo.url) {
       pageInfo.date = new Date(ts).toISOString();
     }
-
-    const session = pageInfo.id;
 
     const respHeaders = reqresp.getResponseHeadersDict();
     const reqHeaders = reqresp.getRequestHeadersDict();
@@ -63,7 +73,7 @@ class DBWriter {
     const status = reqresp.status;
     const statusText = reqresp.statusText;
 
-    const data = {url, ts, status, statusText, mime, payload, session,
+    const data = {url, ts, status, statusText, mime, payload, pageId,
                   respHeaders: respHeaders.headersDict,
                   reqHeaders: reqHeaders.headersDict
                  };
@@ -83,13 +93,64 @@ class DBWriter {
       }
 
       try {
-        await this.db.addUrl({url: fuzzyUrl, ts, mime: "fuzzy", original: data.url});
+        await this.db.addUrl({url: fuzzyUrl, ts, mime: "fuzzy", original: data.url, pageId});
       } catch (e) {
         console.warn(`Fuzzy Add Error: ${fuzzyUrl}`);
       }
     }
+
+    return true;
   }
 }
 
-export { DBWriter };
+
+// ===========================================================================
+class ArchiveDBExt extends ArchiveDB
+{
+  constructor(name) {
+    super(name);
+  }
+
+  async deleteAll() {
+    try {
+      await this.db.clear("resources");
+      await this.db.clear("pages");
+    } catch (e) {}
+
+    try {
+      //await this.db.delete();
+      //await indexedDB.deleteDatabase(MAIN_DB_KEY);
+    } catch (e) {}
+
+    setArchiveSize(0);
+  }
+
+  async getAllPages(reverse = false) {
+    if (!reverse) {
+      return await this.db.getAllFromIndex("pages", "date");
+    }
+    const tx = this.db.transaction("pages", "readonly");
+    const pages = [];
+
+    for await (const cursor of tx.store.index("date").iterate(null, "prev")) {
+      pages.push(cursor.value);
+    }
+
+    return pages;
+  }
+
+  async deletePage(id) {
+    const tx = this.db.transaction("pages", "readwrite");
+    const page = await tx.store.get(id);
+    await tx.store.delete(id);
+
+    await this.deletePageResources(id);
+
+    if (page) {
+      incrArchiveSize(-page.size);
+    }
+  }
+}
+
+export { DBWriter, ArchiveDBExt };
 

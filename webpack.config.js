@@ -5,7 +5,7 @@ module.exports = {
   mode: 'production',
   target: "web",
   entry: {
-    'rec': './src/recorder.js',
+    'rec': './src/main.js',
     'app': './src/app.js',
   },
   output: {

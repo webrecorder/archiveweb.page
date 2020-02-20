@@ -21,18 +21,7 @@ li b {
 <body>
 <div class="center"><h2>Archived Web Pages</h2></div>
 
-<p>Archive Size: <b id="size"></b></p>
-<p>Your archive contains the following pages: </p>
-<div id="pages"></div>
-
-<!-- TODO Fix -->
-<p style="font-size: larger; display: none">
-<a id="download" href="#">Download Archive (WARC)</a>
-</p>
-
-<p style="font-size: smaller">
-<a id="delete" href="#">Delete Archive</a>
-</p>
+<page-index-app dbname="main.archive"></page-index-app>
 
 </body>
 </html>

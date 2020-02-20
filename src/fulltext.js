@@ -3,6 +3,8 @@
 import FlexSearch from 'flexsearch';
 //import Fuse from 'fuse.js';
 
+import { MAIN_DB_KEY } from './utils';
+
 
 // ===========================================================================
 class FullTextFlex
@@ -10,27 +12,54 @@ class FullTextFlex
   constructor(name) {
     this.name = name || "flex";
 
+    this._init();
+    this._import();
+  }
+
+  _init() {
     this.flex = new FlexSearch({
       doc: {
         id: "page:id",
-        field: ['page:url', 'page:date', 'page:title', 'page:text'],
-      }
-    });
-
-    chrome.storage.local.get([name], (result) => {
-      if (result[name]) {
-        console.log(result[name]);
-        this.flex.import(result[name]);
+        field: ['page:url', 'page:date', 'page:title', 'page:text', 'page:size'],
       }
     });
   }
 
+  search(query) {
+    return this.flex.search(query);
+  }
+
   addPageText(pageInfo) {
     this.flex.add([{page: pageInfo}]);
+    this._export();
+  }
 
+  remove(id) {
+    this.flex.remove({page: {id}});
+    this._export();
+  }
+
+  _export() {
     const exportIndex = {};
     exportIndex[this.name] = this.flex.export();
     chrome.storage.local.set(exportIndex);
+  }
+
+  _import() {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get([this.name], (result) => {
+        if (result[this.name]) {
+          this.flex.import(result[this.name]);
+        }
+        resolve();
+      });
+    });
+  }
+
+  deleteAll() {
+    this.flex.destroy();
+    chrome.storage.local.remove(this.name);
+    this._init();
   }
 }
 
@@ -73,7 +102,7 @@ function parseTextFromDom(dom) {
 }
 
 function parseText(node, metadata, accum) {
-  const SKIPPED_NODES = ["script", "style", "header", "footer", "banner-div"];
+  const SKIPPED_NODES = ["script", "style", "header", "footer", "banner-div", "noscript"];
   const EMPTY_LIST = [];
   const TEXT = "#text";
   const TITLE = "title";
@@ -114,5 +143,8 @@ function parseText(node, metadata, accum) {
   }
 }
 
-export { FullTextFuse, FullTextFlex, parseTextFromDom };
+const fulltext = new FullTextFlex(MAIN_DB_KEY);
+self.fulltext = fulltext;
+
+export { parseTextFromDom, fulltext };
 

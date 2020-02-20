@@ -6,7 +6,7 @@
   "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "storage", "unlimitedStorage", "downloads", "<all_urls>"],
   "browser_action": {},
   "background": { 
-    "scripts": ["bg.js", "rec.js"],
+    "scripts": ["rec.js"],
     "persistent": false
   },
   "content_scripts": [

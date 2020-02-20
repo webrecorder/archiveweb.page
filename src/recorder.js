@@ -7,13 +7,9 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from 'wabac/src/rewrite'; 
 import { rewriteDASH, rewriteHLS } from 'wabac/src/rewrite/rewriteVideo'; 
 
-import { DBWriter } from './dbwriter';
+import { sleep, incrArchiveSize } from './utils';
 
-import { FullTextFlex as FullText, parseTextFromDom } from './fulltext';
-
-
-//import { CacheWriter } from './cachewriter';
-//import { WARCWriter } from './warcwriter';
+import { fulltext, parseTextFromDom } from './fulltext';
 
 
 // ===========================================================================
@@ -21,14 +17,16 @@ self.recorders = {};
 
 const DEBUG = false;
 
-const dbWriter = new DBWriter("wr-ext.cache");
+const CONTENT_SCRIPT_URL = chrome.runtime.getURL("content.js");
+
+const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 
 // ===========================================================================
 class Recorder {
-  static startRecorder(tabId) {
+  static startRecorder(tabId, writer) {
     if (!self.recorders[tabId]) {
-      self.recorders[tabId] = new Recorder({"tabId": tabId});
+      self.recorders[tabId] = new Recorder({"tabId": tabId}, writer);
     } else {
       //console.log('Resuming Recording on: ' + tabId);
     }
@@ -36,30 +34,100 @@ class Recorder {
     self.recorders[tabId].attach();
   }
 
-  constructor(debuggee, tabId) {
+  static async stopAll() {
+    for (const tabId of Object.keys(self.recorders)) {
+      if (self.recorders[tabId].running) {
+        await self.recorders[tabId].detach();
+      }
+    }
+  }
+
+  constructor(debuggee, writer) {
     this.debuggee = debuggee;
-    this.tabId = debuggee.tabId || tabId;
+    this.tabId = debuggee.tabId;
 
     //this.writer = new BlobWriter();
     //this.writer = new CacheWriter("wr-ext.cache");
-    this.writer = dbWriter;
+    this.writer = writer
 
-    this.size = 0;
     this.pendingRequests = null;
 
     this.running = false;
 
     this.frameId = null;
-    this.pageInfo = {};
+    this.pageCount = 0;
+    this.pageInfo = {size: 0};
+    this.size = 0;
 
     this.historyMap = {};
-
-    //this.pages = null;
 
     this._promises = {};
 
     this.id = 1;
     this.sessions = {};
+
+    this._onDetached = (tab, reason) => {
+      if (tab && this.tabId !== tab.tabId) {
+        return;
+      }
+
+      this._stop();
+
+      // target closed, delete recorder as this tab will not be used again
+      if (reason === "target_closed") {
+        delete self.recorders[this.tabId];
+      }
+    }
+
+    this._onCanceled = (details) => {
+      if (details && details.tabId == this.tabId) {
+        this.detach();
+      }
+    }
+
+    this._onEvent = async (tab, message, params) => {
+      if (this.tabId === tab.tabId) {
+        await this.processMessage(message, params, []);
+      }
+    }
+  }
+
+  async detach() {
+    const domNodes = await this.getFullText();
+
+    const p = new Promise((resolve, reject) => {
+      chrome.debugger.detach(this.debuggee, () => {
+        if (chrome.runtime.lastError) {
+          console.warn(chrome.runtime.lastError.message);
+        }
+        resolve();
+      });
+    });
+
+    await p;
+    await this._stop(domNodes);
+  }
+
+  async _stop(domNodes = null) {
+    await this.commitPage(this.pageInfo, domNodes, true);
+
+    chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
+    
+    chrome.debugger.onDetach.removeListener(this._onDetached);
+    chrome.debugger.onEvent.removeListener(this._onEvent);
+
+    if (hasInfoBar) {
+      chrome.braveWebrecorder.onCanceled.removeListener(this._onCanceled);
+
+      chrome.braveWebrecorder.hideInfoBar(this.tabId);
+    }
+
+    this.size = 0;
+
+    clearInterval(this._updateId);
+    this.pendingRequests = null;
+
+    this.running = false;
   }
 
   attach() {
@@ -70,49 +138,20 @@ class Recorder {
       return;
     }
 
-/*
-    this._onTabChanged = (tabId, changeInfo, tab) => {
-      if (this.tabId === tabId && changeInfo.status === "complete" && this.running) {
-
-        if (tab.title !== lastTitle) {
-          console.log("onTabChanged: " + tab.title);
-          //this.pages.push({url: tab.url, title: tab.title, date: new Date().toISOString()});
-          //lastTitle = tab.title;
-
-          //chromeStoreSet("pages", this.pages);
-        }
-
-        //this.updateFileSize();
-      }
-    }
-*/
-    this._onDetach = (tab, reason) => {
-      if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
-        console.warn('wrong tab: ' + tab.tabId);
-        return;
-      }
-
-      //console.log('Canceled... Download WARC?');
-      chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
-      //this.download();
-      
-      chrome.debugger.onDetach.removeListener(this._onDetach);
-      chrome.debugger.onEvent.removeListener(this._onEvent);
-      //chrome.tabs.onUpdated.removeListener(this._onTabChanged);
-
-      clearInterval(this._updateId);
-      this.pendingRequests = null;
-
-      this.running = false;
-    }
-
     this.running = true;
 
+    this.pageCount = 0;
     this.pendingRequests = {};
 
-    chrome.debugger.onDetach.addListener(this._onDetach);
+    chrome.debugger.onDetach.addListener(this._onDetached);
 
-    //chrome.tabs.onUpdated.addListener(this._onTabChanged);
+    chrome.debugger.onEvent.addListener(this._onEvent);
+
+    if (hasInfoBar) {
+      chrome.braveWebrecorder.onCanceled.addListener(this._onCanceled);
+
+      chrome.braveWebrecorder.showInfoBar(this.tabId);
+    }
 
     chrome.debugger.attach(this.debuggee, '1.3', () => {
       this.start();
@@ -120,7 +159,6 @@ class Recorder {
 
     this._updateId = setInterval(() => this.updateFileSize(), 3000);
   };
-
 
   download() {
     const blob = new Blob([this.writer._warcOutStream.toBuffer()], {"type": "application/octet-stream"});
@@ -131,29 +169,14 @@ class Recorder {
   }
 
   async updateFileSize() {
-    chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": prettyBytes(this.size)});
+    const sizeMsg = prettyBytes(this.size);
+    chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": sizeMsg, "showBanner": !hasInfoBar});
+    if (hasInfoBar) {
+      chrome.braveWebrecorder.setSizeMsg(this.tabId, sizeMsg);
+    }
   }
 
   async start() {
-    //this.pages = (await chromeStoreLoad("pages")) || [];
-    //const pages = await this.writer.getAllPages();
-
-    this.fulltext = new FullText("wr-ext.text");
-
-    self.fulltext = this.fulltext;
-
-    this._onEvent = async (tab, message, params) => {
-      if (this.tabId !== tab.tabId && this.targetId != tab.targetId) {
-        console.warn('wrong tab: ' + tab.tabId);
-        console.warn(params);
-        return;
-      }
-
-      await this.processMessage(message, params, []);
-    };
-
-    chrome.debugger.onEvent.addListener(this._onEvent);
-
     await this.sessionInit([]);
 
     await this.send("Runtime.evaluate", {expression: "window.location.reload()"});
@@ -175,13 +198,13 @@ class Recorder {
       if (!sessions.length) {
         await this.send("Page.enable");
 
-        await this.send("Debugger.enable");
-        //await this.send("DOM.enable");
-        await this.send("DOMDebugger.setEventListenerBreakpoint", {'eventName': 'beforeunload'});
-
         await this.send("Page.addScriptToEvaluateOnNewDocument", {source: "window.devicePixelRatio = 1;"}, sessions);
       }
-      //await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
+
+      // disable cache for now?
+      await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
+      // another option: clear cache, but don't disable
+      //await this.send("Network.clearBrowserCache", null, sessions);
     } catch (e) {
       console.warn("Session Init Error: ");
       console.log(e);
@@ -270,7 +293,7 @@ class Recorder {
         break;
 
       case "Page.frameNavigated":
-        this.initPage(params);
+        await this.initPage(params);
         break;
 
       case "Page.loadEventFired":
@@ -278,44 +301,73 @@ class Recorder {
         break;
 
       case "Page.navigatedWithinDocument":
-        await this.updateHistory();
+        await this.updateHistory(sessions);
         break;
 
       case "Debugger.paused":
-        this.addText(true);
+        await this.unpauseAndFinish(params);
         break;
-
+  
       default:
-        //if (!method.startsWith("Network.")) {
+        //if (method.startsWith("Page.")) {
         //  console.log(method);
         //}
     }
   }
 
-  async addText(paused) {
-    //console.log("Paused for full text!");
-    let domNodes = null;
-
-    if (this.pageInfo && this.pageInfo.url) {
-      try {
-        const startTime = new Date().getTime();
-        domNodes = await this.send('DOM.getDocument', {'depth': -1, 'pierce': true});
-        console.log(`Time getting text for ${this.pageInfo.id}: ${(new Date().getTime() - startTime)}`);
-      } catch(e) {
-        console.log(e);
-      }
+  async getFullText() {
+    if (!this.pageInfo || !this.pageInfo.url || !this.pageInfo.date) {
+      return null;
     }
 
-    if (paused) {
+    try {
+      const startTime = new Date().getTime();
+      return await this.send('DOM.getDocument', {'depth': -1, 'pierce': true});
+      console.log(`Time getting text for ${this.pageInfo.id}: ${(new Date().getTime() - startTime)}`);
+    } catch(e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async unpauseAndFinish(params) {
+    let domNodes = null;
+
+    const ourUnload = (params.callFrames[0].url === CONTENT_SCRIPT_URL);
+
+    if (ourUnload) {
+      domNodes = await this.getFullText();
+    }
+
+    const currPage = this.pageInfo;
+
+    try {
       await this.send("Debugger.resume");
+    } catch(e) {
+      console.warn(e);
+    }
+
+    if (ourUnload) {
+      await this.commitPage(currPage, domNodes, true);
+    }
+  }
+
+  async commitPage(currPage, domNodes, finished) {
+    if (!currPage || !currPage.url || !currPage.date) {
+      return;
     }
 
     if (domNodes) {
-      this.pageInfo.text = parseTextFromDom(domNodes);
-      if (paused) {
-        this.fulltext.addPageText(this.pageInfo);
-      }
+      currPage.text = parseTextFromDom(domNodes);
+    } else {
+      console.warn("No Full Text Update");
     }
+
+    currPage.finished = finished;
+
+    await this.writer.addPage(currPage);
+
+    fulltext.addPageText(currPage);
   }
 
   receiveMessageFromTarget(params, sessions) {
@@ -340,6 +392,11 @@ class Recorder {
     }
   }
 
+  //from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+  newPageId() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
+
   async initPage(params) {
     if (params.frame.parentId) {
       return;
@@ -348,17 +405,18 @@ class Recorder {
     //console.log("Page.frameNavigated: " + params.frame.url + " " + params.frame.id);
     if (this.frameId != params.frame.id) {
       this.historyMap = {};
-      //this.pageCount = 0;
     }
 
     this.frameId = params.frame.id;
 
     this.pageInfo = {
-      //id: this.frameId + "-" + (this.pageCount++),
+      id: this.newPageId(),
       url: params.frame.url,
       date: "",
       title: "",
       text: "",
+      size: 0,
+      finished: false,
     };
   }
 
@@ -367,7 +425,6 @@ class Recorder {
       console.warn("no page info!");
     }
 
-    // New Pagee Setup WIP
     const result = await this.send("Page.getNavigationHistory");
     const id = result.currentIndex;
 
@@ -382,18 +439,20 @@ class Recorder {
 
     this.pageInfo.title = result.entries[id].title || result.entries[id].url;
 
-    //this.pages.push(this.pageInfo);
-    //await this._pagePromise;
+    const domNodes = await this.getFullText();
 
-    //this.writer.updatePage(this.pageInfo);
-    this.pageInfo.id = await this.writer.addPage(this.pageInfo);
+    await this.commitPage(this.pageInfo, domNodes, false);
 
-    //console.log("Adding Page: " + JSON.stringify(this.pageInfo));
+    // Enable unload pause only on first full page that is being recorded
+    if (!this.pageCount++) {
+      await this.send("Debugger.enable");
+      await this.send("DOMDebugger.setEventListenerBreakpoint", {'eventName': 'beforeunload'});
+    }
 
-    //chromeStoreSet("pages", this.pages);
+    await this.updateFileSize();
   }
 
-  async updateHistory() {
+  async updateHistory(sessions) {
     if (sessions.length) {
       return;
     }
@@ -512,14 +571,14 @@ class Recorder {
       payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
     }
 
-    if (payload) {
-      const currSize = (await chromeStoreLoad("archiveSize")) || 0;
-      chromeStoreSet("archiveSize", currSize + payload.length);
+    const committed = this.writer.processRequestResponse(reqresp, payload, this.pageInfo);
 
+    // increment size counter only if committed
+    if (committed && payload) {
+      incrArchiveSize(payload.length);
+      this.pageInfo.size += payload.length;
       this.size += payload.length;
     }
-
-    this.writer.processRequestResponse(reqresp, payload, this.pageInfo);
   }
 
   async handleFetchResponse(params, sessions) {
@@ -629,25 +688,5 @@ class Recorder {
   }
 }
 
-
-// ===========================================================================
-function sleep(time) {
-  return new Promise((resolve) => setTimeout(() => resolve(), time));
-}
-
-// ===========================================================================
-function chromeStoreLoad(prop) {
-  return new Promise((resolve) => {
-    chrome.storage.local.get([prop], (result) => {
-      resolve(result[prop] || null);
-    });
-  });
-}
-
-function chromeStoreSet(prop, value) {
-  const set = {};
-  set[prop] = value;
-  return chrome.storage.local.set(set, (e) => { if (e) console.log(e); });
-}
 
 export { Recorder };

@@ -24,6 +24,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 function doStart(msg) {
+  if (!msg.showBanner) {
+    return;
+  }
+
   if (document && document.body && !banner) {
     console.log("Record Start");
     banner = document.createElement("banner-div");

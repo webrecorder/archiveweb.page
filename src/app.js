@@ -71,7 +71,13 @@ class PageIndexApp extends LitElement {
       //this.results = this.fulltext.search(this.query).map(data => data.page);
       try {
         const results = await this._doFullText();
-        this.results = results.map(data => data.page);
+        const validResults = [];
+        for (const result of results) {
+          if (result && result.page) {
+            validResults.push(result.page);
+          }
+        }
+        this.results = validResults;
       } catch (e) {
         console.warn(e);
         this.results = [];
@@ -189,7 +195,7 @@ class PageIndexApp extends LitElement {
       ${this.results.map((page) => html`
         <page-result size="${page.size}"
          prefix="/replay/wabac/archive" id="${page.id}" date="${page.date}" ?finished="${page.finished}"
-         url="${page.url}" title="${page.title}" text="${page.text}" query="${this.query}"></page-result>
+         favIconUrl="${page.favIconUrl}" url="${page.url}" title="${page.title}" query="${this.query}">${page.text}</page-result>
       `)}
     `;
   }
@@ -226,6 +232,15 @@ class PageResult extends LitElement
       .size {
         display: inline-block;
       }
+      .favicon {
+        width: 24px;
+        height: 24x;
+        display: inline-block;
+        vertical-align: text-bottom;
+      }
+      img.favicon {
+        filter: drop-shadow(1px 1px 2px grey);
+      }
       .title {
         padding-left: 10px;
         font-size: 18px;
@@ -237,7 +252,7 @@ class PageResult extends LitElement
         padding: 20px;
         font-family: monospace;
         max-height: 200px;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
       }
 
@@ -284,12 +299,86 @@ class PageResult extends LitElement
       date: { type: String },
       url: { type: String },
       title: { type: String },
-      text: { type: String },
       size: { type: Number },
       query: { type: String },
       prefix: { type: String },
-      finished: { type: Boolean }
+      textSnippet: { type: String },
+      finished: { type: Boolean },
+      iconData: { type: String },
+      favIconUrl: { type: String }
     }
+  }
+
+  firstUpdated() {
+    this.updateIconUrl();
+    this.updateSnippet();
+  }
+
+  updated(changedProps) {
+    if (changedProps.has('favIconUrl')) {
+      this.updateIconUrl();
+    }
+
+    if (changedProps.has('query') || changedProps.has("url")) {
+      this.updateSnippet();
+    }
+  }
+
+  async updateIconUrl() {
+    const result = await this.shadowRoot.host.parentNode.host.db.lookupUrl(this.favIconUrl, "");
+    const oldVal = this.iconData;
+
+    try {
+      this.iconData = result ? `data:${result.mime};base64,${btoa(String.fromCharCode.apply(null, result.payload))}` : null;
+    } catch (e) {
+      this.iconData = null;
+    }
+
+    this.requestUpdate('iconData', oldVal);
+  }
+
+  updateSnippet() {
+    const oldVal = this.textSnippet;
+
+    if (!this.query || !this.textContent) {
+      this.textSnippet = null;
+      this.requestUpdate('textSnippet', oldVal);
+      return;
+    }
+
+    let textContent = this.textContent;
+    let query = this.query;
+
+    let inx = textContent.indexOf(this.query);
+
+    if (inx < 0) {
+      let textLower = textContent.toLowerCase();
+      let queryLower = query.toLowerCase();
+
+      inx = textLower.indexOf(queryLower);
+
+      if (inx < 0) {
+        this.textSnippet = null;
+        this.requestUpdate('textSnippet', oldVal);
+        return;
+      }
+
+      textContent = textLower;
+      query = queryLower;
+    }
+
+    let lastInx = textContent.lastIndexOf(query);
+
+    inx = Math.max(inx - 100, 0);
+    lastInx = Math.min(lastInx + 200, textContent.length);
+
+    if (inx === 0 && lastInx === textContent.length) {
+      this.textSnippet = textContent;
+    } else {
+      this.textSnippet = "..." + textContent.slice(inx, lastInx) + "...";
+    }
+
+    this.requestUpdate('textSnippet', oldVal);
   }
 
   render() {
@@ -300,6 +389,7 @@ class PageResult extends LitElement
     return html`
       <div class="main ${this.finished ? '' : 'recording'}">
       <span class="date">${date}</span>
+      ${this.iconData ? html`<img class="favicon" src="${this.iconData}"/>` : html`<span class="favicon"></span>`}
       <span class="title">
         <a href="${this.prefix}/${ts}/${this.url}">${this.title}</a>
       </span>
@@ -313,8 +403,8 @@ class PageResult extends LitElement
         </span>
       `}
 
-     ${this.query ? html`
-        <div class="text"><keyword-mark keywords="${this.query}">${this.text}</keyword-mark></div>` : html``}
+     ${this.textSnippet ? html`
+        <div class="text"><keyword-mark keywords="${this.query}">${this.textSnippet}</keyword-mark></div>` : html``}
       </div>
     `;
   }

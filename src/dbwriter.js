@@ -150,6 +150,18 @@ class ArchiveDBExt extends ArchiveDB
       incrArchiveSize(-page.size);
     }
   }
+
+  async hasUrlForPage(url, pageId) {
+    const tx = this.db.transaction("resources", "readonly");
+
+    for await (const cursor of tx.store.iterate(this.getLookupRange(url))) {
+      if (cursor.value.pageId === pageId) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
 
 export { DBWriter, ArchiveDBExt };

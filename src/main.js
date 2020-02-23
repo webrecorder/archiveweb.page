@@ -24,6 +24,12 @@ function init() {
     }
   });
 
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tabId && self.recorders[tabId] && self.recorders[tabId].running && changeInfo.favIconUrl) {
+      self.recorders[tabId].loadFavIcon(changeInfo.favIconUrl);
+    }
+  });
+
   chrome.contextMenus.create({"id": "wr", "title": "View Recordings", "contexts": ["all"]});
 
   chrome.contextMenus.onClicked.addListener((info, tab) => {

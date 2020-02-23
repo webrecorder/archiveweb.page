@@ -305,7 +305,11 @@ class Recorder {
         break;
 
       case "Debugger.paused":
-        await this.unpauseAndFinish(params);
+        // only unpause for beforeunload event
+        // could be paused for regular breakpoint if debugging via devtools
+        if (params.data && params.data.eventName === "listener:beforeunload") {
+          await this.unpauseAndFinish(params);
+        }
         break;
   
       default:
@@ -333,6 +337,8 @@ class Recorder {
   async unpauseAndFinish(params) {
     let domNodes = null;
 
+    // determine if this is the unload from the injected content script
+    // if not, unpause but don't extract full text
     const ourUnload = (params.callFrames[0].url === CONTENT_SCRIPT_URL);
 
     if (ourUnload) {
@@ -417,7 +423,27 @@ class Recorder {
       text: "",
       size: 0,
       finished: false,
+      favIconUrl: "",
     };
+  }
+
+  getFavIcon() {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.get(this.tabId, (tab) => {
+        resolve(tab.favIconUrl);
+      });
+    });
+  }
+
+  loadFavIcon(favIconUrl) {
+    if (favIconUrl && this.pageInfo && this.pageInfo.favIconUrl != favIconUrl) {
+      this.pageInfo.favIconUrl = favIconUrl;
+
+      //if (!await this.writer.db.hasUrlForPage(favIconUrl, this.pageInfo.id)) {
+      //console.log("Load Favicon: " + favIconUrl);
+      chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": {"url": favIconUrl}});
+      //}
+    }
   }
 
   async updatePage() {
@@ -439,9 +465,16 @@ class Recorder {
 
     this.pageInfo.title = result.entries[id].title || result.entries[id].url;
 
-    const domNodes = await this.getFullText();
+    const results = await Promise.all([
+      this.getFullText(),
+      this.getFavIcon(),
+    ]);
 
-    await this.commitPage(this.pageInfo, domNodes, false);
+    if (results[1]) {
+      this.loadFavIcon(results[1]);
+    }
+
+    await this.commitPage(this.pageInfo, results[0], false);
 
     // Enable unload pause only on first full page that is being recorded
     if (!this.pageCount++) {

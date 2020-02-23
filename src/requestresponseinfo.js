@@ -9,7 +9,7 @@ class RequestResponseInfo
   constructor(requestId) {
     this.requestId = requestId;
 
-    this.datetime = null;
+    this.ts = null;
 
     // request data
     this.method = null;
@@ -56,6 +56,10 @@ class RequestResponseInfo
     this.fetch = true;
   }
 
+  fillResponseRedirect(params) {
+    this._fillResponse(params.redirectResponse);
+  }
+
   fillResponseReceived(params) {
     // if initial fetch was a 200, but now replacing with 304, don't!
     if (params.response.status == 304 && this.status && this.status != 304 && this.url) {
@@ -64,18 +68,22 @@ class RequestResponseInfo
 
     this.url = params.response.url.split("#")[0];
 
-    this.status = params.response.status;
-    this.statusText = params.response.statusText || STATUS_CODES[this.status];
+    this._fillResponse(params.response);
+  }
 
-    this.protocol = params.response.protocol;
+  _fillResponse(response) {
+    this.status = response.status;
+    this.statusText = response.statusText || STATUS_CODES[this.status];
 
-    this.requestHeaders = params.response.requestHeaders;
-    this.requestHeadersText = params.response.requestHeadersText;
+    this.protocol = response.protocol;
 
-    this.responseHeaders = params.response.headers;
-    this.responseHeadersText = params.response.headersText;
+    this.requestHeaders = response.requestHeaders;
+    this.requestHeadersText = response.requestHeadersText;
 
-    this.fromServiceWorker = params.response.fromServiceWorker;
+    this.responseHeaders = response.headers;
+    this.responseHeadersText = response.headersText;
+
+    this.fromServiceWorker = response.fromServiceWorker;
   }
 
   fillResponseReceivedExtraInfo(params) {
@@ -85,31 +93,75 @@ class RequestResponseInfo
     }
   }
 
-  hasRequest() {
-    return this.method && (this.requestHeaders || this.requestHeadersText);
-  }
-
-  getResponseHeadersText() {
-    return this._getHeadersText(this.responseHeaders, this.responseHeadersText);
-  }
-
-  getRequestHeadersText() {
-    return this._getHeadersText(this.requestHeaders, this.requestHeadersText);
-  }
-
-  _getHeadersText(headersDict, headersText) {
-    if (headersText) {
-      // condense any headers containing newlines
-      return pending.responseHeadersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ")});
+  toDBRecord(payload, pageInfo) {
+    // don't save 304 (todo: turn into 'revisit' style entry?)
+    if (this.method === "OPTIONS" || this.status == 304) {
+      return null;
     }
 
+    if (!pageInfo.id) {
+      console.log("Skipping No Page Id for: " + this.url);
+      return null;
+    }
+
+    if (!payload) {
+      payload = Buffer.from([]);
+    }
+
+    this.ts = new Date().getTime();
+
+    if (this.url === pageInfo.url) {
+      pageInfo.date = new Date(this.ts).toISOString();
+    }
+
+    const respHeaders = this.getResponseHeadersDict();
+    const reqHeaders = this.getRequestHeadersDict();
+
+    const mime = respHeaders.headers.get("content-type");
+    const cookie = reqHeaders.headers.get("cookie");
+
+    if (cookie) {
+      respHeaders.headersDict["x-wabac-preset-cookie"] = cookie;
+    }
+
+    const data = {url: this.url,
+                  ts: this.ts,
+                  status: this.status,
+                  statusText:this.statusText,
+                  pageId: pageInfo.id,
+                  payload,
+                  mime,
+                  respHeaders: respHeaders.headersDict,
+                  reqHeaders: reqHeaders.headersDict
+                 };
+
+    return data;
+  }
+
+  fillFromDBRecord(record) {
+    this.url = record.url;
+    this.ts = record.ts;
+
+    this.status = record.status;
+    this.statusText = record.statusText;
+
+    this.payload = record.payload;
+    this.requestHeaders = record.reqHeaders || {};
+    this.responseHeaders = record.respHeaders || {};
+  }
+
+  getResponseHeadersText(headersDict) {
     let headers = `${this.protocol} ${this.status} ${this.statusText}\r\n`;
 
-    for (let header of this.responseHeadersList) {
-       headers += `${header.name}: ${header.value.replace(/\n/g, ', ')}\r\n`;
+    for (const header of Object.keys(this.responseHeaders)) {
+       headers += `${header}: ${this.responseHeaders[header].replace(/\n/g, ', ')}\r\n`;
     }
     headers += `\r\n`;
     return headers;
+  }
+
+  hasRequest() {
+    return this.method && (this.requestHeaders || this.requestHeadersText);
   }
 
   getRequestHeadersDict() {
@@ -124,7 +176,7 @@ class RequestResponseInfo
     if (!headersDict && headersList) {
       headersDict = {};
 
-      for (let header of headersList) {
+      for (const header of headersList) {
         headersDict[header.name] = header.value.replace(/\n/g, ', ');
       }
     }
@@ -138,7 +190,7 @@ class RequestResponseInfo
     try {
       headers = new Headers(headersDict);
     } catch (e) {
-      for (let key of Object.keys(headersDict)) {
+      for (const key of Object.keys(headersDict)) {
         if (key[0] === ":") {
           delete headersDict[key];
           continue;
@@ -156,5 +208,13 @@ class RequestResponseInfo
     return {headers, headersDict};
   }
 }
+
+
+function formatHeadersText(headersText) {
+  // condense any headers containing newlines
+  return headersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ")});
+}
+
+
 
 export { RequestResponseInfo };

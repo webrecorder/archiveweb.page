@@ -6,7 +6,7 @@ import prettyBytes from 'pretty-bytes';
 //import { openDB } from 'idb/with-async-ittr.js';
 //import { FullTextFlex as FullText } from './fulltext';
 
-import { ArchiveDBExt } from './dbwriter';
+import { ArchiveDBExt } from './archivedbext';
 
 import { sleep, getArchiveSize, MAIN_DB_KEY } from './utils';
 
@@ -122,7 +122,7 @@ class PageIndexApp extends LitElement {
         width: 100%;
       }
 
-      .delete {
+      .delete, .download {
         width: 20px;
         height: 20px;
         vertical-align: middle;
@@ -133,7 +133,7 @@ class PageIndexApp extends LitElement {
         margin: 8px 0px 20px 4px;
       }
 
-      .delete-all {
+      .delete-all, .download-all {
         margin-top: 30px;
         font-size: smaller;
       }
@@ -186,6 +186,10 @@ class PageIndexApp extends LitElement {
       <p class="delete-all">
       <img src="./static/trash.svg" class="delete"/><a id="delete" href="#" @click="${this.onDeleteAll}">Delete Archive</a>
       </p>
+
+      <p class="download-all">
+      <img src="./static/download.svg" class="download"/><a id="download" href="#" @click="${this.onDownloadAll}">Download Archive</a>
+      </p>
     `;
   }
 
@@ -213,6 +217,20 @@ class PageIndexApp extends LitElement {
     this.waitingMsg = `Deleting Archived Page: ${url}`;
 
     chrome.runtime.sendMessage({"msg": "deletePage", "id": id});
+  }
+
+  onDownloadAll(event) {
+    this.waitingMsg = "Preparing Download...";
+
+    event.preventDefault();
+    this.doDownloadAll();
+    return false;
+  }
+
+  async doDownloadAll() {
+    const url = await this.db.writeAllToWarc();
+    console.log(url);
+    chrome.downloads.download({url, filename: 'wr-ext.warc', conflictAction: "overwrite"});
   }
 }
 

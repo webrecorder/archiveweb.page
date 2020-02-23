@@ -3,22 +3,40 @@
 import { WARCWriterBase } from 'node-warc';
 
 import { Writable } from 'stream';
+import { RequestResponseInfo } from './requestresponseinfo.js';
 
 
 // ===========================================================================
 class WARCWriter extends WARCWriterBase {
   constructor() {
     super();
-    //this._warcOutStream = new BufferWritableStream();
-    this._warcOutStream = new VirtFSWritableStream();
+    this._warcOutStream = new BufferWritableStream();
+    //this._warcOutStream = new VirtFSWritableStream();
     this.opts = {"gzip": true, "appending": false}
-
-    let now = new Date().toISOString()
-    this._now = now.substr(0, now.indexOf('.')) + 'Z'
   }
 
-  getLength() {
-    return this._warcOutStream.getLength();
+  async writeFromDBIter(iter) {
+    const reqresp = new RequestResponseInfo();
+
+    for await (const cursor of iter) {
+      const record = cursor.value;
+
+      if (record.mime === "fuzzy" || (!record.url.startsWith("http:") && !record.url.startsWith("https:"))) {
+        console.log("Skipping: " + record.url);
+        continue;
+      }
+
+      reqresp.fillFromDBRecord(record);
+      this._now = new Date(record.ts).toISOString();
+
+      this.writeResponseRecord(record.url, reqresp.getResponseHeadersText(), record.payload);
+    }
+
+    return this.toBlob();
+  }
+
+  toBlob() {
+    return new Blob([this._warcOutStream.toBuffer()], {"type": "application/octet-stream"});
   }
 
   processRequestResponse(reqresp, payload) {

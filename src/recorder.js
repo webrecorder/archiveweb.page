@@ -262,7 +262,7 @@ class Recorder {
         break;
 
       case "Network.loadingFinished":
-        this.handleLoadingFinished(params);
+        await this.handleLoadingFinished(params);
         break;
 
       case "Network.responseReceivedExtraInfo":
@@ -270,9 +270,7 @@ class Recorder {
         break;
 
       case "Network.requestWillBeSent":
-        this.pendingReqResp(params.requestId).fillRequest(params);
-        //this.pendingReqResp(params.requestId).method = params.request.method;
-        //console.log(params.request);
+        await this.handleRequestWillBeSent(params);
         break;
 
       case "Fetch.requestPaused":
@@ -313,7 +311,7 @@ class Recorder {
         break;
   
       default:
-        //if (method.startsWith("Page.")) {
+        //if (method.startsWith("Network.")) {
         //  console.log(method);
         //}
     }
@@ -595,7 +593,11 @@ class Recorder {
       return;
     }
 
-    reqresp.datetime = new Date().getTime();
+    if (!reqresp.url.startsWith("https:") && !reqresp.url.startsWith("http:")) {
+      return;
+    }
+
+    //reqresp.datetime = new Date().getTime();
 
     //console.log("Finished: " + reqresp.url);
     let payload = reqresp.payload;
@@ -604,13 +606,34 @@ class Recorder {
       payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
     }
 
-    const committed = this.writer.processRequestResponse(reqresp, payload, this.pageInfo);
+    const data = reqresp.toDBRecord(payload, this.pageInfo);
+    if (data) {
+      await this.writer.commitResource(data);
 
-    // increment size counter only if committed
-    if (committed && payload) {
-      incrArchiveSize(payload.length);
-      this.pageInfo.size += payload.length;
-      this.size += payload.length;
+      // increment size counter only if committed
+      if (payload) {
+        incrArchiveSize(payload.length);
+        this.pageInfo.size += payload.length;
+        this.size += payload.length;
+      }
+    }
+  }
+
+  async handleRequestWillBeSent(params) {
+    const reqresp = this.pendingReqResp(params.requestId);
+
+    let data = null;
+
+    if (params.redirectResponse) {
+      reqresp.fillResponseRedirect(params);
+      data = reqresp.toDBRecord(null, this.pageInfo);
+    }
+
+    reqresp.fillRequest(params);
+
+    // commit redirect response, if any
+    if (data) {
+      await this.writer.commitResource(data);
     }
   }
 
@@ -623,10 +646,6 @@ class Recorder {
 
   async fetchPayloads(params, reqresp, sessions, method) {
     let payload;
-
-    if (!reqresp.url.startsWith("https:") && !reqresp.url.startsWith("http:")) {
-      return null;
-    }
 
     if (reqresp.status === 206) {
       await sleep(500);

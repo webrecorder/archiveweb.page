@@ -42,6 +42,17 @@ class Recorder {
     }
   }
 
+  static async stopForPage(pageId) {
+    for (const tabId of Object.keys(self.recorders)) {
+      if (self.recorders[tabId].running && self.recorders[tabId].pageInfo.id === pageId) {
+        await self.recorders[tabId].detach();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   constructor(debuggee, writer) {
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
@@ -160,14 +171,6 @@ class Recorder {
     this._updateId = setInterval(() => this.updateFileSize(), 3000);
   };
 
-  download() {
-    const blob = new Blob([this.writer._warcOutStream.toBuffer()], {"type": "application/octet-stream"});
-    const url = URL.createObjectURL(blob);
-    //console.log(url);
-    chrome.downloads.download({"url": url, "filename": "wr-ext.warc", "conflictAction": "overwrite", "saveAs": false});
-    URL.revokeObjectURL(blob);
-  }
-
   async updateFileSize() {
     const sizeMsg = prettyBytes(this.size);
     chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": sizeMsg, "showBanner": !hasInfoBar});
@@ -177,6 +180,10 @@ class Recorder {
   }
 
   async start() {
+    await this.send("Page.enable");
+
+    await this.send("Page.addScriptToEvaluateOnNewDocument", {source: "window.devicePixelRatio = 1;"});
+
     await this.sessionInit([]);
 
     await this.send("Runtime.evaluate", {expression: "window.location.reload()"});
@@ -184,21 +191,14 @@ class Recorder {
 
   async sessionInit(sessions) {
     try {
+      await this.send("Network.enable", null, sessions);
+
       await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: false }, sessions);
 
       try {
         await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
       } catch(e) {
         console.log('No Fetch Available');
-      }
-
-      //await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}, {urlPattern: "*", requestStage: "Request"}]}, sessions);
-      await this.send("Network.enable", null, sessions);
-
-      if (!sessions.length) {
-        await this.send("Page.enable");
-
-        await this.send("Page.addScriptToEvaluateOnNewDocument", {source: "window.devicePixelRatio = 1;"}, sessions);
       }
 
       // disable cache for now?
@@ -278,7 +278,7 @@ class Recorder {
         let continued = false;
 
         try {
-          if ((params.responseStatusCode || params.responseErrorReason)) {
+          if (params.responseStatusCode || params.responseErrorReason) {
             continued = await this.handlePaused(params, sessions);
           }
         } catch(e) {
@@ -291,7 +291,7 @@ class Recorder {
         break;
 
       case "Page.frameNavigated":
-        await this.initPage(params);
+        this.initPage(params);
         break;
 
       case "Page.loadEventFired":
@@ -311,7 +311,7 @@ class Recorder {
         break;
   
       default:
-        //if (method.startsWith("Network.")) {
+        //if (method.startsWith("Page.")) {
         //  console.log(method);
         //}
     }
@@ -401,7 +401,7 @@ class Recorder {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 
-  async initPage(params) {
+  initPage(params) {
     if (params.frame.parentId) {
       return;
     }
@@ -541,6 +541,10 @@ class Recorder {
         break;
 
       case "text/html":
+      case "application/json":
+      case "text/javascript":
+      case "application/javascript":
+      case "application/x-javascript":
         const rw = baseDSRules.getRewriter(params.request.url);
 
         if (rw !== baseDSRules.defaultRewriter) {
@@ -553,7 +557,9 @@ class Recorder {
       return false;
     }
 
-    console.log("Rewritten Response for: " + params.request.url);
+    if (newString !== string) {
+      console.log("Rewritten Response for: " + params.request.url);
+    }
 
     const base64Str = new Buffer(newString).toString("base64");
 
@@ -607,15 +613,9 @@ class Recorder {
     }
 
     const data = reqresp.toDBRecord(payload, this.pageInfo);
-    if (data) {
-      await this.writer.commitResource(data);
 
-      // increment size counter only if committed
-      if (payload) {
-        incrArchiveSize(payload.length);
-        this.pageInfo.size += payload.length;
-        this.size += payload.length;
-      }
+    if (data) {
+      await this.commitResource(data);
     }
   }
 
@@ -633,7 +633,21 @@ class Recorder {
 
     // commit redirect response, if any
     if (data) {
-      await this.writer.commitResource(data);
+      await this.commitResource(data);
+    }
+  }
+
+  async commitResource(data) {
+    const sizeCommitted = await this.writer.commitResource(data);
+
+    // increment size counter only if committed
+    if (sizeCommitted) {
+      incrArchiveSize(sizeCommitted);
+      this.pageInfo.size += sizeCommitted;
+      this.size += sizeCommitted;
+
+      // increment page size
+      await this.writer.addPage(this.pageInfo);
     }
   }
 

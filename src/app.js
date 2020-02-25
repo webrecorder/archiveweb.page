@@ -133,8 +133,11 @@ class PageIndexApp extends LitElement {
         margin: 8px 0px 20px 4px;
       }
 
+      .results {
+        margin: 10px;
+      }
+
       .delete-all, .download-all {
-        margin-top: 30px;
         font-size: smaller;
       }
 
@@ -196,11 +199,11 @@ class PageIndexApp extends LitElement {
   renderPages() {
     return html`
       <div class="num-results">${this.results.length} Archived Pages:</div>
+      <div class="results">
       ${this.results.map((page) => html`
-        <page-result size="${page.size}"
-         prefix="/replay/wabac/archive" id="${page.id}" date="${page.date}" ?finished="${page.finished}"
-         favIconUrl="${page.favIconUrl}" url="${page.url}" title="${page.title}" query="${this.query}">${page.text}</page-result>
+        <page-result .page="${page}" .app="${this}" query="${this.query}" prefix="/replay/wabac/archive"></page-result>
       `)}
+      </div>
     `;
   }
 
@@ -259,13 +262,24 @@ class PageResult extends LitElement
       img.favicon {
         filter: drop-shadow(1px 1px 2px grey);
       }
-      .title {
+      .page-info {
         padding-left: 10px;
-        font-size: 18px;
-        font-weight: bold;
         max-width: 60%;
-        display: inline-flex;
+        display: inline-block;
+        vertical-align: middle;
       }
+      .page-info > .title {
+        font-weight: bold;
+        font-size: 18px;
+        display: inline-block;
+      }
+      .page-info > .url {
+        margin: 4px 0px 0px 2px;
+        font-size: 14px;
+        color: grey;
+        display: inline-block;
+      }
+
       .text {
         padding: 20px;
         font-family: monospace;
@@ -313,17 +327,12 @@ class PageResult extends LitElement
  
   static get properties() {
     return {
-      id: { type: String },
-      date: { type: String },
-      url: { type: String },
-      title: { type: String },
-      size: { type: Number },
+      app: { type: Object },
+      page: { type: Object },
       query: { type: String },
       prefix: { type: String },
       textSnippet: { type: String },
-      finished: { type: Boolean },
       iconData: { type: String },
-      favIconUrl: { type: String }
     }
   }
 
@@ -333,17 +342,26 @@ class PageResult extends LitElement
   }
 
   updated(changedProps) {
-    if (changedProps.has('favIconUrl')) {
-      this.updateIconUrl();
+    const newPage = changedProps.get("page");
+    if (newPage) {
+      if (newPage.favIconUrl != this.page.favIconUrl) {
+        this.updateIconUrl();
+      }
+      if (newPage.text !== this.page.text) {
+        this.updateSnippet();
+        return;
+      }
     }
 
-    if (changedProps.has('query') || changedProps.has("url")) {
+    const newQuery = changedProps.get("query");
+
+    if (newQuery != undefined && newQuery !== this.query) {
       this.updateSnippet();
     }
   }
 
   async updateIconUrl() {
-    const result = await this.shadowRoot.host.parentNode.host.db.lookupUrl(this.favIconUrl, "");
+    const result = await this.app.db.lookupUrl(this.page.favIconUrl, "");
     const oldVal = this.iconData;
 
     try {
@@ -358,13 +376,13 @@ class PageResult extends LitElement
   updateSnippet() {
     const oldVal = this.textSnippet;
 
-    if (!this.query || !this.textContent) {
+    if (!this.query || !this.page.text) {
       this.textSnippet = null;
       this.requestUpdate('textSnippet', oldVal);
       return;
     }
 
-    let textContent = this.textContent;
+    let textContent = this.page.text;
     let query = this.query;
 
     let inx = textContent.indexOf(this.query);
@@ -400,27 +418,27 @@ class PageResult extends LitElement
   }
 
   render() {
-    const ts = this.date.replace(/[-:T]/g, '').slice(0, 14);
-    const date = this.date.replace('T', ' ').slice(0, 19);
-    const size = prettyBytes(this.size || 0);
+    const ts = this.page.date.replace(/[-:T]/g, '').slice(0, 14);
+    const date = this.page.date.replace('T', ' ').slice(0, 19);
+    const size = prettyBytes(this.page.size || 0);
 
     return html`
       <div class="main ${this.finished ? '' : 'recording'}">
       <span class="date">${date}</span>
       ${this.iconData ? html`<img class="favicon" src="${this.iconData}"/>` : html`<span class="favicon"></span>`}
-      <span class="title">
-        <a href="${this.prefix}/${ts}/${this.url}">${this.title}</a>
+      <span class="page-info">
+        <a class="title" href="${this.prefix}/${ts}/${this.url}"><keyword-mark keywords="${this.query}">${this.page.title}</keyword-mark></a>
+        <br/>
+        <a class="url" href="${this.prefix}/${ts}/${this.url}"><keyword-mark keywords="${this.query}">${this.page.url}</keyword-mark></a>
       </span>
-     ${this.finished ?
-      html`
-        <span class="size">${size}<a href="#" @click="${this.onDelete}"><img src="./static/trash.svg" class="delete"/></a></span>` :
-      html`
-        <span class="size">${size}
-          <svg height="12" width="12" class="blinking"><circle cx="6" cy="6" r="6" fill="#d9534f" /></svg>
-          Currently Recording
-        </span>
+      <span class="size">
+        ${size}
+        <a href="#" @click="${this.onDelete}"><img src="./static/trash.svg" class="delete"/></a>
+      ${this.page.finished ? html`` : html`
+        <svg height="12" width="12" class="blinking"><circle cx="6" cy="6" r="6" fill="#d9534f" /></svg>
+        Currently Recording
       `}
-
+      </span>
      ${this.textSnippet ? html`
         <div class="text"><keyword-mark keywords="${this.query}">${this.textSnippet}</keyword-mark></div>` : html``}
       </div>
@@ -429,10 +447,7 @@ class PageResult extends LitElement
 
   onDelete(event) {
     event.preventDefault();
-    if (this.shadowRoot.host.parentNode.host) {
-      this.shadowRoot.host.parentNode.host.deletePage(this.id, this.url);
-    }
-
+    this.app.deletePage(this.page.id, this.page.url);
     return false;
   }
 }

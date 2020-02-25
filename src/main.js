@@ -70,6 +70,8 @@ function init() {
         break;
 
       case "deletePage":
+        await Recorder.stopForPage(message.id);
+
         if (fulltext) {
           fulltext.remove(message.id);
         }

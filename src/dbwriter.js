@@ -26,6 +26,13 @@ class DBWriter {
     } catch (e) {
       console.warn(`Commit error for ${data.url} @ ${data.ts} ${data.mime}`);
       console.warn(e);
+      return;
+    }
+
+    // TODO: more accurate size calc?
+    let size = JSON.stringify(data.respHeaders).length + JSON.stringify(data.reqHeaders).length;
+    if (data.payload) {
+      size += data.payload.length;
     }
 
     if (data.status > 299) {
@@ -46,8 +53,11 @@ class DBWriter {
                               pageId: data.pageId});
       } catch (e) {
         console.warn(`Fuzzy Add Error: ${fuzzyUrl}`);
+        console.warn(e);
       }
     }
+
+    return size;
   }
 }
 

@@ -74,6 +74,9 @@ class Recorder {
 
     this._promises = {};
 
+    this._pdfTextDone = null;
+    this.pdfURL = null;
+
     this.id = 1;
     this.sessions = {};
 
@@ -198,7 +201,7 @@ class Recorder {
       try {
         await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
       } catch(e) {
-        console.log('No Fetch Available');
+        //console.log('No Fetch Available');
       }
 
       // disable cache for now?
@@ -262,7 +265,7 @@ class Recorder {
         break;
 
       case "Network.loadingFinished":
-        await this.handleLoadingFinished(params);
+        await this.handleLoadingFinished(params, sessions);
         break;
 
       case "Network.responseReceivedExtraInfo":
@@ -317,15 +320,60 @@ class Recorder {
     }
   }
 
+  requestPDFText(rootNode) {
+    if (this._pdfTextDone) {
+      return;
+    }
+
+    const p = new Promise((resolve, reject) => {
+      this._pdfTextDone = resolve;
+    });
+
+    chrome.tabs.executeScript(this.tabId, {file: "pdf.min.js"}, (results) => {
+      chrome.tabs.executeScript(this.tabId, {file: "extractPDF.js"}, (results2) => {
+        const code = `extractPDF("${this.pdfURL ? this.pdfURL : ''}")`;
+        chrome.tabs.executeScript(this.tabId, {code});
+      });
+    });
+
+    return p;
+  }
+
+  setPDFText(text, tabUrl) {
+    if (this.running && text) {
+      if (tabUrl !== this.pageInfo.url) {
+        console.log("wrong url for pdf text: " + tabUrl);
+      } else {
+        //console.log("Got PDF Text: " + text.length);
+
+        this.pageInfo.text = text;
+      }
+    }
+
+    if (this._pdfTextDone) {
+      this._pdfTextDone();
+    }
+
+    if (this.pdfURL) {
+      URL.revokeObjectURL(this.pdfURL);
+      this.pdfURL = null;
+    }
+  }
+
   async getFullText() {
-    if (!this.pageInfo || !this.pageInfo.url || !this.pageInfo.date) {
+    if (!this.pageInfo || !this.pageInfo.url) {
+      return null;
+    }
+
+    if (this.pageInfo.mime === "application/pdf") {
+      await this.requestPDFText();
       return null;
     }
 
     try {
-      const startTime = new Date().getTime();
+      //const startTime = new Date().getTime();
       return await this.send('DOM.getDocument', {'depth': -1, 'pierce': true});
-      console.log(`Time getting text for ${this.pageInfo.id}: ${(new Date().getTime() - startTime)}`);
+      //console.log(`Time getting text for ${this.pageInfo.id}: ${(new Date().getTime() - startTime)}`);
     } catch(e) {
       console.log(e);
       return null;
@@ -363,7 +411,7 @@ class Recorder {
 
     if (domNodes) {
       currPage.text = parseTextFromDom(domNodes);
-    } else {
+    } else if (!currPage.text) {
       console.warn("No Full Text Update");
     }
 
@@ -422,7 +470,10 @@ class Recorder {
       size: 0,
       finished: false,
       favIconUrl: "",
+      mime: params.frame.mimeType
     };
+
+    this._pdfTextDone = null;
   }
 
   getFavIcon() {
@@ -616,6 +667,16 @@ class Recorder {
 
     if (data) {
       await this.commitResource(data);
+    }
+
+    // top-level page resource
+    if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
+      this.pageInfo.date = new Date(reqresp.ts).toISOString();
+
+      if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
+        const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
+        this.pdfURL = URL.createObjectURL(pdfblob);
+      }
     }
   }
 

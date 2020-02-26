@@ -20,7 +20,10 @@ function init() {
 
   chrome.tabs.onCreated.addListener((tab) => {
     if (tab.id && tab.openerTabId && self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
-      Recorder.startRecorder(tab.id, dbWriter);
+      const url = tab.pendingUrl || tab.url;
+      if (url.startsWith("https:") || url.startsWith("http:")) {
+        Recorder.startRecorder(tab.id, dbWriter);
+      }
     }
   });
 
@@ -89,7 +92,13 @@ function init() {
         self.archiveSize = 0;
         await dbWriter.db.deleteAll();
         break;
-    }
+
+      case "pdfText":
+        if (sender.tab && sender.tab.id && self.recorders[sender.tab.id]) {
+          self.recorders[sender.tab.id].setPDFText(message.text, sender.tab.url);
+        }
+        break;
+      }
   });
 
   registerSW();

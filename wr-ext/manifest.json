@@ -16,5 +16,9 @@
       "run_at": "document_start"
     }
   ],
+  "web_accessible_resources": [
+    "pdf.min.js",
+    "pdf.worker.min.js"
+  ],
   "manifest_version": 2
 }

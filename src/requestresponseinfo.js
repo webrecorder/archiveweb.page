@@ -110,14 +110,10 @@ class RequestResponseInfo
 
     this.ts = new Date().getTime();
 
-    if (this.url === pageInfo.url) {
-      pageInfo.date = new Date(this.ts).toISOString();
-    }
-
     const respHeaders = this.getResponseHeadersDict();
     const reqHeaders = this.getRequestHeadersDict();
 
-    const mime = respHeaders.headers.get("content-type");
+    const mime = (respHeaders.headers.get("content-type") || "").split(";")[0];
     const cookie = reqHeaders.headers.get("cookie");
 
     if (cookie) {

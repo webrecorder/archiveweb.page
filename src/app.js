@@ -64,6 +64,8 @@ class PageIndexApp extends LitElement {
   }
 
   async doQuery() {
+    this._shouldQuery = false;
+
     if (!this.query) {
       this.results = await this.db.getAllPages(true);
     } else {
@@ -85,7 +87,6 @@ class PageIndexApp extends LitElement {
     }
 
     this.archiveSize = await getArchiveSize();
-    this._shouldQuery = false;
     this.waitingMsg = "";
   }
 
@@ -108,8 +109,10 @@ class PageIndexApp extends LitElement {
   }
 
   onSubmit(event) {
+    this.waitingMsg = "Searching...";
+
     event.preventDefault();
-    this.query = this.shadowRoot.querySelector("#query").value;
+    this.query = this.shadowRoot.querySelector("#query").value.trim();
     window.location.hash = this.query ? "#q=" + this.query : "";
     this.doQuery();
     return false;
@@ -264,9 +267,10 @@ class PageResult extends LitElement
       }
       .page-info {
         padding-left: 10px;
-        max-width: 60%;
+        width: 60%;
         display: inline-block;
         vertical-align: middle;
+        word-break: break-all;
       }
       .page-info > .title {
         font-weight: bold;
@@ -304,7 +308,10 @@ class PageResult extends LitElement
         animation: 1s blink ease infinite;
         margin-left: 20px;
       }
-
+      .curr-recording {
+        float: right;
+        margin: 21px -80px 0px 0px;
+      }
       @keyframes "blink" {
         from, to {
           opacity: 0;
@@ -422,22 +429,24 @@ class PageResult extends LitElement
     const date = this.page.date.replace('T', ' ').slice(0, 19);
     const size = prettyBytes(this.page.size || 0);
 
+    const fullUrl = `${this.prefix}/${ts}/${this.page.url}`;
+
     return html`
       <div class="main ${this.finished ? '' : 'recording'}">
       <span class="date">${date}</span>
       ${this.iconData ? html`<img class="favicon" src="${this.iconData}"/>` : html`<span class="favicon"></span>`}
+      ${this.page.finished ? html`` : html`
+        <span class="curr-recording"><svg height="12" width="12" class="blinking"><circle cx="6" cy="6" r="6" fill="#d9534f" /></svg>&nbsp;Recording</span>
+      `}
       <span class="page-info">
-        <a class="title" href="${this.prefix}/${ts}/${this.url}"><keyword-mark keywords="${this.query}">${this.page.title}</keyword-mark></a>
+        <a class="title" href="${fullUrl}"><keyword-mark keywords="${this.query}">${this.page.title}</keyword-mark></a>
         <br/>
-        <a class="url" href="${this.prefix}/${ts}/${this.url}"><keyword-mark keywords="${this.query}">${this.page.url}</keyword-mark></a>
+        <a class="url" href="${fullUrl}"><keyword-mark keywords="${this.query}">${this.page.url}</keyword-mark></a>
       </span>
       <span class="size">
         ${size}
         <a href="#" @click="${this.onDelete}"><img src="./static/trash.svg" class="delete"/></a>
-      ${this.page.finished ? html`` : html`
-        <svg height="12" width="12" class="blinking"><circle cx="6" cy="6" r="6" fill="#d9534f" /></svg>
-        Currently Recording
-      `}
+      </span>
       </span>
      ${this.textSnippet ? html`
         <div class="text"><keyword-mark keywords="${this.query}">${this.textSnippet}</keyword-mark></div>` : html``}

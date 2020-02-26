@@ -66,12 +66,19 @@ class ArchiveDBExt extends ArchiveDB
     return false;
   }
 
-  async writeAllToWarc() {
-    const tx = this.db.transaction("resources", "readonly");
-
+  async writeToWARC(pages) {
     const warcwriter = new WARCWriter();
 
-    const blob = await warcwriter.writeFromDBIter(tx.store.index("ts").iterate());
+    const tx = this.db.transaction("resources", "readonly");
+    let blob;
+
+    if (!pages || !pages.length) {
+      blob = await warcwriter.writeFromDBIter(tx.store.index("ts").iterate());
+    } else {
+      for (const pageId of pages) {
+        blob = await warcwriter.writeFromDBIter(tx.store.index("pageId").iterate(pageId));
+      }
+    }
 
     return URL.createObjectURL(blob);
   }

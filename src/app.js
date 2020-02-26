@@ -133,11 +133,11 @@ class PageIndexApp extends LitElement {
       }
 
       .num-results {
-        margin: 8px 0px 20px 4px;
+        margin: 8px 0px 10px 4px;
       }
 
       .results {
-        margin: 10px;
+        margin: 10px 10px 30px 10px;
       }
 
       .delete-all, .download-all {
@@ -212,31 +212,30 @@ class PageIndexApp extends LitElement {
 
   onDeleteAll(event) {
     event.preventDefault();
-    this.waitingMsg = "Deleting All";
+    this.waitingMsg = "Deleting All...";
 
     chrome.runtime.sendMessage({"msg": "deleteAll"});
 
     return false;
   }
 
-  deletePage(id, url) {
-    this.waitingMsg = `Deleting Archived Page: ${url}`;
+  deletePage(id, title) {
+    this.waitingMsg = `Deleting Archived Page: ${title}`;
 
     chrome.runtime.sendMessage({"msg": "deletePage", "id": id});
   }
 
   onDownloadAll(event) {
-    this.waitingMsg = "Preparing Download...";
-
     event.preventDefault();
-    this.doDownloadAll();
+    this.doDownload(null);
     return false;
   }
 
-  async doDownloadAll() {
-    const url = await this.db.writeAllToWarc();
-    console.log(url);
+  async doDownload(pages) {
+    this.waitingMsg = "Downloading...";
+    const url = await this.db.writeToWARC(pages);
     chrome.downloads.download({url, filename: 'wr-ext.warc', conflictAction: "overwrite"});
+    this.waitingMsg = "";
   }
 }
 
@@ -250,10 +249,14 @@ class PageResult extends LitElement
         padding-top: 10px;
         padding-bottom: 5px;
       }
-      .date, .size {
-        padding: 20px;
+      .date {
+        padding: 0px 30px 0px 20px;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: right;
       }
       .size {
+        padding: 20px;
         display: inline-block;
       }
       .favicon {
@@ -292,7 +295,7 @@ class PageResult extends LitElement
         overflow-x: hidden;
       }
 
-      .delete {
+      .delete, .download {
         width: 16px;
         height: 20px;
         vertical-align: bottom;
@@ -310,7 +313,7 @@ class PageResult extends LitElement
       }
       .curr-recording {
         float: right;
-        margin: 21px -80px 0px 0px;
+        margin: 25px -100px 0px 0px;
       }
       @keyframes "blink" {
         from, to {
@@ -426,18 +429,19 @@ class PageResult extends LitElement
 
   render() {
     const ts = this.page.date.replace(/[-:T]/g, '').slice(0, 14);
-    const date = this.page.date.replace('T', ' ').slice(0, 19);
+    //const datetime = this.page.date.replace('T', ' ').slice(0, 19);
+    const datetime = this.page.date.split('T');
+    const date = datetime[0];
+    const time = datetime[1].slice(0, 8);
+
     const size = prettyBytes(this.page.size || 0);
 
     const fullUrl = `${this.prefix}/${ts}/${this.page.url}`;
 
     return html`
-      <div class="main ${this.finished ? '' : 'recording'}">
-      <span class="date">${date}</span>
+      <div class="main ${this.page.finished ? '' : 'recording'}">
+      <span class="date">${date}<br/>${time}</span>
       ${this.iconData ? html`<img class="favicon" src="${this.iconData}"/>` : html`<span class="favicon"></span>`}
-      ${this.page.finished ? html`` : html`
-        <span class="curr-recording"><svg height="12" width="12" class="blinking"><circle cx="6" cy="6" r="6" fill="#d9534f" /></svg>&nbsp;Recording</span>
-      `}
       <span class="page-info">
         <a class="title" href="${fullUrl}"><keyword-mark keywords="${this.query}">${this.page.title}</keyword-mark></a>
         <br/>
@@ -446,7 +450,11 @@ class PageResult extends LitElement
       <span class="size">
         ${size}
         <a href="#" @click="${this.onDelete}"><img src="./static/trash.svg" class="delete"/></a>
+        <a href="#" @click="${this.onDownload}"><img src="./static/download.svg" class="download"/></a>
       </span>
+      ${this.page.finished ? html`` : html`
+        <span title="Currently Recording" class="curr-recording"><svg height="12" width="12" class="blinking"><circle cx="6" cy="6" r="6" fill="#d9534f" /></svg>&nbsp;Recording</span>
+      `}
       </span>
      ${this.textSnippet ? html`
         <div class="text"><keyword-mark keywords="${this.query}">${this.textSnippet}</keyword-mark></div>` : html``}
@@ -457,6 +465,12 @@ class PageResult extends LitElement
   onDelete(event) {
     event.preventDefault();
     this.app.deletePage(this.page.id, this.page.url);
+    return false;
+  }
+
+  onDownload(event) {
+    event.preventDefault();
+    this.app.doDownload([this.page.id]);
     return false;
   }
 }

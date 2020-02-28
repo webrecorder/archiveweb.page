@@ -2,41 +2,34 @@
 
 import { ArchiveDB } from 'wabac/src/archivedb';
 
-import { setArchiveSize, incrArchiveSize, MAIN_DB_KEY } from './utils';
+import { clearArchiveSize, incrArchiveSize, MAIN_DB_KEY } from './utils';
 
 import { WARCWriter } from './warcwriter';
+
+import { deleteDB } from 'idb/with-async-ittr.js';
 
 
 // ===========================================================================
 class ArchiveDBExt extends ArchiveDB
 {
   constructor(name) {
-    super(name);
+    super(name || MAIN_DB_KEY);
   }
 
   async deleteAll() {
-    try {
-      await this.db.clear("resources");
-      await this.db.clear("pages");
-    } catch (e) {}
+    //await deleteDB(this.name);
+    await this.clearAll();
 
-    try {
-      //await this.db.delete();
-      //await indexedDB.deleteDatabase(MAIN_DB_KEY);
-    } catch (e) {}
-
-    setArchiveSize(0);
+    clearArchiveSize();
   }
 
-  async getAllPages(reverse = false) {
-    if (!reverse) {
-      return await this.db.getAllFromIndex("pages", "date");
-    }
+  async getPageMap(reverse = false) {
+    const dir = reverse ? "prev" : "next";
     const tx = this.db.transaction("pages", "readonly");
-    const pages = [];
+    const pages = new Map();
 
-    for await (const cursor of tx.store.index("date").iterate(null, "prev")) {
-      pages.push(cursor.value);
+    for await (const cursor of tx.store.index("date").iterate(null, dir)) {
+      pages.set(cursor.value.id, cursor.value);
     }
 
     return pages;
@@ -47,10 +40,11 @@ class ArchiveDBExt extends ArchiveDB
     const page = await tx.store.get(id);
     await tx.store.delete(id);
 
-    await this.deletePageResources(id);
+    const size = await this.deletePageResources(id);
 
-    if (page) {
-      incrArchiveSize(-page.size);
+    if (size > 0) {
+      incrArchiveSize('dedup', -size);
+      incrArchiveSize('total', -page.size);
     }
   }
 
@@ -66,21 +60,27 @@ class ArchiveDBExt extends ArchiveDB
     return false;
   }
 
-  async writeToWARC(pages) {
+  async writeToWARC(pageIds) {
     const warcwriter = new WARCWriter();
 
-    const tx = this.db.transaction("resources", "readonly");
-    let blob;
+    const allPages = await this.getPageMap();
 
-    if (!pages || !pages.length) {
-      blob = await warcwriter.writeFromDBIter(tx.store.index("ts").iterate());
-    } else {
-      for (const pageId of pages) {
-        blob = await warcwriter.writeFromDBIter(tx.store.index("pageId").iterate(pageId));
-      }
+    if (!pageIds || !pageIds.length) {
+      pageIds = allPages.keys();
     }
 
-    return URL.createObjectURL(blob);
+    const tx = this.db.transaction("resources", "readonly");
+
+    for (const pageId of pageIds) {
+      const page = allPages.get(pageId);
+      if (!page) {
+        continue;
+      }
+      warcwriter.writePage(page);
+      await warcwriter.writeFromDBIter(tx.store.index("pageId").iterate(pageId));
+    }
+
+    return URL.createObjectURL(warcwriter.toBlob());
   }
 }
 

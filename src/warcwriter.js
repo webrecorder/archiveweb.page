@@ -31,8 +31,11 @@ class WARCWriter extends WARCWriterBase {
 
       this.writeResponseRecord(record.url, reqresp.getResponseHeadersText(), record.payload);
     }
+  }
 
-    return this.toBlob();
+  writePage(page) {
+    this._now = page.date;
+    this.writeWarcMetadata("urn:page:" + page.url, JSON.stringify(page));
   }
 
   toBlob() {

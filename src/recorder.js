@@ -9,6 +9,7 @@ import { rewriteDASH, rewriteHLS } from 'wabac/src/rewrite/rewriteVideo';
 
 import { sleep, incrArchiveSize } from './utils';
 
+import { ArchiveDBExt } from './archivedbext';
 import { fulltext, parseTextFromDom } from './fulltext';
 
 
@@ -24,9 +25,9 @@ const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 // ===========================================================================
 class Recorder {
-  static startRecorder(tabId, writer) {
+  static startRecorder(tabId) {
     if (!self.recorders[tabId]) {
-      self.recorders[tabId] = new Recorder({"tabId": tabId}, writer);
+      self.recorders[tabId] = new Recorder({"tabId": tabId});
     } else {
       //console.log('Resuming Recording on: ' + tabId);
     }
@@ -53,13 +54,11 @@ class Recorder {
     return false;
   }
 
-  constructor(debuggee, writer) {
+  constructor(debuggee) {
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
 
-    //this.writer = new BlobWriter();
-    //this.writer = new CacheWriter("wr-ext.cache");
-    this.writer = writer
+    this.db = new ArchiveDBExt();
 
     this.pendingRequests = null;
 
@@ -73,6 +72,7 @@ class Recorder {
     this.historyMap = {};
 
     this._promises = {};
+    this._fetchPending = {};
 
     this._pdfTextDone = null;
     this.pdfURL = null;
@@ -108,6 +108,12 @@ class Recorder {
 
   async detach() {
     const domNodes = await this.getFullText();
+
+    try {
+      await Promise.all(Object.values(this._fetchPending));
+    } catch(e) {
+      console.log(e);
+    }
 
     const p = new Promise((resolve, reject) => {
       chrome.debugger.detach(this.debuggee, () => {
@@ -268,6 +274,12 @@ class Recorder {
         await this.handleLoadingFinished(params, sessions);
         break;
 
+      case "Network.loadingFailed":
+      case "Network.requestServedFromCache":
+        const reqresp = this.removeReqResp(params.requestId);
+        //console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
+        break;
+
       case "Network.responseReceivedExtraInfo":
         this.pendingReqResp(params.requestId).fillResponseReceivedExtraInfo(params);
         break;
@@ -314,7 +326,7 @@ class Recorder {
         break;
   
       default:
-        //if (method.startsWith("Page.")) {
+        //if (method.startsWith("Target.")) {
         //  console.log(method);
         //}
     }
@@ -417,7 +429,7 @@ class Recorder {
 
     currPage.finished = finished;
 
-    await this.writer.addPage(currPage);
+    await this.addPage(currPage);
 
     fulltext.addPageText(currPage);
   }
@@ -659,25 +671,40 @@ class Recorder {
     //console.log("Finished: " + reqresp.url);
     let payload = reqresp.payload;
 
-    if (!reqresp.fetch) {
-      payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
-    }
+    let doneResolve;
 
-    const data = reqresp.toDBRecord(payload, this.pageInfo);
+    const pending = new Promise((resolve, reject) => {
+      doneResolve = resolve;
+    });
 
-    if (data) {
-      await this.commitResource(data);
-    }
+    this._fetchPending[params.requestId] = pending;
 
-    // top-level page resource
-    if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
-      this.pageInfo.date = new Date(reqresp.ts).toISOString();
 
-      if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
-        const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
-        this.pdfURL = URL.createObjectURL(pdfblob);
+    try {
+      if (!reqresp.fetch) {
+        payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
       }
+
+      const data = reqresp.toDBRecord(payload, this.pageInfo);
+
+      if (data) {
+        await this.commitResource(data);
+      }
+
+      // top-level page resource
+      if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
+        this.pageInfo.date = new Date(reqresp.ts).toISOString();
+
+        if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
+          const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
+          this.pdfURL = URL.createObjectURL(pdfblob);
+        }
+      }
+    } catch(e) {     
     }
+
+    doneResolve();
+    delete this._fetchPending[params.requestId];
   }
 
   async handleRequestWillBeSent(params) {
@@ -699,17 +726,31 @@ class Recorder {
   }
 
   async commitResource(data) {
-    const sizeCommitted = await this.writer.commitResource(data);
+    //console.log(`Commit ${url} @ ${ts}, cookie: ${cookie}, sw: ${reqresp.fromServiceWorker}`);
+    let writtenSize = 0;
+    const payloadSize = data.payload.length;
+
+    try {
+      if (await this.db.addResource(data)) {
+        writtenSize = payloadSize;
+      }
+    } catch (e) {
+      console.warn(`Commit error for ${data.url} @ ${data.ts} ${data.mime}`);
+      console.warn(e);
+      return;
+    }
+
+    // TODO: more accurate size calc?
+    //const headerSize = 0;//JSON.stringify(data.respHeaders).length + JSON.stringify(data.reqHeaders).length;
 
     // increment size counter only if committed
-    if (sizeCommitted) {
-      incrArchiveSize(sizeCommitted);
-      this.pageInfo.size += sizeCommitted;
-      this.size += sizeCommitted;
+    incrArchiveSize('dedup', writtenSize);
+    incrArchiveSize('total', payloadSize);
+    this.pageInfo.size += payloadSize;
+    this.size += payloadSize;
 
-      // increment page size
-      await this.writer.addPage(this.pageInfo);
-    }
+    // increment page size
+    await this.addPage(this.pageInfo);
   }
 
   async handleFetchResponse(params, sessions) {
@@ -812,6 +853,14 @@ class Recorder {
 
     chrome.debugger.sendCommand(this.debuggee, method, params, callback);
     return promise;
+  }
+
+  addPage(pageInfo) {
+    if (!pageInfo.url) {
+      console.warn("Empty Page, Skipping");
+      return;
+    }
+    return this.db.addPage(pageInfo);
   }
 }
 

@@ -8,7 +8,7 @@ import prettyBytes from 'pretty-bytes';
 
 import { ArchiveDBExt } from './archivedbext';
 
-import { sleep, getArchiveSize, MAIN_DB_KEY } from './utils';
+import { sleep, getArchiveSize, MAIN_DB_KEY, registerSW } from './utils';
 
 import {} from "keyword-mark-element/lib/keyword-mark.js";
 
@@ -19,8 +19,9 @@ class PageIndexApp extends LitElement {
     super();
     this.dbname = "";
     this.query = "";
-    this.results = [];
-    this.archiveSize = 0;
+    this.results = new Map();
+    this.archiveSizeTotal = 0;
+    this.archiveSizeDedup = 0;
 
     this.waitingMsg = "";
 
@@ -43,8 +44,9 @@ class PageIndexApp extends LitElement {
     return {
       dbname: { type: String, reflect: true },
       query: { type: String, reflect: true },
-      results: { type: Array },
-      archiveSize: { type: Number },
+      results: { type: Map },
+      archiveSizeDedup: { type: Number },
+      archiveSizeTotal: { type: Number },
       waitingMsg: { type: String }
     }
   }
@@ -67,26 +69,30 @@ class PageIndexApp extends LitElement {
     this._shouldQuery = false;
 
     if (!this.query) {
-      this.results = await this.db.getAllPages(true);
+      this.results = await this.db.getPageMap(true);
     } else {
       //await this.fulltext.load();
       //this.results = this.fulltext.search(this.query).map(data => data.page);
       try {
         const results = await this._doFullText();
-        const validResults = [];
+        const validResults = new Map();
         for (const result of results) {
           if (result && result.page) {
-            validResults.push(result.page);
+            validResults.set(result.page.id, result.page);
           }
         }
         this.results = validResults;
       } catch (e) {
         console.warn(e);
-        this.results = [];
+        this.results = new Map();
       }
     }
 
-    this.archiveSize = await getArchiveSize();
+    const archiveSize = await getArchiveSize();
+    if (archiveSize) {
+      this.archiveSizeTotal = archiveSize.total;
+      this.archiveSizeDedup = archiveSize.dedup;
+    }
     this.waitingMsg = "";
   }
 
@@ -180,14 +186,14 @@ class PageIndexApp extends LitElement {
 
   render() {
     return html`
-      <p>Total Archive Size: <b id="size">${prettyBytes(this.archiveSize)}</b></p>
+      <p>Total Archive Size: <b id="size">${prettyBytes(this.archiveSizeDedup)}</b>&nbsp;(Before deduplication: ${prettyBytes(this.archiveSizeTotal)})</p>
       <form @submit="${this.onSubmit}" class="pure-form">
         <input class="pure-input pure-input-1-2" type="text" id="query" name="query" .value="${this.query}" placeholder="Filter by page text or url">
       </form>
 
       <div id="status-container" class="${this.waitingMsg ? '' : 'hidden'}"><span class="spinner"></span>${this.waitingMsg}</div>
 
-      ${this.results.length > 0 ? this.renderPages() : html`<i>No Pages Found</i>`}
+      ${this.results.size > 0 ? this.renderPages() : html`<i>No Pages Found</i>`}
 
       <p class="delete-all">
       <img src="./static/trash.svg" class="delete"/><a id="delete" href="#" @click="${this.onDeleteAll}">Delete Archive</a>
@@ -201,9 +207,9 @@ class PageIndexApp extends LitElement {
 
   renderPages() {
     return html`
-      <div class="num-results">${this.results.length} Archived Pages:</div>
+      <div class="num-results">${this.results.size} Archived Pages:</div>
       <div class="results">
-      ${this.results.map((page) => html`
+      ${Array.from(this.results.values()).map(page => html`
         <page-result .page="${page}" .app="${this}" query="${this.query}" prefix="/replay/wabac/archive"></page-result>
       `)}
       </div>
@@ -371,11 +377,18 @@ class PageResult extends LitElement
   }
 
   async updateIconUrl() {
-    const result = await this.app.db.lookupUrl(this.page.favIconUrl, "");
+    const result = await this.app.db.lookupUrl(this.page.favIconUrl);
+
+    let payload = null;
+
+    if (result) {
+      payload = await this.app.db.loadPayload(result);
+    }
+
     const oldVal = this.iconData;
 
     try {
-      this.iconData = result ? `data:${result.mime};base64,${btoa(String.fromCharCode.apply(null, result.payload))}` : null;
+      this.iconData = result ? `data:${result.mime};base64,${btoa(String.fromCharCode.apply(null, payload))}` : null;
     } catch (e) {
       this.iconData = null;
     }
@@ -480,6 +493,8 @@ class PageResult extends LitElement
 document.addEventListener("DOMContentLoaded", () => {
   customElements.define('page-index-app', PageIndexApp);
   customElements.define('page-result', PageResult);
+
+  registerSW();
 });
 
 export { PageIndexApp };

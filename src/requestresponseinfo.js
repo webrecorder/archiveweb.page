@@ -1,6 +1,6 @@
 "use strict";
 
-import { STATUS_CODES } from 'http';
+import { getStatusText } from 'http-status-codes';
 
 
 // ===========================================================================
@@ -35,6 +35,8 @@ class RequestResponseInfo
     this.fromServiceWorker = false;
 
     this.fetch = false;
+
+    this.extraOpts = {};
   }
 
   fillRequest(params) {
@@ -49,7 +51,7 @@ class RequestResponseInfo
     this.fillRequest(params);
 
     this.status = params.responseStatusCode;
-    this.statusText = STATUS_CODES[this.status];
+    this.statusText = getStatusText(this.status);
 
     this.responseHeadersList = params.responseHeaders;
 
@@ -73,7 +75,7 @@ class RequestResponseInfo
 
   _fillResponse(response) {
     this.status = response.status;
-    this.statusText = response.statusText || STATUS_CODES[this.status];
+    this.statusText = response.statusText || getStatusText(this.status);
 
     this.protocol = response.protocol;
 
@@ -128,7 +130,8 @@ class RequestResponseInfo
                   payload,
                   mime,
                   respHeaders: respHeaders.headersDict,
-                  reqHeaders: reqHeaders.headersDict
+                  reqHeaders: reqHeaders.headersDict,
+                  extraOpts: this.extraOpts
                  };
 
     return data;

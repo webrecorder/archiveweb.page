@@ -7,10 +7,15 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from 'wabac/src/rewrite'; 
 import { rewriteDASH, rewriteHLS } from 'wabac/src/rewrite/rewriteVideo'; 
 
-import { sleep, incrArchiveSize } from './utils';
+//import { sleep, incrArchiveSize } from './utils';
 
-import { ArchiveDBExt } from './archivedbext';
-import { fulltext, parseTextFromDom } from './fulltext';
+import { ArchiveDB } from 'wabac/src/archivedb';
+import { CollectionLoader } from 'wabac/src/loaders';
+
+import { parseTextFromDom } from './fulltext';
+
+const MAIN_DB_KEY = "main.archive";
+//import { MAIN_DB_KEY } from './utils.js';
 
 
 // ===========================================================================
@@ -21,6 +26,11 @@ const DEBUG = false;
 const CONTENT_SCRIPT_URL = chrome.runtime.getURL("content.js");
 
 const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
+
+// ===========================================================================
+function sleep(time) {
+  return new Promise((resolve) => setTimeout(() => resolve(), time));
+}
 
 
 // ===========================================================================
@@ -58,7 +68,8 @@ class Recorder {
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
 
-    this.db = new ArchiveDBExt();
+    this.db = new ArchiveDB(MAIN_DB_KEY);
+    this.colldb = new CollectionLoader();
 
     this.pendingRequests = null;
 
@@ -417,7 +428,7 @@ class Recorder {
   }
 
   async commitPage(currPage, domNodes, finished) {
-    if (!currPage || !currPage.url || !currPage.date) {
+    if (!currPage || !currPage.url || !currPage.ts) {
       return;
     }
 
@@ -431,7 +442,7 @@ class Recorder {
 
     await this.addPage(currPage);
 
-    fulltext.addPageText(currPage);
+    //fulltext.addPageText(currPage);
   }
 
   receiveMessageFromTarget(params, sessions) {
@@ -561,15 +572,19 @@ class Recorder {
 
   async handlePaused(params, sessions) {
     let payload = null;
+    let reqresp = null;
 
     try {
-      payload = await this.handleFetchResponse(params, sessions);
+      const result = await this.handleFetchResponse(params, sessions);
+      payload = result.payload;
+      reqresp = result.reqresp;
+
     } catch (e) {
       console.warn(e);
     }
 
     try {
-      return await this.rewriteResponse(params, payload, sessions);
+      return await this.rewriteResponse(params, payload, reqresp, sessions);
     } catch (e) {
       console.error("Continue failed for: " + params.request.url);
       console.error(e);
@@ -578,7 +593,7 @@ class Recorder {
     return false;
   }
 
-  async rewriteResponse(params, payload, sessions) {
+  async rewriteResponse(params, payload, reqresp, sessions) {
     if (!payload) {
       return false;
     }
@@ -596,11 +611,11 @@ class Recorder {
     switch (ct) {
       case "application/x-mpegURL":
       case "application/vnd.apple.mpegurl":
-        newString = rewriteHLS(string);
+        newString = rewriteHLS(string, {save: reqresp.extraOpts});
         break;
 
       case "application/dash+xml":
-        newString = rewriteDASH(string);
+        newString = rewriteDASH(string, {save: reqresp.extraOpts});
         break;
 
       case "text/html":
@@ -693,7 +708,8 @@ class Recorder {
 
       // top-level page resource
       if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
-        this.pageInfo.date = new Date(reqresp.ts).toISOString();
+        //this.pageInfo.date = new Date(reqresp.ts).toISOString();
+        this.pageInfo.ts = reqresp.ts;
 
         if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
           const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
@@ -744,8 +760,10 @@ class Recorder {
     //const headerSize = 0;//JSON.stringify(data.respHeaders).length + JSON.stringify(data.reqHeaders).length;
 
     // increment size counter only if committed
-    incrArchiveSize('dedup', writtenSize);
-    incrArchiveSize('total', payloadSize);
+    //incrArchiveSize('dedup', writtenSize);
+    //incrArchiveSize('total', payloadSize);
+    this.colldb.updateSize(MAIN_DB_KEY, payloadSize, writtenSize);
+
     this.pageInfo.size += payloadSize;
     this.size += payloadSize;
 
@@ -757,7 +775,8 @@ class Recorder {
     const reqresp = this.pendingReqResp(params.networkId);
     reqresp.fillFetchRequestPaused(params);
 
-    return await this.fetchPayloads(params, reqresp, sessions, "Fetch.getResponseBody");
+    const payload = await this.fetchPayloads(params, reqresp, sessions, "Fetch.getResponseBody");
+    return {payload, reqresp};
   }
 
   async fetchPayloads(params, reqresp, sessions, method) {

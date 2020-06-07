@@ -7,25 +7,8 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from 'wabac/src/rewrite'; 
 import { rewriteDASH, rewriteHLS } from 'wabac/src/rewrite/rewriteVideo'; 
 
-//import { sleep, incrArchiveSize } from './utils';
-
-import { ArchiveDB } from 'wabac/src/archivedb';
-import { CollectionLoader } from 'wabac/src/loaders';
-
 import { parseTextFromDom } from './fulltext';
 
-const MAIN_DB_KEY = "main.archive";
-//import { MAIN_DB_KEY } from './utils.js';
-
-
-// ===========================================================================
-self.recorders = {};
-
-const DEBUG = false;
-
-const CONTENT_SCRIPT_URL = chrome.runtime.getURL("content.js");
-
-const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 // ===========================================================================
 function sleep(time) {
@@ -35,43 +18,12 @@ function sleep(time) {
 
 // ===========================================================================
 class Recorder {
-  static startRecorder(tabId) {
-    if (!self.recorders[tabId]) {
-      self.recorders[tabId] = new Recorder({"tabId": tabId});
-    } else {
-      //console.log('Resuming Recording on: ' + tabId);
-    }
-
-    self.recorders[tabId].attach();
-  }
-
-  static async stopAll() {
-    for (const tabId of Object.keys(self.recorders)) {
-      if (self.recorders[tabId].running) {
-        await self.recorders[tabId].detach();
-      }
-    }
-  }
-
-  static async stopForPage(pageId) {
-    for (const tabId of Object.keys(self.recorders)) {
-      if (self.recorders[tabId].running && self.recorders[tabId].pageInfo.id === pageId) {
-        await self.recorders[tabId].detach();
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  constructor(debuggee) {
-    this.debuggee = debuggee;
-    this.tabId = debuggee.tabId;
-
-    this.db = new ArchiveDB(MAIN_DB_KEY);
-    this.colldb = new CollectionLoader();
+  constructor(contentScriptUrl) {
+    this.contentScriptUrl = contentScriptUrl;
 
     this.pendingRequests = null;
+
+    this.injectScript = `window.devicePixelRatio = 1;`;
 
     this.running = false;
 
@@ -90,31 +42,6 @@ class Recorder {
 
     this.id = 1;
     this.sessions = {};
-
-    this._onDetached = (tab, reason) => {
-      if (tab && this.tabId !== tab.tabId) {
-        return;
-      }
-
-      this._stop();
-
-      // target closed, delete recorder as this tab will not be used again
-      if (reason === "target_closed") {
-        delete self.recorders[this.tabId];
-      }
-    }
-
-    this._onCanceled = (details) => {
-      if (details && details.tabId == this.tabId) {
-        this.detach();
-      }
-    }
-
-    this._onEvent = async (tab, message, params) => {
-      if (this.tabId === tab.tabId) {
-        await this.processMessage(message, params, []);
-      }
-    }
   }
 
   async detach() {
@@ -126,44 +53,28 @@ class Recorder {
       console.log(e);
     }
 
-    const p = new Promise((resolve, reject) => {
-      chrome.debugger.detach(this.debuggee, () => {
-        if (chrome.runtime.lastError) {
-          console.warn(chrome.runtime.lastError.message);
-        }
-        resolve();
-      });
-    });
+    await this._doDetach();
 
-    await p;
     await this._stop(domNodes);
   }
 
   async _stop(domNodes = null) {
+    this.flushPending();
+
     await this.commitPage(this.pageInfo, domNodes, true);
 
-    chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
-    
-    chrome.debugger.onDetach.removeListener(this._onDetached);
-    chrome.debugger.onEvent.removeListener(this._onEvent);
-
-    if (hasInfoBar) {
-      chrome.braveWebrecorder.onCanceled.removeListener(this._onCanceled);
-
-      chrome.braveWebrecorder.hideInfoBar(this.tabId);
-    }
+    this._doStop();
 
     this.size = 0;
 
     clearInterval(this._updateId);
+
     this.pendingRequests = null;
 
     this.running = false;
   }
 
   attach() {
-    let lastTitle;
-
     if (this.running) {
       console.warn("Already Attached!");
       return;
@@ -174,39 +85,25 @@ class Recorder {
     this.pageCount = 0;
     this.pendingRequests = {};
 
-    chrome.debugger.onDetach.addListener(this._onDetached);
-
-    chrome.debugger.onEvent.addListener(this._onEvent);
-
-    if (hasInfoBar) {
-      chrome.braveWebrecorder.onCanceled.addListener(this._onCanceled);
-
-      chrome.braveWebrecorder.showInfoBar(this.tabId);
-    }
-
-    chrome.debugger.attach(this.debuggee, '1.3', () => {
-      this.start();
-    });
+    this._doAttach();
 
     this._updateId = setInterval(() => this.updateFileSize(), 3000);
   };
 
   async updateFileSize() {
     const sizeMsg = prettyBytes(this.size);
-    chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": sizeMsg, "showBanner": !hasInfoBar});
-    if (hasInfoBar) {
-      chrome.braveWebrecorder.setSizeMsg(this.tabId, sizeMsg);
-    }
+
+    this._doUpdateFileSize(sizeMsg);
   }
 
   async start() {
     await this.send("Page.enable");
 
-    await this.send("Page.addScriptToEvaluateOnNewDocument", {source: "window.devicePixelRatio = 1;"});
+    if (this.injectScript) {
+      await this.send("Page.addScriptToEvaluateOnNewDocument", {source: this.injectScript});
+    }
 
     await this.sessionInit([]);
-
-    await this.send("Runtime.evaluate", {expression: "window.location.reload()"});
   }
 
   async sessionInit(sessions) {
@@ -223,6 +120,7 @@ class Recorder {
 
       // disable cache for now?
       await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
+      await this.send("Network.setBypassServiceWorker", {bypass: true}, sessions);
       // another option: clear cache, but don't disable
       //await this.send("Network.clearBrowserCache", null, sessions);
     } catch (e) {
@@ -253,8 +151,6 @@ class Recorder {
         sessions.push(params.sessionId);
         //console.warn("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url);
         this.sessions[params.sessionId] = {"id": 1, "type": params.targetInfo.type};
-        //self.recorders[params.targetInfo.targetId] = new Recorder({targetId: params.targetInfo.targetId}, this.tabId);
-        //self.recorders[params.targetInfo.targetId].attach();
         
         await this.sessionInit(sessions);
         await this.send('Runtime.runIfWaitingForDebugger', null, sessions);
@@ -275,7 +171,6 @@ class Recorder {
         break;
 
       case "Network.responseReceived":
-        //console.log("Network Response: " + params.response.url);
         if (params.response) {
           this.pendingReqResp(params.requestId).fillResponseReceived(params);
         }
@@ -288,7 +183,7 @@ class Recorder {
       case "Network.loadingFailed":
       case "Network.requestServedFromCache":
         const reqresp = this.removeReqResp(params.requestId);
-        //console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
+        console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
         break;
 
       case "Network.responseReceivedExtraInfo":
@@ -300,7 +195,6 @@ class Recorder {
         break;
 
       case "Fetch.requestPaused":
-        //console.log('Fetch.requestPaused: ' + params.request.url);
         let continued = false;
 
         try {
@@ -340,7 +234,10 @@ class Recorder {
         //if (method.startsWith("Target.")) {
         //  console.log(method);
         //}
+        return false;
     }
+
+    return true;
   }
 
   requestPDFText(rootNode) {
@@ -352,12 +249,8 @@ class Recorder {
       this._pdfTextDone = resolve;
     });
 
-    chrome.tabs.executeScript(this.tabId, {file: "pdf.min.js"}, (results) => {
-      chrome.tabs.executeScript(this.tabId, {file: "extractPDF.js"}, (results2) => {
-        const code = `extractPDF("${this.pdfURL ? this.pdfURL : ''}")`;
-        chrome.tabs.executeScript(this.tabId, {code});
-      });
-    });
+    //TODO: impl
+    this._doPdfExtract();
 
     return p;
   }
@@ -375,11 +268,6 @@ class Recorder {
 
     if (this._pdfTextDone) {
       this._pdfTextDone();
-    }
-
-    if (this.pdfURL) {
-      URL.revokeObjectURL(this.pdfURL);
-      this.pdfURL = null;
     }
   }
 
@@ -408,7 +296,7 @@ class Recorder {
 
     // determine if this is the unload from the injected content script
     // if not, unpause but don't extract full text
-    const ourUnload = (params.callFrames[0].url === CONTENT_SCRIPT_URL);
+    const ourUnload = (this.contentScriptUrl && params.callFrames[0].url === this.contentScriptUrl);
 
     if (ourUnload) {
       domNodes = await this.getFullText();
@@ -423,6 +311,8 @@ class Recorder {
     }
 
     if (ourUnload) {
+      this.flushPending();
+
       await this.commitPage(currPage, domNodes, true);
     }
   }
@@ -440,9 +330,15 @@ class Recorder {
 
     currPage.finished = finished;
 
-    await this.addPage(currPage);
+    await this._doAddPage(currPage);
+  }
 
-    //fulltext.addPageText(currPage);
+  commitResource(data) {
+    const payloadSize = data.payload.length;
+    this.pageInfo.size += payloadSize;
+    this.size += payloadSize;
+
+    this._doAddResource(data);
   }
 
   receiveMessageFromTarget(params, sessions) {
@@ -451,9 +347,9 @@ class Recorder {
     if (nestedParams.id != undefined) {
       const promise = this._promises[nestedParams.id];
       if (promise) {
-        if (DEBUG) {
-          console.log("RECV " + promise.method + " " + params.message);
-        }
+        //if (DEBUG) {
+        //  console.log("RECV " + promise.method + " " + params.message);
+        //}
         if (nestedParams.error) {
           promise.reject(nestedParams.error);
         } else {
@@ -487,7 +383,7 @@ class Recorder {
     this.pageInfo = {
       id: this.newPageId(),
       url: params.frame.url,
-      date: "",
+      ts: 0,
       title: "",
       text: "",
       size: 0,
@@ -499,22 +395,11 @@ class Recorder {
     this._pdfTextDone = null;
   }
 
-  getFavIcon() {
-    return new Promise((resolve, reject) => {
-      chrome.tabs.get(this.tabId, (tab) => {
-        resolve(tab.favIconUrl);
-      });
-    });
-  }
-
   loadFavIcon(favIconUrl) {
     if (favIconUrl && this.pageInfo && this.pageInfo.favIconUrl != favIconUrl) {
       this.pageInfo.favIconUrl = favIconUrl;
 
-      //if (!await this.writer.db.hasUrlForPage(favIconUrl, this.pageInfo.id)) {
-      //console.log("Load Favicon: " + favIconUrl);
-      chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": {"url": favIconUrl}});
-      //}
+      this._doAsyncFetch({url: favIconUrl});
     }
   }
 
@@ -673,9 +558,13 @@ class Recorder {
 
   async handleLoadingFinished(params, sessions) {
     const reqresp = this.removeReqResp(params.requestId);
+
     if (!reqresp) {
+      console.log("unknown request finished: " + params.requestId);
       return;
     }
+
+    //console.log("Loading Finished: " + reqresp.url);
 
     if (!reqresp.url.startsWith("https:") && !reqresp.url.startsWith("http:")) {
       return;
@@ -712,8 +601,7 @@ class Recorder {
         this.pageInfo.ts = reqresp.ts;
 
         if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
-          const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
-          this.pdfURL = URL.createObjectURL(pdfblob);
+          this._doPreparePDF(reqresp);
         }
       }
     } catch(e) {     
@@ -741,36 +629,6 @@ class Recorder {
     }
   }
 
-  async commitResource(data) {
-    //console.log(`Commit ${url} @ ${ts}, cookie: ${cookie}, sw: ${reqresp.fromServiceWorker}`);
-    let writtenSize = 0;
-    const payloadSize = data.payload.length;
-
-    try {
-      if (await this.db.addResource(data)) {
-        writtenSize = payloadSize;
-      }
-    } catch (e) {
-      console.warn(`Commit error for ${data.url} @ ${data.ts} ${data.mime}`);
-      console.warn(e);
-      return;
-    }
-
-    // TODO: more accurate size calc?
-    //const headerSize = 0;//JSON.stringify(data.respHeaders).length + JSON.stringify(data.reqHeaders).length;
-
-    // increment size counter only if committed
-    //incrArchiveSize('dedup', writtenSize);
-    //incrArchiveSize('total', payloadSize);
-    this.colldb.updateSize(MAIN_DB_KEY, payloadSize, writtenSize);
-
-    this.pageInfo.size += payloadSize;
-    this.size += payloadSize;
-
-    // increment page size
-    await this.addPage(this.pageInfo);
-  }
-
   async handleFetchResponse(params, sessions) {
     const reqresp = this.pendingReqResp(params.networkId);
     reqresp.fillFetchRequestPaused(params);
@@ -785,7 +643,9 @@ class Recorder {
     if (reqresp.status === 206) {
       await sleep(500);
       //console.log('Start Async Fetch For: ' + params.request.url);
-      chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": params.request});
+      //IMPL
+      this._doAsyncFetch(params.request);
+      //chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": params.request});
       return null;
     }
 
@@ -815,10 +675,34 @@ class Recorder {
       }
     }
 
-    //console.log("Total: " + this.writer.getLength());
-    //chrome.tabs.sendMessage(this.tabId, {"msg": "update", "size": this.writer.getLength()});
     reqresp.payload = payload;
     return payload;
+  }
+
+  flushPending() {
+    const oldPendingReqs = this.pendingRequests;
+    const pageInfo = this.pageInfo;
+    this.pendingRequests = {};
+
+    for (const [id, reqresp] of Object.entries(oldPendingReqs)) {
+      if (reqresp.payload) {
+        console.log(`Committing Finished ${id} - ${reqresp.url}`);
+
+        const data = reqresp.toDBRecord(reqresp.payload, pageInfo);
+
+        if (data) {
+          this.commitResource(data);
+        }
+
+        // top-level page resource
+        if (data && reqresp.url === pageInfo.url) {
+          pageInfo.ts = reqresp.ts;
+        }
+        
+      } else {
+        console.log(`Discarding Payload-less ${reqresp.url}`);
+      }
+    }
   }
 
   send(method, params = null, sessions = []) {
@@ -849,37 +733,7 @@ class Recorder {
       method = 'Target.sendMessageToTarget';
     }
 
-    let prr;
-    const p = new Promise((resolve, reject) => {
-      prr = {resolve, reject, method};
-    });
-
-    if (!promise) {
-      promise = p;
-    }
-
-    const callback = (res) => {
-      if (res) {
-        prr.resolve(res);
-      } else {
-        prr.reject(chrome.runtime.lastError.message);
-      }
-    }
-
-    if (DEBUG) {
-      console.log("SEND " + JSON.stringify({command: method, params}));
-    }
-
-    chrome.debugger.sendCommand(this.debuggee, method, params, callback);
-    return promise;
-  }
-
-  addPage(pageInfo) {
-    if (!pageInfo.url) {
-      console.warn("Empty Page, Skipping");
-      return;
-    }
-    return this.db.addPage(pageInfo);
+    return this._doSendCommand(method, params, promise);
   }
 }
 

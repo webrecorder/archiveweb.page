@@ -110,6 +110,13 @@ function createWindow(startPage = "index.html") {
 app.whenReady().then(() => {
   const sesh = session.defaultSession;
 
+  const ua = sesh.getUserAgent();
+  const desktopUA = ua.replace(/ Electron[^\s]+/, '');
+
+  sesh.setUserAgent(desktopUA);
+
+  app.userAgentFallback = desktopUA;
+
   //sesh.protocol.interceptStreamProtocol("file", doIntercept);
   sesh.protocol.interceptStreamProtocol("http", doIntercept);
 
@@ -133,6 +140,8 @@ app.on('window-all-closed', function () {
 const recorders = new Map();
 
 app.on('web-contents-created', (event, contents) => {
+  console.log(contents.getType());
+
   contents.on("will-attach-webview", (event, webPrefs, params) => {
 
     console.log("will-attach", contents.id);
@@ -144,9 +153,9 @@ app.on('web-contents-created', (event, contents) => {
 
     if (recorder) {
       recorder.openUrl = params.src;
+      params.src = "about:blank";
     }
 
-    params.src = "about:blank";
   });
 
   contents.on("did-attach-webview", (event, newWC) => {
@@ -175,6 +184,8 @@ app.on('web-contents-created', (event, contents) => {
     contents.on("preload-error", (event, preloadPath, error) => {
       console.log(`error ${preloadPath}: ${error}`);
     });
+
+    contents.openDevTools();
 
     contents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
       //console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);

@@ -181,9 +181,18 @@ class Recorder {
         break;
 
       case "Network.loadingFailed":
+        {
+          const reqresp = this.removeReqResp(params.requestId);
+          if (reqresp) {
+            console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
+          }
+          break;
+        }
+
       case "Network.requestServedFromCache":
-        const reqresp = this.removeReqResp(params.requestId);
-        console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
+        {
+          const reqresp = this.removeReqResp(params.requestId);
+        }
         break;
 
       case "Network.responseReceivedExtraInfo":

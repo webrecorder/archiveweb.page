@@ -1,4 +1,5 @@
 import 'replaywebpage/src/pages';
+import 'replaywebpage/src/pageentry';
 import 'replaywebpage/src/sorter';
 import 'replaywebpage/src/coll';
 import 'replaywebpage/src/url-resources';

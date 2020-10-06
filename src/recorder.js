@@ -10,11 +10,12 @@ import { rewriteDASH, rewriteHLS } from 'wabac/src/rewrite/rewriteVideo';
 import { parseTextFromDom } from './fulltext';
 
 
+const encoder = new TextEncoder("utf-8");
+
 // ===========================================================================
 function sleep(time) {
   return new Promise((resolve) => setTimeout(() => resolve(), time));
 }
-
 
 // ===========================================================================
 class Recorder {
@@ -149,11 +150,19 @@ class Recorder {
     switch (method) {
       case "Target.attachedToTarget":
         sessions.push(params.sessionId);
-        //console.warn("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url);
-        this.sessions[params.sessionId] = {"id": 1, "type": params.targetInfo.type};
+
+        try {
+          this.sessions[params.sessionId] = {"id": 1, "type": params.targetInfo.type};
         
-        await this.sessionInit(sessions);
-        await this.send('Runtime.runIfWaitingForDebugger', null, sessions);
+          await this.sessionInit(sessions);
+          await this.send('Runtime.runIfWaitingForDebugger', null, sessions);
+
+          console.log("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url);
+        } catch (e) {
+          console.log(e);
+          console.warn("Error attaching target: " + params.targetInfo.type + " " + params.targetInfo.url);
+        }
+
         break;
 
       case "Target.detachedFromTarget":
@@ -215,7 +224,11 @@ class Recorder {
         }
 
         if (!continued) {
-          await this.send("Fetch.continueRequest", {requestId: params.requestId }, sessions);
+          try {
+            await this.send("Fetch.continueRequest", {requestId: params.requestId }, sessions);
+          } catch(e) {
+            console.warn("Continue Failed", e);
+          }
         }
         break;
 
@@ -530,10 +543,13 @@ class Recorder {
     }
 
     if (newString !== string) {
+      reqresp.extraOpts = {"rewritten": "1"};
+      reqresp.payload = encoder.encode(newString);
+
       console.log("Rewritten Response for: " + params.request.url);
     }
 
-    const base64Str = new Buffer(newString).toString("base64");
+    const base64Str = Buffer.from(newString).toString("base64");
 
     try {
       await this.send("Fetch.fulfillRequest",
@@ -650,12 +666,18 @@ class Recorder {
     let payload;
 
     if (reqresp.status === 206) {
-      await sleep(500);
-      //console.log('Start Async Fetch For: ' + params.request.url);
-      //IMPL
-      this._doAsyncFetch(params.request);
-      //chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": params.request});
-      return null;
+      const headers = new Headers(reqresp.responseHeaders);
+
+      const contentLength = Number(headers.get("content-length"));
+      const contentRange = headers.get("content-range");
+
+      if (contentLength < 2000000 && contentRange && contentRange === `bytes 0-${contentLength - 1}/${contentLength}`) {
+        reqresp.status = 200;
+      } else {
+        sleep(500).then(() => this._doAsyncFetch(params.request));
+        reqresp.payload = null;
+        return null;
+      }
     }
 
     if (!this.noResponseForStatus(reqresp.status)) {

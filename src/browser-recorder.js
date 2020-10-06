@@ -44,7 +44,13 @@ class BrowserRecorder extends Recorder {
 
     this._onEvent = async (tab, message, params) => {
       if (this.tabId === tab.tabId) {
-        await this.processMessage(message, params, []);
+        try {
+          await this.processMessage(message, params, []);
+        } catch (e) {
+          console.warn(e);
+          console.log(message);
+          console.log(params);
+        }
       }
     }
   }

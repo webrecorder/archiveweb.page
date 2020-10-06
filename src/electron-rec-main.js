@@ -117,6 +117,8 @@ app.whenReady().then(() => {
 
   app.userAgentFallback = desktopUA;
 
+  app.allowRendererProcessReuse = false;
+
   //sesh.protocol.interceptStreamProtocol("file", doIntercept);
   sesh.protocol.interceptStreamProtocol("http", doIntercept);
 

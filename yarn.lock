@@ -829,10 +829,10 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bulma@^0.8.2:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.8.2.tgz#5d928f16ed4a84549c2873f95c92c38c69c631a7"
-  integrity sha512-vMM/ijYSxX+Sm+nD7Lmc1UgWDy2JcL2nTKqwgEqXuOMU+IGALbXd5MLt/BcjBAPLIx36TtzhzBcSnOP974gcqA==
+bulma@^0.9.0:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.9.1.tgz#2bf0e25062a22166db5c92e8c3dcb4605ab040d8"
+  integrity sha512-LSF69OumXg2HSKl2+rN0/OEXJy7WFEb681wtBlNS/ulJYR27J3rORHibdXZ6GVb/vyUzzYK/Arjyh56wjbFedA==
 
 bytes@3.0.0:
   version "3.0.0"
@@ -1537,10 +1537,10 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-electron@9.0.2:
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-9.0.2.tgz#361924ce833396f1a45ac2195f442b92eb4f8f5d"
-  integrity sha512-+a3KegLvQXVjC3b6yBWwZmtWp3tHf9ut27yORAWHO9JRFtKfNf88fi1UvTPJSW8R0sUH7ZEdzN6A95T22KGtlA==
+electron@^10.1.3:
+  version "10.1.3"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-10.1.3.tgz#7e276e373bf30078bd4cb1184850a91268dc0e6c"
+  integrity sha512-CR8LrlG47MdAp317SQ3vGYa2o2cIMdMSMPYH46OVitFLk35dwE9fn3VqvhUIXhCHYcNWIAPzMhkVHpkoFdKWuw==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^12.0.12"
@@ -1892,6 +1892,11 @@ fd-slicer@~1.1.0:
   integrity sha1-JcfInLH5B3+IkbvmHY85Dq4lbx4=
   dependencies:
     pend "~1.2.0"
+
+fetch-ndjson@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/fetch-ndjson/-/fetch-ndjson-1.1.0.tgz#dff9f70493c2a8a61b46d4c0a6d2c04255c01618"
+  integrity sha512-/2xKQdp7MMPMReDXvWiU5BHsvcBjrGGO8s3jJBfEWL/dJXG3/u++BG1WNBM/AGFNvK/1HdrM6H8jFWFCBa9Mdw==
 
 figgy-pudding@^3.5.1:
   version "3.5.1"
@@ -4397,14 +4402,15 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.0.1.tgz#6edf2dc39b3163b6e7025c6f38a6efae37327a75"
-  integrity sha512-M0h0QgNATb468bOMp9M4Fshl1LcDWMfMFM0BHT3bo/SY0GcvNGzLCVYcEPFIXH0/cabPxOB9tiZ8KWPh+tZg8g==
+replaywebpage@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.1.1.tgz#6a7d98b2a632bbafc4c57cbe0e6921ef1c3ef1c3"
+  integrity sha512-gdJWA565F+Ix5b0zTOaJS+1vFiOHLHeEGOUVfs5YJHgn/+Mk6JILLYvFxbqQN5o+2TD15DY0RbuzSuX2Lm0uug==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
     "@webrecorder/wabac" "github:webrecorder/wabac.js"
-    bulma "^0.8.2"
+    bulma "^0.9.0"
+    fetch-ndjson "^1.1.0"
     flexsearch "^0.6.32"
     keyword-mark-element "^0.1.2"
     lit-element "^2.3.1"
@@ -4412,6 +4418,7 @@ replaywebpage@^1.0.1:
     mime-types "^2.1.27"
     pretty-bytes "^5.3.0"
     register-service-worker "^1.7.1"
+    split.js "^1.6.2"
 
 request@^2.87.0, request@^2.88.0:
   version "2.88.2"
@@ -4952,6 +4959,11 @@ split-string@^3.0.1, split-string@^3.0.2:
   integrity sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==
   dependencies:
     extend-shallow "^3.0.0"
+
+split.js@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/split.js/-/split.js-1.6.2.tgz#b8c63aeef2b15d84a003ead09e7def6ad166bb40"
+  integrity sha512-72C7zcQePzlmWqPOKkB2Ro0sUmnWSx+qEWXjLJKk6Qp4jAkFRz1hJgJb+ay6ZQyz/Aw9r8N/PZiCEKbPVpFoDQ==
 
 sprintf-js@^1.1.2:
   version "1.1.2"

@@ -79,13 +79,20 @@ class RequestResponseInfo
 
     this.protocol = response.protocol;
 
-    this.requestHeaders = response.requestHeaders;
-    this.requestHeadersText = response.requestHeadersText;
+    if (response.requestHeaders) {
+      this.requestHeaders = response.requestHeaders;
+    }
+    if (response.requestHeadersText) {
+      this.requestHeadersText = response.requestHeadersText;
+    }
 
     this.responseHeaders = response.headers;
-    this.responseHeadersText = response.headersText;
 
-    this.fromServiceWorker = response.fromServiceWorker;
+    if (response.headersText) {
+      this.responseHeadersText = response.headersText;
+    }
+
+    this.fromServiceWorker = !!response.fromServiceWorker;
   }
 
   fillResponseReceivedExtraInfo(params) {
@@ -97,7 +104,8 @@ class RequestResponseInfo
 
   toDBRecord(payload, pageInfo) {
     // don't save 304 (todo: turn into 'revisit' style entry?)
-    if (this.method === "OPTIONS" || this.status == 304) {
+    // extra check for 206, should already be skipped
+    if (this.method === "OPTIONS" || this.status == 304 || this.status === 206) {
       return null;
     }
 
@@ -133,6 +141,19 @@ class RequestResponseInfo
                   reqHeaders: reqHeaders.headersDict,
                   extraOpts: this.extraOpts
                  };
+
+    if (this.method !== "GET") {
+      data.method = this.method;
+    }
+
+    if (this.postData) {
+      if (this.method === "POST" && data.reqHeaders["Content-Type"] === "application/x-www-form-urlencoded") {
+        data.url += (data.url.indexOf("?") > 0 ? "&" : "?") + this.postData;
+        data.method = "GET";
+      } else {
+        data.postData = this.postData;
+      }
+    }
 
     return data;
   }

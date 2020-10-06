@@ -1,7 +1,7 @@
 "use strict";
 
-import { ArchiveDB } from 'wabac/src/archivedb';
-import { CollectionLoader } from 'wabac/src/loaders';
+import { ArchiveDB } from '@webrecorder/wabac/src/archivedb';
+import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 
 const { ipcRenderer } = require('electron');
 

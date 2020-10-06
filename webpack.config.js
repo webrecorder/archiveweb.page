@@ -56,7 +56,7 @@ const browserConfig = (env, argv) => {
     entry: {
       'bg': './src/bg.js',
       'app': './src/app.js',
-      'sw': 'wabac/src/sw.js'
+      'sw': '@webrecorder/wabac/src/sw.js'
     },
     output: {
       path: path.join(__dirname, 'wr-ext', 'replay'),

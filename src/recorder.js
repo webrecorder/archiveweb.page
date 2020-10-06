@@ -4,8 +4,8 @@ import prettyBytes from 'pretty-bytes';
 
 import { RequestResponseInfo } from './requestresponseinfo.js';
 
-import { baseRules as baseDSRules } from 'wabac/src/rewrite'; 
-import { rewriteDASH, rewriteHLS } from 'wabac/src/rewrite/rewriteVideo'; 
+import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite'; 
+import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo'; 
 
 import { parseTextFromDom } from './fulltext';
 

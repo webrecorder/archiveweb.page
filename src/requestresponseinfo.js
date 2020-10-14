@@ -7,6 +7,8 @@ import { getStatusText } from 'http-status-codes';
 class RequestResponseInfo
 {
   constructor(requestId) {
+    this._created = new Date();
+    
     this.requestId = requestId;
 
     this.ts = null;
@@ -36,15 +38,25 @@ class RequestResponseInfo
 
     this.fetch = false;
 
+    this.resourceType = null;
+
     this.extraOpts = {};
   }
 
   fillRequest(params) {
     this.url = params.request.url;
     this.method = params.request.method;
-    this.requestHeaders = params.request.headers;
+    if (!this.requestHeaders) {
+      this.requestHeaders = params.request.headers;
+    }
     this.postData = params.request.postData;
     this.hasPostData = params.request.hasPostData;
+
+    if (params.type) {
+      this.resourceType = params.type;
+    }
+
+    //this.loaderId = params.loaderId;
   }
 
   fillFetchRequestPaused(params) {
@@ -56,6 +68,7 @@ class RequestResponseInfo
     this.responseHeadersList = params.responseHeaders;
 
     this.fetch = true;
+    this.resourceType = params.resourceType;
   }
 
   fillResponseRedirect(params) {
@@ -107,6 +120,10 @@ class RequestResponseInfo
     // extra check for 206, should already be skipped
     if (this.method === "OPTIONS" || this.status == 304 || this.status === 206) {
       return null;
+    }
+
+    if (!this.url || (!this.url.startsWith("https:") && !this.url.startsWith("http:"))) {
+      return;
     }
 
     if (!pageInfo.id) {

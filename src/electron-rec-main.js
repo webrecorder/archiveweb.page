@@ -1,4 +1,4 @@
-import {app, session, BrowserWindow, ipcMain} from 'electron';
+import {app, session, BrowserWindow, BrowserView, screen, ipcMain} from 'electron';
 import { ElectronRecorder } from './electron-recorder';
 
 import path from 'path';
@@ -6,8 +6,10 @@ import fs from 'fs';
 import mime from 'mime-types';
 
 import { Headers } from 'node-fetch';
+import fetch from 'node-fetch';
 
 global.Headers = Headers;
+global.fetch = fetch;
 
 import { PassThrough } from 'stream';
 
@@ -21,8 +23,86 @@ const staticContentPath = path.join(__dirname, "../wr-ext/replay/");
 
 const pluginPath = path.join(projPath, "plugins", "PepperFlashPlayer.plugin");
 
+let screenSize = {width: 1024, height: 768};
+
+const recorders = new Map();
+
+let mainWindow = null;
+
+
+// ===========================================================================
 app.commandLine.appendSwitch('ppapi-flash-path', pluginPath);
 
+app.whenReady().then(() => main());
+
+
+// ===========================================================================
+// Main entry point
+function main() {
+  const sesh = session.defaultSession;
+
+  screenSize = screen.getPrimaryDisplay().workAreaSize;
+
+  const ua = sesh.getUserAgent();
+  const desktopUA = ua.replace(/ Electron[^\s]+/, '');
+
+  sesh.setUserAgent(desktopUA);
+
+  app.userAgentFallback = desktopUA;
+
+  //app.allowRendererProcessReuse = false;
+
+  //sesh.protocol.interceptStreamProtocol("file", doIntercept);
+  sesh.protocol.interceptStreamProtocol("http", doIntercept);
+  
+  app.on('activate', function () {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  });
+
+    // Quit when all windows are closed.
+  app.on('window-all-closed', function () {
+    // On macOS it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    //if (process.platform !== 'darwin')
+    app.quit();
+  });
+
+  ipcMain.on("start-rec", (event, url) => {
+    createRecordWindow(url);
+  });
+
+  createMainWindow();
+}
+
+// ===========================================================================
+function createMainWindow(startPage = "index.html") {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    width: screenSize.width,
+    height: screenSize.height,
+    isMaximized: true,
+    show: false,
+    webPreferences: {
+      //plugins: true,
+      //webviewTag: true,
+      preload: path.join(__dirname, 'preload.js'),
+      //nativeWindowOpen: true,
+      contextIsolation: true
+    }
+  }).once('ready-to-show', () => {
+    mainWindow.show();
+    mainWindow.maximize();
+  });
+
+  mainWindow.loadURL(STATIC_PREFIX + startPage);
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools();
+  }
+}
+
+// ===========================================================================
 async function doIntercept(request, callback) {
   console.log(`${request.method} ${request.url} from ${request.referrer}`);
 
@@ -61,7 +141,7 @@ async function doIntercept(request, callback) {
   }
 }
 
-
+// ===========================================================================
 function bufferToStream(data) {
   const rv = new PassThrough();
   rv.push(data);
@@ -69,134 +149,58 @@ function bufferToStream(data) {
   return rv;
 }
 
-
+// ===========================================================================
 function notFound(url, callback) {
   console.log("not found: " +  url);
   const data = bufferToStream(`Sorry, the url <b>${url}</b> could not be found in this archive.`);
   callback({statusCode: 404, headers: {"Content-Type": 'text/html; charset="utf-8"'}, data});
 }
 
+// ===========================================================================
+function createRecordWindow(url) {
+  console.log("start rec window: " + url);
 
-let mainWindow = null;
-
-function createWindow(startPage = "index.html") {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
+  const recWindow = new BrowserWindow({
+    width: screenSize.width,
+    height: screenSize.height - 1,
     isMaximized: true,
-    show: false,
-    webPreferences: {
-      plugins: true,
-      webviewTag: true,
-      preload: path.join(__dirname, 'preload.js'),
-      //nativeWindowOpen: true,
-      contextIsolation: false
-    }
-  }).once('ready-to-show', () => {
-    mainWindow.show();
-    mainWindow.maximize();
+    show: true,
   });
 
-  mainWindow.loadURL(STATIC_PREFIX + startPage);
-  if (process.env.NODE_ENV === "development") {
-    mainWindow.webContents.openDevTools();
-  }
-}
+  recWindow.loadURL(STATIC_PREFIX + "rec.html");
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  const sesh = session.defaultSession;
-
-  const ua = sesh.getUserAgent();
-  const desktopUA = ua.replace(/ Electron[^\s]+/, '');
-
-  sesh.setUserAgent(desktopUA);
-
-  app.userAgentFallback = desktopUA;
-
-  app.allowRendererProcessReuse = false;
-
-  //sesh.protocol.interceptStreamProtocol("file", doIntercept);
-  sesh.protocol.interceptStreamProtocol("http", doIntercept);
-
-  createWindow();
-  
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  //if (process.platform !== 'darwin')
-  app.quit();
-});
-
-const recorders = new Map();
-
-app.on('web-contents-created', (event, contents) => {
-  console.log(contents.getType());
-
-  contents.on("will-attach-webview", (event, webPrefs, params) => {
-
-    console.log("will-attach", contents.id);
-
-    webPrefs.preloadURL = "file://" + __WEBVIEW_PRELOAD_PATH__;
-    webPrefs.plugins = true;
-
-    const recorder = recorders.get(webPrefs.guestInstanceId);
-
-    if (recorder) {
-      recorder.openUrl = params.src;
-      params.src = "about:blank";
-    }
-
-  });
-
-  contents.on("did-attach-webview", (event, newWC) => {
-    console.log("did attach", newWC.id);
-
-    const recorder = recorders.get(newWC.id);
-
-    if (recorder) {
-      recorder.loadOpenUrl();
-      //newWC.loadURL(recorder.openUrl);
+  const view = new BrowserView({webPreferences: {
+      partition: "persist:wr"
     }
   });
 
+  const HEADER_HEIGHT = 70;
+  recWindow.setBrowserView(view);
+  view.setBounds({ x: 0, y: HEADER_HEIGHT, width: screenSize.width, height: screenSize.height - HEADER_HEIGHT });
+  view.setAutoResize({width: true, height: true});
+  recWindow.setSize(screenSize.width, screenSize.height);
+  recWindow.maximize();
 
-  if (contents.getType() === "webview") {    
-    const id = contents.id;
+  const recorder = new ElectronRecorder(view.webContents, mainWindow.webContents);
 
-    console.log("webview created", id);
+  recWindow.on('close', (event) => {
+    console.log("closing...")
+    event.preventDefault();
+    recorder.detach().then(() => recWindow.destroy());
+  });
 
-    const recorder = new ElectronRecorder(contents, mainWindow.webContents);
-    recorders.set(id, recorder);
+  view.webContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
+    event.preventDefault();
+    event.newGuest = createRecordWindow(url);
+    console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);
+  });
+
+  view.webContents.loadURL("about:blank").then(() => {
+    recorders.set(view.webContents.id, recorder);
     recorder.attach();
 
-    console.log("attached debugger", id);
+    return recorder.started;
+  }).then(() => view.webContents.loadURL(url));
 
-    contents.on("preload-error", (event, preloadPath, error) => {
-      console.log(`error ${preloadPath}: ${error}`);
-    });
-
-    contents.openDevTools();
-
-    contents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
-      //console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);
-      createWindow("index.html#recUrl=" + url);
-    });
-
-    contents.on("destroyed", () => {
-      recorders.delete(id);
-    });
-  }
-});
-
+  return recWindow;
+}

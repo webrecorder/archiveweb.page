@@ -3,10 +3,13 @@
 import { ArchiveDB } from '@webrecorder/wabac/src/archivedb';
 import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, contextBridge } = require('electron');
 
 //contextBridge.exposeInMainWorld('electron', {'IS_APP': true});
-window.IS_APP = true;
+contextBridge.exposeInMainWorld('IS_APP', {'IS_APP': true});
+contextBridge.exposeInMainWorld('webrecorder', {"record": (url) => ipcRenderer.send("start-rec", url)});
+
+//window.IS_APP = true;
 
 const MAIN_DB_KEY = "main.archive";
 const db = new ArchiveDB(MAIN_DB_KEY);

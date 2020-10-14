@@ -10,7 +10,7 @@ import fasCircle from '@fortawesome/fontawesome-free/svgs/solid/circle.svg';
 
 import { registerSW } from 'replaywebpage/src/pageutils';
 
-import { wrapCss, IS_APP } from 'replaywebpage/src/misc';
+import { wrapCss } from 'replaywebpage/src/misc';
 
 import { LitElement, html, css } from 'lit-element';
 
@@ -20,10 +20,6 @@ import wrText from '../assets/webrecorder-text.svg';
 import wrLogo from '../assets/wr-logo.svg';
 
 const MAIN_DB_KEY = "main.archive";
-
-if (IS_APP) {
-  require('./recview.js');
-}
 
 
 //============================================================================
@@ -36,8 +32,6 @@ class ExtApp extends LitElement
     this.loadInfo = {customColl: MAIN_DB_KEY};
 
     this.navMenuShown = false;
-
-    this.recUrl = "";
 
     registerSW("sw.js");
     this.initDB();
@@ -71,8 +65,6 @@ class ExtApp extends LitElement
       sourceUrl: { type: String },
       navMenuShown: { type: Boolean },
       recordShown: { type: Boolean },
-
-      recUrl: { type: String }
     }
   }
 
@@ -81,7 +73,6 @@ class ExtApp extends LitElement
 
     if (hash) {
       const params = new URLSearchParams(hash.slice(1));
-      this.recUrl = params.get("recUrl");
     }
   }
 
@@ -191,11 +182,7 @@ class ExtApp extends LitElement
       </div>
     </div>
 
-    ${!this.recUrl ? html`
-    <wr-coll .editable="${true}" .loadInfo="${this.loadInfo}" sourceUrl="${this.sourceUrl}"></wr-coll>
-    ` : html`
-    <wr-rec-view url="${this.recUrl}"></wr-rec-view>
-    `}`;
+    <wr-coll .editable="${true}" .loadInfo="${this.loadInfo}" sourceUrl="${this.sourceUrl}"></wr-coll>`;
   }
 
   onStartRecord(event) {
@@ -206,8 +193,8 @@ class ExtApp extends LitElement
 
     if (self.chrome && self.chrome.runtime) {
       chrome.runtime.sendMessage({"msg": "startNew", url});
-    } else if (IS_APP) {
-      this.recUrl = url;
+    } else if (window.webrecorder && window.webrecorder.record) {
+      window.webrecorder.record(url);
     }
     return false;
   }

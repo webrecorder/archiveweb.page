@@ -16,6 +16,8 @@ class ElectronRecorder extends Recorder
     this.webContents = webContents;
     this.debugger = webContents.debugger;
 
+    this.flatMode = true;
+
     this.webContents.on("did-navigate", (event, url) => {
       this.didNavigateInitPage(url);
     });
@@ -25,11 +27,12 @@ class ElectronRecorder extends Recorder
       this._stop();
     });
 
-    this.debugger.on("message", (event, message, params) => {
+    this.debugger.on("message", (event, message, params, sessionId) => {
       if (DEBUG) {
         console.log(" <= ", message);
       }
-      this.processMessage(message, params, []);
+      const sessions = sessionId ? [sessionId] : [];
+      this.processMessage(message, params, sessions);
     });
 
     this.webContents.on('page-favicon-updated', (event, favicons) => {
@@ -40,15 +43,19 @@ class ElectronRecorder extends Recorder
     });
   }
 
-  async loadOpenUrl() {
+  async loadOpenUrl(openUrl) {
+    if (!openUrl) {
+      openUrl = this.openUrl;
+    }
+
     let expression;
 
     await this.started;
 
-    console.log("loading " + this.openUrl);
+    console.log("loading " + openUrl);
 
-    if (this.openUrl) {
-      expression = `window.location.href = "${this.openUrl}";`;
+    if (openUrl) {
+      expression = `window.location.href = "${openUrl}";`;
     } else {
       return;
     }
@@ -98,6 +105,15 @@ class ElectronRecorder extends Recorder
       case "Page.frameStoppedLoading":
         this.nextFrameId = null;
         break;
+
+      // case "Page.lifecycleEvent":
+      //   if (params.name === "load") {
+      //     const reqresp = this.removeReqResp(params.loaderId);
+      //     if (reqresp) {
+      //       this.fullCommit(reqresp, sessions);
+      //     }
+      //   }
+      //   break;
     }
   }
 
@@ -108,22 +124,18 @@ class ElectronRecorder extends Recorder
   _doAttach() {
     this.debugger.attach('1.3');
     this.started = this.start();
-  };
+  }
 
   _doStop() {
     // send msg
   }
 
-  _doUpdateFileSize(sizeMsg) {
-    // send sizeMsg
+  _doUpdateStatus(data) {
+    console.log(data);
   }
 
   getFavIcon() {
     return this.favicons && this.favicons.length ? this.favicons[0] : null;
-  }
-
-  _doAsyncFetch(request) {
-    this.webContents.send("async-fetch", request);
   }
 
   _doPreparePDF(reqresp) {
@@ -147,6 +159,14 @@ class ElectronRecorder extends Recorder
       const p = this.debugger.sendCommand(method, params);
       return promise ? promise : p;
     } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  _doSendCommandFlat(method, params, sessionId) {
+    try {
+      return this.debugger.sendCommand(method, params, sessionId);
+    } catch(e) {
       console.warn(e);
     }
   }

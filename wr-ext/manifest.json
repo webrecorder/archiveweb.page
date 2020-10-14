@@ -1,9 +1,9 @@
 {
   "name": "Webrecorder",
   "description": "Webrecorder",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "storage", "unlimitedStorage", "downloads", "<all_urls>"],
+  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "storage", "unlimitedStorage", "downloads", "<all_urls>", "about:blank"],
   "background": { 
     "scripts": ["replay/bg.js"],
     "persistent": false
@@ -18,13 +18,6 @@
     },
     "default_title": "Webrecorder"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_start"
-    }
-  ],
   "web_accessible_resources": [
     "pdf.min.js",
     "pdf.worker.min.js",

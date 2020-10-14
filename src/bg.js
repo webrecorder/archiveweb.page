@@ -7,6 +7,7 @@ import { BrowserRecorder } from './browser-recorder';
 self.recorders = {};
 self.newRecId = null;
 
+chrome.browserAction.setBadgeBackgroundColor({color: "#64e986"});
 
 // ===========================================================================
 chrome.browserAction.onClicked.addListener((tab) => {
@@ -28,7 +29,7 @@ chrome.tabs.onCreated.addListener((tab) => {
     return;
   }
 
-  const url = tab.pendingUrl || tab.url;
+  const url = tab.pendingUrl;
   let openUrl = null;
   let start = false;
 
@@ -46,16 +47,24 @@ chrome.tabs.onCreated.addListener((tab) => {
 
   if (start) {
     const testUrl = openUrl || url;
-    if (testUrl.startsWith("https:") || testUrl.startsWith("http:")) {
-      startRecorder(tab.id, openUrl);
+    if (testUrl && !testUrl.startsWith("https:") && !testUrl.startsWith("http:")) {
+      return;
     }
+
+    startRecorder(tab.id, openUrl, !testUrl);
   }
 });
 
 // ===========================================================================
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (tabId && self.recorders[tabId] && self.recorders[tabId].running && changeInfo.favIconUrl) {
-    self.recorders[tabId].loadFavIcon(changeInfo.favIconUrl);
+  if (tabId && self.recorders[tabId]) {
+    if (self.recorders[tabId].waitForTabUpdate && changeInfo.url) {
+      self.recorders[tabId].attach();
+    }
+
+    if (self.recorders[tabId].running && changeInfo.favIconUrl) {
+      self.recorders[tabId].loadFavIcon(changeInfo.favIconUrl);
+    }
   }
 });
 
@@ -69,14 +78,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 
 // ===========================================================================
-function startRecorder(tabId, openUrl) {
+function startRecorder(tabId, openUrl, waitForTabUpdate = false) {
   if (!self.recorders[tabId]) {
-    self.recorders[tabId] = new BrowserRecorder({"tabId": tabId}, openUrl);
+    self.recorders[tabId] = new BrowserRecorder({"tabId": tabId}, openUrl, waitForTabUpdate);
   } else {
     //console.log('Resuming Recording on: ' + tabId);
   }
 
-  self.recorders[tabId].attach();
+  if (!waitForTabUpdate) {
+    self.recorders[tabId].attach();
+  }
 }
 
 

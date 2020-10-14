@@ -19,9 +19,10 @@ const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 // ===========================================================================
 class BrowserRecorder extends Recorder {
-  constructor(debuggee, openUrl) {
+  constructor(debuggee, openUrl, waitForTabUpdate) {
     super(CONTENT_SCRIPT_URL);
     this.openUrl = openUrl;
+    this.waitForTabUpdate = waitForTabUpdate;
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
 
@@ -31,6 +32,10 @@ class BrowserRecorder extends Recorder {
     this._onDetached = (tab, reason) => {
       if (tab && this.tabId !== tab.tabId) {
         return;
+      }
+
+      if (reason === "target_closed") {
+        this.tabId = 0;
       }
 
       this._stop();
@@ -67,19 +72,28 @@ class BrowserRecorder extends Recorder {
   }
 
   _doStop() {
-    chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
+    //chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
     
     chrome.debugger.onDetach.removeListener(this._onDetached);
     chrome.debugger.onEvent.removeListener(this._onEvent);
+
+    if (!this.tabId) {
+      return;
+    }
 
     if (hasInfoBar) {
       chrome.braveWebrecorder.onCanceled.removeListener(this._onCanceled);
 
       chrome.braveWebrecorder.hideInfoBar(this.tabId);
     }
+
+    chrome.browserAction.setTitle({title: "Not Recording", tabId: this.tabId});
+    chrome.browserAction.setBadgeText({text: "", tabId: this.tabId});
   }
 
   _doAttach() {
+    this.waitForTabUpdate = false;
+
     chrome.debugger.onDetach.addListener(this._onDetached);
 
     chrome.debugger.onEvent.addListener(this._onEvent);
@@ -89,6 +103,9 @@ class BrowserRecorder extends Recorder {
 
       chrome.braveWebrecorder.showInfoBar(this.tabId);
     }
+
+    chrome.browserAction.setTitle({title: "Recording, No URLs Pending", tabId: this.tabId});
+    chrome.browserAction.setBadgeText({text: " ", tabId: this.tabId});
 
     chrome.debugger.attach(this.debuggee, '1.3', async () => {
       await this.start();
@@ -105,11 +122,29 @@ class BrowserRecorder extends Recorder {
     });
   };
 
-  _doUpdateFileSize(sizeMsg) {
-    chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": sizeMsg, "showBanner": !hasInfoBar});
-    if (hasInfoBar) {
-      chrome.braveWebrecorder.setSizeMsg(this.tabId, sizeMsg);
+  _doUpdateStatus(data) {
+    // chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": sizeMsg, "showBanner": !hasInfoBar});
+    // if (hasInfoBar) {
+    //   chrome.braveWebrecorder.setSizeMsg(this.tabId, sizeMsg);
+    // }
+
+    let title, color, text;
+    const tabId = this.tabId;
+
+    if (data.numPending === 0) {
+      title = "Recording: No URLs pending, can continue";
+      color = "#64e986";
+      text = " ";
+
+    } else {
+      title = `Recording: ${data.numPending} URLs pending, please wait`;
+      color = "#d9534f";
+      text = "" + data.numPending;
     }
+
+    chrome.browserAction.setTitle({title, tabId});
+    chrome.browserAction.setBadgeBackgroundColor({color, tabId});
+    chrome.browserAction.setBadgeText({text, tabId});
   }
 
   _doPdfExtract() {
@@ -136,10 +171,6 @@ class BrowserRecorder extends Recorder {
     });
   }
 
-  _doAsyncFetch(request) {
-    chrome.tabs.sendMessage(this.tabId, {"msg": "asyncFetch", "req": request});
-  }
-
   _doPreparePDF(reqresp) {
     const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
     this.pdfURL = URL.createObjectURL(pdfblob);
@@ -149,6 +180,8 @@ class BrowserRecorder extends Recorder {
     //console.log(`Commit ${url} @ ${ts}, cookie: ${cookie}, sw: ${reqresp.fromServiceWorker}`);
     let writtenSize = 0;
     const payloadSize = data.payload.length;
+
+    await this.db.initing;
 
     try {
       if (await this.db.addResource(data)) {

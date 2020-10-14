@@ -4408,24 +4408,6 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@1.2.0-beta.0:
-  version "1.2.0-beta.0"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.2.0-beta.0.tgz#67eba8805e4815e5e4c6f6eca783ce9ef77d7bcb"
-  integrity sha512-XtE0qhxJ73g4gynMs13cIgRIEDIutwoy9E55zztsPE8WQFCEptVxXRE3kFyorNn/8UmSxIw4pdQhvZcSmegdqw==
-  dependencies:
-    "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "github:webrecorder/wabac.js#develop"
-    bulma "^0.9.0"
-    fetch-ndjson "^1.1.0"
-    flexsearch "^0.6.32"
-    keyword-mark-element "^0.1.2"
-    lit-element "^2.3.1"
-    marked "^1.0.0"
-    mime-types "^2.1.27"
-    pretty-bytes "^5.3.0"
-    register-service-worker "^1.7.1"
-    split.js "^1.6.2"
-
 "replaywebpage@github:webrecorder/replayweb.page#develop":
   version "1.2.0-beta.0"
   resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/b80971dacb18b54db41dc27249c67b118d169d0e"

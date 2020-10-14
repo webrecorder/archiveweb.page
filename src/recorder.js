@@ -7,10 +7,9 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite'; 
 import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo'; 
 
-import { parseTextFromDom } from './fulltext';
-
 
 const encoder = new TextEncoder("utf-8");
+
 
 // ===========================================================================
 function sleep(time) {
@@ -22,9 +21,11 @@ class Recorder {
   constructor(contentScriptUrl) {
     this.contentScriptUrl = contentScriptUrl;
 
+    this.flatMode = false;
+
     this.pendingRequests = null;
 
-    this.injectScript = `window.devicePixelRatio = 1;`;
+    //this.injectScript = `window.devicePixelRatio = 1;`;
 
     this.running = false;
 
@@ -36,7 +37,9 @@ class Recorder {
     this.historyMap = {};
 
     this._promises = {};
+
     this._fetchPending = {};
+    this._fetchUrls = new Set();
 
     this._pdfTextDone = null;
     this.pdfURL = null;
@@ -54,25 +57,27 @@ class Recorder {
       console.log(e);
     }
 
-    await this._doDetach();
+    try {
+      await this._doDetach();
+    } catch (e) {}
 
     await this._stop(domNodes);
   }
 
-  async _stop(domNodes = null) {
-    this.flushPending();
-
-    await this.commitPage(this.pageInfo, domNodes, true);
+  _stop(domNodes = null) {
+    clearInterval(this._updateId);
+    clearInterval(this._cleanupId);
 
     this._doStop();
 
-    this.size = 0;
-
-    clearInterval(this._updateId);
-
+    this.flushPending();
     this.pendingRequests = null;
 
+    this.size = 0;
+
     this.running = false;
+
+    return this.commitPage(this.pageInfo, domNodes, true);
   }
 
   attach() {
@@ -88,13 +93,35 @@ class Recorder {
 
     this._doAttach();
 
-    this._updateId = setInterval(() => this.updateFileSize(), 3000);
+    this._updateId = setInterval(() => this.updateStatus(), 1000);
+
+    this._cleanupId = setInterval(() => this.cleanupStale(), 10000);
   };
 
-  async updateFileSize() {
-    const sizeMsg = prettyBytes(this.size);
+  cleanupStale() {
+    for (const key of Object.keys(this.pendingRequests)) {
+      const reqresp = this.pendingRequests[key];
 
-    this._doUpdateFileSize(sizeMsg);
+      if ((new Date() - reqresp._created) > 30000) {
+        if (this.noResponseForStatus(reqresp.status)) {
+          console.log("Dropping stale: " + key);
+        } else {
+          console.log(`Committing stale ${reqresp.status} ${reqresp.url}`);
+          this.fullCommit(reqresp, []);
+        }
+        delete this.pendingRequests[key];
+      }
+    }
+  }
+
+  updateStatus() {
+    //const sizeMsg = prettyBytes(this.size);
+
+    const numPending = Object.keys(this.pendingRequests).length + Object.keys(this._fetchPending).length;
+
+    //console.log(Object.values(this.pendingRequests).map((x) => x.status + " " + x.fetch + " " + x.requestId + " " + x.url + " "));
+
+    this._doUpdateStatus({numPending});
   }
 
   async start() {
@@ -111,13 +138,13 @@ class Recorder {
     try {
       await this.send("Network.enable", null, sessions);
 
-      await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: false }, sessions);
-
       try {
         await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
       } catch(e) {
-        //console.log('No Fetch Available');
+        console.log('No Fetch Available');
       }
+
+      await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: this.flatMode }, sessions);
 
       // disable cache for now?
       await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
@@ -130,8 +157,11 @@ class Recorder {
     }
   }
 
-  pendingReqResp(requestId) {
+  pendingReqResp(requestId, reuseOnly = false) {
     if (!this.pendingRequests[requestId]) {
+      if (reuseOnly || !requestId) {
+        return null;
+      }
       this.pendingRequests[requestId] = new RequestResponseInfo(requestId);
     } else if (requestId !== this.pendingRequests[requestId].requestId) {
       console.error("Wrong Req Id!");
@@ -155,9 +185,12 @@ class Recorder {
           this.sessions[params.sessionId] = {"id": 1, "type": params.targetInfo.type};
         
           await this.sessionInit(sessions);
-          await this.send('Runtime.runIfWaitingForDebugger', null, sessions);
 
-          console.log("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url);
+          if (params.waitingForDebugger) {
+            await this.send('Runtime.runIfWaitingForDebugger', null, sessions);
+          }
+
+          console.log("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url + " " + params.sessionId);
         } catch (e) {
           console.log(e);
           console.warn("Error attaching target: " + params.targetInfo.type + " " + params.targetInfo.url);
@@ -166,6 +199,7 @@ class Recorder {
         break;
 
       case "Target.detachedFromTarget":
+        //console.log("Detaching: " + params.sessionId);
         delete this.sessions[params.sessionId];
         break;
 
@@ -181,7 +215,10 @@ class Recorder {
 
       case "Network.responseReceived":
         if (params.response) {
-          this.pendingReqResp(params.requestId).fillResponseReceived(params);
+          const reqresp = this.pendingReqResp(params.requestId, true);
+          if (reqresp) {
+            reqresp.fillResponseReceived(params);
+          }
         }
         break;
 
@@ -192,52 +229,45 @@ class Recorder {
       case "Network.loadingFailed":
         {
           const reqresp = this.removeReqResp(params.requestId);
-          if (reqresp) {
+          if (reqresp && reqresp.status !== 206) {
             console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
           }
           break;
         }
 
       case "Network.requestServedFromCache":
-        {
-          const reqresp = this.removeReqResp(params.requestId);
-        }
+        this.removeReqResp(params.requestId);
         break;
 
       case "Network.responseReceivedExtraInfo":
-        this.pendingReqResp(params.requestId).fillResponseReceivedExtraInfo(params);
+        {
+          const reqresp = this.pendingReqResp(params.requestId, true);
+          if (reqresp) {
+            reqresp.fillResponseReceivedExtraInfo(params);
+          }
+        }
         break;
 
       case "Network.requestWillBeSent":
         await this.handleRequestWillBeSent(params);
         break;
 
+      case "Network.requestWillBeSentExtraInfo":
+        if (!this.shouldSkip(null, params.headers, null)) {
+          this.pendingReqResp(params.requestId).requestHeaders = params.headers;
+        }
+        break;
+
       case "Fetch.requestPaused":
-        let continued = false;
-
-        try {
-          if (params.responseStatusCode || params.responseErrorReason) {
-            continued = await this.handlePaused(params, sessions);
-          }
-        } catch(e) {
-          console.warn(e);
-        }
-
-        if (!continued) {
-          try {
-            await this.send("Fetch.continueRequest", {requestId: params.requestId }, sessions);
-          } catch(e) {
-            console.warn("Continue Failed", e);
-          }
-        }
+        await this.handlePaused(params, sessions);
         break;
 
       case "Page.frameNavigated":
-        this.initPage(params);
+        this.initPage(params, sessions);
         break;
 
       case "Page.loadEventFired":
-        await this.updatePage();
+        await this.updatePage(sessions);
         break;
 
       case "Page.navigatedWithinDocument":
@@ -339,26 +369,27 @@ class Recorder {
     }
   }
 
-  async commitPage(currPage, domNodes, finished) {
-    if (!currPage || !currPage.url || !currPage.ts) {
+  commitPage(currPage, domNodes, finished) {
+    if (!currPage || !currPage.url || !currPage.ts || currPage.url === "about:blank") {
       return;
     }
 
     if (domNodes) {
-      currPage.text = parseTextFromDom(domNodes);
+      currPage.text = this.parseTextFromDom(domNodes);
     } else if (!currPage.text) {
       console.warn("No Full Text Update");
     }
 
     currPage.finished = finished;
 
-    await this._doAddPage(currPage);
+    return this._doAddPage(currPage);
   }
 
   commitResource(data) {
     const payloadSize = data.payload.length;
     this.pageInfo.size += payloadSize;
     this.size += payloadSize;
+
 
     this._doAddResource(data);
   }
@@ -390,7 +421,7 @@ class Recorder {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 
-  initPage(params) {
+  initPage(params, sessions) {
     if (params.frame.parentId) {
       return;
     }
@@ -401,6 +432,7 @@ class Recorder {
     }
 
     this.frameId = params.frame.id;
+    this.loaderId = params.frame.loaderId;
 
     this.pageInfo = {
       id: this.newPageId(),
@@ -414,18 +446,25 @@ class Recorder {
       mime: params.frame.mimeType
     };
 
+    this._fetchUrls.clear();
+
     this._pdfTextDone = null;
-  }
 
-  loadFavIcon(favIconUrl) {
-    if (favIconUrl && this.pageInfo && this.pageInfo.favIconUrl != favIconUrl) {
-      this.pageInfo.favIconUrl = favIconUrl;
-
-      this._doAsyncFetch({url: favIconUrl});
+    const reqresp = this.removeReqResp(this.loaderId);
+    if (reqresp) {
+      this.fullCommit(reqresp, sessions);
     }
   }
 
-  async updatePage() {
+  loadFavIcon(favIconUrl, sessions) {
+    if (favIconUrl && this.pageInfo && this.pageInfo.favIconUrl != favIconUrl) {
+      this.pageInfo.favIconUrl = favIconUrl;
+
+      this.doAsyncFetch({url: favIconUrl}, sessions);
+    }
+  }
+
+  async updatePage(sessions) {
     if (!this.pageInfo) {
       console.warn("no page info!");
     }
@@ -450,7 +489,7 @@ class Recorder {
     ]);
 
     if (results[1]) {
-      this.loadFavIcon(results[1]);
+      this.loadFavIcon(results[1], sessions);
     }
 
     await this.commitPage(this.pageInfo, results[0], false);
@@ -461,7 +500,7 @@ class Recorder {
       await this.send("DOMDebugger.setEventListenerBreakpoint", {'eventName': 'beforeunload'});
     }
 
-    await this.updateFileSize();
+    await this.updateStatus();
   }
 
   async updateHistory(sessions) {
@@ -477,30 +516,78 @@ class Recorder {
     }
   }
 
-  async handlePaused(params, sessions) {
-    let payload = null;
-    let reqresp = null;
-
-    try {
-      const result = await this.handleFetchResponse(params, sessions);
-      payload = result.payload;
-      reqresp = result.reqresp;
-
-    } catch (e) {
-      console.warn(e);
+  shouldSkip(method, headers, resourceType) {
+    if (headers && !method) {
+      method = headers[":method"];
     }
 
-    try {
-      return await this.rewriteResponse(params, payload, reqresp, sessions);
-    } catch (e) {
-      console.error("Continue failed for: " + params.request.url);
-      console.error(e);
+    if (method === "OPTIONS") {
+      return true;
+    }
+
+    if (["EventSource", "WebSocket", "Ping"].includes(resourceType)) {
+      return true;
+    }
+
+    // beacon
+    if (resourceType === "Other" && method === "POST") {
+      return true;
+    }
+
+    // skip eventsource, resourceType may not be set correctly
+    if (headers && (headers["accept"] === "text/event-stream" || headers["Accept"] === "text/event-stream")) {
+      return true;
     }
 
     return false;
   }
 
-  async rewriteResponse(params, payload, reqresp, sessions) {
+  async handlePaused(params, sessions) {
+    let continued = false;
+    let reqresp = null;
+
+    let skip = false;
+
+    if (this.shouldSkip(params.request.method, params.request.headers, params.resourceType)) {
+      skip = true;
+    } else if (!params.responseStatusCode && !params.responseErrorReason) {
+      skip = true;
+    }
+
+    try {
+      if (!skip) {
+        reqresp = await this.handleFetchResponse(params, sessions);
+    
+        try {
+          continued = await this.rewriteResponse(params, reqresp, sessions);
+        } catch (e) {
+          console.error("Fetch rewrite failed for: " + params.request.url);
+          console.error(e);
+        }     
+      }
+    } catch(e) {
+      console.warn(e);
+    }
+
+    if (!continued) {
+      try {
+        await this.send("Fetch.continueRequest", {requestId: params.requestId }, sessions);
+      } catch(e) {
+        console.warn("Continue failed for: " + params.request.url, e);
+      }
+    }
+
+    // if finished and matches current frameId, commit right away
+    if (reqresp && reqresp.payload && params.frameId === this.frameId && !isNaN(Number(params.networkId))) {
+    //  console.log("top-level doc: " + params.request.url + " " + reqresp.resourceType);
+       this.removeReqResp(params.networkId);
+       this.fullCommit(reqresp, sessions);
+    }
+  }
+
+  async rewriteResponse(params, reqresp, sessions) {
+    const payload = reqresp.payload;
+
     if (!payload) {
       return false;
     }
@@ -578,43 +665,50 @@ class Recorder {
   }
 
   noResponseForStatus(status) {
-    return (status === 204 || (status >= 300 && status < 400));
+    return (!status || status === 204 || (status >= 300 && status < 400));
   }
 
   async handleLoadingFinished(params, sessions) {
     const reqresp = this.removeReqResp(params.requestId);
 
-    if (!reqresp) {
-      console.log("unknown request finished: " + params.requestId);
+    if (!reqresp || !reqresp.url) {
+      //console.log("unknown request finished: " + params.requestId);
       return;
     }
-
-    //console.log("Loading Finished: " + reqresp.url);
 
     if (!reqresp.url.startsWith("https:") && !reqresp.url.startsWith("http:")) {
       return;
     }
 
-    //reqresp.datetime = new Date().getTime();
-
-    //console.log("Finished: " + reqresp.url);
     let payload = reqresp.payload;
+
+    if (!reqresp.fetch && !payload) {
+      // empty response, don't attempt to store it
+      if (params.encodedDataLength) {
+        payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
+      }
+      if (!payload || !payload.length) {
+        return;
+      }
+      reqresp.payload = payload;
+    }
+
+    this.fullCommit(reqresp, sessions);
+  }
+
+  async fullCommit(reqresp, sessions) {
+    const requestId = reqresp.requestId;
 
     let doneResolve;
 
-    const pending = new Promise((resolve, reject) => {
+    const pending = new Promise((resolve) => {
       doneResolve = resolve;
     });
 
-    this._fetchPending[params.requestId] = pending;
-
+    this._fetchPending[requestId] = pending;
 
     try {
-      if (!reqresp.fetch) {
-        payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
-      }
-
-      const data = reqresp.toDBRecord(payload, this.pageInfo);
+      const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
 
       if (data) {
         await this.commitResource(data);
@@ -622,21 +716,26 @@ class Recorder {
 
       // top-level page resource
       if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
-        //this.pageInfo.date = new Date(reqresp.ts).toISOString();
         this.pageInfo.ts = reqresp.ts;
 
         if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
           this._doPreparePDF(reqresp);
         }
       }
-    } catch(e) {     
+    } catch(e) {
+      console.log("error committing", e);
     }
 
     doneResolve();
-    delete this._fetchPending[params.requestId];
+    delete this._fetchPending[requestId];
   }
 
   async handleRequestWillBeSent(params) {
+    if (this.shouldSkip(params.request.method, params.request.headers, params.type)) {
+      this.removeReqResp(params.requestId);
+      return;
+    }
+
     const reqresp = this.pendingReqResp(params.requestId);
 
     let data = null;
@@ -655,29 +754,84 @@ class Recorder {
   }
 
   async handleFetchResponse(params, sessions) {
+    if (!params.networkId) {
+      console.log("*** No networKId", params);
+      return null;
+    }
+
     const reqresp = this.pendingReqResp(params.networkId);
+
     reqresp.fillFetchRequestPaused(params);
 
-    const payload = await this.fetchPayloads(params, reqresp, sessions, "Fetch.getResponseBody");
-    return {payload, reqresp};
+    reqresp.payload = await this.fetchPayloads(params, reqresp, sessions, "Fetch.getResponseBody");
+
+    if (reqresp.status === 206) {
+      this.removeReqResp(params.networkId);
+    }
+    
+    return reqresp;
+  }
+
+  async doAsyncFetch(request) {
+    if (this._fetchUrls.has(request.url)) {
+      console.log("Skipping, already fetching: " + request.url);
+      return;
+    }
+
+    let doneResolve;
+    const fetchId = "fetch-" + this.newPageId();
+
+    try {
+      console.log("Start Async Load: " + request.url);
+
+      this._fetchUrls.add(request.url);
+
+      const pending = new Promise((resolve) => {
+        doneResolve = resolve;
+      });
+
+      this._fetchPending[fetchId] = pending;
+
+      const headers = new Headers(request.headers);
+      headers.delete("range");
+
+      const resp = await fetch(request.url, {headers});
+      const payload = await resp.arrayBuffer();
+
+      const reqresp = new RequestResponseInfo(fetchId);
+      reqresp.status = resp.status;
+      reqresp.statusText = resp.statusText;
+      reqresp.responseHeaders = Object.fromEntries(resp.headers);
+
+      reqresp.method = "GET";
+      reqresp.url = request.url;
+      reqresp.payload = new Uint8Array(payload);
+
+      const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
+
+      if (data) {
+        await this.commitResource(data);
+        console.log("Done Async Load: " + request.url);
+      } else {
+        console.warn("No Data Committed for: " + request.url + " Status: " + resp.status);
+      }
+
+    } catch(e) {
+      console.log(e);
+      this._fetchUrls.delete(request.url);
+    }
+
+    doneResolve();
+    delete this._fetchPending[fetchId];
   }
 
   async fetchPayloads(params, reqresp, sessions, method) {
     let payload;
 
     if (reqresp.status === 206) {
-      const headers = new Headers(reqresp.responseHeaders);
-
-      const contentLength = Number(headers.get("content-length"));
-      const contentRange = headers.get("content-range");
-
-      if (contentLength < 2000000 && contentRange && contentRange === `bytes 0-${contentLength - 1}/${contentLength}`) {
-        reqresp.status = 200;
-      } else {
-        sleep(500).then(() => this._doAsyncFetch(params.request));
-        reqresp.payload = null;
-        return null;
-      }
+      this.doAsyncFetch(params.request, sessions);
+      reqresp.payload = null;
+      return null;
     }
 
     if (!this.noResponseForStatus(reqresp.status)) {
@@ -691,10 +845,12 @@ class Recorder {
         }
 
       } catch (e) {
-        console.warn('no buffer for: ' + reqresp.url + " " + reqresp.status + " " + reqresp.requestId);
+        console.warn('no buffer for: ' + reqresp.url + " " + reqresp.status + " " + reqresp.requestId + " " + method);
         console.warn(e);
         return null;
       }
+    } else {
+      payload = Buffer.from([]);
     }
 
     if (reqresp.hasPostData && !reqresp.postData) {
@@ -714,6 +870,10 @@ class Recorder {
     const oldPendingReqs = this.pendingRequests;
     const pageInfo = this.pageInfo;
     this.pendingRequests = {};
+
+    if (!oldPendingReqs) {
+      return;
+    }
 
     for (const [id, reqresp] of Object.entries(oldPendingReqs)) {
       if (reqresp.payload) {
@@ -739,8 +899,9 @@ class Recorder {
   send(method, params = null, sessions = []) {
     let promise = null;
 
-    //params = params || null;
-    //sessions = sessions || [];
+    if (this.flatMode && sessions.length) {
+      return this._doSendCommandFlat(method, params, sessions[sessions.length - 1]);
+    }
 
     for (let i = sessions.length - 1; i >= 0; i--) {
       //const id = this.sessions[sessionId].id++;
@@ -766,7 +927,57 @@ class Recorder {
 
     return this._doSendCommand(method, params, promise);
   }
-}
 
+  parseTextFromDom(dom) {
+    const accum = [];
+    const metadata = {};
+
+    this._parseText(dom.root, metadata, accum);
+
+    return accum.join('\n');
+  }
+
+  _parseText(node, metadata, accum) {
+    const SKIPPED_NODES = ["script", "style", "header", "footer", "banner-div", "noscript"];
+    const EMPTY_LIST = [];
+    const TEXT = "#text";
+    const TITLE = "title";
+    
+    const name = node.nodeName.toLowerCase();
+      
+    if (SKIPPED_NODES.includes(name)) {
+      return;
+    }
+
+    const children = node.children || EMPTY_LIST;
+
+    if (name === TEXT) {
+      const value = node.nodeValue ? node.nodeValue.trim() : '';
+      if (value) {
+        accum.push(value);
+      }
+    } else if (name === TITLE) {
+      const title = [];
+
+      for (let child of children) {
+        this._parseText(child, null, title);
+      }
+    
+      if (metadata) {
+        metadata.title = title.join(' ');
+      } else {
+        accum.push(title.join(' '));
+      }
+    } else {
+      for (let child of children) {
+        this._parseText(child, metadata, accum);
+      }
+
+      if (node.contentDocument) { 
+        this._parseText(node.contentDocument, null, accum);
+      } 
+    }
+  }
+}
 
 export { Recorder };

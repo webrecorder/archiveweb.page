@@ -24,6 +24,7 @@ class Recorder {
     this.flatMode = false;
 
     this.pendingRequests = null;
+    this.numPending = 0;
 
     //this.injectScript = `window.devicePixelRatio = 1;`;
 
@@ -32,7 +33,11 @@ class Recorder {
     this.frameId = null;
     this.pageCount = 0;
     this.pageInfo = {size: 0};
-    this.size = 0;
+
+    this.sizeNew = 0;
+    this.sizeTotal = 0;
+    this.numPages = 0;
+    this.numUrls = 0;
 
     this.historyMap = {};
 
@@ -68,14 +73,12 @@ class Recorder {
     clearInterval(this._updateId);
     clearInterval(this._cleanupId);
 
-    this._doStop();
-
     this.flushPending();
-    this.pendingRequests = null;
-
-    this.size = 0;
-
     this.running = false;
+    this.pendingRequests = null;
+    this.numPending = 0;
+
+    this._doStop();
 
     return this.commitPage(this.pageInfo, domNodes, true);
   }
@@ -117,11 +120,11 @@ class Recorder {
   updateStatus() {
     //const sizeMsg = prettyBytes(this.size);
 
-    const numPending = Object.keys(this.pendingRequests).length + Object.keys(this._fetchPending).length;
+    this.numPending = Object.keys(this.pendingRequests).length + Object.keys(this._fetchPending).length;
 
     //console.log(Object.values(this.pendingRequests).map((x) => x.status + " " + x.fetch + " " + x.requestId + " " + x.url + " "));
 
-    this._doUpdateStatus({numPending});
+    this.doUpdateStatus();
   }
 
   async start() {
@@ -388,10 +391,11 @@ class Recorder {
   commitResource(data) {
     const payloadSize = data.payload.length;
     this.pageInfo.size += payloadSize;
-    this.size += payloadSize;
 
+    this.sizeTotal += payloadSize;
+    this.numUrls++;
 
-    this._doAddResource(data);
+    this._doAddResource(data).then((writtenSize) => this.sizeNew += writtenSize);
   }
 
   receiveMessageFromTarget(params, sessions) {
@@ -445,6 +449,8 @@ class Recorder {
       favIconUrl: "",
       mime: params.frame.mimeType
     };
+
+    this.numPages++;
 
     this._fetchUrls.clear();
 

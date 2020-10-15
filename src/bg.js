@@ -7,11 +7,57 @@ import { BrowserRecorder } from './browser-recorder';
 self.recorders = {};
 self.newRecId = null;
 
-chrome.browserAction.setBadgeBackgroundColor({color: "#64e986"});
+function main() {
+  chrome.browserAction.setBadgeBackgroundColor({color: "#64e986"});
+
+  chrome.contextMenus.create({"id": "toggle-rec", "title": "Start Recording", "contexts": ["browser_action"]});
+  chrome.contextMenus.create({"id": "view-rec", "title": "View Recordings", "contexts": ["all"]});
+}
 
 // ===========================================================================
-chrome.browserAction.onClicked.addListener((tab) => {
-  startRecorder(tab.id);
+// chrome.browserAction.onClicked.addListener((tab) => {
+//   startRecorder(tab.id);
+// });
+
+
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name !== "popup-port") {
+    return;
+  }
+
+  if (!port.sender || port.sender.url !== chrome.runtime.getURL("popup.html")) {
+    return;
+  }
+
+  let tabId = null;
+
+  port.onMessage.addListener((message) => {
+    switch (message.type) {
+      case "startUpdates":
+        tabId = message.tabId;
+        if (self.recorders[tabId]) {
+          self.recorders[tabId].port = port;
+          self.recorders[tabId].doUpdateStatus();
+        }
+        break;
+
+      case "startRecording":
+        startRecorder(tabId);
+        self.recorders[tabId].port = port;
+        break;
+
+      case "stopRecording":
+        stopRecorder(tabId);
+        break;
+    }
+  });
+
+  port.onDisconnect.addListener(() => {
+    console.log("port disconnect");
+    if (self.recorders[tabId]) {
+      self.recorders[tabId].port = null;
+    }
+  });
 });
 
 
@@ -47,18 +93,17 @@ chrome.tabs.onCreated.addListener((tab) => {
 
   if (start) {
     const testUrl = openUrl || url;
-    if (testUrl && !testUrl.startsWith("https:") && !testUrl.startsWith("http:")) {
+    if (!isValidUrl(testUrl)) {
       return;
     }
-
-    startRecorder(tab.id, openUrl, !testUrl);
+    startRecorder(tab.id, testUrl, !testUrl);
   }
 });
 
 // ===========================================================================
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (tabId && self.recorders[tabId]) {
-    if (self.recorders[tabId].waitForTabUpdate && changeInfo.url) {
+    if (self.recorders[tabId].waitForTabUpdate && isValidUrl(changeInfo.url)) {
       self.recorders[tabId].attach();
     }
 
@@ -69,13 +114,23 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 // ===========================================================================
-chrome.contextMenus.create({"id": "wr", "title": "View Recordings", "contexts": ["all"]});
-
-
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  chrome.tabs.create({ url: chrome.runtime.getURL("replay/index.html") });
-});
+  switch (info.menuItemId) {
+    case "view-rec":
+      chrome.tabs.create({ url: chrome.runtime.getURL("replay/index.html") });
+      break;
 
+    case "toggle-rec":
+      if (!isRecording(tab.id)) {
+        if (isValidUrl(tab.url)) {
+          startRecorder(tab.id);
+        }
+      } else {
+        stopRecorder(tab.id);
+      }
+      break;
+  }
+});
 
 // ===========================================================================
 function startRecorder(tabId, openUrl, waitForTabUpdate = false) {
@@ -85,11 +140,31 @@ function startRecorder(tabId, openUrl, waitForTabUpdate = false) {
     //console.log('Resuming Recording on: ' + tabId);
   }
 
-  if (!waitForTabUpdate) {
+  if (!waitForTabUpdate && !self.recorders[tabId].running) {
     self.recorders[tabId].attach();
+    return true;
   }
 }
 
+// ===========================================================================
+function stopRecorder(tabId) {
+  if (self.recorders[tabId]) {
+    self.recorders[tabId].detach();
+    return true;
+  }
+
+  return false;
+}
+
+// ===========================================================================
+function isRecording(tabId) {
+  return self.recorders[tabId] && self.recorders[tabId].running;
+}
+
+// ===========================================================================
+function isValidUrl(url) {
+  return url && (url.startsWith("https:") || url.startsWith("http:"));
+}
 
 // ===========================================================================
 async function stopAll() {
@@ -132,6 +207,4 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 });
 
 // ===========================================================================
-//chrome.runtime.onInstalled.addListener(registerSW);
-
-//chrome.runtime.onStartup.addListener(registerSW);
+main();

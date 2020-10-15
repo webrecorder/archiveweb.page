@@ -49,6 +49,44 @@ const electronPreloadConfig = (env, argv) => {
   }
 };
 
+const popupConfig = (env, argv) => {
+  return {
+    mode: 'production',
+    target: "web",
+    entry: {
+      'popup': './src/popup.js',
+    },
+
+    output: {
+      path: path.join(__dirname, 'wr-ext'),
+      filename: '[name].js',
+      libraryTarget: 'global',
+      globalObject: 'self'
+    },
+
+    plugins: [
+      new MiniCssExtractPlugin(),
+    ],
+
+    module: {
+      rules: [
+      {
+        test:  /\.svg$/,
+        loader: 'svg-inline-loader'
+      },
+      {
+        test: /.*sass$/,
+        loaders: ['to-string-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        test: /(dist\/wombat.js|src\/wombatWorkers.js)$/i,
+        loaders: 'raw-loader',
+      }
+     ]
+    }
+  }
+};
+
 const browserConfig = (env, argv) => {
   return {
     mode: 'production',
@@ -100,5 +138,5 @@ const browserConfig = (env, argv) => {
 };
 
 
-module.exports = [ browserConfig, electronMainConfig, electronPreloadConfig ];
+module.exports = [ browserConfig, popupConfig, electronMainConfig, electronPreloadConfig ];
 

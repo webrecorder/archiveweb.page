@@ -105,15 +105,6 @@ class ElectronRecorder extends Recorder
       case "Page.frameStoppedLoading":
         this.nextFrameId = null;
         break;
-
-      // case "Page.lifecycleEvent":
-      //   if (params.name === "load") {
-      //     const reqresp = this.removeReqResp(params.loaderId);
-      //     if (reqresp) {
-      //       this.fullCommit(reqresp, sessions);
-      //     }
-      //   }
-      //   break;
     }
   }
 

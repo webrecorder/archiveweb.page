@@ -26,6 +26,8 @@ class BrowserRecorder extends Recorder {
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
 
+    this.port = null;
+
     this.db = new ArchiveDB(MAIN_DB_KEY);
     this.colldb = new CollectionLoader();
 
@@ -87,8 +89,7 @@ class BrowserRecorder extends Recorder {
       chrome.braveWebrecorder.hideInfoBar(this.tabId);
     }
 
-    chrome.browserAction.setTitle({title: "Not Recording", tabId: this.tabId});
-    chrome.browserAction.setBadgeText({text: "", tabId: this.tabId});
+    this.doUpdateStatus();
   }
 
   _doAttach() {
@@ -120,31 +121,50 @@ class BrowserRecorder extends Recorder {
   
       await this.send("Runtime.evaluate", {expression});
     });
-  };
+  }
 
-  _doUpdateStatus(data) {
-    // chrome.tabs.sendMessage(this.tabId, {"msg": "startRecord", "size": sizeMsg, "showBanner": !hasInfoBar});
-    // if (hasInfoBar) {
-    //   chrome.braveWebrecorder.setSizeMsg(this.tabId, sizeMsg);
-    // }
-
+  doUpdateStatus() {
     let title, color, text;
     const tabId = this.tabId;
 
-    if (data.numPending === 0) {
-      title = "Recording: No URLs pending, can continue";
-      color = "#64e986";
-      text = " ";
+    if (this.running) {
+      if (this.numPending === 0) {
+        title = "Recording: No URLs pending, can continue";
+        color = "#64e986";
+        text = " ";
 
+      } else {
+        title = `Recording: ${this.numPending} URLs pending, please wait`;
+        color = "#bb9f08";
+        text = "" + this.numPending;
+      }
     } else {
-      title = `Recording: ${data.numPending} URLs pending, please wait`;
-      color = "#d9534f";
-      text = "" + data.numPending;
+      title = "Not Recording";
+      text = "";
+      color = "#64e986";
     }
 
     chrome.browserAction.setTitle({title, tabId});
     chrome.browserAction.setBadgeBackgroundColor({color, tabId});
     chrome.browserAction.setBadgeText({text, tabId});
+
+    if (this.port) {
+      this.port.postMessage(this.getStatusMsg());
+    }
+  }
+
+  getStatusMsg() {
+    return {
+      recording: this.running,
+      sizeTotal: this.sizeTotal,
+      sizeNew: this.sizeNew,
+      numUrls: this.numUrls,
+      numPages: this.numPages,
+      numPending: this.numPending,
+      pageUrl: this.pageInfo.url,
+      pageTs: this.pageInfo.ts,
+      type: "status"
+    }
   }
 
   _doPdfExtract() {
@@ -203,6 +223,8 @@ class BrowserRecorder extends Recorder {
 
     // increment page size
     await this._doAddPage(this.pageInfo);
+
+    return writtenSize;
   }
 
   _doAddPage(pageInfo) {

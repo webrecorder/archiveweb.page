@@ -44,18 +44,22 @@ class ExtApp extends LitElement
       }
     });
 
-    const data = {
-      name: MAIN_DB_KEY,
-      type: "archive",
-      config: {
-        dbname: MAIN_DB_KEY,
-        decode: false,
-        metadata: {"desc": "", "title": "Local Web Archive"},
-        sourceUrl: this.sourceUrl
-      }
-    }
+    let data = await colldb.get("colls", MAIN_DB_KEY);
 
-    await colldb.put("colls", data);
+    if (!data) {
+      const data = {
+        name: MAIN_DB_KEY,
+        type: "archive",
+        config: {
+          dbname: MAIN_DB_KEY,
+          decode: false,
+          metadata: {"desc": "", "title": "Local Web Archive"},
+          sourceUrl: this.sourceUrl
+        }
+      }
+
+      await colldb.put("colls", data);
+    }
   }
 
   static get properties() {

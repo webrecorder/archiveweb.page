@@ -70,7 +70,7 @@ class RecPopup extends LitElement
 
   updated(changedProperties) {
     if (this.pageUrl && this.pageTs && 
-      (changedProperties.has("pageUrl") || changedProperties.has("ts") || changedProperties.has("recording"))) {
+      (changedProperties.has("pageUrl") || changedProperties.has("pageTs") || changedProperties.has("recording"))) {
       
       const params = new URLSearchParams();
       params.set("url", this.pageUrl);

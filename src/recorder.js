@@ -592,11 +592,11 @@ class Recorder {
   }
 
   async rewriteResponse(params, reqresp, sessions) {
-    const payload = reqresp.payload;
-
-    if (!payload) {
+    if (!reqresp || !reqresp.payload) {
       return false;
     }
+
+    const payload = reqresp.payload;
 
     const string = payload.toString("utf-8");
 
@@ -761,7 +761,7 @@ class Recorder {
 
   async handleFetchResponse(params, sessions) {
     if (!params.networkId) {
-      console.log("*** No networKId", params);
+      console.error("*** No networkId", params);
       return null;
     }
 
@@ -778,7 +778,34 @@ class Recorder {
     return reqresp;
   }
 
-  async doAsyncFetch(request) {
+  doAsyncFetch(request) {
+    //return this.doAsyncFetchInBrowser(request);
+    return this.doAsyncFetchDirect(request);
+  }
+
+  async doAsyncFetchInBrowser(request) {
+    if (this._fetchUrls.has(request.url)) {
+      console.log("Skipping, already fetching: " + request.url);
+      return;
+    }
+
+    this._fetchUrls.add(request.url);
+
+    const expression = `
+    (async (url) => {
+      console.log("Async Fetching: " + url);
+      const resp = await fetch(url);
+      return resp.status;
+    })("${request.url}");
+    `;
+
+    console.log("Start Async Load: " + request.url);
+
+    const result = await this.send("Runtime.evaluate", {expression, awaitPromise: true});
+    console.log("Async Fetch Result: " + JSON.stringify(result));
+  }
+
+  async doAsyncFetchDirect(request) {
     if (this._fetchUrls.has(request.url)) {
       console.log("Skipping, already fetching: " + request.url);
       return;

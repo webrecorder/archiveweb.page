@@ -93,7 +93,7 @@ chrome.tabs.onCreated.addListener((tab) => {
 
   if (start) {
     const testUrl = openUrl || url;
-    if (!isValidUrl(testUrl)) {
+    if (testUrl && !isValidUrl(testUrl)) {
       return;
     }
     startRecorder(tab.id, testUrl, !testUrl);

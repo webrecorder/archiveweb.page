@@ -50,7 +50,7 @@ class Recorder {
     this.pdfURL = null;
 
     this.id = 1;
-    this.sessions = {};
+    this.sessionSet = new Set();
   }
 
   async detach() {
@@ -127,6 +127,20 @@ class Recorder {
     this.doUpdateStatus();
   }
 
+  getStatusMsg() {
+    return {
+      recording: this.running,
+      sizeTotal: this.sizeTotal,
+      sizeNew: this.sizeNew,
+      numUrls: this.numUrls,
+      numPages: this.numPages,
+      numPending: this.numPending,
+      pageUrl: this.pageInfo.url,
+      pageTs: this.pageInfo.ts,
+      type: "status"
+    }
+  }
+
   async start() {
     await this.send("Page.enable");
 
@@ -144,7 +158,7 @@ class Recorder {
       try {
         await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
       } catch(e) {
-        console.log('No Fetch Available');
+        console.log('No Fetch Available', e);
       }
 
       await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: this.flatMode }, sessions);
@@ -185,7 +199,7 @@ class Recorder {
         sessions.push(params.sessionId);
 
         try {
-          this.sessions[params.sessionId] = {"id": 1, "type": params.targetInfo.type};
+          this.sessionSet.add(params.sessionId);
         
           await this.sessionInit(sessions);
 
@@ -203,11 +217,11 @@ class Recorder {
 
       case "Target.detachedFromTarget":
         //console.log("Detaching: " + params.sessionId);
-        delete this.sessions[params.sessionId];
+        this.sessionSet.delete(params.sessionId);
         break;
 
       case "Target.receivedMessageFromTarget":
-        if (!this.sessions[params.sessionId]) {
+        if (!this.sessionSet.has(params.sessionId)) {
           console.warn("no such session: " + params.sessionId);
           console.warn(params);
           return;
@@ -584,9 +598,9 @@ class Recorder {
     }
 
     // if finished and matches current frameId, commit right away
-    if (reqresp && reqresp.payload && params.frameId === this.frameId && !isNaN(Number(params.networkId))) {
+    if (reqresp && reqresp.payload && params.frameId === this.frameId && !isNaN(Number(reqresp.requestId))) {
     //  console.log("top-level doc: " + params.request.url + " " + reqresp.resourceType);
-       this.removeReqResp(params.networkId);
+       this.removeReqResp(reqresp.requestId);
        this.fullCommit(reqresp, sessions);
     }
   }
@@ -761,29 +775,30 @@ class Recorder {
 
   async handleFetchResponse(params, sessions) {
     if (!params.networkId) {
-      console.error("*** No networkId", params);
-      return null;
+      //console.warn(`No networkId for ${params.request.url} ${params.resourceType}`);
     }
 
-    const reqresp = this.pendingReqResp(params.networkId);
+    const id = params.networkId || params.requestId;
+
+    const reqresp = this.pendingReqResp(id);
 
     reqresp.fillFetchRequestPaused(params);
 
     reqresp.payload = await this.fetchPayloads(params, reqresp, sessions, "Fetch.getResponseBody");
 
     if (reqresp.status === 206) {
-      this.removeReqResp(params.networkId);
+      this.removeReqResp(id);
     }
     
     return reqresp;
   }
 
-  doAsyncFetch(request) {
-    //return this.doAsyncFetchInBrowser(request);
+  doAsyncFetch(request, sessions = []) {
+    //return this.doAsyncFetchInBrowser(request, sessions);
     return this.doAsyncFetchDirect(request);
   }
 
-  async doAsyncFetchInBrowser(request) {
+  async doAsyncFetchInBrowser(request, sessions) {
     if (this._fetchUrls.has(request.url)) {
       console.log("Skipping, already fetching: " + request.url);
       return;
@@ -801,7 +816,7 @@ class Recorder {
 
     console.log("Start Async Load: " + request.url);
 
-    const result = await this.send("Runtime.evaluate", {expression, awaitPromise: true});
+    const result = await this.send("Runtime.evaluate", {expression, awaitPromise: true}, sessions);
     console.log("Async Fetch Result: " + JSON.stringify(result));
   }
 
@@ -937,7 +952,6 @@ class Recorder {
     }
 
     for (let i = sessions.length - 1; i >= 0; i--) {
-      //const id = this.sessions[sessionId].id++;
       const id = this.id++;
 
       const p = new Promise((resolve, reject) => {

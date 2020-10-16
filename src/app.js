@@ -53,7 +53,7 @@ class ExtApp extends LitElement
         config: {
           dbname: MAIN_DB_KEY,
           decode: false,
-          metadata: {"desc": "", "title": "Local Web Archive"},
+          metadata: {"desc": "", "title": "My Web Archive"},
           sourceUrl: this.sourceUrl
         }
       }

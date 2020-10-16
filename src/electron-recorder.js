@@ -38,7 +38,8 @@ class ElectronRecorder extends Recorder
     this.webContents.on('page-favicon-updated', (event, favicons) => {
       this.favicons = favicons;
       for (const icon of favicons) {
-        this.webContents.send("async-fetch", {url: icon});
+        //this.webContents.send("async-fetch", {url: icon});
+        this.doAsyncFetch({url: icon});
       }
     });
   }
@@ -121,8 +122,8 @@ class ElectronRecorder extends Recorder
     // send msg
   }
 
-  _doUpdateStatus(data) {
-    console.log(data);
+  doUpdateStatus() {
+    //console.log(this.getStatusMsg());
   }
 
   getFavIcon() {
@@ -134,8 +135,10 @@ class ElectronRecorder extends Recorder
     //this.pdfURL = URL.createObjectURL(pdfblob);
   }
 
-  _doAddResource(data) {
+  async _doAddResource(data) {
+    //TODO: get result if actually added
     this.mainWC.send("add-resource", data, this.pageInfo);
+    return 0;
   }
 
   _doAddPage(pageInfo) {

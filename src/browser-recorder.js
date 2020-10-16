@@ -153,20 +153,6 @@ class BrowserRecorder extends Recorder {
     }
   }
 
-  getStatusMsg() {
-    return {
-      recording: this.running,
-      sizeTotal: this.sizeTotal,
-      sizeNew: this.sizeNew,
-      numUrls: this.numUrls,
-      numPages: this.numPages,
-      numPending: this.numPending,
-      pageUrl: this.pageInfo.url,
-      pageTs: this.pageInfo.ts,
-      type: "status"
-    }
-  }
-
   _doPdfExtract() {
     chrome.tabs.executeScript(this.tabId, {file: "pdf.min.js"}, (results) => {
       chrome.tabs.executeScript(this.tabId, {file: "extractPDF.js"}, (results2) => {

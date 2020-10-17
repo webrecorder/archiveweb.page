@@ -19,14 +19,14 @@ const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 // ===========================================================================
 class BrowserRecorder extends Recorder {
-  constructor(debuggee, openUrl, waitForTabUpdate) {
+  constructor(debuggee, {waitForTabUpdate = false, openUrl = null, port = null}) {
     super(CONTENT_SCRIPT_URL);
     this.openUrl = openUrl;
     this.waitForTabUpdate = waitForTabUpdate;
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
 
-    this.port = null;
+    this.port = port;
 
     this.db = new ArchiveDB(MAIN_DB_KEY);
     this.colldb = new CollectionLoader();
@@ -105,21 +105,35 @@ class BrowserRecorder extends Recorder {
       chrome.braveWebrecorder.showInfoBar(this.tabId);
     }
 
-    chrome.browserAction.setTitle({title: "Recording, No URLs Pending", tabId: this.tabId});
-    chrome.browserAction.setBadgeText({text: " ", tabId: this.tabId});
+    return new Promise((resolve, reject) => {
+      chrome.debugger.attach(this.debuggee, '1.3', async () => {
+        if (chrome.runtime.lastError) {
+          this.failureMsg = chrome.runtime.lastError.message;
+          reject(chrome.runtime.lastError.message);
 
-    chrome.debugger.attach(this.debuggee, '1.3', async () => {
-      await this.start();
+          // allow for retry, don't display error yet
+          if (this.failureMsg !== "Cannot attach to this target.") {
+            this.doUpdateStatus();
+          }
+          return;
+        }
 
-      let expression;
+        await this.start();
+        this.failureMsg = null;
 
-      if (this.openUrl) {
-        expression = `window.location.href = "${this.openUrl}";`;
-      } else {
-        expression = "window.location.reload()";
-      }
-  
-      await this.send("Runtime.evaluate", {expression});
+        let expression;
+
+        if (this.openUrl) {
+          expression = `window.location.href = "${this.openUrl}";`;
+        } else {
+          expression = "window.location.reload()";
+        }
+    
+        await this.send("Runtime.evaluate", {expression});
+        this.doUpdateStatus();
+
+        resolve();
+      });
     });
   }
 
@@ -138,6 +152,10 @@ class BrowserRecorder extends Recorder {
         color = "#bb9f08";
         text = "" + this.numPending;
       }
+    } else if (this.failureMsg) {
+      title = "Error: Can't Record this page";
+      text = "X";
+      color = "#F00";
     } else {
       title = "Not Recording";
       text = "";

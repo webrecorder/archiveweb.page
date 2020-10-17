@@ -23,7 +23,7 @@ class Recorder {
 
     this.flatMode = false;
 
-    this.pendingRequests = null;
+    this.pendingRequests = {};
     this.numPending = 0;
 
     //this.injectScript = `window.devicePixelRatio = 1;`;
@@ -48,6 +48,8 @@ class Recorder {
 
     this._pdfTextDone = null;
     this.pdfURL = null;
+
+    this.failureMsg = null;
 
     this.id = 1;
     this.sessionSet = new Set();
@@ -75,7 +77,7 @@ class Recorder {
 
     this.flushPending();
     this.running = false;
-    this.pendingRequests = null;
+    this.pendingRequests = {};
     this.numPending = 0;
 
     this._doStop();
@@ -83,18 +85,15 @@ class Recorder {
     return this.commitPage(this.pageInfo, domNodes, true);
   }
 
-  attach() {
+  async attach() {
     if (this.running) {
       console.warn("Already Attached!");
       return;
     }
 
+    await this._doAttach();
+
     this.running = true;
-
-    this.pageCount = 0;
-    this.pendingRequests = {};
-
-    this._doAttach();
 
     this._updateId = setInterval(() => this.updateStatus(), 1000);
 
@@ -137,6 +136,7 @@ class Recorder {
       numPending: this.numPending,
       pageUrl: this.pageInfo.url,
       pageTs: this.pageInfo.ts,
+      failureMsg: this.failureMsg,
       type: "status"
     }
   }

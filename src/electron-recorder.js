@@ -116,6 +116,7 @@ class ElectronRecorder extends Recorder
   _doAttach() {
     this.debugger.attach('1.3');
     this.started = this.start();
+    return this.started;
   }
 
   _doStop() {

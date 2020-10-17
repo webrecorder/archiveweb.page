@@ -3,7 +3,7 @@
   "description": "Webrecorder",
   "version": "0.3.0",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "unlimitedStorage", "storage", "<all_urls>", "about:blank", ""],
+  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "unlimitedStorage", "storage", "<all_urls>"],
   "background": { 
     "scripts": ["replay/bg.js"],
     "persistent": false

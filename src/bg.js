@@ -14,12 +14,6 @@ function main() {
   chrome.contextMenus.create({"id": "view-rec", "title": "View Recordings", "contexts": ["all"]});
 }
 
-// ===========================================================================
-// chrome.browserAction.onClicked.addListener((tab) => {
-//   startRecorder(tab.id);
-// });
-
-
 chrome.runtime.onConnect.addListener((port) => {
   if (port.name !== "popup-port") {
     return;
@@ -31,7 +25,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
   let tabId = null;
 
-  port.onMessage.addListener((message) => {
+  port.onMessage.addListener(async (message) => {
     switch (message.type) {
       case "startUpdates":
         tabId = message.tabId;
@@ -42,8 +36,7 @@ chrome.runtime.onConnect.addListener((port) => {
         break;
 
       case "startRecording":
-        startRecorder(tabId);
-        self.recorders[tabId].port = port;
+        doStartWithRetry(tabId, port);
         break;
 
       case "stopRecording":
@@ -75,28 +68,29 @@ chrome.tabs.onCreated.addListener((tab) => {
     return;
   }
 
-  const url = tab.pendingUrl;
   let openUrl = null;
   let start = false;
 
-  if (self.newRecUrl) {
-    if (url === "about:blank") {
-      start = true;
-      openUrl = self.newRecUrl;
-      self.newRecUrl = null;
-    }
-  }
-
-  if (!start && tab.openerTabId && self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
+  // start recording from extension in new tab use case
+  if (self.newRecUrl && tab.pendingUrl === "about:blank") {
+    start = true;
+    openUrl = self.newRecUrl;
+    self.newRecUrl = null;
+  } else if (tab.openerTabId && self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
     start = true;
   }
 
   if (start) {
-    const testUrl = openUrl || url;
-    if (testUrl && !isValidUrl(testUrl)) {
+    if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    startRecorder(tab.id, testUrl, !testUrl);
+    startRecorder(tab.id, {waitForTabUpdate: true, openUrl}).then((err) => {
+      // open in new tab from extension
+      // if (err && openUrl) {
+      //   console.log("retry new tab attach");
+      //   setTimeout(() => {self.recorders[tab.id].attach()}, 200);
+      // }
+    });
   }
 });
 
@@ -123,7 +117,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     case "toggle-rec":
       if (!isRecording(tab.id)) {
         if (isValidUrl(tab.url)) {
-          startRecorder(tab.id);
+          doStartWithRetry(tab.id);
         }
       } else {
         stopRecorder(tab.id);
@@ -133,17 +127,44 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 // ===========================================================================
-function startRecorder(tabId, openUrl, waitForTabUpdate = false) {
+async function startRecorder(tabId, opts) {
   if (!self.recorders[tabId]) {
-    self.recorders[tabId] = new BrowserRecorder({"tabId": tabId}, openUrl, waitForTabUpdate);
+    self.recorders[tabId] = new BrowserRecorder({"tabId": tabId}, opts);
   } else {
     //console.log('Resuming Recording on: ' + tabId);
   }
 
+  let err = null;
+
+  const {waitForTabUpdate} = opts;
+
   if (!waitForTabUpdate && !self.recorders[tabId].running) {
-    self.recorders[tabId].attach();
-    return true;
+    try {
+      await self.recorders[tabId].attach();
+    } catch(e) {
+      console.warn(e);
+      err = e;
+    }
+    return err;
   }
+}
+
+async function doStartWithRetry(tabId, port) {
+  const err = await startRecorder(tabId, {port});
+
+  if (err !== "Cannot attach to this target.") {
+    return;
+  }
+
+  chrome.tabs.get(tabId, (tab) => {
+    if (tab && tab.url) {
+      // attempt navigating to about:blank and then reloading
+      self.recorders[tabId].openUrl = tab.url;
+      self.recorders[tabId].waitForTabUpdate = true;
+
+      chrome.tabs.update(tabId, {url: "about:blank"});
+    }
+  });
 }
 
 // ===========================================================================
@@ -163,7 +184,7 @@ function isRecording(tabId) {
 
 // ===========================================================================
 function isValidUrl(url) {
-  return url && (url.startsWith("https:") || url.startsWith("http:"));
+  return url && (url === "about:blank" || url.startsWith("https:") || url.startsWith("http:"));
 }
 
 // ===========================================================================
@@ -207,4 +228,4 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 });
 
 // ===========================================================================
-main();
+chrome.runtime.onInstalled.addListener(main);

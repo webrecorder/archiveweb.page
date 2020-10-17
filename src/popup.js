@@ -28,6 +28,7 @@ class RecPopup extends LitElement
     this.replayUrl = "";
 
     this.canRecord = false;
+    this.failureMsg = null;
   }
 
   static get properties() {
@@ -39,7 +40,8 @@ class RecPopup extends LitElement
       pageUrl: { type: String },
       pageTs: { type: Number },
 
-      canRecord: { type: Boolean }
+      canRecord: { type: Boolean },
+      failureMsg: { type: String }
     }
   }
 
@@ -62,8 +64,13 @@ class RecPopup extends LitElement
       if (message.type === "status") {
         this.recording = message.recording;
         this.status = message;
-        this.pageUrl = message.pageUrl;
-        this.pageTs = message.pageTs;
+        if (message.pageUrl) {
+          this.pageUrl = message.pageUrl;
+        }
+        if (message.pageTs) {
+          this.pageTs = message.pageTs;
+        }
+        this.failureMsg = message.failureMsg;
       }
     });
   }
@@ -80,8 +87,8 @@ class RecPopup extends LitElement
       this.replayUrl = chrome.runtime.getURL("replay/index.html") + "#" + params.toString();
     }
 
-    if (changedProperties.has("pageUrl")) {
-      this.canRecord = this.pageUrl && (this.pageUrl.startsWith("http:") || this.pageUrl.startsWith("https:"));
+    if (changedProperties.has("pageUrl") || changedProperties.has("failureMsg")) {
+      this.canRecord = this.pageUrl && (this.pageUrl === "about:blank" || this.pageUrl.startsWith("http:") || this.pageUrl.startsWith("https:"));
     }
   }
 
@@ -97,8 +104,6 @@ class RecPopup extends LitElement
         height: 1.5em !important;
         background-color: aliceblue;
       }
-
-
 
       .rec-state {
         margin-right: 1.0em;
@@ -139,7 +144,39 @@ class RecPopup extends LitElement
         color: #bb9f08;
         font-style: italic;
       }
+      .error {
+        font-size: 12px;
+        color: maroon;
+      }
+
+      .error p {
+        margin-bottom: 1em;
+      }
     `);
+  }
+
+  renderStatus() {
+    if (this.recording) {
+      return html`<b>Recording:&nbsp;</b>
+        ${this.status && this.status.numPending ? html`
+      <span class="status-pending">${this.status.numPending} URLs pending, please wait before loading a new page.</span>
+    ` : html`
+      <span class="status-ready">Idle, Continue Browsing</span>`}`;
+    }
+
+    if (this.failureMsg) {
+      return html`
+      <div class="error">
+        <p>Sorry, there was an error starting recording on this page. Please try again or try a different page.</p>
+      </div>
+      `;
+    }
+
+    if (!this.canRecord) {
+      return html`<i>Can't record this page.</i>`;
+    }
+
+    return html`<i>Not Recording this Tab</i>`;
   }
 
   render() { 
@@ -147,14 +184,7 @@ class RecPopup extends LitElement
       <div class="container">
         <div class="rec-row">
           <p class="rec-state">
-          ${this.recording ? html`
-            <b>Recording:&nbsp;</b>
-            ${this.status && this.status.numPending ? html`
-              <span class="status-pending">${this.status.numPending} URLs pending, please wait before loading a new page.</span>
-            ` : html`
-              <span class="status-ready">Idle, Continue Browsing</span>
-            `}
-          ` : html`<i>Not Recording this Tab</i>`}
+          ${this.renderStatus()}
           </p>
           ${this.canRecord ? html`
           <button

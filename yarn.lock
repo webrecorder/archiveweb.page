@@ -303,9 +303,9 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@github:webrecorder/wabac.js#develop":
-  version "2.1.0-beta.2"
-  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/2851cb9ddf44dfd1616b9f127f3f659e49e9cc19"
+"@webrecorder/wabac@github:webrecorder/wabac.js":
+  version "2.1.0-beta.4"
+  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/21bb3b5ea9bb9d67aa9c12cb1de7bf168616a92b"
   dependencies:
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.15.1"
@@ -322,7 +322,7 @@
     unescape-js "^1.1.4"
     warcio "^1.2.0"
     wbn "^0.0.3"
-    wombat "github:webrecorder/wombat#post-to-get"
+    wombat "github:webrecorder/wombat"
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -4409,28 +4409,11 @@ repeating@^2.0.0:
     is-finite "^1.0.0"
 
 "replaywebpage@github:webrecorder/replayweb.page":
-  version "1.2.0-beta.0"
-  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/8144b602a7f4d0e02a603b9434c024eeb9bb94f0"
+  version "1.2.0-beta.1"
+  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/92b875a29bfcd68d5d43c9db7d6c1f5f8bee4f9d"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "github:webrecorder/wabac.js#develop"
-    bulma "^0.9.0"
-    fetch-ndjson "^1.1.0"
-    flexsearch "^0.6.32"
-    keyword-mark-element "^0.1.2"
-    lit-element "^2.3.1"
-    marked "^1.0.0"
-    mime-types "^2.1.27"
-    pretty-bytes "^5.3.0"
-    register-service-worker "^1.7.1"
-    split.js "^1.6.2"
-
-"replaywebpage@github:webrecorder/replayweb.page#develop":
-  version "1.2.0-beta.0"
-  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/b80971dacb18b54db41dc27249c67b118d169d0e"
-  dependencies:
-    "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "github:webrecorder/wabac.js#develop"
+    "@webrecorder/wabac" "github:webrecorder/wabac.js"
     bulma "^0.9.0"
     fetch-ndjson "^1.1.0"
     flexsearch "^0.6.32"
@@ -5807,9 +5790,9 @@ wide-align@^1.1.0:
   dependencies:
     string-width "^1.0.2 || 2"
 
-"wombat@github:webrecorder/wombat#post-to-get":
+"wombat@github:webrecorder/wombat":
   version "3.0.0"
-  resolved "https://codeload.github.com/webrecorder/wombat/tar.gz/3b77ec41c3e28b51da772bebaedcb49e09970e37"
+  resolved "https://codeload.github.com/webrecorder/wombat/tar.gz/d547717e1daabc7769b0b2ee562a13baeeec180e"
 
 worker-farm@^1.7.0:
   version "1.7.0"

@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "github:webrecorder/wabac.js#develop",
+    "@webrecorder/wabac": "github:webrecorder/wabac.js",
     "bulma": "^0.9.1",
     "flexsearch": "^0.6.32",
     "http-status-codes": "^1.4.0",

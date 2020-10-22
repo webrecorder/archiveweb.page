@@ -10,6 +10,8 @@ import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteV
 
 const encoder = new TextEncoder("utf-8");
 
+const MAX_CONCURRENT_FETCH = 6;
+
 
 // ===========================================================================
 function sleep(time) {
@@ -43,7 +45,8 @@ class Recorder {
 
     this._promises = {};
 
-    this._fetchPending = {};
+    this._fetchPending = new Map();
+    this._fetchQueue = [];
     this._fetchUrls = new Set();
 
     this._pdfTextDone = null;
@@ -53,13 +56,15 @@ class Recorder {
 
     this.id = 1;
     this.sessionSet = new Set();
+
+    this._bgFetchId = setInterval(() => this.doBackgroundFetch(), 10000);
   }
 
   async detach() {
     const domNodes = await this.getFullText();
 
     try {
-      await Promise.all(Object.values(this._fetchPending));
+      await Promise.all(this._fetchPending.values());
     } catch(e) {
       console.log(e);
     }
@@ -119,7 +124,7 @@ class Recorder {
   updateStatus() {
     //const sizeMsg = prettyBytes(this.size);
 
-    this.numPending = Object.keys(this.pendingRequests).length + Object.keys(this._fetchPending).length;
+    this.numPending = Object.keys(this.pendingRequests).length + this._fetchPending.size;
 
     //console.log(Object.values(this.pendingRequests).map((x) => x.status + " " + x.fetch + " " + x.requestId + " " + x.url + " "));
 
@@ -212,7 +217,6 @@ class Recorder {
           console.log(e);
           console.warn("Error attaching target: " + params.targetInfo.type + " " + params.targetInfo.url);
         }
-
         break;
 
       case "Target.detachedFromTarget":
@@ -402,9 +406,10 @@ class Recorder {
     return this._doAddPage(currPage);
   }
 
-  commitResource(data) {
+  commitResource(data, pageInfo) {
     const payloadSize = data.payload.length;
-    this.pageInfo.size += payloadSize;
+    pageInfo = pageInfo || this.pageInfo;
+    pageInfo.size += payloadSize;
 
     this.sizeTotal += payloadSize;
     this.numUrls++;
@@ -719,13 +724,13 @@ class Recorder {
   async fullCommit(reqresp, sessions) {
     const requestId = reqresp.requestId;
 
-    let doneResolve;
+    // let doneResolve;
 
-    const pending = new Promise((resolve) => {
-      doneResolve = resolve;
-    });
+    // const pending = new Promise((resolve) => {
+    //   doneResolve = resolve;
+    // });
 
-    this._fetchPending[requestId] = pending;
+    //this._fetchPending.set(requestId, pending);
 
     try {
       const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
@@ -746,8 +751,8 @@ class Recorder {
       console.log("error committing", e);
     }
 
-    doneResolve();
-    delete this._fetchPending[requestId];
+    //doneResolve();
+    //delete this._fetchPending[requestId];
   }
 
   async handleRequestWillBeSent(params) {
@@ -826,6 +831,25 @@ class Recorder {
       return;
     }
 
+    request.pageInfo = this.pageInfo;
+
+    this._fetchQueue.push(request);
+
+    this.doBackgroundFetch();
+  }
+
+  async doBackgroundFetch() {
+    if (!this._fetchQueue.length || this._fetchPending.size >= MAX_CONCURRENT_FETCH) {
+      return;
+    }
+
+    const request = this._fetchQueue.shift();
+
+    if (this._fetchUrls.has(request.url)) {
+      console.log("Skipping, already fetching: " + request.url);
+      return;
+    }
+
     let doneResolve;
     const fetchId = "fetch-" + this.newPageId();
 
@@ -838,7 +862,7 @@ class Recorder {
         doneResolve = resolve;
       });
 
-      this._fetchPending[fetchId] = pending;
+      this._fetchPending.set(fetchId, pending);
 
       const headers = new Headers(request.headers);
       headers.delete("range");
@@ -855,11 +879,16 @@ class Recorder {
       reqresp.url = request.url;
       reqresp.payload = new Uint8Array(payload);
 
-      const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
+      const data = reqresp.toDBRecord(reqresp.payload, request.pageInfo);
 
       if (data) {
-        await this.commitResource(data);
+        await this.commitResource(data, request.pageInfo);
         console.log("Done Async Load: " + request.url);
+
+        if (this.pageInfo !== request.pageInfo) {
+          await this.commitPage(request.pageInfo);
+        }
+
       } else {
         console.warn("No Data Committed for: " + request.url + " Status: " + resp.status);
       }
@@ -870,7 +899,7 @@ class Recorder {
     }
 
     doneResolve();
-    delete this._fetchPending[fetchId];
+    this._fetchPending.delete(fetchId);
   }
 
   async fetchPayloads(params, reqresp, sessions, method) {

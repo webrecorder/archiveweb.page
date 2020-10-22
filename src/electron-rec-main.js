@@ -85,10 +85,8 @@ function createMainWindow(startPage = "index.html") {
     isMaximized: true,
     show: false,
     webPreferences: {
-      //plugins: true,
-      //webviewTag: true,
+      plugins: true,
       preload: path.join(__dirname, 'preload.js'),
-      //nativeWindowOpen: true,
       contextIsolation: true
     }
   }).once('ready-to-show', () => {
@@ -170,7 +168,8 @@ function createRecordWindow(url) {
   recWindow.loadURL(STATIC_PREFIX + "rec.html");
 
   const view = new BrowserView({webPreferences: {
-      partition: "persist:wr"
+      partition: "persist:wr",
+      plugins: true
     }
   });
 

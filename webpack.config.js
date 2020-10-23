@@ -107,11 +107,8 @@ const browserConfig = (env, argv) => {
       new MiniCssExtractPlugin(),
       new webpack.DefinePlugin({
         __VERSION__: JSON.stringify('1.0.0')
-      })
-
-      //new ExtensionReloader({
-      //  manifest: path.resolve(__dirname, "wr-ext", "manifest.json")
-      //}),
+      }),
+      new webpack.BannerPlugin('[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3.')
     ],
 
     module: {

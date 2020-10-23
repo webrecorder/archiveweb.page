@@ -1,9 +1,11 @@
 {
-  "name": "webrecorder",
+  "name": "webrecorder-extension",
   "version": "0.3.1",
   "main": "index.js",
-  "author": "Ilya Kreymer <ikreymer@gmail.com>",
-  "license": "MIT",
+  "description": "Create Web Archives directly in your browser",
+  "repository": "https://github.com/webrecorder/webrecorder-extension",
+  "author": "Webrecorder Software",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@webrecorder/wabac": "github:webrecorder/wabac.js",

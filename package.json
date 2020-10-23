@@ -1,6 +1,6 @@
 {
   "name": "webrecorder-extension",
-  "version": "0.3.1",
+  "version": "0.3.2-dev.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/webrecorder-extension",
@@ -14,7 +14,8 @@
     "http-status-codes": "^1.4.0",
     "keyword-mark-element": "^0.1.2",
     "lit-element": "^2.3.1",
-    "node-fetch": "^2.6.0",
+    "lodash": "^4.17.20",
+    "node-fetch": "^2.6.1",
     "pretty-bytes": "^5.3.0",
     "replaywebpage": "github:webrecorder/replayweb.page"
   },

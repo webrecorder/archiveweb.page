@@ -34,6 +34,7 @@ class ExtApp extends LitElement
     this.navMenuShown = false;
 
     registerSW("sw.js");
+    this.inited = false;
     this.initDB();
   }
 
@@ -59,7 +60,22 @@ class ExtApp extends LitElement
       }
 
       await colldb.put("colls", data);
+
+      while (true) {
+        try {
+          const resp = await fetch(`./wabac/api/${MAIN_DB_KEY}?all=1`);
+          if (resp.status === 200) {
+            break;
+          }
+        } catch (e) {
+
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        console.log("Waiting for load...");
+      }
     }
+
+    this.inited = true;
   }
 
   static get properties() {
@@ -69,6 +85,7 @@ class ExtApp extends LitElement
       sourceUrl: { type: String },
       navMenuShown: { type: Boolean },
       recordShown: { type: Boolean },
+      inited: { type: Boolean }
     }
   }
 
@@ -153,7 +170,7 @@ class ExtApp extends LitElement
           </a>
           <div class="navbar-item">
             <p class="control">
-            <a class="button is-link is-rounded is-small" @click="${(e) => this.recordShown = !this.recordShown}">
+            <a class="button is-primary is-rounded is-small" @click="${(e) => this.recordShown = !this.recordShown}">
             <span class="icon"><fa-icon size="0.8em" .svg="${fasCircle}"></fa-icon></span><span>Start Recording...</span>
             </a>
             </p>
@@ -185,8 +202,10 @@ class ExtApp extends LitElement
         </section>
       </div>
     </div>
-
-    <wr-coll .editable="${true}" .loadInfo="${this.loadInfo}" sourceUrl="${this.sourceUrl}"></wr-coll>`;
+    ${this.inited ? html`
+    <wr-coll .editable="${true}" .loadInfo="${this.loadInfo}" sourceUrl="${this.sourceUrl}"></wr-coll>
+    ` : html`
+    <p class="loader"></p>`}`;
   }
 
   onStartRecord(event) {

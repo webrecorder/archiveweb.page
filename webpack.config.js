@@ -2,12 +2,16 @@ const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExtensionReloader  = require('webpack-extension-reloader');
+const GenerateJsonPlugin = require('generate-json-webpack-plugin');
 
+const PACKAGE = require("./package.json");
 
 //const WEBVIEW_PRELOAD_PATH = "file:webview-preload.js";
 const WEBVIEW_PRELOAD_PATH = path.join(__dirname, 'src', 'webview-preload.js');
 
+const BANNER = '[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3.';
 
+const manifest = require("./src/manifest.json");
 
 const electronMainConfig = (env, argv) => {
   return {
@@ -29,7 +33,8 @@ const electronMainConfig = (env, argv) => {
         __WEBVIEW_PRELOAD_PATH__: JSON.stringify(WEBVIEW_PRELOAD_PATH)
       //  __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
       //  __HELPER_PROXY__ : JSON.stringify(HELPER_PROXY)
-      })
+      }),
+      new webpack.BannerPlugin(BANNER),
     ]
   }
 };
@@ -50,6 +55,20 @@ const electronPreloadConfig = (env, argv) => {
 };
 
 const popupConfig = (env, argv) => {
+  const icon = (argv.mode === "production") ? "icon.png" : "icon-dev.png";
+
+  const generateManifest = (name, value) => {
+    switch (value) {
+      case "$VERSION":
+        return PACKAGE.version;
+
+      case "$ICON":
+        return icon;
+    }
+
+    return value;
+  };
+
   return {
     mode: 'production',
     target: "web",
@@ -66,6 +85,8 @@ const popupConfig = (env, argv) => {
 
     plugins: [
       new MiniCssExtractPlugin(),
+      new webpack.BannerPlugin(BANNER),
+      new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2)
     ],
 
     module: {
@@ -108,7 +129,7 @@ const browserConfig = (env, argv) => {
       new webpack.DefinePlugin({
         __VERSION__: JSON.stringify('1.0.0')
       }),
-      new webpack.BannerPlugin('[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3.')
+      new webpack.BannerPlugin(BANNER),
     ],
 
     module: {

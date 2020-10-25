@@ -1,11 +1,20 @@
 {
   "name": "Webrecorder",
   "description": "Webrecorder",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "unlimitedStorage", "<all_urls>"],
-  "background": { 
-    "scripts": ["replay/bg.js"],
+  "permissions": [
+    "debugger",
+    "contextMenus",
+    "tabs",
+    "activeTab",
+    "unlimitedStorage",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "replay/bg.js"
+    ],
     "persistent": false
   },
   "icons": {

@@ -304,8 +304,8 @@
     "@xtuc/long" "4.2.2"
 
 "@webrecorder/wabac@github:webrecorder/wabac.js":
-  version "2.1.0"
-  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/3bf657ea00e601255b475c6a47f5dcdacca870c3"
+  version "2.1.1"
+  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/75a34f0ef0e68efd8e1c9cfc99aa5968b5d0d3b6"
   dependencies:
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.15.1"
@@ -2103,6 +2103,11 @@ gaze@^1.0.0:
   integrity sha512-BRdNm8hbWzFzWHERTrejLqwHDfS4GibPoq5wjTPIoJHoBtKGPg3xAFfxmM+9ztbXelxcf2hwQcaz1PtmFeue8g==
   dependencies:
     globule "^1.0.0"
+
+generate-json-webpack-plugin@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/generate-json-webpack-plugin/-/generate-json-webpack-plugin-1.0.0.tgz#518e762eb8a152f7a8cc2af56172c0dc58dfa989"
+  integrity sha512-VX3hYIHuVRGH44pz2c1/QonRvCLa7pzw1dP2pisRiRhVx7pl5/mkG+e/FL2nTAJTc6k8PDVI8npBA2WUH3YG3w==
 
 get-caller-file@^1.0.1:
   version "1.0.3"
@@ -4407,8 +4412,8 @@ repeating@^2.0.0:
     is-finite "^1.0.0"
 
 "replaywebpage@github:webrecorder/replayweb.page":
-  version "1.2.0"
-  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/3c77ac93d1e12b906a3c1f4c3169bf0811612f87"
+  version "1.2.1"
+  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/4083b10bd2f702773f633be89436c7926eef3d32"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
     "@webrecorder/wabac" "github:webrecorder/wabac.js"

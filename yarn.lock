@@ -18,6 +18,11 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
+"@electron/remote@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@electron/remote/-/remote-1.0.0.tgz#f663fe52c06e883c2adb1466920c15416eb8cb8a"
+  integrity sha512-c64kgxi/ZynORfrwGKhzPTyPUhgPjEQfTMnoPqct+0CrV/+VveIARwzVNulWhaODfacS5Ln20sBU5j3CgQM4vQ==
+
 "@fortawesome/fontawesome-free@^5.13.0":
   version "5.13.0"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.13.0.tgz#fcb113d1aca4b471b709e8c9c168674fbd6e06d9"

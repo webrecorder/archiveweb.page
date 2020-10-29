@@ -18,12 +18,12 @@
     "persistent": false
   },
   "icons": {
-    "32": "icon.png",
-    "128": "icon.png"
+    "32": "icon-dev.png",
+    "128": "icon-dev.png"
   },
   "browser_action": {
     "default_icon": {
-      "32": "icon.png"
+      "32": "icon-dev.png"
     },
     "default_title": "Webrecorder",
     "default_popup": "popup.html"

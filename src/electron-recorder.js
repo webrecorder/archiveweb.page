@@ -9,10 +9,7 @@ class ElectronRecorder extends Recorder
   constructor(webContents, mainWC) {
     super(__WEBVIEW_PRELOAD_PATH__);
     this.mainWC = mainWC;
-    
-    this.injectScript = null;
 
-    //console.log(mainWC);
     this.webContents = webContents;
     this.debugger = webContents.debugger;
 
@@ -116,6 +113,7 @@ class ElectronRecorder extends Recorder
   _doAttach() {
     this.debugger.attach('1.3');
     this.started = this.start();
+
     return this.started;
   }
 

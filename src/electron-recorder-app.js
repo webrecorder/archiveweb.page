@@ -37,8 +37,15 @@ class ElectronRecorderApp extends ElectronReplayApp
       this.createRecordWindow(url);
     });
 
+    require('@electron/remote/main').initialize();
+
     super.onAppReady();
   }
+
+  get mainWindowUrl() {
+    return "wr-ext/replay/index.html";
+  }
+
 
   createRecordWindow(url) {
     console.log("start rec window: " + url);
@@ -48,9 +55,11 @@ class ElectronRecorderApp extends ElectronReplayApp
       height: this.screenSize.height - 1,
       isMaximized: true,
       show: true,
+      webPreferences: {
+        enableRemoteModule: true,
+        nodeIntegration: true
+      }
     });
-
-    recWindow.loadURL(STATIC_PREFIX + "rec.html");
 
     const view = new BrowserView({webPreferences: {
         partition: "persist:wr",
@@ -58,8 +67,10 @@ class ElectronRecorderApp extends ElectronReplayApp
       }
     });
 
-    const HEADER_HEIGHT = 70;
-    recWindow.setBrowserView(view);
+    recWindow.loadURL(STATIC_PREFIX + "locbar.html#" + view.webContents.id);
+
+    const HEADER_HEIGHT = 73;
+    recWindow.addBrowserView(view);
     view.setBounds({ x: 0, y: HEADER_HEIGHT, width: this.screenSize.width, height: this.screenSize.height - HEADER_HEIGHT });
     view.setAutoResize({width: true, height: true});
     recWindow.setSize(this.screenSize.width, this.screenSize.height);
@@ -87,8 +98,13 @@ class ElectronRecorderApp extends ElectronReplayApp
     });
 
     view.webContents.loadURL("about:blank").then(() => {
+      view.webContents.clearHistory();
       this.recorders.set(view.webContents.id, recorder);
       recorder.attach();
+
+      if (process.env.NODE_ENV === "development") {
+        view.webContents.openDevTools();
+      }
 
       return recorder.started;
     }).then(() => view.webContents.loadURL(url));

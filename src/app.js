@@ -191,7 +191,7 @@ class ExtApp extends LitElement
             <div class="field has-addons">
               <p class="control is-expanded">
                 <input class="input" type="url" required
-                name="url" id="url"
+                name="url" id="url" value="https://example.com/"
                 placeholder="Enter a URL to Start Recording">
               </p>
               <div class="control">

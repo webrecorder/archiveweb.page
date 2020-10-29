@@ -4,7 +4,7 @@ import path from 'path';
 
 // ===========================================================================
 const recorderApp = new ElectronRecorderApp({
-  staticPath: path.join(__dirname, "../wr-ext/replay/")
+  staticPath: path.join(__dirname, "../")
 });
 
 recorderApp.init();

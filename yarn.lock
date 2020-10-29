@@ -304,8 +304,8 @@
     "@xtuc/long" "4.2.2"
 
 "@webrecorder/wabac@github:webrecorder/wabac.js":
-  version "2.1.1"
-  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/75a34f0ef0e68efd8e1c9cfc99aa5968b5d0d3b6"
+  version "2.1.2"
+  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/85d884dff0b19033c267910c518f48528ed59fd1"
   dependencies:
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.15.1"
@@ -4413,7 +4413,7 @@ repeating@^2.0.0:
 
 "replaywebpage@github:webrecorder/replayweb.page":
   version "1.2.1"
-  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/4083b10bd2f702773f633be89436c7926eef3d32"
+  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/21b796fa62551967dd7815c3a83febad007096ff"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
     "@webrecorder/wabac" "github:webrecorder/wabac.js"
@@ -4424,6 +4424,7 @@ repeating@^2.0.0:
     lit-element "^2.3.1"
     marked "^1.0.0"
     mime-types "^2.1.27"
+    minimist "^1.2.5"
     pretty-bytes "^5.3.0"
     register-service-worker "^1.7.1"
     split.js "^1.6.2"

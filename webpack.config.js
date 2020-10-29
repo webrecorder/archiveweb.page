@@ -147,7 +147,7 @@ const browserConfig = (env, argv) => {
         loaders: ['to-string-loader', 'css-loader', 'sass-loader']
       },
       {
-        test: /(dist\/wombat.js|src\/wombatWorkers.js)$/i,
+        test: /(dist\/wombat.js|src\/wombatWorkers.js|autofetcher.js)$/i,
         loaders: 'raw-loader',
       }
      ]

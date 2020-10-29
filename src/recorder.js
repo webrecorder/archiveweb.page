@@ -1,12 +1,9 @@
-"use strict";
-
-import prettyBytes from 'pretty-bytes';
-
 import { RequestResponseInfo } from './requestresponseinfo.js';
 
-import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite'; 
-import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo'; 
+import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite';
+import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo';
 
+import autofetcher from './autofetcher.js';
 
 const encoder = new TextEncoder("utf-8");
 
@@ -28,7 +25,7 @@ class Recorder {
     this.pendingRequests = {};
     this.numPending = 0;
 
-    //this.injectScript = `window.devicePixelRatio = 1;`;
+    this.injectScript = autofetcher;
 
     this.running = false;
 
@@ -617,23 +614,24 @@ class Recorder {
 
     const payload = reqresp.payload;
 
-    const string = payload.toString("utf-8");
-
-    if (!string.length) {
+    if (!payload.length) {
       return false;
     }
 
     let newString = null;
+    let string = null;
 
     const ct = this._getContentType(params.responseHeaders);
 
     switch (ct) {
       case "application/x-mpegURL":
       case "application/vnd.apple.mpegurl":
+        string = payload.toString("utf-8");
         newString = rewriteHLS(string, {save: reqresp.extraOpts});
         break;
 
       case "application/dash+xml":
+        string = payload.toString("utf-8");
         newString = rewriteDASH(string, {save: reqresp.extraOpts});
         break;
 
@@ -642,6 +640,7 @@ class Recorder {
       case "text/javascript":
       case "application/javascript":
       case "application/x-javascript":
+        string = payload.toString("utf-8");
         const rw = baseDSRules.getRewriter(params.request.url);
 
         if (rw !== baseDSRules.defaultRewriter) {

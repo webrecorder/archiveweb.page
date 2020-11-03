@@ -164,11 +164,26 @@ class RequestResponseInfo
     }
 
     if (this.postData) {
-      if (this.method === "POST" && data.reqHeaders["Content-Type"] === "application/x-www-form-urlencoded") {
-        data.url += (data.url.indexOf("?") > 0 ? "&" : "?") + this.postData;
-        data.method = "GET";
-      } else {
-        data.postData = this.postData;
+      if (this.method === "POST") {
+        const contentType = (data.reqHeaders["Content-Type"] || "").split(";", 1)[0];
+        let query = null;
+
+        switch (contentType) {
+          case "application/x-www-form-urlencoded":
+            query = this.postData;
+            break;
+
+          case "application/json":
+            query = "__wb_json_data=" + this.postData.replace(/\n/g, "");
+            break;
+        }
+
+        if (query)  {
+          data.url += (data.url.indexOf("?") > 0 ? "&" : "?") + query;
+          data.method = "GET";
+        } else {
+          data.postData = this.postData;
+        }
       }
     }
 

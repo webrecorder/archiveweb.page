@@ -163,6 +163,12 @@ class Recorder {
         console.log('No Fetch Available', e);
       }
 
+      try {
+        await this.send("Media.enable", null, sessions);
+      } catch(e) {
+        console.log("No media events available");
+      }
+
       await this.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true, flatten: this.flatMode }, sessions);
 
       // disable cache for now?
@@ -299,10 +305,14 @@ class Recorder {
           await this.unpauseAndFinish(params);
         }
         break;
+
+      case "Media.playerEventsAdded":
+        this.parseMediaEventsAdded(params, sessions);
+        break;
   
       default:
         //if (method.startsWith("Target.")) {
-        //  console.log(method);
+        //  console.log(method, params);
         //}
         return false;
     }
@@ -644,7 +654,7 @@ class Recorder {
         const rw = baseDSRules.getRewriter(params.request.url);
 
         if (rw !== baseDSRules.defaultRewriter) {
-          newString = rw.rewrite(string);
+          newString = rw.rewrite(string, {live: true});
         }
         break;
     }
@@ -795,6 +805,20 @@ class Recorder {
     }
     
     return reqresp;
+  }
+
+  parseMediaEventsAdded(params, sessions) {
+    if (!this.pageInfo.id) {
+      return;
+    }
+
+    for (const {value} of params.events) {
+      if (value.indexOf('"kLoad"') > 0) {
+        const {url} = JSON.parse(value);
+        this.doAsyncFetch({url}, sessions);
+        break;
+      }
+    }
   }
 
   doAsyncFetch(request, sessions = []) {

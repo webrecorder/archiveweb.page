@@ -22,7 +22,7 @@
   "web_accessible_resources": [
     "pdf.min.js",
     "pdf.worker.min.js",
-    "./**"
+    "replay/*"
   ],
   "manifest_version": 2
 }

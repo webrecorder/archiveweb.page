@@ -121,7 +121,7 @@ const extensionConfig = (env, argv) => {
       'sw': '@webrecorder/wabac/src/sw.js'
     },
     output: {
-      path: path.join(__dirname, 'wr-ext', 'replay'),
+      path: path.join(__dirname, 'wr-ext'),
       filename: (chunkData) => {
         return chunkData.chunk.name === 'popup' ? '[name].js': './replay/[name].js';
       },

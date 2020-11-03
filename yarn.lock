@@ -308,9 +308,32 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
+"@webrecorder/wabac@^2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.1.3.tgz#ef34fc94ce491cf1618720d0bad28a508fba864b"
+  integrity sha512-gmW3I91BcMUaUJW6A7ozYGaMraKNLXq3eT0QaVOV9XJbzWauJjlKDtQA+IHoyYjiZwdUDPGf+J5O99pFJZiFMQ==
+  dependencies:
+    "@webrecorder/wombat" "^3.0.0"
+    brotli "github:foliojs/brotli.js"
+    fast-xml-parser "^3.15.1"
+    http-status-codes "^1.4.0"
+    idb "^5.0.1"
+    js-levenshtein "^1.1.6"
+    js-yaml "^3.13.1"
+    json-2-csv "^3.7.1"
+    jszip "^3.4.0"
+    pako "^1.0.10"
+    parse5-html-rewriting-stream "^6.0.0"
+    parse5-sax-parser "^6.0.0"
+    path-parser "^6.1.0"
+    unescape-js "^1.1.4"
+    warcio "^1.2.0"
+    wbn "^0.0.3"
+    wombat "github:webrecorder/wombat"
+
 "@webrecorder/wabac@github:webrecorder/wabac.js":
   version "2.1.3"
-  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/e8c17633353f70d56806770f59f8e3ca6cd11ca0"
+  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/a6231f9867b4198453ac571c7df58f03408e29f3"
   dependencies:
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.15.1"
@@ -328,6 +351,11 @@
     warcio "^1.2.0"
     wbn "^0.0.3"
     wombat "github:webrecorder/wombat"
+
+"@webrecorder/wombat@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.0.0.tgz#25eac451a74c5395280c3c298f58499d442172d0"
+  integrity sha512-gU7jg/Iry8yPC8PSmPewBd0BT9c4wHdWrdDsoaPdWZlLw64H/g+SvvWEdy2sGDhTHyVYxuemZb1uJ5M74n+dnw==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -4418,7 +4446,7 @@ repeating@^2.0.0:
 
 "replaywebpage@github:webrecorder/replayweb.page":
   version "1.2.2"
-  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/7c121a0e3af4b28057b07f484c41441d2d7d67b8"
+  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/0f58a881a203cce7655f7786a1e58f93382c494c"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
     "@webrecorder/wabac" "github:webrecorder/wabac.js"
@@ -5801,7 +5829,7 @@ wide-align@^1.1.0:
 
 "wombat@github:webrecorder/wombat":
   version "3.0.0"
-  resolved "https://codeload.github.com/webrecorder/wombat/tar.gz/d547717e1daabc7769b0b2ee562a13baeeec180e"
+  resolved "https://codeload.github.com/webrecorder/wombat/tar.gz/7ee2799c4a371c3f6e960f98de272107ab198afd"
 
 worker-farm@^1.7.0:
   version "1.7.0"

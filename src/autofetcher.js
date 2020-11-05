@@ -22,7 +22,7 @@ class AutoFetcher
 
   init() {
     window.addEventListener("load", () => {
-      this.extractSrcSrcSetAll();
+      this.extractSrcSrcSetAll(document);
       this.extractStyleSheets();
 
       this.initObserver();
@@ -99,16 +99,19 @@ class AutoFetcher
             if (elem.sheet) {
               this.extractStyleSheet(elem.sheet);
             }
+            this.extractSrcSrcSet(elem);
+            setTimeout(() => this.extractSrcSrcSetAll(elem), 1000);
           }
           break;
       }
     }
   }
 
-  extractSrcSrcSetAll() {
-    const elems = document.querySelectorAll(SRC_SET_SELECTOR);
+  extractSrcSrcSetAll(root) {
+    const elems = root.querySelectorAll(SRC_SET_SELECTOR);
 
     for (const elem of elems) {
+      //console.log(elem);
       this.extractSrcSrcSet(elem);
     } 
   }

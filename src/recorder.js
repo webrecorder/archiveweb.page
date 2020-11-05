@@ -106,7 +106,7 @@ class Recorder {
     for (const key of Object.keys(this.pendingRequests)) {
       const reqresp = this.pendingRequests[key];
 
-      if ((new Date() - reqresp._created) > 30000) {
+      if ((new Date() - reqresp._created) > 20000) {
         if (this.noResponseForStatus(reqresp.status)) {
           console.log("Dropping stale: " + key);
         } else {
@@ -702,6 +702,10 @@ class Recorder {
     return (!status || status === 204 || (status >= 300 && status < 400));
   }
 
+  isValidUrl(url) {
+    return url && (url.startsWith("https:") || url.startsWith("http:"));
+  }
+
   async handleLoadingFinished(params, sessions) {
     const reqresp = this.removeReqResp(params.requestId);
 
@@ -710,7 +714,7 @@ class Recorder {
       return;
     }
 
-    if (!reqresp.url.startsWith("https:") && !reqresp.url.startsWith("http:")) {
+    if (!this.isValidUrl(reqresp.url)) {
       return;
     }
 
@@ -849,6 +853,10 @@ class Recorder {
   }
 
   async doAsyncFetchDirect(request) {
+    if (request || !this.isValidUrl(request.url)) {
+      return;
+    }
+
     if (this._fetchUrls.has(request.url)) {
       console.log("Skipping, already fetching: " + request.url);
       return;
@@ -887,7 +895,7 @@ class Recorder {
 
       this._fetchPending.set(fetchId, pending);
 
-      const headers = new Headers(request.headers);
+      const headers = new Headers(request.requestHeaders);
       headers.delete("range");
 
       const resp = await fetch(request.url, {headers});
@@ -929,7 +937,7 @@ class Recorder {
     let payload;
 
     if (reqresp.status === 206) {
-      this.doAsyncFetch(params.request, sessions);
+      this.doAsyncFetch(reqresp, sessions);
       reqresp.payload = null;
       return null;
     }

@@ -21,6 +21,8 @@ class AutoFetcher
   }
 
   init() {
+    console.log("init autofetch");
+
     window.addEventListener("load", () => {
       this.extractSrcSrcSetAll(document);
       this.extractStyleSheets();
@@ -85,24 +87,38 @@ class AutoFetcher
     });
   }
 
+  processChangedNode(target) {
+    switch (target.nodeType) {
+      case Node.ATTRIBUTE_NODE:
+        if (target.nodeName === "srcset") {
+          this.extractSrcSetAttr(target.nodeValue);
+        }
+        break;
+
+      case Node.TEXT_NODE:
+        if (target.parentNode.tagName === "STYLE") {
+          this.extractStyleText(target.nodeValue);
+        }
+        break;
+
+      case Node.ELEMENT_NODE:
+        if (target.sheet) {
+          this.extractStyleSheet(target.sheet);
+        }
+        this.extractSrcSrcSet(target);
+        setTimeout(() => this.extractSrcSrcSetAll(target), 1000);
+        break;
+    }
+  }
+
   observeChange(changes) {
     for (const change of changes) {
-      switch (change.type) {
-        case "attributes":
-          if (change.target.nodeValue) {
-            this.extractSrcSetAttr(change.target.nodeValue);
-          }
-          break;
+      this.processChangedNode(change.target);
 
-        case "childList":
-          for (const elem of change.addedNodes) {
-            if (elem.sheet) {
-              this.extractStyleSheet(elem.sheet);
-            }
-            this.extractSrcSrcSet(elem);
-            setTimeout(() => this.extractSrcSrcSetAll(elem), 1000);
-          }
-          break;
+      if (change.type === "childList") {
+        for (const node of change.addedNodes) {
+          this.processChangedNode(node);
+        }
       }
     }
   }
@@ -117,7 +133,7 @@ class AutoFetcher
   }
 
   extractSrcSrcSet(elem) {
-    if (!elem) {
+    if (!elem || elem.nodeType !== Node.ELEMENT_NODE) {
       console.warn("No elem to extract from");
       return;
     }
@@ -153,11 +169,6 @@ class AutoFetcher
   }
 
   extractStyleSheet(sheet) {
-    const urlExtractor = (m, n1, n2, n3) => {
-      this.queueUrl(n2);
-      return n1 + n2 + n3;
-    };
-
     let rules;
     
     try {
@@ -169,11 +180,18 @@ class AutoFetcher
 
     for (const rule of rules) {
       if (rule.type === CSSRule.MEDIA_RULE) {
-        rule.cssText
-        .replace(STYLE_REGEX, urlExtractor)
-        .replace(IMPORT_REGEX, urlExtractor);
+        this.extractStyleText(rule.cssText);
       }
     }
+  }
+
+  extractStyleText(text) {
+    const urlExtractor = (m, n1, n2, n3) => {
+      this.queueUrl(n2);
+      return n1 + n2 + n3;
+    };
+
+    text.replace(STYLE_REGEX, urlExtractor).replace(IMPORT_REGEX, urlExtractor);
   }
 }
 

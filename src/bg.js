@@ -46,7 +46,6 @@ chrome.runtime.onConnect.addListener((port) => {
   });
 
   port.onDisconnect.addListener(() => {
-    console.log("port disconnect");
     if (self.recorders[tabId]) {
       self.recorders[tabId].port = null;
     }
@@ -76,7 +75,8 @@ chrome.tabs.onCreated.addListener((tab) => {
     start = true;
     openUrl = self.newRecUrl;
     self.newRecUrl = null;
-  } else if (tab.openerTabId && self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
+  } else if (tab.openerTabId && (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
+             self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
     start = true;
   }
 

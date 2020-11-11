@@ -208,7 +208,7 @@ class Recorder {
 
         try {
           this.sessionSet.add(params.sessionId);
-        
+
           await this.sessionInit(sessions);
 
           if (params.waitingForDebugger) {
@@ -853,7 +853,7 @@ class Recorder {
   }
 
   async doAsyncFetchDirect(request) {
-    if (request || !this.isValidUrl(request.url)) {
+    if (!request || !this.isValidUrl(request.url)) {
       return;
     }
 

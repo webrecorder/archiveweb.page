@@ -96,7 +96,7 @@ class AutoFetcher
         break;
 
       case Node.TEXT_NODE:
-        if (target.parentNode.tagName === "STYLE") {
+        if (target.parentNode && target.parentNode.tagName === "STYLE") {
           this.extractStyleText(target.nodeValue);
         }
         break;

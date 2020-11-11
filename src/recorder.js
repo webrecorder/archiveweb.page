@@ -895,10 +895,14 @@ class Recorder {
 
       this._fetchPending.set(fetchId, pending);
 
-      const headers = new Headers(request.requestHeaders);
-      headers.delete("range");
+      const opts = {};
 
-      const resp = await fetch(request.url, {headers});
+      if (request.getResponseHeadersDict) {
+        opts.headers = request.getResponseHeadersDict().headers;
+        opts.headers.delete("range");
+      }
+
+      const resp = await fetch(request.url, opts);
       const payload = await resp.arrayBuffer();
 
       const reqresp = new RequestResponseInfo(fetchId);

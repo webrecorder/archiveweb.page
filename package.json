@@ -9,7 +9,7 @@
   "dependencies": {
     "@electron/remote": "^1.0.0",
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.1.5",
+    "@webrecorder/wabac": "^2.1.7",
     "bulma": "^0.9.1",
     "flexsearch": "^0.6.32",
     "http-status-codes": "^1.4.0",

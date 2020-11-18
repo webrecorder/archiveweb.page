@@ -69,6 +69,7 @@ chrome.tabs.onCreated.addListener((tab) => {
 
   let openUrl = null;
   let start = false;
+  let waitForTabUpdate = true;
 
   // start recording from extension in new tab use case
   if (self.newRecUrl && tab.pendingUrl === "about:blank") {
@@ -78,13 +79,17 @@ chrome.tabs.onCreated.addListener((tab) => {
   } else if (tab.openerTabId && (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
              self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
     start = true;
+    if (tab.pendingUrl) {
+      waitForTabUpdate = false;
+      openUrl = tab.pendingUrl;
+    }
   }
 
   if (start) {
     if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    startRecorder(tab.id, {waitForTabUpdate: true, openUrl}).then((err) => {
+    startRecorder(tab.id, {waitForTabUpdate, openUrl}).then((err) => {
       // open in new tab from extension
       // if (err && openUrl) {
       //   console.log("retry new tab attach");
@@ -97,8 +102,14 @@ chrome.tabs.onCreated.addListener((tab) => {
 // ===========================================================================
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (tabId && self.recorders[tabId]) {
-    if (self.recorders[tabId].waitForTabUpdate && isValidUrl(changeInfo.url)) {
-      self.recorders[tabId].attach();
+    if (self.recorders[tabId].waitForTabUpdate) {
+      if (isValidUrl(changeInfo.url)) {
+        self.recorders[tabId].attach();
+      } else {
+        self.recorders[tabId].waitForTabUpdate = false;
+        delete self.recorders[tabId];
+        return;
+      }
     }
 
     if (self.recorders[tabId].running && changeInfo.favIconUrl) {

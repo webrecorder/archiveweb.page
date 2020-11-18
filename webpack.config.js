@@ -53,6 +53,10 @@ const electronMainConfig = (env, argv) => {
       }),
       new webpack.BannerPlugin(BANNER),
     ],
+    externals: {
+      "bufferutil": "bufferutil",
+      "utf-8-validate": "utf-8-validate",
+    },
     module: moduleSettings,
   }
 };
@@ -132,7 +136,7 @@ const extensionConfig = (env, argv) => {
     plugins: [
       new MiniCssExtractPlugin(),
       new webpack.DefinePlugin({
-        __VERSION__: JSON.stringify('1.0.0')
+        __VERSION__: JSON.stringify(PACKAGE.version)
       }),
       new webpack.BannerPlugin(BANNER),
       new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2)

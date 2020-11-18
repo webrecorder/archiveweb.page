@@ -5,6 +5,7 @@ import 'replaywebpage/src/coll';
 import 'replaywebpage/src/url-resources';
 import 'replaywebpage/src/story';
 import 'replaywebpage/src/replay';
+import 'replaywebpage/src/coll-index';
 
 import fasCircle from '@fortawesome/fontawesome-free/svgs/solid/circle.svg';
 
@@ -48,6 +49,10 @@ class ExtApp extends LitElement
     let data = await colldb.get("colls", MAIN_DB_KEY);
 
     if (!data) {
+      let baseUrl = new URL(window.location.href);
+      baseUrl.hash = "";
+      baseUrl = baseUrl.href;
+
       const data = {
         name: MAIN_DB_KEY,
         type: "archive",
@@ -55,7 +60,8 @@ class ExtApp extends LitElement
           dbname: MAIN_DB_KEY,
           decode: false,
           metadata: {"desc": "", "title": "My Web Archive"},
-          sourceUrl: this.sourceUrl
+          sourceUrl: this.sourceUrl,
+          extraConfig: {baseUrl}
         }
       }
 
@@ -203,7 +209,13 @@ class ExtApp extends LitElement
       </div>
     </div>
     ${this.inited ? html`
-    <wr-coll .editable="${true}" .loadInfo="${this.loadInfo}" sourceUrl="${this.sourceUrl}"></wr-coll>
+    <wr-coll
+      .editable="${true}"
+      .loadInfo="${this.loadInfo}"
+      appName="Webrecorder"
+      .appLogo="${wrLogo}"
+      sourceUrl="${this.sourceUrl}">
+    </wr-coll>
     ` : html`
     <p class="loader"></p>`}`;
   }

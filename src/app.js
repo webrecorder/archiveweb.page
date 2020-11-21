@@ -214,6 +214,7 @@ class ExtApp extends LitElement
       .loadInfo="${this.loadInfo}"
       appName="Webrecorder"
       .appLogo="${wrLogo}"
+      appHomeUrl="./index.html"
       sourceUrl="${this.sourceUrl}">
     </wr-coll>
     ` : html`

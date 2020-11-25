@@ -298,6 +298,10 @@ class Recorder {
         await this.updateHistory(sessions);
         break;
 
+      case "Page.windowOpen":
+        this.doAsyncFetchInBrowser({url: params.url}, sessions);
+        break;
+
       case "Debugger.paused":
         // only unpause for beforeunload event
         // could be paused for regular breakpoint if debugging via devtools
@@ -841,7 +845,7 @@ class Recorder {
     const expression = `
     (async (url) => {
       console.log("Async Fetching: " + url);
-      const resp = await fetch(url);
+      const resp = await fetch(url, {"redirect": "manual"});
       return resp.status;
     })("${request.url}");
     `;

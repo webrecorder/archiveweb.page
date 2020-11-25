@@ -1,6 +1,6 @@
 {
   "name": "webrecorder-extension",
-  "version": "0.3.8.1",
+  "version": "0.3.9",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/webrecorder-extension",
@@ -9,7 +9,7 @@
   "dependencies": {
     "@electron/remote": "^1.0.0",
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.3.0",
+    "@webrecorder/wabac": "^2.3.1",
     "bulma": "^0.9.1",
     "flexsearch": "^0.6.32",
     "http-status-codes": "^1.4.0",

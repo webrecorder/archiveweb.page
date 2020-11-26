@@ -1,6 +1,6 @@
 {
   "name": "webrecorder-extension",
-  "version": "0.3.9",
+  "version": "0.3.9.4",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/webrecorder-extension",

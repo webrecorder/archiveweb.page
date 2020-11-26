@@ -111,8 +111,7 @@ class BrowserRecorder extends Recorder {
           this.failureMsg = chrome.runtime.lastError.message;
           reject(chrome.runtime.lastError.message);
 
-          // allow for retry, don't display error yet
-          if (this.failureMsg !== "Cannot attach to this target.") {
+          if (this.failureMsg) {
             this.doUpdateStatus();
           }
           return;

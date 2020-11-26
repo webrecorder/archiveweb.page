@@ -102,18 +102,23 @@ chrome.tabs.onCreated.addListener((tab) => {
 // ===========================================================================
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (tabId && self.recorders[tabId]) {
-    if (self.recorders[tabId].waitForTabUpdate) {
+    const recorder = self.recorders[tabId];
+    if (changeInfo.url) {
+      recorder.failureMsg = null;
+    }
+
+    if (recorder.waitForTabUpdate) {
       if (isValidUrl(changeInfo.url)) {
-        self.recorders[tabId].attach();
+        recorder.attach();
       } else {
-        self.recorders[tabId].waitForTabUpdate = false;
+        recorder.waitForTabUpdate = false;
         delete self.recorders[tabId];
         return;
       }
     }
 
-    if (self.recorders[tabId].running && changeInfo.favIconUrl) {
-      self.recorders[tabId].loadFavIcon(changeInfo.favIconUrl);
+    if (recorder.running && changeInfo.favIconUrl) {
+      recorder.loadFavIcon(changeInfo.favIconUrl);
     }
   }
 });
@@ -163,19 +168,21 @@ async function startRecorder(tabId, opts) {
 async function doStartWithRetry(tabId, port) {
   const err = await startRecorder(tabId, {port});
 
-  if (err !== "Cannot attach to this target.") {
-    return;
-  }
+  return err;
 
-  chrome.tabs.get(tabId, (tab) => {
-    if (tab && tab.url) {
-      // attempt navigating to about:blank and then reloading
-      self.recorders[tabId].openUrl = tab.url;
-      self.recorders[tabId].waitForTabUpdate = true;
+  // if (err) { !== "Cannot attach to this target.") {
+  //   return;
+  // }
 
-      chrome.tabs.update(tabId, {url: "about:blank"});
-    }
-  });
+  // chrome.tabs.get(tabId, (tab) => {
+  //   if (tab && tab.url) {
+  //     // attempt navigating to about:blank and then reloading
+  //     self.recorders[tabId].openUrl = tab.url;
+  //     self.recorders[tabId].waitForTabUpdate = true;
+
+  //     chrome.tabs.update(tabId, {url: "about:blank"});
+  //   }
+  // });
 }
 
 // ===========================================================================

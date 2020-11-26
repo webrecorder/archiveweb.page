@@ -1143,7 +1143,7 @@ const o=new WeakMap,s=Object(n.d)(e=>t=>{if(!(t instanceof n.a)||t instanceof n.
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.3.9"})</span>
+                <span class="menu-version">(${"0.3.9.4"})</span>
               </a>
             </div>
           </div>

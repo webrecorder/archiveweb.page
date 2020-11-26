@@ -164,10 +164,12 @@ class RequestResponseInfo
     }
 
     if (this.postData) {
+      const requestMime = (reqHeaders.headers.get("content-type") || "").split(";")[0];
+
       if (this.method === "POST") {
         let query = null;
 
-        switch (mime) {
+        switch (requestMime) {
           case "application/x-www-form-urlencoded":
             query = this.postData;
             break;

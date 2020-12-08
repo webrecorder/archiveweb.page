@@ -1,5 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
-import { wrapCss, rwpLogo, clickOnSpacebarPress } from 'replaywebpage/src/misc';
+import { LitElement, html, css, wrapCss, rwpLogo, clickOnSpacebarPress } from 'replaywebpage/src/misc';
 
 import fasRefresh from '@fortawesome/fontawesome-free/svgs/solid/redo-alt.svg';
 import fasFullscreen from '@fortawesome/fontawesome-free/svgs/solid/desktop.svg';
@@ -9,7 +8,7 @@ import fasLeft from '@fortawesome/fontawesome-free/svgs/solid/arrow-left.svg';
 import fasRight from '@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg';
 import fasMenuV from '@fortawesome/fontawesome-free/svgs/solid/ellipsis-v.svg';
 
-import wrLogo from '../assets/wr-logo.svg';
+import wrLogo from '../../assets/wr-logo.svg';
 
 //import { ipcRenderer } from 'electron';
 import { webContents } from '@electron/remote';

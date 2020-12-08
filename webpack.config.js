@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExtensionReloader  = require('webpack-extension-reloader');
 const GenerateJsonPlugin = require('generate-json-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const PACKAGE = require("./package.json");
 
@@ -11,7 +12,7 @@ const WEBVIEW_PRELOAD_PATH = path.join(__dirname, 'src', 'webview-preload.js');
 
 const BANNER = '[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3.';
 
-const manifest = require("./src/manifest.json");
+const manifest = require("./src/ext/manifest.json");
 
 const moduleSettings =  {
   rules: [
@@ -35,7 +36,7 @@ const electronMainConfig = (env, argv) => {
     target: 'electron-main',
     mode: 'production',
     entry: {
-      'electron': './src/electron-rec-main.js',
+      'electron': './src/electron/electron-rec-main.js',
     },
     output: {
       path: path.join(__dirname, 'dist'),
@@ -67,7 +68,7 @@ const electronPreloadConfig = (env, argv) => {
     target: 'electron-preload',
     mode: 'production',
     entry: {
-      'preload': './src/electron-rec-preload.js',
+      'preload': './src/electron/electron-rec-preload.js',
     },
     output: {
       path: path.join(__dirname, 'dist'),
@@ -81,7 +82,7 @@ const electronRendererConfig = (env, argv) => {
     mode: 'production',
     target: "electron-renderer",
     entry: {
-      'locationbar': './src/locationbar.js',
+      'locationbar': './src/electron/locationbar.js',
     },
 
     output: {
@@ -119,9 +120,9 @@ const extensionConfig = (env, argv) => {
     mode: 'production',
     target: "web",
     entry: {
-      'bg': './src/bg.js',
+      'bg': './src/ext/bg.js',
       'app': './src/app.js',
-      'popup': './src/popup.js',
+      'popup': './src/ext/popup.js',
       'sw': '@webrecorder/wabac/src/sw.js'
     },
     output: {
@@ -139,7 +140,16 @@ const extensionConfig = (env, argv) => {
         __VERSION__: JSON.stringify(PACKAGE.version)
       }),
       new webpack.BannerPlugin(BANNER),
-      new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2)
+      new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2),
+      new webpack.DefinePlugin({
+        __SW_NAME__: JSON.stringify("sw.js"),
+        __IPFS_CORE_URL__: JSON.stringify("/ipfs-core.min.js")
+      }),
+      new CopyPlugin({
+        patterns: [
+          { from: 'node_modules/ipfs-core/dist/index.min.js', to: 'ipfs-core.min.js' },
+        ]
+      })
     ],
 
     module: moduleSettings,

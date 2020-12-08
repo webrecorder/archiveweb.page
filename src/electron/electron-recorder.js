@@ -1,4 +1,4 @@
-import { Recorder } from './recorder';
+import { Recorder } from '../recorder';
 
 const DEBUG = false;
 
@@ -7,7 +7,7 @@ const DEBUG = false;
 class ElectronRecorder extends Recorder
 {
   constructor(webContents, mainWC) {
-    super(__WEBVIEW_PRELOAD_PATH__);
+    super();
     this.mainWC = mainWC;
 
     this.webContents = webContents;

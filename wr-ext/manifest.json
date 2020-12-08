@@ -1,7 +1,7 @@
 {
-  "name": "Webrecorder",
-  "description": "Webrecorder",
-  "version": "0.3.9.4",
+  "name": "Webrecorder ArchiveWeb.page",
+  "description": "Create high-fidelity web archives directly in your browser",
+  "version": "0.4.0",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
     "debugger",
@@ -25,12 +25,13 @@
     "default_icon": {
       "32": "icon.png"
     },
-    "default_title": "Webrecorder",
+    "default_title": "Webrecorder ArchiveWeb.page",
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
     "pdf.min.js",
     "pdf.worker.min.js",
+    "ipfs-core.min.js",
     "replay/*"
   ],
   "manifest_version": 2

@@ -2,16 +2,56 @@
 
 import { BrowserRecorder } from './browser-recorder';
 
+import { ArchiveDB } from '@webrecorder/wabac/src/archivedb';
+import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
+
 
 // ===========================================================================
 self.recorders = {};
 self.newRecId = null;
+
+let collLoader = null;
+
+let newRecUrl = null;
+let newRecCollId = null;
+// ===========================================================================
+
 
 function main() {
   chrome.browserAction.setBadgeBackgroundColor({color: "#64e986"});
 
   chrome.contextMenus.create({"id": "toggle-rec", "title": "Start Recording", "contexts": ["browser_action"]});
   chrome.contextMenus.create({"id": "view-rec", "title": "View Recordings", "contexts": ["all"]});
+
+  collLoader = new CollectionLoader();
+  ensureDefaultColl();
+}
+
+async function ensureDefaultColl()
+{
+  let colls = await collLoader.listAll();
+
+  if (!colls.length) {
+    const metadata = {"title": "My Web Archive"};
+    const result = await collLoader.initNewColl(metadata);
+
+    localStorage.setItem("defaultCollId", result.name);
+
+    colls = [result];
+
+  } else {
+    const defaultId = localStorage.getItem("defaultCollId");
+
+    for (const coll of colls) {
+      if (coll.name === defaultId) {
+        return colls;
+      }
+    }
+
+    localStorage.setItem("defaultCollId", colls[0].name);
+  }
+
+  return colls;
 }
 
 chrome.runtime.onConnect.addListener((port) => {
@@ -26,6 +66,14 @@ chrome.runtime.onConnect.addListener((port) => {
   let tabId = null;
 
   port.onMessage.addListener(async (message) => {
+    async function listAll() {
+      const colls = await ensureDefaultColl();
+      const msg = {type: "collections"};
+      msg.collId = localStorage.getItem("defaultCollId");
+      msg.collections = colls.map(coll => ({id: coll.name, title: coll.config.metadata.title}));
+      port.postMessage(msg);
+    }
+
     switch (message.type) {
       case "startUpdates":
         tabId = message.tabId;
@@ -33,14 +81,22 @@ chrome.runtime.onConnect.addListener((port) => {
           self.recorders[tabId].port = port;
           self.recorders[tabId].doUpdateStatus();
         }
+        listAll();
         break;
 
       case "startRecording":
-        doStartWithRetry(tabId, port);
+        startRecorder(tabId, {collId: message.collId, port});
         break;
 
       case "stopRecording":
         stopRecorder(tabId);
+        break;
+
+      case "newColl":
+        collLoader.initNewColl({title: message.title}).then((newColl) => {
+          localStorage.setItem("defaultCollId", newColl.name);
+          listAll();
+        });
         break;
     }
   });
@@ -70,14 +126,19 @@ chrome.tabs.onCreated.addListener((tab) => {
   let openUrl = null;
   let start = false;
   let waitForTabUpdate = true;
+  let collId = null;
 
   // start recording from extension in new tab use case
-  if (self.newRecUrl && tab.pendingUrl === "about:blank") {
+  if (newRecUrl && tab.pendingUrl === "about:blank") {
     start = true;
-    openUrl = self.newRecUrl;
-    self.newRecUrl = null;
+    openUrl = newRecUrl;
+    collId = newRecCollId || localStorage.getItem("defaultCollId");
+    newRecUrl = null;
+    newRecCollId = null;
   } else if (tab.openerTabId && (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
              self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
+    collId = self.recorders[tab.openerTabId].collId;
+
     start = true;
     if (tab.pendingUrl) {
       waitForTabUpdate = false;
@@ -89,7 +150,7 @@ chrome.tabs.onCreated.addListener((tab) => {
     if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    startRecorder(tab.id, {waitForTabUpdate, openUrl}).then((err) => {
+    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl}).then((err) => {
       // open in new tab from extension
       // if (err && openUrl) {
       //   console.log("retry new tab attach");
@@ -124,6 +185,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 // ===========================================================================
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  delete self.recorders[tabId];
+  localStorage.removeItem(`${tabId}-collId`);
+});
+
+// ===========================================================================
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   switch (info.menuItemId) {
     case "view-rec":
@@ -145,9 +212,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 // ===========================================================================
 async function startRecorder(tabId, opts) {
   if (!self.recorders[tabId]) {
-    self.recorders[tabId] = new BrowserRecorder({"tabId": tabId}, opts);
-  } else {
-    //console.log('Resuming Recording on: ' + tabId);
+    opts.collLoader = collLoader;
+    self.recorders[tabId] = new BrowserRecorder({tabId}, opts);
   }
 
   let err = null;
@@ -156,6 +222,7 @@ async function startRecorder(tabId, opts) {
 
   if (!waitForTabUpdate && !self.recorders[tabId].running) {
     try {
+      self.recorders[tabId].setCollId(opts.collId);
       await self.recorders[tabId].attach();
     } catch(e) {
       console.warn(e);
@@ -163,26 +230,6 @@ async function startRecorder(tabId, opts) {
     }
     return err;
   }
-}
-
-async function doStartWithRetry(tabId, port) {
-  const err = await startRecorder(tabId, {port});
-
-  return err;
-
-  // if (err) { !== "Cannot attach to this target.") {
-  //   return;
-  // }
-
-  // chrome.tabs.get(tabId, (tab) => {
-  //   if (tab && tab.url) {
-  //     // attempt navigating to about:blank and then reloading
-  //     self.recorders[tabId].openUrl = tab.url;
-  //     self.recorders[tabId].waitForTabUpdate = true;
-
-  //     chrome.tabs.update(tabId, {url: "about:blank"});
-  //   }
-  // });
 }
 
 // ===========================================================================
@@ -237,9 +284,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       break;
 
     case "startNew":
-      //console.log(sender.tab.id);
-      //self.newRecId = sender.tab.id;
-      self.newRecUrl = message.url;
+      newRecUrl = message.url;
+      newRecCollId = message.collId;
       chrome.tabs.create({url: "about:blank"});
       break;
     }

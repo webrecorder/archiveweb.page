@@ -1,0 +1,21 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <defs>
+  <linearGradient spreadMethod="pad" y2="0" x2="1" y1="0" x1="0" id="svg_6">
+   <stop offset="0" stop-opacity="1.0" stop-color="#4876ff"/>
+   <stop offset="1" stop-opacity="1.0" stop-color="#04cdff"/>
+  </linearGradient>
+  <linearGradient y2="0" x2="1" y1="0" x1="0" id="svg_7">
+   <stop offset="0" stop-opacity="1.0" stop-color="#4876ff"/>
+   <stop offset="1" stop-opacity="1.0" stop-color="#04cdff"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <ellipse stroke="url(#svg_7)" ry="24.37472" rx="24.37472" id="svg_3" cy="32" cx="32" stroke-width="1.5" fill="url(#svg_6)"/>
+ </g>
+</svg>

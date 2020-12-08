@@ -1,35 +1,28 @@
 "use strict";
 
-import { Recorder }  from './recorder';
-
-import { ArchiveDB } from '@webrecorder/wabac/src/archivedb';
-import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
-
-
-const MAIN_DB_KEY = "main.archive";
+import { Recorder }  from '../recorder';
 
 
 // ===========================================================================
 const DEBUG = false;
-
-const CONTENT_SCRIPT_URL = chrome.runtime.getURL("content.js");
 
 const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 
 // ===========================================================================
 class BrowserRecorder extends Recorder {
-  constructor(debuggee, {waitForTabUpdate = false, openUrl = null, port = null}) {
-    super(CONTENT_SCRIPT_URL);
+  constructor(debuggee, {collId, collLoader, waitForTabUpdate = false, openUrl = null, port = null}) {
+    super();
+
     this.openUrl = openUrl;
     this.waitForTabUpdate = waitForTabUpdate;
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
 
-    this.port = port;
+    this.collLoader = collLoader;
+    this.setCollId(collId);
 
-    this.db = new ArchiveDB(MAIN_DB_KEY);
-    this.colldb = new CollectionLoader();
+    this.port = port;
 
     this._onDetached = (tab, reason) => {
       if (tab && this.tabId !== tab.tabId) {
@@ -59,6 +52,14 @@ class BrowserRecorder extends Recorder {
           console.log(params);
         }
       }
+    }
+  }
+
+  setCollId(collId) {
+    if (collId !== this.collId) {
+      this.collId = collId;
+      this.db = null;
+      this._initDB = this.collLoader.loadColl(this.collId);
     }
   }
 
@@ -92,7 +93,7 @@ class BrowserRecorder extends Recorder {
     this.doUpdateStatus();
   }
 
-  _doAttach() {
+  async _doAttach() {
     this.waitForTabUpdate = false;
 
     chrome.debugger.onDetach.addListener(this._onDetached);
@@ -105,35 +106,43 @@ class BrowserRecorder extends Recorder {
       chrome.braveWebrecorder.showInfoBar(this.tabId);
     }
 
-    return new Promise((resolve, reject) => {
-      chrome.debugger.attach(this.debuggee, '1.3', async () => {
-        if (chrome.runtime.lastError) {
-          this.failureMsg = chrome.runtime.lastError.message;
-          reject(chrome.runtime.lastError.message);
+    const coll = await this._initDB;
+    if (!coll) {
+      throw new Error("Collection Not Found");
+    }
 
-          if (this.failureMsg) {
-            this.doUpdateStatus();
+    this.db = coll.store;
+
+    try {
+      await new Promise((resolve, reject) => {
+        chrome.debugger.attach(this.debuggee, '1.3', async () => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError.message);
           }
-          return;
-        }
-
-        await this.start();
-        this.failureMsg = null;
-
-        let expression;
-
-        if (this.openUrl) {
-          expression = `window.location.href = "${this.openUrl}";`;
-        } else {
-          expression = "window.location.reload()";
-        }
-    
-        await this.send("Runtime.evaluate", {expression});
-        this.doUpdateStatus();
-
-        resolve();
+          resolve();
+        });
       });
-    });
+
+      await this.start();
+      this.failureMsg = null;
+    
+      let expression;
+    
+      if (this.openUrl) {
+        expression = `window.location.href = "${this.openUrl}";`;
+      } else {
+        expression = "window.location.reload()";
+      }
+    
+      await this.send("Runtime.evaluate", {expression});
+
+      this.doUpdateStatus();
+
+    } catch (msg) {
+      this.failureMsg = chrome.runtime.lastError.message;
+      this.doUpdateStatus();
+      throw msg;
+    }
   }
 
   doUpdateStatus() {
@@ -166,7 +175,9 @@ class BrowserRecorder extends Recorder {
     chrome.browserAction.setBadgeText({text, tabId});
 
     if (this.port) {
-      this.port.postMessage(this.getStatusMsg());
+      const status = this.getStatusMsg();
+      status.collId = this.collId;
+      this.port.postMessage(status);
     }
   }
 
@@ -222,7 +233,7 @@ class BrowserRecorder extends Recorder {
     // increment size counter only if committed
     //incrArchiveSize('dedup', writtenSize);
     //incrArchiveSize('total', payloadSize);
-    this.colldb.updateSize(MAIN_DB_KEY, payloadSize, writtenSize);
+    this.collLoader.updateSize(this.collId, payloadSize, writtenSize);
 
     // increment page size
     await this._doAddPage(this.pageInfo);

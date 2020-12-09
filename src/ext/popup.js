@@ -41,6 +41,8 @@ class RecPopup extends LitElement
     this.failureMsg = null;
 
     this.collDrop = "";
+
+    this.extRoot = chrome.runtime.getURL("");
   }
 
   static get properties() {
@@ -276,6 +278,15 @@ class RecPopup extends LitElement
     }
 
     if (!this.canRecord) {
+      if (this.pageUrl && this.pageUrl.startsWith(this.extRoot)) {
+        return html`
+          <p class="is-size-7">This page is part of the extension. You can view existing archives from here.
+          To start a new recording, click the
+          "<svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(wrRec)}</g></svg>" button and enter a new URL.
+          </p>
+        `;
+      }
+
       return html`<i>Can't record this page.</i>`;
     }
 

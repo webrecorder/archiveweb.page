@@ -10,6 +10,8 @@ const PACKAGE = require("./package.json");
 //const WEBVIEW_PRELOAD_PATH = "file:webview-preload.js";
 const WEBVIEW_PRELOAD_PATH = path.join(__dirname, 'src', 'webview-preload.js');
 
+const IPFS_CORE_URL = "/ipfs-core.min.js";
+
 const BANNER = '[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3.';
 
 const manifest = require("./src/ext/manifest.json");
@@ -74,6 +76,13 @@ const electronPreloadConfig = (env, argv) => {
       path: path.join(__dirname, 'dist'),
       filename: '[name].js'
     },
+    plugins: [
+      // this needs to be defined, but not actually used, as electron app uses
+      // ipfs-core from node
+      new webpack.DefinePlugin({
+        __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL)
+      }),
+    ]
   }
 };
 
@@ -143,7 +152,7 @@ const extensionConfig = (env, argv) => {
       new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2),
       new webpack.DefinePlugin({
         __SW_NAME__: JSON.stringify("sw.js"),
-        __IPFS_CORE_URL__: JSON.stringify("/ipfs-core.min.js")
+        __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL)
       }),
       new CopyPlugin({
         patterns: [

@@ -16,6 +16,7 @@ import { ReplayWebApp } from 'replaywebpage/src/appmain';
 import { WrColl } from 'replaywebpage/src/coll';
 
 import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
+import fasDownload from '@fortawesome/fontawesome-free/svgs/solid/download.svg';
 import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
 import fasShare from '@fortawesome/fontawesome-free/svgs/solid/share.svg';
 import fasReshare from '@fortawesome/fontawesome-free/svgs/solid/retweet.svg';
@@ -219,56 +220,98 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderStartModal() {
     return html`
-    <div class="recorder modal is-active">
-      <div class="modal-background" @click="${(e) => this.recordShown = false}"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title is-3">Start Recording</p>
-          <button class="delete" aria-label="close" @click="${(e) => this.recordShown = false}"></button>
-        </header>
-        <section class="modal-card-body" @click="${(e) => this.showCollDrop = false}">
-
-          <div class="dropdown-row">
-            <span>Archive To:&nbsp;</span>
-            <div class="dropdown ${this.showCollDrop ? 'is-active' : ''}">
-              <div class="dropdown-trigger">
-                <button @click="${this.onShowDrop}" class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
-                  <span>${this.selCollTitle}</span>
-                  <span class="icon">
-                    <fa-icon .svg=${fasCaretDown}></fa-icon>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  ${this.colls.map((coll) => html`
-                    <a @click=${this.onSelectColl} data-title="${coll.title}" data-id="${coll.id}" class="dropdown-item">${coll.title}</a>
-                  `)}
-                </div>
-              </div>
+    <wr-modal @modal-closed="${(e) => this.recordShown = false}" title="Start Recording">
+      <div class="dropdown-row">
+        <span>Archive To:&nbsp;</span>
+        <div class="dropdown ${this.showCollDrop ? 'is-active' : ''}">
+          <div class="dropdown-trigger">
+            <button @click="${this.onShowDrop}" class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
+              <span>${this.selCollTitle}</span>
+              <span class="icon">
+                <fa-icon .svg=${fasCaretDown}></fa-icon>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              ${this.colls.map((coll) => html`
+                <a @click=${this.onSelectColl} data-title="${coll.title}" data-id="${coll.id}" class="dropdown-item">${coll.title}</a>
+              `)}
             </div>
           </div>
-
-          <form class="is-flex" @submit="${this.onStartRecord}">
-            <div class="field has-addons">
-              <p class="control is-expanded">
-                <input class="input" type="url" required
-                name="url" id="url" value="https://example.com/"
-                placeholder="Enter a URL to Start Recording">
-              </p>
-              <div class="control">
-                <button type="submit" class="button is-hidden-mobile is-outlined is-link">
-                  <span class="icon">
-                    <fa-icon size="1.0em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
-                  </span>
-                  <span>Go!</span>
-                </button>
-              </div>
-            </div>
-          </form>
-        </section>
+        </div>
       </div>
-    </div>`;
+
+      <form class="is-flex" @submit="${this.onStartRecord}">
+        <div class="field has-addons">
+          <p class="control is-expanded">
+            <input class="input" type="url" required
+            name="url" id="url" value="https://example.com/"
+            placeholder="Enter a URL to Start Recording">
+          </p>
+          <div class="control">
+            <button type="submit" class="button is-hidden-mobile is-outlined is-link">
+              <span class="icon">
+                <fa-icon size="1.0em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+              </span>
+              <span>Go!</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </wr-modal>`;
+  }
+
+  renderAbout() {
+    return html`
+      <div class="modal is-active">
+        <div class="modal-background" @click="${this.onAboutClose}"></div>
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">About ArchiveWeb.page ${IS_APP ? 'App' : 'Extension'}</p>
+              <button class="delete" aria-label="close" @click="${this.onAboutClose}"></button>
+            </header>
+            <section class="modal-card-body">
+              <div class="container">
+                <div class="content">
+                  <div style="display: flex">
+                    <div class="has-text-centered" style="width: 220px">
+                      <fa-icon class="logo" size="48px" .svg="${wrLogo}"></fa-icon>
+                      <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? 'App' : 'Extension'} v${__VERSION__}</div>
+                    </div>
+
+                    ${IS_APP ? html`
+                    <p>ArchiveWeb.page App is a standalone app for Mac, Windows and Linux that allows users to create web archives as they browse</p>
+
+                    ` : html`
+                    <p>ArchiveWeb.page allows users to create web archives directly in your browser!</p>`}
+                  </div>
+
+                  <p>Full source code is available at:
+                    <a href="https://github.com/webrecorder/archiveweb.page" target="_blank">https://github.com/webrecorder/archiveweb.page</a>
+                  </p>
+
+                  <p>ArchiveWeb.page is part of the <a href="https://webrecorder.net/" target="_blank">Webrecorder Project</a>.</p>
+                  <p>This project is still in beta and some features may not work yet.</p>
+
+                  <h4>Disclaimer of Warranties</h4>
+                  <p>The application is provided "as is" without any guarantees.</p>
+                  <details>
+                    <summary>Legalese:</summary>
+                    <p style="font-size: 0.8rem">DISCLAIMER OF SOFTWARE WARRANTY. WEBRECORDER SOFTWARE PROVIDES THIS SOFTWARE TO YOU "AS AVAILABLE"
+                    AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,
+                    INCLUDING WITHOUT LIMITATION ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+                  </details>
+
+                  <div class="has-text-centered">
+                    <a class="button is-warning" href="#" @click="${this.onAboutClose}">Close</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>`;
   }
 
   async onShowDrop(event) {
@@ -363,8 +406,76 @@ class WrRecColl extends WrColl
 //============================================================================
 class WrRecCollIndex extends WrCollIndex
 {
+  constructor() {
+    super();
+    this.deleteConfirm = null;
+  }
+
+  static get properties() {
+    return {
+      ...WrCollIndex.properties,
+
+      deleteConfirm: { type: Object }
+    }
+  }
+
   renderCollInfo(coll) {
     return html`<wr-rec-coll-info .coll=${coll}></wr-rec-coll-info>`;
+  }
+
+  render() {
+    return html`
+    ${super.render()}
+    ${this.renderDeleteConfirm()}
+    `;
+  }
+
+  renderDeleteConfirm() {
+    if (!this.deleteConfirm) {
+      return null;
+    }
+
+    return html`
+    <wr-modal bgClass="has-background-grey-lighter" @modal-closed="${(e) => this.deleteConfirm = null}" title="Confirm Delete">
+      <p>Are you sure you want to permanentely delete the archive <b>${this.deleteConfirm.title}</b>
+      (Size: <b>${prettyBytes(this.deleteConfirm.size)}</b>)</p>
+      <button @click="${this.doDelete}"class="button is-danger">Delete</button>
+      <button @click="${(e) => this.deleteConfirm = null}" class="button">Cancel</button>
+    </wr-modal>`;
+  }
+
+  onDeleteColl(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.sortedColls) {
+      return;
+    }
+
+    const index = Number(event.currentTarget.getAttribute("data-coll-index"));
+
+    this.deleteConfirm = this.sortedColls[index];
+  }
+
+  async doDelete() {
+    if (!this.deleteConfirm) {
+      return;
+    }
+
+    this._deleting[this.deleteConfirm.sourceUrl] = true;
+    this.requestUpdate();
+
+    const resp = await fetch(`./wabac/api/${this.deleteConfirm.id}`, {method: 'DELETE'});
+    if (resp.status === 200) {
+      const json = await resp.json();
+      this.colls = json.colls;
+    }
+
+    this.deleteConfirm = null;
+  }
+
+  renderEmpty() {
+    return html`No Archives. Click "Create New" above to create a new archive and start recording!`;
   }
 }
 
@@ -375,6 +486,7 @@ class WrRecCollInfo extends LitElement
     super();
     this.detailed = false;
     this.ipfsURL = null;
+    this.shareWait = false;
   }
 
   static get properties() {
@@ -382,6 +494,7 @@ class WrRecCollInfo extends LitElement
       coll: { type: Object },
       detailed: { type: Boolean },
       ipfsURL: { type: String },
+      shareWait: { type: Boolean }
     }
   }
 
@@ -417,10 +530,11 @@ class WrRecCollInfo extends LitElement
 
     .button-row {
       align-items: center;
+      flex-wrap: wrap;
     }
 
-    .button-row *:not(:first-child) {
-      margin-left: 0.5em;
+    .button-row *:not(:last-child) {
+      margin-right: 0.5em;
     }
     
     `);
@@ -450,24 +564,30 @@ class WrRecCollInfo extends LitElement
           <p class="minihead">Title</p>
           <span class="subtitle has-text-weight-bold">
             ${detailed ? html`
-            ${coll.title || coll.filename}
+            ${coll.title}
             ` : html`
-            <a href="?source=${encodeURIComponent(coll.sourceUrl)}">${coll.title || coll.filename}</a>`}
+            <a href="?source=${encodeURIComponent(coll.sourceUrl)}">${coll.title}</a>`}
           </span>
         </div>
 
         <div class="column is-2"><p class="minihead">Date Created</p>${coll.ctime ? new Date(coll.ctime).toLocaleString() : ""}</div>
         
-        <div class="column is-2"><p class="minihead">Total Size</p>${prettyBytes(Number(coll.size || 0))}</div>
+        <div class="column is-1"><p class="minihead">Total Size</p>
+        ${prettyBytes(Number(coll.size || 0))}
+        </div>
 
-        <div class="column is-1">
-          <p class="minihead">Add to Archive</p>
+        <div class="column is-2">
+          <p class="minihead">Actions</p>
           <div class="button-row is-flex">
+            <button @click="${this.onDownload}" class="button is-small" title="Download">
+              <span class="icon is-small">
+                <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
+              </span>
+            </button>
             <button @click="${this.onShowStart}" class="button is-small" title="Start Recording...">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${wrRec}"></fa-icon>
               </span>
-              <span>Start...</span>
             </button>
           </div>
         </div>
@@ -475,30 +595,50 @@ class WrRecCollInfo extends LitElement
         <div class="column is-size-7">
           <p class="minihead">Sharing (via IPFS)</p>
           <div class="button-row is-flex">
-            ${!this.ipfsURL ? html`<i>Not Sharing</i>` : html`
+            ${this.ipfsURL ? html`
               <button @click="${this.onCopyLink}" class="button is-link is-light is-small">
                 <span class="icon is-small">
                   <fa-icon .svg="${fasShare}"></fa-icon>
                 </span>
                 <span>Copy Sharable Link</span>
               </button>
+
+              <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPin}">
+                <span class="icon is-small">
+                  <fa-icon .svg="${fasReshare}"></fa-icon>
+                </span>
+                <span>${!this.ipfsURL ? "Share" : "Reshare Latest"}</span>
+              </button>
+
+              <button class="button is-small" @click="${this.onUnpin}">
+                <span class="icon is-small">
+                  <fa-icon .svg="${fasX}"></fa-icon>
+                </span>
+                <span>Unshare</span>
+              </button>
+
+              `: html`
+            
+              <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPin}">
+                <span class="icon is-small">
+                  <fa-icon .svg="${fasShare}"></fa-icon>
+                </span>
+                <span>Start Sharing</span>
+              </button>
             `}
-            <button class="button is-small" @click="${this.onPin}">
-              <span class="icon is-small">
-                <fa-icon .svg="${!this.ipfsURL ? fasShare : fasReshare}"></fa-icon>
-              </span>
-              <span>${!this.ipfsURL ? "Share" : "Reshare Latest"}</span>
-            </button>
-            <button class="button is-small" ?disabled="${!this.ipfsURL}" @click="${this.onUnpin}">
-              <span class="icon is-small">
-                <fa-icon .svg="${fasX}"></fa-icon>
-              </span>
-              <span>Unshare</span>
-            </button>
           </div>
         </div>
       </div>
       `;
+  }
+
+  onDownload() {
+    const params = new URLSearchParams();
+    params.set("format", "wacz");
+    params.set("filename", this.coll.title);
+    params.set("pages", "all");
+
+    window.location.href = `/replay/wabac/api/${this.coll.id}/dl?` + params.toString();
   }
 
   onShowStart(event) {
@@ -508,26 +648,27 @@ class WrRecCollInfo extends LitElement
   }
 
   async onPin() {
+    this.shareWait = true;
     const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/pin`, {method: "POST"});
     const json = await resp.json();
     if (json.ipfsURL) {
       this.ipfsURL = json.ipfsURL;
     }
-    this.onCopyLink(event);
+    this.onCopyLink();
+    this.shareWait = false;
   }
 
   async onUnpin() {
+    this.shareWait = true;
     const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/unpin`, {method: "POST"});
     const json = await resp.json();
     if (json.removed) {
       this.ipfsURL = null;
     }
+    this.shareWait = false;
   }
 
-  onCopyLink(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
+  onCopyLink() {
     const params = new URLSearchParams();
     params.set("source", this.ipfsURL);
     const url = "https://replayweb.page/?" + params.toString();
@@ -535,6 +676,56 @@ class WrRecCollInfo extends LitElement
     navigator.clipboard.writeText(url);
   }
 }
+
+class WrModal extends LitElement
+{
+  constructor() {
+    super();
+    this.title = "";
+    this.bgClass = "";
+  }
+
+  static get properties() {
+    return {
+      title: { type: String },
+      bgClass: { type: String }
+    }
+  }
+
+  static get styles() {
+    return wrapCss(css`
+    .modal-background {
+      background-color: rgba(10, 10, 10, 0.50);
+    }
+
+    .modal-card-head {
+      background-color: var(--background, #97a1ff);
+    }
+    `);
+  }
+
+  render() {
+    return html`
+    <div class="modal is-active">
+      <div class="modal-background" @click="${this.onClose}"></div>
+      <div class="modal-card">
+        <header class="modal-card-head ${this.bgClass}">
+          <p class="modal-card-title is-3">${this.title}</p>
+          <button class="delete" aria-label="close" @click="${this.onClose}"></button>
+        </header>
+        <section class="modal-card-body">
+          <slot></slot>
+        </section>
+      </div>
+    </div>`;
+  }
+
+  onClose() {
+    this.dispatchEvent(new CustomEvent("modal-closed"));
+  }
+}
+
+customElements.define('wr-modal', WrModal);
 
 customElements.define('wr-rec-coll', WrRecColl);
 

@@ -10,21 +10,17 @@ import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 self.recorders = {};
 self.newRecId = null;
 
-let collLoader = null;
-
 let newRecUrl = null;
 let newRecCollId = null;
-// ===========================================================================
 
+const collLoader = new CollectionLoader();
+// ===========================================================================
 
 function main() {
   chrome.browserAction.setBadgeBackgroundColor({color: "#64e986"});
 
   chrome.contextMenus.create({"id": "toggle-rec", "title": "Start Recording", "contexts": ["browser_action"]});
   chrome.contextMenus.create({"id": "view-rec", "title": "View Recordings", "contexts": ["all"]});
-
-  collLoader = new CollectionLoader();
-  ensureDefaultColl();
 }
 
 async function ensureDefaultColl()
@@ -150,13 +146,7 @@ chrome.tabs.onCreated.addListener((tab) => {
     if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl}).then((err) => {
-      // open in new tab from extension
-      // if (err && openUrl) {
-      //   console.log("retry new tab attach");
-      //   setTimeout(() => {self.recorders[tab.id].attach()}, 200);
-      // }
-    });
+    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl});
   }
 });
 
@@ -293,3 +283,5 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
 // ===========================================================================
 chrome.runtime.onInstalled.addListener(main);
+
+ensureDefaultColl();

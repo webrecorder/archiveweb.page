@@ -184,30 +184,21 @@ class RecPopup extends LitElement
         flex: auto;
       }
 
-      .rec-row {
+      .status-row {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        border-bottom: 1px solid lightgrey;
       }
 
       .view-row {
         display: flex;
-        flex-direction: row-reverse;
+        flex-direction: row;
         justify-content: space-between;
         align-items: center;
         margin-top: 0.5em;
         font-size: 1.1em;
-      }
-
-      .coll-row {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        padding-bottom: 0.5em;
-        align-items: center;
-        border-bottom: 1px solid lightgrey;
-        justify-content: space-between;
       }
 
       .coll-select {
@@ -230,10 +221,13 @@ class RecPopup extends LitElement
       }
 
       .session-head {
-        margin-top: 1.0em;
-        margin-bottom: 0.5em;
         font-style: italic;
+      }
+
+      .underline {
+        margin-top: 1.0em;
         border-bottom: 1px gray solid;
+        margin-bottom: 0.5em;
       }
 
       .status th {
@@ -295,8 +289,8 @@ class RecPopup extends LitElement
 
   renderDropdown() {
     return html`
-    <div class="coll-select is-flex">
-      <span class="is-size-7">${this.recording ? "Archiving" : "Archive"} To:&nbsp;</span>
+    <div class="coll-select">
+      <div class="is-size-7">${this.recording ? "Recording" : "Record"} To:&nbsp;</div>
       <div class="dropdown ${this.collDrop === "show" ? 'is-active' : ''}">
         <div class="dropdown-trigger">
           <button @click="${this.onShowDrop}" class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
@@ -319,7 +313,6 @@ class RecPopup extends LitElement
           </div>
         </div>` : html``}
       </div>
-      <a target="_blank" href="${this.getCollPage()}" class="is-size-7">&nbsp;View</a>
     </div>
     `;
   }
@@ -330,38 +323,36 @@ class RecPopup extends LitElement
     }
 
     return html`
-    <form @submit="${this.onNewColl}">
-      <div class="flex-form">
-        <label for="new-name" class="is-size-7 is-italic">New Archive:</label>
-        <div class="control">
-          <input class="input is-small" id="new-name" type="text" required placeholder="Enter Archive Name">
+    <div class="view-row is-marginless" style="background-color: lightsteelblue">
+      <form @submit="${this.onNewColl}">
+        <div class="flex-form">
+          <label for="new-name" class="is-size-7 is-italic">Create New Archive:</label>
+          <div class="control">
+            <input class="input is-small" id="new-name" type="text" required placeholder="Enter Archive Name">
+          </div>
+          <button class="button is-small is-outlined" type="submit">
+            <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasCheck)}</g></svg>
+          </button>
+          <button @click="${(e) => this.collDrop = ""}" class="button is-small is-outlined" type="button">
+            <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasX)}</g></svg>
+          </button>
         </div>
-        <button class="button is-small is-outlined" type="submit">
-          <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasCheck)}</g></svg>
-        </button>
-        <button @click="${(e) => this.collDrop = ""}" class="button is-small is-outlined" type="button">
-          <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasX)}</g></svg>
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
     `;
   }
 
   render() { 
     return html`
       <div class="container">
-        <div class="coll-row">
-          ${this.renderDropdown()}
-          <a target="_blank" href="${this.getHomePage()}" class="is-size-7">View All</a>
-          ${this.renderCollCreate()}
-        </div>
-        <div class="rec-row">
+        <div class="status-row">
           <p class="rec-state">
           ${this.renderStatus()}
           </p>
         </div>
         <div class="view-row">
           ${this.canRecord ? html`
+          ${this.renderDropdown()}
           <button
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
             <span class="icon">
@@ -373,12 +364,21 @@ class RecPopup extends LitElement
           </button>
           ` : ``}
         </div>
-        <div class="view-row">
-          ${this.replayUrl ? 
-            html`<a target="_blank" href="${this.replayUrl}">View Recorded Page</a>` : ``}
+        ${this.renderCollCreate()}
+        <div class="view-row is-marginless">
+          <div>
+            ${this.canRecord ? html`
+            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-7">View this Archive</a></p>` : ``}
+            <p><a target="_blank" href="${this.getHomePage()}" class="is-size-7">View All Archives</a></p>
+          </div>
         </div>
+
         ${this.status && this.status.sizeTotal ? html`
-        <div class="session-head">Recorded in this tab</div>
+        <div class="view-row underline">
+          <div class="session-head">Recorded in this tab</div>
+          ${this.replayUrl ? 
+            html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>` : ``}
+        </div>
         <table class="status">
           <tr><td>New Size:</td><th>${prettyBytes(this.status.sizeNew)}</th></tr>
           <tr><td>Size:</td><th>${prettyBytes(this.status.sizeTotal)}</th></tr>

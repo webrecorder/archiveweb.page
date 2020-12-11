@@ -4,6 +4,7 @@ import { ElectronRecorder } from './electron-recorder';
 import { ElectronReplayApp, STATIC_PREFIX } from 'replaywebpage/src/electron-replay-app';
 
 import path from 'path';
+import { PassThrough } from 'stream';
 
 
 // ===========================================================================
@@ -33,8 +34,20 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     app.userAgentFallback = desktopUA;
 
-    ipcMain.on("start-rec", (event, url) => {
-      this.createRecordWindow(url);
+    ipcMain.on("start-rec", (event, url, collId) => {
+      this.createRecordWindow(url, collId);
+    });
+
+    ipcMain.on("start-ipfs", (event) => {
+      this.ipfsClient.initIPFS();
+    });
+
+    ipcMain.on("ipfs-pin", (event, reqId, filename) => {
+      this.ipfsPin(event, reqId, filename);
+    });
+
+    ipcMain.on("ipfs-unpin", (event, reqId, pinList) => {
+      this.ipfsUnpin(event, reqId, pinList);
     });
 
     require('@electron/remote/main').initialize();
@@ -43,11 +56,10 @@ class ElectronRecorderApp extends ElectronReplayApp
   }
 
   get mainWindowUrl() {
-    return "wr-ext/replay/index.html";
+    return "replay/index.html";
   }
 
-
-  createRecordWindow(url) {
+  createRecordWindow(url, collId = "") {
     console.log("start rec window: " + url);
 
     const recWindow = new BrowserWindow({
@@ -76,7 +88,7 @@ class ElectronRecorderApp extends ElectronReplayApp
     recWindow.setSize(this.screenSize.width, this.screenSize.height);
     recWindow.maximize();
 
-    const recorder = new ElectronRecorder(view.webContents, this.mainWindow.webContents);
+    const recorder = new ElectronRecorder(view.webContents, this.mainWindow.webContents, collId);
 
     recWindow.on('close', (event) => {
       console.log("closing...")
@@ -110,6 +122,34 @@ class ElectronRecorderApp extends ElectronReplayApp
     }).then(() => view.webContents.loadURL(url));
 
     return recWindow;
+  }
+
+  async ipfsPin(event, reqId, filename) {
+    let downloadStream = new PassThrough();
+
+    ipcMain.on(reqId, (event, data) => {
+      downloadStream.push(data);
+      if (!data) {
+        ipcMain.removeAllListeners(reqId);
+      }
+    });
+
+    await this.ipfsClient.initIPFS();
+
+    const data = await this.ipfsClient.addPin(filename, downloadStream);
+
+    console.log("ipfs added: " + data.url);
+
+    event.reply(reqId, data);
+  }
+
+  async ipfsUnpin(event, reqId, pinList) {
+    if (pinList && pinList.length) {
+      await this.ipfsClient.initIPFS();
+      await this.ipfsClient.rmAllPins(pinList);
+    }
+
+    event.reply(reqId);
   }
 }
 

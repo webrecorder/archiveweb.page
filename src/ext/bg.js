@@ -1,9 +1,8 @@
-
-
 import { BrowserRecorder } from './browser-recorder';
 
-import { ArchiveDB } from '@webrecorder/wabac/src/archivedb';
 import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
+
+import { ensureDefaultColl } from '../dbutils';
 
 
 // ===========================================================================
@@ -14,6 +13,7 @@ let newRecUrl = null;
 let newRecCollId = null;
 
 const collLoader = new CollectionLoader();
+
 // ===========================================================================
 
 function main() {
@@ -21,33 +21,6 @@ function main() {
 
   chrome.contextMenus.create({"id": "toggle-rec", "title": "Start Recording", "contexts": ["browser_action"]});
   chrome.contextMenus.create({"id": "view-rec", "title": "View Recordings", "contexts": ["all"]});
-}
-
-async function ensureDefaultColl()
-{
-  let colls = await collLoader.listAll();
-
-  if (!colls.length) {
-    const metadata = {"title": "My Web Archive"};
-    const result = await collLoader.initNewColl(metadata);
-
-    localStorage.setItem("defaultCollId", result.name);
-
-    colls = [result];
-
-  } else {
-    const defaultId = localStorage.getItem("defaultCollId");
-
-    for (const coll of colls) {
-      if (coll.name === defaultId) {
-        return colls;
-      }
-    }
-
-    localStorage.setItem("defaultCollId", colls[0].name);
-  }
-
-  return colls;
 }
 
 chrome.runtime.onConnect.addListener((port) => {
@@ -63,7 +36,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
   port.onMessage.addListener(async (message) => {
     async function listAll() {
-      const colls = await ensureDefaultColl();
+      const colls = await ensureDefaultColl(collLoader);
       const msg = {type: "collections"};
       msg.collId = localStorage.getItem("defaultCollId");
       msg.collections = colls.map(coll => ({id: coll.name, title: coll.config.metadata.title}));
@@ -284,4 +257,4 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 // ===========================================================================
 chrome.runtime.onInstalled.addListener(main);
 
-ensureDefaultColl();
+ensureDefaultColl(collLoader);

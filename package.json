@@ -1,6 +1,6 @@
 {
   "name": "archiveweb.page",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/webrecorder-extension",
@@ -9,7 +9,7 @@
   "dependencies": {
     "@electron/remote": "^1.0.0",
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.3.3",
+    "@webrecorder/wabac": "^2.3.6",
     "bulma": "^0.9.1",
     "flexsearch": "^0.6.32",
     "http-status-codes": "^1.4.0",
@@ -17,12 +17,14 @@
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "pretty-bytes": "^5.3.0",
-    "replaywebpage": "https://github.com/webrecorder/replayweb.page"
+    "replaywebpage": "^1.3.4"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^6.4.0",
     "css-loader": "^3.5.3",
     "electron": "^10.1.3",
+    "electron-builder": "^22.9.1",
+    "electron-notarize": "^1.0.0",
     "generate-json-webpack-plugin": "1.0.0",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.14.1",
@@ -39,6 +41,65 @@
     "build": "webpack --mode production",
     "build-dev": "webpack --mode development",
     "start-electron": "NODE_ENV=development electron ./dist/electron.js",
-    "start-ext": "NODE_ENV=development webpack --mode=development --watch"
+    "start-ext": "NODE_ENV=development webpack --mode=development --watch",
+    "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
+    "pack-signed": "electron-builder",
+    "dist": "yarn run build && yarn run pack",
+    "dist-dev": "yarn run build-dev && yarn run pack",
+    "release": "yarn run build && electron-builder"
+  },
+  "build": {
+    "afterSign": "build/notarize.js",
+    "productName": "ArchiveWeb.page",
+    "asar": true,
+    "appId": "net.webrecorder.archivewebpage",
+    "artifactName": "${productName}-${version}.${ext}",
+    "extraMetadata": {
+      "main": "dist/electron.js"
+    },
+    "files": [
+      "!**/node_modules/**/*",
+      "dist/*.js",
+      "dist/*.html",
+      "dist/prebuilds/${platform}-${arch}/*",
+      "dist/build/*",
+      "dist/replay/*"
+    ],
+    "dmg": {
+      "title": "ArchiveWeb.page"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "electronLanguages": [
+        "en"
+      ],
+      "extraResources": [
+        "plugins-mac"
+      ]
+    },
+    "linux": {
+      "category": "Archiving;Utility;",
+      "target": [
+        "AppImage"
+      ],
+      "extraResources": [
+        "plugins-linux"
+      ]
+    },
+    "win": {
+      "target": "portable",
+      "extraResources": [
+        "plugins-win"
+      ]
+    },
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    }
   }
 }

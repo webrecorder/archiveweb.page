@@ -4,7 +4,8 @@ import path from 'path';
 
 // ===========================================================================
 const recorderApp = new ElectronRecorderApp({
-  staticPath: path.join(__dirname, "../")
+  staticPath: path.join(__dirname, "./"),
+  profileName: "archivewebpage"
 });
 
 recorderApp.init();

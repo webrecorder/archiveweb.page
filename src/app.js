@@ -358,8 +358,8 @@ class ArchiveWebApp extends ReplayWebApp
         url,
         collId: this.selCollId,
       });
-    } else if (window.webrecorder && window.webrecorder.record) {
-      window.webrecorder.record(url);
+    } else if (window.archivewebpage && window.archivewebpage.record) {
+      window.archivewebpage.record(url, this.selCollId);
     }
     return false;
   }
@@ -641,7 +641,7 @@ class WrRecCollInfo extends LitElement
     window.location.href = `/replay/wabac/api/${this.coll.id}/dl?` + params.toString();
   }
 
-  onShowStart(event) {
+  onShowStart() {
     const coll = this.coll.id;
     const title = this.coll.title;
     this.dispatchEvent(new CustomEvent("show-start", {bubbles: true, composed: true, detail: {coll, title}}));
@@ -649,8 +649,14 @@ class WrRecCollInfo extends LitElement
 
   async onPin() {
     this.shareWait = true;
-    const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/pin`, {method: "POST"});
-    const json = await resp.json();
+    let json = null;
+
+    if (window.archivewebpage) {
+      json = await window.archivewebpage.ipfsPin(this.coll.id);
+    } else {
+      const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/pin`, {method: "POST"});
+      json = await resp.json();
+    }
     if (json.ipfsURL) {
       this.ipfsURL = json.ipfsURL;
     }
@@ -660,8 +666,15 @@ class WrRecCollInfo extends LitElement
 
   async onUnpin() {
     this.shareWait = true;
-    const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/unpin`, {method: "POST"});
-    const json = await resp.json();
+    let json = null;
+
+    if (window.archivewebpage) {
+      json = await window.archivewebpage.ipfsUnpin(this.coll.id);
+    } else {
+      const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/unpin`, {method: "POST"});
+      json = await resp.json();
+    } 
+
     if (json.removed) {
       this.ipfsURL = null;
     }

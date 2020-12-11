@@ -6,9 +6,10 @@ const DEBUG = false;
 // ===========================================================================
 class ElectronRecorder extends Recorder
 {
-  constructor(webContents, mainWC) {
+  constructor(webContents, mainWC, collId) {
     super();
     this.mainWC = mainWC;
+    this.collId = collId;
 
     this.webContents = webContents;
     this.debugger = webContents.debugger;
@@ -136,12 +137,12 @@ class ElectronRecorder extends Recorder
 
   async _doAddResource(data) {
     //TODO: get result if actually added
-    this.mainWC.send("add-resource", data, this.pageInfo);
+    this.mainWC.send("add-resource", data, this.pageInfo, this.collId);
     return 0;
   }
 
   _doAddPage(pageInfo) {
-    this.mainWC.send("add-page", this.pageInfo);
+    this.mainWC.send("add-page", this.pageInfo, this.collId);
   }
 
   _doSendCommand(method, params, promise) {

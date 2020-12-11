@@ -7,14 +7,12 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 const PACKAGE = require("./package.json");
 
-//const WEBVIEW_PRELOAD_PATH = "file:webview-preload.js";
-const WEBVIEW_PRELOAD_PATH = path.join(__dirname, 'src', 'webview-preload.js');
-
 const IPFS_CORE_URL = "/ipfs-core.min.js";
 
 const BANNER = '[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3.';
 
 const manifest = require("./src/ext/manifest.json");
+
 
 const moduleSettings =  {
   rules: [
@@ -40,6 +38,13 @@ const electronMainConfig = (env, argv) => {
     entry: {
       'electron': './src/electron/electron-rec-main.js',
     },
+    resolve: {
+      alias: {
+        "abort-controller": "abort-controller/dist/abort-controller.js",
+        "dlv": "dlv/dist/dlv.js",
+        "bignumber.js": "bignumber.js/bignumber.js"
+      }
+    },
     output: {
       path: path.join(__dirname, 'dist'),
       filename: '[name].js'
@@ -50,11 +55,16 @@ const electronMainConfig = (env, argv) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        __WEBVIEW_PRELOAD_PATH__: JSON.stringify(WEBVIEW_PRELOAD_PATH)
-      //  __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
-      //  __HELPER_PROXY__ : JSON.stringify(HELPER_PROXY)
+        __IPFS_CORE_URL__: JSON.stringify("")
       }),
       new webpack.BannerPlugin(BANNER),
+      new CopyPlugin({
+        patterns: [
+          { from: 'wr-ext/replay/', to: 'replay/' },
+          { from: 'node_modules/bcrypto/build/Release/bcrypto.node', to: 'build' },
+          { from: 'node_modules/leveldown/prebuilds/', to: 'prebuilds' },
+        ],
+      }),
     ],
     externals: {
       "bufferutil": "bufferutil",
@@ -80,7 +90,7 @@ const electronPreloadConfig = (env, argv) => {
       // this needs to be defined, but not actually used, as electron app uses
       // ipfs-core from node
       new webpack.DefinePlugin({
-        __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL)
+        __IPFS_CORE_URL__: JSON.stringify("")
       }),
     ]
   }
@@ -103,6 +113,11 @@ const electronRendererConfig = (env, argv) => {
 
     plugins: [
       new MiniCssExtractPlugin(),
+      new CopyPlugin({
+        patterns: [
+          { from: 'src/electron/locbar.html', to: '' },
+        ]
+      })
     ],
 
     module: moduleSettings,

@@ -1,23 +1,33 @@
 "use strict";
 
-import { ArchiveDB } from '@webrecorder/wabac/src/archivedb';
-import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
+import { ensureDefaultColl } from '../dbutils';
 
-import 'replaywebpage/src/electron-preload';
+import { loader, getColl, getDB } from 'replaywebpage/src/electron-preload';
+
+import { Downloader } from '@webrecorder/wabac/src/downloader';
 
 const { ipcRenderer, contextBridge } = require('electron');
 
-contextBridge.exposeInMainWorld('webrecorder', {"record": (url) => ipcRenderer.send("start-rec", url)});
 
-const MAIN_DB_KEY = "main.archive";
-const db = new ArchiveDB(MAIN_DB_KEY);
+// ===========================================================================
+contextBridge.exposeInMainWorld('archivewebpage', {
+  record: (url, collId) => {
+    ipcRenderer.send("start-rec", url, collId);
+  },
 
-const colldb = new CollectionLoader();
+  ipfsPin: (collId) => {
+    return handleIpfsPin(collId);
+  },
 
-console.log("preload");
+  ipfsUnpin: (collId) => {
+    return handleIpfsUnpin(collId);
+  },
+});
 
-ipcRenderer.on('add-resource', async (event, data, pageInfo) => {
-  await db.initing;
+
+// ===========================================================================
+ipcRenderer.on('add-resource', async (event, data, pageInfo, collId) => {
+  const db = await getDB(collId);
 
   let writtenSize = 0;
   const payloadSize = data.payload.length;
@@ -32,15 +42,114 @@ ipcRenderer.on('add-resource', async (event, data, pageInfo) => {
     return;
   }
 
-  //colldb.updateSize(MAIN_DB_KEY, payloadSize, writtenSize);
+  loader.updateSize(collId, payloadSize, writtenSize);
 
   // increment page size
   db.addPage(pageInfo);
 });
 
 
-ipcRenderer.on('add-page', async (event, pageInfo) => {
-  await db.initing;
+// ===========================================================================
+ipcRenderer.on('add-page', async (event, pageInfo, collId) => {
+  const db = await getDB(collId);
+
   db.addPage(pageInfo);
   console.log("add-page", pageInfo);
 });
+
+
+// ===========================================================================
+async function handleIpfsPin(collId) {
+  const reqId = "pin-" + collId + (100 * Math.random());
+
+  const coll = await getColl(collId);
+
+  const dl = new Downloader(coll.store, null, coll.name, coll.config.metadata);
+
+  // determine filename from title, if it exists
+  let filename = "webarchive.wacz";
+
+  if (coll.config.metadata.title) {
+    filename = coll.config.metadata.title.toLowerCase().replace(/\s/g, "-") + ".wacz";
+  }
+
+  ipcRenderer.send("ipfs-pin", reqId, filename);
+
+  const resp = await dl.downloadWACZ(filename);
+
+  const reader = resp.body.getReader();
+
+  const getHash = new Promise((resolve) => {
+    ipcRenderer.once(reqId, async (event, pinData) => {
+      if (!coll.config.metadata.ipfsPins) {
+        coll.config.metadata.ipfsPins = [];
+      }
+    
+      coll.config.metadata.ipfsPins.push(pinData);
+    
+      await loader.updateMetadata(collId, coll.config.metadata);
+
+      resolve({"ipfsURL": pinData.url});
+    });
+  });
+
+  let done = false;
+
+  while (!done) {
+    const res = await reader.read();
+    done = res.done;
+    if (res.value) {
+      ipcRenderer.send(reqId, res.value);
+    }
+  }
+
+  ipcRenderer.send(reqId, null);
+
+  return await getHash;
+}
+
+// ===========================================================================
+async function handleIpfsUnpin(collId) {
+  const reqId = "unpin-" + collId + (100 * Math.random());
+
+  const coll = await getColl(collId);
+
+  if (!coll.config.metadata.ipfsPins) {
+    return {"removed": true};
+  }
+
+  const removeHashes = new Promise((resolve) => {
+    ipcRenderer.once(reqId, async (event) => {
+      delete coll.config.metadata.ipfsPins;
+    
+      await loader.updateMetadata(collId, coll.config.metadata);
+
+      resolve({"removed": true});
+    });
+  });
+
+  ipcRenderer.send("ipfs-unpin", reqId, coll.config.metadata.ipfsPins);
+
+  return await removeHashes;
+}
+
+// ===========================================================================
+async function main()
+{
+  const colls = await ensureDefaultColl(loader);
+  let hasIpfs = false;
+
+  for (const coll of colls) {
+    if (coll.config.metadata.ipfsPins) {
+      hasIpfs = true;
+      break;
+    }
+  }
+
+  if (hasIpfs) {
+    ipcRenderer.send("start-ipfs");
+  }
+}
+
+// ===========================================================================
+main();

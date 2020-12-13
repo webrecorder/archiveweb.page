@@ -145,9 +145,9 @@ const extensionConfig = (env, argv) => {
     target: "web",
     entry: {
       'bg': './src/ext/bg.js',
-      'app': './src/app.js',
+      'ui': './src/ui.js',
       'popup': './src/ext/popup.js',
-      'sw': '@webrecorder/wabac/src/sw.js'
+      'sw': './src/sw/main.js'
     },
     output: {
       path: path.join(__dirname, 'wr-ext'),

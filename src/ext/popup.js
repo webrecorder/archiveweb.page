@@ -2,7 +2,9 @@ import { LitElement, html, css, unsafeCSS } from 'lit-element';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
 import bulma from 'bulma/bulma.sass';
 
+import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
 import fasBox from '@fortawesome/fontawesome-free/svgs/solid/square.svg';
+import fasHome from '@fortawesome/fontawesome-free/svgs/solid/home.svg';
 import fasCheck from '@fortawesome/fontawesome-free/svgs/solid/check.svg';
 import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
 import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
@@ -174,9 +176,15 @@ class RecPopup extends LitElement
         font-size: initial !important;
       }
 
-      button.button {
+      .button {
         height: 1.5em !important;
         background-color: aliceblue;
+      }
+
+      .smallest.button {
+        margin: 0.25em;
+        background-color: initial;
+        padding: 6px 12px;
       }
 
       .rec-state {
@@ -276,7 +284,7 @@ class RecPopup extends LitElement
         return html`
           <p class="is-size-7">This page is part of the extension. You can view existing archives from here.
           To start a new recording, click the
-          "<svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(wrRec)}</g></svg>" button and enter a new URL.
+          "<wr-icon .src="${wrRec}"></wr-icon>" button and enter a new URL.
           </p>
         `;
       }
@@ -296,20 +304,22 @@ class RecPopup extends LitElement
           <button @click="${this.onShowDrop}" class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
             <span>${this.collTitle}</span>
             <span class="icon is-small">
-              <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasCaretDown)}</g></svg>
+              <wr-icon .src="${fasCaretDown}"></wr-icon>
             </span>
           </button>
         </div>
         ${!this.recording ? html`
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
+            <a @click="${(e) => this.collDrop = "create"}" class="dropdown-item">
+              <span class="icon is-small">
+                <wr-icon .src="${fasPlus}"></wr-icon>
+              </span>Create New Archive...
+            </a>
+            <hr class="dropdown-divider">
             ${this.collections.map((coll) => html`
               <a @click=${this.onSelectColl} data-title="${coll.title}" data-id="${coll.id}" class="dropdown-item">${coll.title}</a>
             `)}
-            <hr class="dropdown-divider">
-            <a @click="${(e) => this.collDrop = "create"}" class="dropdown-item">
-              Create New Archive...
-            </a>
           </div>
         </div>` : html``}
       </div>
@@ -331,10 +341,10 @@ class RecPopup extends LitElement
             <input class="input is-small" id="new-name" type="text" required placeholder="Enter Archive Name">
           </div>
           <button class="button is-small is-outlined" type="submit">
-            <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasCheck)}</g></svg>
+            <wr-icon .src=${fasCheck}></wr-icon>
           </button>
           <button @click="${(e) => this.collDrop = ""}" class="button is-small is-outlined" type="button">
-            <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasX)}</g></svg>
+            <wr-icon .src=${fasX}></wr-icon>
           </button>
         </div>
       </form>
@@ -349,6 +359,11 @@ class RecPopup extends LitElement
           <p class="rec-state">
           ${this.renderStatus()}
           </p>
+          <a target="_blank" href="${this.getHomePage()}" class="smallest button is-small is-inverted">
+            <span class="icon is-small">
+              <wr-icon size="1.0em" title="Home - All Archives" .src="${fasHome}"></wr-icon>
+            </span>
+          </a>
         </div>
         <div class="view-row">
           ${this.canRecord ? html`
@@ -357,8 +372,8 @@ class RecPopup extends LitElement
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
             <span class="icon">
               ${!this.recording ? html`
-                <svg style="width: 1.5em; height: 1.5em"><g>${unsafeSVG(wrRec)}</g></svg>` : html`
-                <svg style="width: 0.9em; height: 0.9em"><g>${unsafeSVG(fasBox)}</g></svg>`}
+                <wr-icon .src=${wrRec}></wr-icon>` : html`
+                <wr-icon .src=${fasBox}></wr-icon>`}
             </span>
             <span>${!this.recording ? 'Start' : 'Stop'}</span>
           </button>
@@ -368,8 +383,7 @@ class RecPopup extends LitElement
         <div class="view-row is-marginless">
           <div>
             ${this.canRecord ? html`
-            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-7">View this Archive</a></p>` : ``}
-            <p><a target="_blank" href="${this.getHomePage()}" class="is-size-7">View All Archives</a></p>
+            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ``}
           </div>
         </div>
 
@@ -428,6 +442,29 @@ class RecPopup extends LitElement
   }
 }
 
+// ===========================================================================
+class WrIcon extends LitElement
+{
+  constructor() {
+    super();
+    this.size = "0.9em";
+  }
+
+  static get properties() {
+    return {
+      src: { type: Object },
+      size: { type: String }
+    }
+  }
+
+  render() {
+    return html`
+    <svg style="width: ${this.size}; height: ${this.size}"><g>${unsafeSVG(this.src)}</g></svg>
+    `;
+  }
+}
+
+customElements.define('wr-icon', WrIcon);
 customElements.define('wr-popup-viewer', RecPopup);
 
 export { RecPopup };

@@ -1,19 +1,9 @@
 import { LitElement, html, css, wrapCss, IS_APP, clickOnSpacebarPress } from 'replaywebpage/src/misc';
 
-import 'replaywebpage/src/pages';
-import 'replaywebpage/src/pageentry';
-import 'replaywebpage/src/sorter';
-import 'replaywebpage/src/url-resources';
-import 'replaywebpage/src/story';
-import 'replaywebpage/src/replay';
-
-import { WrCollIndex, WrCollInfo } from 'replaywebpage/src/coll-index';
+// replaywebpage imports
+import { ReplayWebApp, CollIndex, Coll, Embed, Loader } from 'replaywebpage';
 
 import prettyBytes from 'pretty-bytes';
-
-import { ReplayWebApp } from 'replaywebpage/src/appmain';
-
-import { WrColl } from 'replaywebpage/src/coll';
 
 import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
 import fasDownload from '@fortawesome/fontawesome-free/svgs/solid/download.svg';
@@ -367,7 +357,7 @@ class ArchiveWebApp extends ReplayWebApp
 
 
 //============================================================================
-class WrRecColl extends WrColl
+class WrRecColl extends Coll
 {
   renderExtraToolbar(isDropdown = false) {
     if (isDropdown) {
@@ -404,7 +394,7 @@ class WrRecColl extends WrColl
 }
 
 //============================================================================
-class WrRecCollIndex extends WrCollIndex
+class WrRecCollIndex extends CollIndex
 {
   constructor() {
     super();
@@ -413,14 +403,14 @@ class WrRecCollIndex extends WrCollIndex
 
   static get properties() {
     return {
-      ...WrCollIndex.properties,
+      ...CollIndex.properties,
 
       deleteConfirm: { type: Object }
     }
   }
 
   renderCollInfo(coll) {
-    return html`<wr-rec-coll-info .coll=${coll}></wr-rec-coll-info>`;
+    return html`<wr-rec-coll-info data-coll="${coll.id}" .coll=${coll}></wr-rec-coll-info>`;
   }
 
   render() {
@@ -465,10 +455,10 @@ class WrRecCollIndex extends WrCollIndex
     this._deleting[this.deleteConfirm.sourceUrl] = true;
     this.requestUpdate();
 
-    const resp = await fetch(`./wabac/api/${this.deleteConfirm.id}`, {method: 'DELETE'});
-    if (resp.status === 200) {
-      const json = await resp.json();
-      this.colls = json.colls;
+    const info = this.renderRoot.querySelector(`wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`);
+
+    if (info) {
+      await info.doDelete();
     }
 
     this.deleteConfirm = null;
@@ -649,14 +639,8 @@ class WrRecCollInfo extends LitElement
 
   async onPin() {
     this.shareWait = true;
-    let json = null;
+    const json = await this.ipfsApi(this.coll.id, true);
 
-    if (window.archivewebpage) {
-      json = await window.archivewebpage.ipfsPin(this.coll.id);
-    } else {
-      const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/pin`, {method: "POST"});
-      json = await resp.json();
-    }
     if (json.ipfsURL) {
       this.ipfsURL = json.ipfsURL;
     }
@@ -666,19 +650,32 @@ class WrRecCollInfo extends LitElement
 
   async onUnpin() {
     this.shareWait = true;
-    let json = null;
-
-    if (window.archivewebpage) {
-      json = await window.archivewebpage.ipfsUnpin(this.coll.id);
-    } else {
-      const resp = await fetch(`./wabac/api/${this.coll.id}/ipfs/unpin`, {method: "POST"});
-      json = await resp.json();
-    } 
+    const json = await this.ipfsApi(this.coll.id, false);
 
     if (json.removed) {
       this.ipfsURL = null;
     }
     this.shareWait = false;
+  }
+
+  ipfsApi(collId, pin) {
+    if (window.archivewebpage) {
+      return (pin ? 
+        window.archivewebpage.ipfsPin(this.coll.id) : 
+        window.archivewebpage.ipfsUnpin(this.coll.id));
+    }
+
+    // if (useSw) {
+    //   return fetch(`./wabac/api/${this.coll.id}/ipfs/${pin ? "pin" : "unpin"}`, {method: "POST"}).then(response => response.json());
+    // }
+
+    return new Promise((resolve) => {
+      const port = chrome.runtime.connect({name: "share-port"});
+      port.onMessage.addListener((message) => {
+        resolve(message);
+      });
+      port.postMessage({collId, pin});
+    });
   }
 
   onCopyLink() {
@@ -687,6 +684,18 @@ class WrRecCollInfo extends LitElement
     const url = "https://replayweb.page/?" + params.toString();
 
     navigator.clipboard.writeText(url);
+  }
+
+  async doDelete() {
+    const resp = await fetch(`./wabac/api/${this.coll.id}`, {method: 'DELETE'});
+    if (resp.status === 200) {
+      const json = await resp.json();
+      this.colls = json.colls;
+    }
+
+    if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
+      await this.ipfsApi(this.coll.id, false);
+    }
   }
 }
 
@@ -747,4 +756,6 @@ customElements.define('wr-rec-coll-info', WrRecCollInfo);
 
 customElements.define('archive-web-page-app', ArchiveWebApp);
 
-export { ArchiveWebApp };
+//customElements.define("wr-loader", Loader);
+
+export { ArchiveWebApp, Loader, Embed };

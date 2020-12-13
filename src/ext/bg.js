@@ -2,7 +2,9 @@ import { BrowserRecorder } from './browser-recorder';
 
 import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 
-import { ensureDefaultColl } from '../dbutils';
+import { ensureDefaultColl, ensureDefaultCollAndIPFS } from '../utils';
+
+import { ExtAPI } from '../sw/api';
 
 
 // ===========================================================================
@@ -14,6 +16,9 @@ let newRecCollId = null;
 
 const collLoader = new CollectionLoader();
 
+const api = new ExtAPI(collLoader);
+
+
 // ===========================================================================
 
 function main() {
@@ -24,10 +29,27 @@ function main() {
 }
 
 chrome.runtime.onConnect.addListener((port) => {
-  if (port.name !== "popup-port") {
-    return;
-  }
+  switch (port.name) {
+    case "popup-port":
+      popupHandler(port);
+      break;
 
+    case "share-port":
+      shareHandler(port);
+      break;
+  }
+});
+
+function shareHandler(port) {
+  port.onMessage.addListener(async (message) => {
+    const resp = await api.ipfsPinUnpin(message.collId, message.pin);
+    port.postMessage(resp);
+    port.disconnect();
+  });
+}
+
+
+function popupHandler(port) {
   if (!port.sender || port.sender.url !== chrome.runtime.getURL("popup.html")) {
     return;
   }
@@ -75,7 +97,7 @@ chrome.runtime.onConnect.addListener((port) => {
       self.recorders[tabId].port = null;
     }
   });
-});
+};
 
 
 // ===========================================================================
@@ -257,4 +279,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 // ===========================================================================
 chrome.runtime.onInstalled.addListener(main);
 
-ensureDefaultColl(collLoader);
+
+// ===========================================================================
+(async () => {
+  if (await ensureDefaultCollAndIPFS(collLoader)) {
+    api.initIPFS();
+  }
+})();

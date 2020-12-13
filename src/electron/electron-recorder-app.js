@@ -6,6 +6,8 @@ import { ElectronReplayApp, STATIC_PREFIX } from 'replaywebpage/src/electron-rep
 import path from 'path';
 import { PassThrough } from 'stream';
 
+import { ipfsAddPin, ipfsUnpinAll } from '../utils';
+
 
 // ===========================================================================
 class ElectronRecorderApp extends ElectronReplayApp
@@ -136,7 +138,7 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     await this.ipfsClient.initIPFS();
 
-    const data = await this.ipfsClient.addPin(filename, downloadStream);
+    const data = await ipfsAddPin(this.ipfsClient, filename, downloadStream);
 
     console.log("ipfs added: " + data.url);
 
@@ -146,7 +148,7 @@ class ElectronRecorderApp extends ElectronReplayApp
   async ipfsUnpin(event, reqId, pinList) {
     if (pinList && pinList.length) {
       await this.ipfsClient.initIPFS();
-      await this.ipfsClient.rmAllPins(pinList);
+      await ipfsUnpinAll(this.ipfsClient, pinList);
     }
 
     event.reply(reqId);

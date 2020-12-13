@@ -1,10 +1,10 @@
 "use strict";
 
-import { ensureDefaultColl } from '../dbutils';
+import { ensureDefaultCollAndIPFS } from '../utils';
 
 import { loader, getColl, getDB } from 'replaywebpage/src/electron-preload';
 
-import { Downloader } from '@webrecorder/wabac/src/downloader';
+import { Downloader } from '../sw/downloader';
 
 const { ipcRenderer, contextBridge } = require('electron');
 
@@ -136,15 +136,7 @@ async function handleIpfsUnpin(collId) {
 // ===========================================================================
 async function main()
 {
-  const colls = await ensureDefaultColl(loader);
-  let hasIpfs = false;
-
-  for (const coll of colls) {
-    if (coll.config.metadata.ipfsPins) {
-      hasIpfs = true;
-      break;
-    }
-  }
+  const hasIpfs = await ensureDefaultCollAndIPFS(loader);
 
   if (hasIpfs) {
     ipcRenderer.send("start-ipfs");

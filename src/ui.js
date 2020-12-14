@@ -32,10 +32,6 @@ class ArchiveWebApp extends ReplayWebApp
     return "ArchiveWeb.page";
   }
 
-  get homeUrl() {
-    return "/replay/index.html";
-  }
-
   static get properties() {
     return {
       ...ReplayWebApp.properties,
@@ -683,18 +679,21 @@ class WrRecCollInfo extends LitElement
     params.set("source", this.ipfsURL);
     const url = "https://replayweb.page/?" + params.toString();
 
+    // const hash = this.ipfsURL.split("/")[2];
+    // const url2 = `https://ipfs.io/ipfs/${hash}/`;
+
     navigator.clipboard.writeText(url);
   }
 
   async doDelete() {
+    if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
+      await this.ipfsApi(this.coll.id, false);
+    }
+
     const resp = await fetch(`./wabac/api/${this.coll.id}`, {method: 'DELETE'});
     if (resp.status === 200) {
       const json = await resp.json();
       this.colls = json.colls;
-    }
-
-    if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
-      await this.ipfsApi(this.coll.id, false);
     }
   }
 }

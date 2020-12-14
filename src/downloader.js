@@ -4,7 +4,7 @@ import { PassThrough } from 'stream';
 
 import { Deflate } from 'pako';
 
-import { createSHA256 } from 'hash-wasm';
+import { createMD5 } from 'hash-wasm';
 
 import { WARCRecord, WARCSerializer } from 'warcio';
 
@@ -67,11 +67,22 @@ class ResumePassThrough extends PassThrough
 // ===========================================================================
 class Downloader
 {
-  constructor(db, pageList, collId, metadata) {
-    this.db = db;
+  constructor({coll, format = "wacz", filename = null, pageList = null}) {
+    this.db = coll.store;
     this.pageList = pageList;
-    this.collId = collId;
-    this.metadata = metadata;
+    this.collId = coll.name;
+    this.metadata = coll.config.metadata;
+
+    this.format = format;
+
+    // determine filename from title, if it exists
+    if (!filename && coll.config.metadata.title) {
+      this.filename = coll.config.metadata.title.toLowerCase().replace(/\s/g, "-");
+    }
+    
+    if (!this.filename) {
+      this.filename = "webarchive";
+    }
 
     this.offset = 0;
     this.resources = [];
@@ -87,10 +98,23 @@ class Downloader
     this.fileStats = [];
   }
 
-  downloadWARC(filename) {
-    const dl = this;
+  download() {
+    switch (this.format) {
+      case "wacz":
+        return this.downloadWACZ(this.filename);
 
+      case "warc":
+        return this.downloadWARC(this.filename);
+
+      default:
+        return {"error": "invalid 'format': must be wacz or warc"};
+    }
+  }
+
+  downloadWARC(filename) {
     filename = (filename || "webarchive").split(".")[0] + ".warc";
+
+    const dl = this;
 
     const rs = new ReadableStream({
       start(controller) {
@@ -103,7 +127,9 @@ class Downloader
       "Content-Type": "application/octet-stream"
     };
 
-    return new Response(rs, {headers});
+    const resp = new Response(rs, {headers});
+    resp.filename = filename;
+    return resp;
   }
 
   async loadResources() {
@@ -133,7 +159,7 @@ class Downloader
   }
 
   addFile(zip, filename, generator, compressed = false) {
-    const stats = {filename, size: 0, sha256: ""}
+    const stats = {filename, size: 0}
 
     if (filename !== "datapackage.json") {
       this.fileStats.push(stats);
@@ -154,7 +180,7 @@ class Downloader
 
     await this.loadResources();
 
-    this.hasher = await createSHA256();
+    this.hasher = await createMD5();
 
     this.addFile(zip, "pages/pages.jsonl", this.generatePages(), true);
     this.addFile(zip, "archive/data.warc", this.generateWARC(filename + "#/archive/data.warc"), false);
@@ -354,7 +380,7 @@ class Downloader
           hash: stats.hash,
           bytes: stats.size,
         },
-        hashing: "sha256"
+        hashing: "md5"
       }
     });
 

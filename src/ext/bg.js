@@ -2,9 +2,9 @@ import { BrowserRecorder } from './browser-recorder';
 
 import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 
-import { ensureDefaultColl, ensureDefaultCollAndIPFS } from '../utils';
+import { ensureDefaultColl } from '../utils';
 
-import { ExtAPI } from '../sw/api';
+import { ExtIPFSClient } from './ipfs';
 
 
 // ===========================================================================
@@ -16,7 +16,7 @@ let newRecCollId = null;
 
 const collLoader = new CollectionLoader();
 
-const api = new ExtAPI(collLoader);
+const ipfsClient = new ExtIPFSClient(collLoader);
 
 
 // ===========================================================================
@@ -42,7 +42,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
 function shareHandler(port) {
   port.onMessage.addListener(async (message) => {
-    const resp = await api.ipfsPinUnpin(message.collId, message.pin);
+    const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin);
     port.postMessage(resp);
     port.disconnect();
   });
@@ -281,8 +281,4 @@ chrome.runtime.onInstalled.addListener(main);
 
 
 // ===========================================================================
-(async () => {
-  if (await ensureDefaultCollAndIPFS(collLoader)) {
-    api.initIPFS();
-  }
-})();
+ipfsClient.init();

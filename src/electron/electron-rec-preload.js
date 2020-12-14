@@ -4,7 +4,7 @@ import { ensureDefaultCollAndIPFS } from '../utils';
 
 import { loader, getColl, getDB } from 'replaywebpage/src/electron-preload';
 
-import { Downloader } from '../sw/downloader';
+import { Downloader } from '../downloader';
 
 const { ipcRenderer, contextBridge } = require('electron');
 
@@ -64,18 +64,11 @@ async function handleIpfsPin(collId) {
 
   const coll = await getColl(collId);
 
-  const dl = new Downloader(coll.store, null, coll.name, coll.config.metadata);
+  const dl = new Downloader({coll});
 
-  // determine filename from title, if it exists
-  let filename = "webarchive.wacz";
+  const resp = await dl.download();
 
-  if (coll.config.metadata.title) {
-    filename = coll.config.metadata.title.toLowerCase().replace(/\s/g, "-") + ".wacz";
-  }
-
-  ipcRenderer.send("ipfs-pin", reqId, filename);
-
-  const resp = await dl.downloadWACZ(filename);
+  ipcRenderer.send("ipfs-pin", reqId, resp.filename);
 
   const reader = resp.body.getReader();
 

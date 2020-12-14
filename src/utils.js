@@ -1,5 +1,8 @@
+import { IPFSClient } from "@webrecorder/wabac/src/ipfs";
 
-async function ensureDefaultColl(collLoader, checkIpfs = false)
+
+// ===========================================================================
+async function ensureDefaultColl(collLoader)
 {
   let colls = await collLoader.listAll();
 
@@ -26,6 +29,8 @@ async function ensureDefaultColl(collLoader, checkIpfs = false)
   return colls;
 }
 
+
+// ===========================================================================
 async function ensureDefaultCollAndIPFS(collLoader) {
   const colls = await ensureDefaultColl(collLoader);
   let hasIpfs = false;
@@ -40,20 +45,8 @@ async function ensureDefaultCollAndIPFS(collLoader) {
   return hasIpfs;
 }
 
-async function ipfsUnpinAll(ipfsClient, pinList) {
-  if (pinList) {
-    for (const pin of pinList) {
-      try {
-        ipfsClient.ipfs.pin.rm(pin.hash);
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-    ipfsClient.runGC();
-  }
-  return null;
-}
 
+// ===========================================================================
 async function ipfsAddPin(ipfsClient, path, content) {
   const resp = await ipfsClient.ipfs.add({path, content}, {wrapWithDirectory: true});
 
@@ -68,19 +61,41 @@ async function ipfsAddPin(ipfsClient, path, content) {
   return {hash, url, size, ctime};
 }
 
-async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, urlPrefix, files) {
+
+// ===========================================================================
+async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, fetchPrefix) {
+  const fileDef = [
+    {path: "ui.js"},
+    {path: "sw.js"},
+    {path: "index.html",
+     content: `
+     <!doctype html>
+     <html class="no-overflow">
+     <head>
+       <title>ReplayWeb.page</title>
+       <meta charset="utf-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+       <script src="./ui.js"></script>
+     </head>
+     <body>
+       <replay-app-main source="${waczPath}"></replay-app-main>
+     </body>
+     </html>`
+    }
+  ];
+
   const fileData = [];
 
-  for (const entry of files) {
+  for (const entry of fileDef) {
     let content;
 
-    if (entry.src) {
-      const resp = await fetch(urlPrefix + entry.src);
+    if (!entry.content) {
+      const resp = await fetch(fetchPrefix + entry.path);
       content = await resp.arrayBuffer();
     } else {
       content = new TextEncoder().encode(entry.content);
     }
-    fileData.push({path: entry.target, content});
+    fileData.push({path: entry.path, content});
   }
 
   fileData.push({path: waczPath, content: waczContent});
@@ -102,6 +117,22 @@ async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, urlPrefix, f
   const ctime = new Date().getTime();
 
   return {hash, url, size, ctime};
+}
+
+
+// ===========================================================================
+async function ipfsUnpinAll(ipfsClient, pinList) {
+  if (pinList) {
+    for (const pin of pinList) {
+      try {
+        await ipfsClient.ipfs.pin.rm(pin.hash);
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    ipfsClient.runGC();
+  }
+  return null;
 }
 
 export { ensureDefaultColl, ensureDefaultCollAndIPFS, ipfsAddPin, ipfsAddWithReplay, ipfsUnpinAll };

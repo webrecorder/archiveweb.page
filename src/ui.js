@@ -8,6 +8,7 @@ import prettyBytes from 'pretty-bytes';
 import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
 import fasDownload from '@fortawesome/fontawesome-free/svgs/solid/download.svg';
 import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
+import fasCaretUp from '@fortawesome/fontawesome-free/svgs/solid/caret-up.svg';
 import fasShare from '@fortawesome/fontawesome-free/svgs/solid/share.svg';
 import fasReshare from '@fortawesome/fontawesome-free/svgs/solid/retweet.svg';
 import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
@@ -65,6 +66,7 @@ class ArchiveWebApp extends ReplayWebApp
     return wrapCss(css`
       :host {
         font-size: initial;
+        overflow: auto;
       }
 
       wr-rec-coll {
@@ -179,8 +181,10 @@ class ArchiveWebApp extends ReplayWebApp
        dateName="Date Created"
        headerName="Current Web Archives"
        @show-start=${this.onShowStart}
+       style="overflow: visible"
        >
-      </wr-rec-coll-index>`;
+      </wr-rec-coll-index>
+     `;
   }
 
   render() {
@@ -397,6 +401,12 @@ class WrRecCollIndex extends CollIndex
     this.deleteConfirm = null;
   }
 
+  firstUpdated() {
+    this.loadColls();
+
+    this._poll = setInterval(() => this.loadColls(), 10000);
+  }
+
   static get properties() {
     return {
       ...CollIndex.properties,
@@ -406,7 +416,10 @@ class WrRecCollIndex extends CollIndex
   }
 
   renderCollInfo(coll) {
-    return html`<wr-rec-coll-info data-coll="${coll.id}" .coll=${coll}></wr-rec-coll-info>`;
+    return html`
+    <wr-rec-coll-info
+      style="overflow: visible" data-coll="${coll.id}" .coll=${coll}>
+    </wr-rec-coll-info>`;
   }
 
   render() {
@@ -473,6 +486,7 @@ class WrRecCollInfo extends LitElement
     this.detailed = false;
     this.ipfsURL = null;
     this.shareWait = false;
+    this.showShareMenu = false;
   }
 
   static get properties() {
@@ -480,12 +494,17 @@ class WrRecCollInfo extends LitElement
       coll: { type: Object },
       detailed: { type: Boolean },
       ipfsURL: { type: String },
-      shareWait: { type: Boolean }
+      shareWait: { type: Boolean },
+      showShareMenu: { type: Boolean }
     }
   }
 
   static get styles() {
     return wrapCss(css`
+    :host {
+      overflow: visible;
+    }
+
     .columns {
       width: 100%;
     }
@@ -524,6 +543,10 @@ class WrRecCollInfo extends LitElement
     }
     
     `);
+  }
+
+  firstUpdated() {
+    this.renderRoot.addEventListener("click", () => this.showShareMenu = false);
   }
 
   updated(changedProps) {
@@ -582,25 +605,52 @@ class WrRecCollInfo extends LitElement
           <p class="minihead">Sharing (via IPFS)</p>
           <div class="button-row is-flex">
             ${this.ipfsURL ? html`
-              <button @click="${this.onCopyLink}" class="button is-link is-light is-small">
-                <span class="icon is-small">
-                  <fa-icon .svg="${fasShare}"></fa-icon>
-                </span>
-                <span>Copy Sharable Link</span>
-              </button>
 
-              <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPin}">
-                <span class="icon is-small">
-                  <fa-icon .svg="${fasReshare}"></fa-icon>
-                </span>
-                <span>${!this.ipfsURL ? "Share" : "Reshare Latest"}</span>
-              </button>
+              <div class="dropdown is-up ${this.showShareMenu ? 'is-active' : ''}">
+                <div class="dropdown-trigger">
+                  <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? 'is-loading' : ''}"" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span>Sharing!</span>
+                    <span class="icon">
+                      <fa-icon .svg=${fasCaretUp}></fa-icon>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
+                  <div class="dropdown-content">
+                    <a @click="${this.onPin}" class="dropdown-item">
+                      <span class="icon is-small">
+                        <fa-icon .svg="${fasReshare}"></fa-icon>
+                      </span>
+                      Reshare Latest
+                    </a>
+                    <hr class="dropdown-divider"/>
+                    <a @click="${this.onCopyIPFSLink}" class="dropdown-item">
+                      <span class="icon is-small">
+                        <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                      </span>
+                      Copy IPFS URL
+                    </a>
+                    <a @click="${this.onCopyGatewayLink}" class="dropdown-item">
+                      <span class="icon is-small">
+                        <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                      </span>
+                      Copy Shareable Gateway Link
+                    </a>
+                    <a @click="${this.onCopyRWPLink}" class="dropdown-item">
+                      <span class="icon is-small">
+                        <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                      </span>
+                      Copy Shareble ReplayWeb.page Link
+                    </a>
+                  </div>
+                </div>
+              </div>
 
               <button class="button is-small" @click="${this.onUnpin}">
                 <span class="icon is-small">
                   <fa-icon .svg="${fasX}"></fa-icon>
                 </span>
-                <span>Unshare</span>
+                <span>Stop Sharing</span>
               </button>
 
               `: html`
@@ -621,10 +671,16 @@ class WrRecCollInfo extends LitElement
   onDownload() {
     const params = new URLSearchParams();
     params.set("format", "wacz");
-    params.set("filename", this.coll.title);
+    //params.set("filename", this.coll.title);
     params.set("pages", "all");
 
     window.location.href = `/replay/wabac/api/${this.coll.id}/dl?` + params.toString();
+  }
+
+  onShowShareMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showShareMenu = !this.showShareMenu;
   }
 
   onShowStart() {
@@ -640,7 +696,7 @@ class WrRecCollInfo extends LitElement
     if (json.ipfsURL) {
       this.ipfsURL = json.ipfsURL;
     }
-    this.onCopyLink();
+    this.onCopyRWPLink();
     this.shareWait = false;
   }
 
@@ -674,15 +730,26 @@ class WrRecCollInfo extends LitElement
     });
   }
 
-  onCopyLink() {
+  onCopyRWPLink() {
     const params = new URLSearchParams();
     params.set("source", this.ipfsURL);
     const url = "https://replayweb.page/?" + params.toString();
 
-    // const hash = this.ipfsURL.split("/")[2];
-    // const url2 = `https://ipfs.io/ipfs/${hash}/`;
-
+    this.showShareMenu = false;
     navigator.clipboard.writeText(url);
+  }
+
+  onCopyGatewayLink() {
+    const hash = this.ipfsURL.split("/")[2];
+    const url = `https://ipfs.io/ipfs/${hash}/`;
+
+    this.showShareMenu = false;
+    navigator.clipboard.writeText(url);
+  }
+
+  onCopyIPFSLink() {
+    this.showShareMenu = false;
+    navigator.clipboard.writeText(this.ipfsURL);
   }
 
   async doDelete() {

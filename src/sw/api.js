@@ -20,7 +20,7 @@ class ExtAPI extends API
   async handleApi(request, params) {
     switch (params._route) {
       case "downloadPages":
-        coll = await this.collections.loadColl(params.coll);
+        const coll = await this.collections.loadColl(params.coll);
         if (!coll) {
           return {error: "collection_not_found"};
         }

@@ -1,6 +1,6 @@
 {
   "name": "archiveweb.page",
-  "version": "0.4.3",
+  "version": "0.4.4.1",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/webrecorder-extension",
@@ -14,7 +14,7 @@
     "flexsearch": "^0.6.32",
     "hash-wasm": "^4.4.1",
     "http-status-codes": "^1.4.0",
-    "ipfs-core": "^0.3.1-rc.11",
+    "ipfs-core": "^0.3.1-rc.13",
     "jszip": "^3.5.0",
     "keyword-mark-element": "^0.1.2",
     "lodash": "^4.17.20",

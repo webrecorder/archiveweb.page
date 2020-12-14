@@ -75,8 +75,10 @@ class Downloader
 
     this.format = format;
 
+    this.filename = filename;
+
     // determine filename from title, if it exists
-    if (!filename && coll.config.metadata.title) {
+    if (!this.filename && coll.config.metadata.title) {
       this.filename = coll.config.metadata.title.toLowerCase().replace(/\s/g, "-");
     }
     

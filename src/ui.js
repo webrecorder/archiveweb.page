@@ -41,7 +41,7 @@ class ArchiveWebApp extends ReplayWebApp
       showCollDrop: { type: Boolean },
       colls: { type: Array },
       selCollId: { type: String },
-      selCollTitle: { type: String }
+      selCollTitle: { type: String },
     }
   }
 
@@ -123,14 +123,10 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   renderNavEnd() {
-    return html``;
+    return html`
+    <a href="?about" @click="${(e) => { e.preventDefault(); this.showAbout = true} }"class="navbar-item is-size-6">About
+    </a>`
   }
-
-  // renderNavBrand() {
-  //   return html`
-  //   <fa-icon class="wr-text" width="7.0rem" size="" .svg="${wrText}"/>
-  //   `;
-  // }
 
   renderNavBrand() {
     return html`
@@ -283,6 +279,12 @@ class ArchiveWebApp extends ReplayWebApp
 
                   <p>ArchiveWeb.page is part of the <a href="https://webrecorder.net/" target="_blank">Webrecorder Project</a>.</p>
                   <p>This project is still in beta and some features may not work yet.</p>
+
+                  <h3>Privacy Policy</h3>
+                  <p>ArchiveWeb.page allows users to archive what they browse. The archive data is stored directly in the browser and can be downloaded at any time.
+                  By selecting the <b>Share</b> option for each archive, users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
+                  Once shared, data may be accessible to others.
+                  All Archives are private by default. ArchiveWeb.page does not collect any usage or tracking data.</p>
 
                   <h4>Disclaimer of Warranties</h4>
                   <p>The application is provided "as is" without any guarantees.</p>
@@ -487,6 +489,7 @@ class WrRecCollInfo extends LitElement
     this.ipfsURL = null;
     this.shareWait = false;
     this.showShareMenu = false;
+    this.shareWarn = false;
   }
 
   static get properties() {
@@ -495,7 +498,8 @@ class WrRecCollInfo extends LitElement
       detailed: { type: Boolean },
       ipfsURL: { type: String },
       shareWait: { type: Boolean },
-      showShareMenu: { type: Boolean }
+      showShareMenu: { type: Boolean },
+      shareWarn: { type: Boolean },
     }
   }
 
@@ -655,7 +659,7 @@ class WrRecCollInfo extends LitElement
 
               `: html`
             
-              <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPin}">
+              <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPinOrWarn}">
                 <span class="icon is-small">
                   <fa-icon .svg="${fasShare}"></fa-icon>
                 </span>
@@ -665,7 +669,34 @@ class WrRecCollInfo extends LitElement
           </div>
         </div>
       </div>
+      ${this.shareWarn ? this.renderShareWarn(): ''}
       `;
+  }
+
+  renderShareWarn() {
+    return html`
+    <wr-modal bgClass="has-background-warning" @modal-closed="${(e) => this.shareWarn = false}" title="Start Sharing?">
+      <div class="content is-size-7">
+        <p>
+          Do you want to share the all the pages in the archive "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
+          distributed storage network?
+        </p>
+        <p>Your archive will have a unique link which can be shared with others to load your archive
+        via ReplayWeb.page. This feature is still experimental and works best with smaller archives (<100MB)</p>
+        <p>You can cancel sharing at anytime. 
+        </p>
+        <p><b>Once shared, this data leaves your computer and could be read by others.</b></p>
+        <p>If you do not wish to share this data, click Cancel.</p>
+      </div>
+      <div class="content">
+        <label class="checkbox" for="sharewarn">
+          <input @change="${this.toggleShareWarn}" type="checkbox">
+          Don't show this message again
+        </label>
+      </div>
+      <button @click="${this.onPin}"class="button is-primary">Share</button>
+      <button @click="${(e) => this.shareWarn = false}" class="button">Cancel</button>
+    </wr-modal>`;
   }
 
   onDownload() {
@@ -689,7 +720,21 @@ class WrRecCollInfo extends LitElement
     this.dispatchEvent(new CustomEvent("show-start", {bubbles: true, composed: true, detail: {coll, title}}));
   }
 
+  toggleShareWarn(event) {
+    localStorage.setItem("nosharewarn", event.currentTarget.checked ? "1" : "0");
+  }
+
+  onPinOrWarn() {
+    if (localStorage.getItem("nosharewarn") === "1") {
+      this.onPin();
+    } else {
+      this.shareWarn = true;
+    }
+  }
+
   async onPin() {
+    this.shareWarn = false;
+
     this.shareWait = true;
     const json = await this.ipfsApi(this.coll.id, true);
 

@@ -13,7 +13,7 @@
   ],
   "background": {
     "scripts": [
-      "replay/bg.js"
+      "bg.js"
     ],
     "persistent": false
   },

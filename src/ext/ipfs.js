@@ -17,12 +17,6 @@ class ExtIPFSClient extends IPFSClient
     }
   }
 
-  async initIPFS() {
-    await super.initIPFS();
-
-    console.log(await this.ipfs.config.getAll());
-  }
-
   async ipfsPinUnpin(collId, isPin) {
     const coll = await this.collLoader.loadColl(collId);
     if (!coll) {

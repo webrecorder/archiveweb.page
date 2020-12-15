@@ -152,7 +152,7 @@ const extensionConfig = (env, argv) => {
     output: {
       path: path.join(__dirname, 'wr-ext'),
       filename: (chunkData) => {
-        return chunkData.chunk.name === 'popup' ? '[name].js': './replay/[name].js';
+        return !['sw', 'ui'].includes(chunkData.chunk.name) ? '[name].js': './replay/[name].js';
       },
       libraryTarget: 'global',
       globalObject: 'self'

@@ -1,5 +1,3 @@
-import { IPFSClient } from "@webrecorder/wabac/src/ipfs";
-
 
 // ===========================================================================
 async function ensureDefaultColl(collLoader)
@@ -33,16 +31,44 @@ async function ensureDefaultColl(collLoader)
 // ===========================================================================
 async function ensureDefaultCollAndIPFS(collLoader) {
   const colls = await ensureDefaultColl(collLoader);
-  let hasIpfs = false;
+
+  const validPins = new Set();
 
   for (const coll of colls) {
     if (coll.config.metadata.ipfsPins) {
-      hasIpfs = true;
-      break;
+      coll.config.metadata.ipfsPins.forEach((data) => validPins.add(data.hash));  
     }
   }
 
-  return hasIpfs;
+  return validPins;
+}
+
+
+// ===========================================================================
+async function checkPins(ipfsClient, validPins) {
+  const invalidPins = [];
+
+  for await (const {cid, type} of ipfsClient.ipfs.pin.ls({type: "recursive"})) {
+    const hash = cid.toString();
+
+    if (!validPins.has(hash)) {
+      invalidPins.push({cid, recursive: true});
+    }
+  }
+
+  if (invalidPins.length) {
+    console.log(`Removing ${invalidPins.length} invalid pins...`);
+    for await (const unpin of ipfsClient.ipfs.pin.rmAll(invalidPins));
+    console.log(`Running GC`);
+    await ipfsClient.runGC();
+  }
+
+  if (ipfsClient.customPreload) {
+    for (const pin of validPins) {
+      console.log(`Preloading pin: ${pin}`)
+      await ipfsClient.cacheDirToPreload(pin);
+    }
+  }
 }
 
 
@@ -63,12 +89,14 @@ async function ipfsAddPin(ipfsClient, path, content) {
 
 
 // ===========================================================================
-async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, fetchPrefix) {
+async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, swContent, uiContent) {
+  const encoder = new TextEncoder();
+  
   const fileDef = [
-    {path: "ui.js"},
-    {path: "sw.js"},
+    {path: "ui.js", content: uiContent},
+    {path: "sw.js", content: swContent},
     {path: "index.html",
-     content: `
+     content: encoder.encode(`
      <!doctype html>
      <html class="no-overflow">
      <head>
@@ -80,22 +108,14 @@ async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, fetchPrefix)
      <body>
        <replay-app-main source="${waczPath}"></replay-app-main>
      </body>
-     </html>`
+     </html>`)
     }
   ];
 
   const fileData = [];
 
   for (const entry of fileDef) {
-    let content;
-
-    if (!entry.content) {
-      const resp = await fetch(fetchPrefix + entry.path);
-      content = await resp.arrayBuffer();
-    } else {
-      content = new TextEncoder().encode(entry.content);
-    }
-    fileData.push({path: entry.path, content});
+    fileData.push({path: entry.path, content: entry.content});
   }
 
   fileData.push({path: waczPath, content: waczContent});
@@ -135,4 +155,4 @@ async function ipfsUnpinAll(ipfsClient, pinList) {
   return null;
 }
 
-export { ensureDefaultColl, ensureDefaultCollAndIPFS, ipfsAddPin, ipfsAddWithReplay, ipfsUnpinAll };
+export { ensureDefaultColl, ensureDefaultCollAndIPFS, checkPins, ipfsAddPin, ipfsAddWithReplay, ipfsUnpinAll };

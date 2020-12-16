@@ -328,7 +328,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <wr-anim-logo class="logo" size="48px"></wr-anim-logo>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.4.5"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.4.6"}</div>
                     </div>
 
                     ${b?a.c`
@@ -1107,7 +1107,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.4.5"})</span>
+                <span class="menu-version">(${"0.4.6"})</span>
               </a>
             </div>
           </div>
@@ -2426,7 +2426,7 @@ Please try a different browser.\n
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${_t.a}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.4.5"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.4.6"}</div>
                     </div>
 
                     ${b?a.c`
@@ -2575,13 +2575,13 @@ Please try a different browser.\n
                       <span class="icon is-small">
                         <fa-icon size="0.8em" .svg="${xt.a}"></fa-icon>
                       </span>
-                      Copy Shareable Gateway Link
+                      Copy Shareable IPFS Gateway Link
                     </a>
-                    <a @click="${this.onCopyRWPLink}" class="dropdown-item">
+                    <a @click="${this.onCopyRWPLink}" class="has-text-weight-bold dropdown-item">
                       <span class="icon is-small">
                         <fa-icon size="0.8em" .svg="${xt.a}"></fa-icon>
                       </span>
-                      Copy Shareble ReplayWeb.page Link
+                      Copy Shareable ReplayWeb.page Link
                     </a>
                   </div>
                 </div>
@@ -2615,7 +2615,7 @@ Please try a different browser.\n
           distributed storage network?
         </p>
         <p>Your archive will have a unique link which can be shared with others to load your archive
-        via ReplayWeb.page. This feature is still experimental and works best with smaller archives (<100MB)</p>
+        via ReplayWeb.page. All archived data is loaded on-demand when replayed. This feature is experimental and likely works best with smaller archives.</p>
         <p>You can cancel sharing at anytime. 
         </p>
         <p><b>Once shared, this data leaves your computer and could be read by others.</b></p>

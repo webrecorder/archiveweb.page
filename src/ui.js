@@ -638,13 +638,13 @@ class WrRecCollInfo extends LitElement
                       <span class="icon is-small">
                         <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
                       </span>
-                      Copy Shareable Gateway Link
+                      Copy Shareable IPFS Gateway Link
                     </a>
-                    <a @click="${this.onCopyRWPLink}" class="dropdown-item">
+                    <a @click="${this.onCopyRWPLink}" class="has-text-weight-bold dropdown-item">
                       <span class="icon is-small">
                         <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
                       </span>
-                      Copy Shareble ReplayWeb.page Link
+                      Copy Shareable ReplayWeb.page Link
                     </a>
                   </div>
                 </div>
@@ -682,7 +682,7 @@ class WrRecCollInfo extends LitElement
           distributed storage network?
         </p>
         <p>Your archive will have a unique link which can be shared with others to load your archive
-        via ReplayWeb.page. This feature is still experimental and works best with smaller archives (<100MB)</p>
+        via ReplayWeb.page. All archived data is loaded on-demand when replayed. This feature is experimental and likely works best with smaller archives.</p>
         <p>You can cancel sharing at anytime. 
         </p>
         <p><b>Once shared, this data leaves your computer and could be read by others.</b></p>

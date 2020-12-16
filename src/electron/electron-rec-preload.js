@@ -113,7 +113,7 @@ async function handleIpfsUnpin(collId) {
 
   const removeHashes = new Promise((resolve) => {
     ipcRenderer.once(reqId, async (event) => {
-      delete coll.config.metadata.ipfsPins;
+      coll.config.metadata.ipfsPins = null;
     
       await loader.updateMetadata(collId, coll.config.metadata);
 
@@ -129,10 +129,10 @@ async function handleIpfsUnpin(collId) {
 // ===========================================================================
 async function main()
 {
-  const hasIpfs = await ensureDefaultCollAndIPFS(loader);
+  const validPins = await ensureDefaultCollAndIPFS(loader);
 
-  if (hasIpfs) {
-    ipcRenderer.send("start-ipfs");
+  if (validPins.size) {
+    ipcRenderer.send("start-ipfs", validPins);
   }
 }
 

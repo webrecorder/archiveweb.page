@@ -1,6 +1,6 @@
 {
   "name": "archiveweb.page",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/webrecorder-extension",
@@ -9,7 +9,7 @@
   "dependencies": {
     "@electron/remote": "^1.0.0",
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.4.1",
+    "@webrecorder/wabac": "^2.4.2",
     "bulma": "^0.9.1",
     "flexsearch": "^0.6.32",
     "hash-wasm": "^4.4.1",

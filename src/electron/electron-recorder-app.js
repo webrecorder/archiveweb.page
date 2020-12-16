@@ -6,7 +6,10 @@ import { ElectronReplayApp, STATIC_PREFIX } from 'replaywebpage/src/electron-rep
 import path from 'path';
 import { PassThrough } from 'stream';
 
-import { ipfsAddPin, ipfsUnpinAll } from '../utils';
+import fs from 'fs';
+import util from 'util';
+
+import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from '../utils';
 
 
 // ===========================================================================
@@ -40,8 +43,8 @@ class ElectronRecorderApp extends ElectronReplayApp
       this.createRecordWindow(url, collId);
     });
 
-    ipcMain.on("start-ipfs", (event) => {
-      this.ipfsClient.initIPFS();
+    ipcMain.on("start-ipfs", (event, validPins) => {
+      this.ipfsStart(validPins);
     });
 
     ipcMain.on("ipfs-pin", (event, reqId, filename) => {
@@ -126,6 +129,12 @@ class ElectronRecorderApp extends ElectronReplayApp
     return recWindow;
   }
 
+  async ipfsStart(validPins) {
+    await this.ipfsClient.initIPFS();
+
+    checkPins(this.ipfsClient, validPins);
+  }
+
   async ipfsPin(event, reqId, filename) {
     let downloadStream = new PassThrough();
 
@@ -138,7 +147,14 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     await this.ipfsClient.initIPFS();
 
-    const data = await ipfsAddPin(this.ipfsClient, filename, downloadStream);
+    const readFile = (fileName) => util.promisify(fs.readFile)(fileName);
+
+    const swContent = await readFile(path.join(this.staticContentPath, "replay", "sw.js"));
+    const uiContent = await readFile(path.join(this.staticContentPath, "replay", "ui.js"));
+
+    //const data = await ipfsAddPin(this.ipfsClient, filename, downloadStream);
+    const data = await ipfsAddWithReplay(this.ipfsClient, filename, downloadStream,
+      swContent, uiContent);
 
     console.log("ipfs added: " + data.url);
 

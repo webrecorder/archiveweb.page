@@ -44,11 +44,14 @@ class ExtIPFSClient extends IPFSClient
         dlResponse.filename, dlResponse.body,
         swContent, uiContent);
 
-      coll.config.metadata.ipfsPins.push(data);
-
       if (this.customPreload) {
-        await this.cacheDirToPreload(data.hash);
+        if (!await this.cacheDirToPreload(data.hash)) {
+          // failed to load on preload, assume it didn't work
+          return {};
+        }
       }
+
+      coll.config.metadata.ipfsPins.push(data);
 
       console.log("ipfs hash added " + data.url);
 

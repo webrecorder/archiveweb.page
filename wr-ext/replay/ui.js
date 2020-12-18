@@ -328,7 +328,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <wr-anim-logo class="logo" size="48px"></wr-anim-logo>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.4.6"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.4.7"}</div>
                     </div>
 
                     ${b?a.c`
@@ -1107,7 +1107,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.4.6"})</span>
+                <span class="menu-version">(${"0.4.7"})</span>
               </a>
             </div>
           </div>
@@ -2426,7 +2426,7 @@ Please try a different browser.\n
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${_t.a}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.4.6"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.4.7"}</div>
                     </div>
 
                     ${b?a.c`
@@ -2444,14 +2444,17 @@ Please try a different browser.\n
                   <p>This project is still in beta and some features may not work yet.</p>
 
                   <h3>Privacy Policy</h3>
-                  <p>ArchiveWeb.page allows users to archive what they browse. The archive data is stored directly in the browser and can be downloaded at any time.
-                  By selecting the <b>Share</b> option for each archive, users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
-                  Once shared, data may be accessible to others.
-                  All Archives are private by default. ArchiveWeb.page does not collect any usage or tracking data.</p>
+                  <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, this archive data is stored directly in the browser.
+                  Users can downloaded this data as files to their hardrive. Users can also delete any and all archived data at any time.
+                  ArchiveWeb.page does not collect any usage or tracking data.</p>
+
+                  <p class="is-size-7">ArchiveWeb.page includes an experimental sharing option for each. Users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
+                  Once shared, data may be accessible to others. (A seperate warning is displayed when sharing)
+                  All Archives are private and not shared by default.</p>
 
                   <h4>Disclaimer of Warranties</h4>
-                  <p>The application is provided "as is" without any guarantees.</p>
-                  <details>
+                  <p class="is-size-7">The application is provided "as is" without any guarantees.</p>
+                  <details class="is-size-7">
                     <summary>Legalese:</summary>
                     <p style="font-size: 0.8rem">DISCLAIMER OF SOFTWARE WARRANTY. WEBRECORDER SOFTWARE PROVIDES THIS SOFTWARE TO YOU "AS AVAILABLE"
                     AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,

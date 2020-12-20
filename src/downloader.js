@@ -407,6 +407,7 @@ class Downloader
         title: page.title,
         url: page.url,
         id: page.id,
+        size: page.size,
         ts};
 
       if (page.favIconUrl) {

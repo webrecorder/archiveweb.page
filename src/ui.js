@@ -14,7 +14,7 @@ import fasReshare from '@fortawesome/fontawesome-free/svgs/solid/retweet.svg';
 import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
 
 //import wrText from '../assets/webrecorder-text.svg';
-import wrLogo from '../assets/wr-logo.svg';
+import wrLogo from '../assets/awp-logo.svg';
 import wrRec from '../assets/recLogo.svg';
 
 
@@ -131,7 +131,7 @@ class ArchiveWebApp extends ReplayWebApp
   renderNavBrand() {
     return html`
       <span id="home" class="logo-text has-text-weight-bold is-size-6 has-allcaps wide-only">
-      <span class="has-text-black">archive</span>
+      <span class="" style="color: #8878c3">archive</span>
       <span class="has-text-link">web.page</span>
       <span class="is-sr-only">Home</span>
     </span>`;
@@ -143,7 +143,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="columns">
           <div class="column">
             <div class="message is-small is-9">
-              <div class="message-header">New Web Archive</div>
+              <div class="message-header" style="background-color: #ddddff; color: black">New Web Archive</div>
               <div class="extra-padding message-body">
                 <form class="is-flex" @submit="${this.onNewColl}">
                   <div class="field has-addons">
@@ -151,7 +151,7 @@ class ArchiveWebApp extends ReplayWebApp
                       <input class="input is-small" id="new-name" type="text" required placeholder="Enter New Archive Name">
                     </div>
                     <div class="control">
-                      <button class="button is-small is-success" type="submit">
+                      <button class="button is-small" type="submit">
                         <span class="icon">
                           <fa-icon .svg=${fasPlus}></fa-icon>
                         </span>

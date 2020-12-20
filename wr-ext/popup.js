@@ -239,7 +239,7 @@ class r{constructor(e,i,t){this.__parts=[],this.template=e,this.processor=i,this
       </div>
     </div>
     `}renderCollCreate(){return"create"!==this.collDrop?"":o.c`
-    <div class="view-row is-marginless" style="background-color: lightsteelblue">
+    <div class="view-row is-marginless" style="background-color: #ddddff">
       <form @submit="${this.onNewColl}">
         <div class="flex-form">
           <label for="new-name" class="is-size-7 is-italic">Create New Archive:</label>
@@ -295,8 +295,8 @@ class r{constructor(e,i,t){this.__parts=[],this.template=e,this.processor=i,this
           ${this.replayUrl?o.c`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>`:""}
         </div>
         <table class="status">
-          <tr><td>New Size:</td><th>${y()(this.status.sizeNew)}</th></tr>
-          <tr><td>Size:</td><th>${y()(this.status.sizeTotal)}</th></tr>
+          <tr><td>Size:</td><th>${y()(this.status.sizeNew)}</th></tr>
+          <tr><td>Size Loaded:</td><th>${y()(this.status.sizeTotal)}</th></tr>
           <tr><td>Pages:</td><th>${this.status.numPages}</th></tr>
           <tr><td>URLs:</td><th>${this.status.numUrls}</th></tr>
         </table>`:o.c``}

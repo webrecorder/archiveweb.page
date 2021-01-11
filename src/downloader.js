@@ -199,7 +199,7 @@ class Downloader
 
     const rs = new ReadableStream({
       start(controller) {
-        zip.generateInternalStream({type:"uint8array"})
+        zip.generateInternalStream({type:"uint8array", streamFiles: true})
         .on('data', (data, metadata) => {
           controller.enqueue(data);
           //console.log(metadata);

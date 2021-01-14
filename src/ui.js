@@ -12,6 +12,7 @@ import fasCaretUp from '@fortawesome/fontawesome-free/svgs/solid/caret-up.svg';
 import fasShare from '@fortawesome/fontawesome-free/svgs/solid/share.svg';
 import fasReshare from '@fortawesome/fontawesome-free/svgs/solid/retweet.svg';
 import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
+import fasHelp from '@fortawesome/fontawesome-free/svgs/solid/question-circle.svg';
 
 //import wrText from '../assets/webrecorder-text.svg';
 import wrLogo from '../assets/awp-logo.svg';
@@ -124,6 +125,9 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderNavEnd() {
     return html`
+    <a href="https://archiveweb.page/guide" target="_blank" class="navbar-item is-size-6">
+    <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon><span>&nbsp;User Guide</span>
+
     <a href="?about" @click="${(e) => { e.preventDefault(); this.showAbout = true} }"class="navbar-item is-size-6">About
     </a>`
   }

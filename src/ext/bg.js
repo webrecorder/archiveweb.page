@@ -25,7 +25,7 @@ function main() {
   chrome.browserAction.setBadgeBackgroundColor({color: "#64e986"});
 
   chrome.contextMenus.create({"id": "toggle-rec", "title": "Start Recording", "contexts": ["browser_action"]});
-  chrome.contextMenus.create({"id": "view-rec", "title": "View Recordings", "contexts": ["all"]});
+  chrome.contextMenus.create({"id": "view-rec", "title": "View Web Archives", "contexts": ["all"]});
 }
 
 chrome.runtime.onConnect.addListener((port) => {

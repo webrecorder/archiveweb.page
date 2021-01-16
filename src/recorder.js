@@ -25,7 +25,7 @@ class Recorder {
     this.pendingRequests = {};
     this.numPending = 0;
 
-    this.injectScript = autofetcher;
+    this.injectScripts = [autofetcher, this.addExternalInject("ruffle/ruffle.js")];
 
     this.running = false;
 
@@ -55,6 +55,18 @@ class Recorder {
     this.sessionSet = new Set();
 
     this._bgFetchId = setInterval(() => this.doBackgroundFetch(), 10000);
+  }
+
+  addExternalInject(path) {
+    return `
+    (function () {
+      window.addEventListener("DOMContentLoaded", () => {
+        const e = document.createElement("script");
+        e.src = "${this.getExternalInjectURL(path)}";
+        document.head.appendChild(e);
+      });
+    })();
+    `
   }
 
   async detach() {
@@ -146,8 +158,8 @@ class Recorder {
   async start() {
     await this.send("Page.enable");
 
-    if (this.injectScript) {
-      await this.send("Page.addScriptToEvaluateOnNewDocument", {source: this.injectScript});
+    for (const source of this.injectScripts) {
+      await this.send("Page.addScriptToEvaluateOnNewDocument", {source});
     }
 
     await this.sessionInit([]);
@@ -299,7 +311,7 @@ class Recorder {
         break;
 
       case "Page.windowOpen":
-        this.doAsyncFetchInBrowser({url: params.url}, sessions);
+        this.handleWindowOpen(params.url, sessions);
         break;
 
       case "Debugger.paused":
@@ -322,6 +334,10 @@ class Recorder {
     }
 
     return true;
+  }
+
+  handleWindowOpen(url, sessions) {
+    this.doAsyncFetchInBrowser({url}, sessions);
   }
 
   requestPDFText(rootNode) {

@@ -23,7 +23,8 @@
     "pdf.min.js",
     "pdf.worker.min.js",
     "ipfs-core.min.js",
-    "replay/*"
+    "replay/*",
+    "ruffle/*"
   ],
   "manifest_version": 2
 }

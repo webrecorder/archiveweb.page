@@ -768,10 +768,9 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@^2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.5.0.tgz#46cefeb8c9eb55442a469fe5d081a8870013bff0"
-  integrity sha512-9by8vghl8C6gwaI2VnLnq64aBVyq2/1i9M2WDdZxIcH5EPmzST7r1dKEboF1iUzRxjXDEL8K3i8SM0DnblU5Dg==
+"@webrecorder/wabac@github:webrecorder/wabac.js":
+  version "2.5.1"
+  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/272f0c1aae8c5fb5586482732a34cf221516c5a6"
   dependencies:
     "@webrecorder/wombat" "^3.0.3"
     brotli "github:foliojs/brotli.js"
@@ -8016,13 +8015,12 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.3.7:
-  version "1.3.7"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.3.7.tgz#1630e942019d07406eb1e14504f241a4e552014b"
-  integrity sha512-Ma42Y7Ze0ag1KILpQGAAQ38Vk58pWARJr2FiQ9KBiNNnpvkZRqh7KZqO0yMt15S1+953v7oLQHMLSErQeUBM8A==
+"replaywebpage@github:webrecorder/replayweb.page":
+  version "1.3.8"
+  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/064f7e180f4dd19dbeaaadaf7a728b89c94b6dae"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "^2.5.0"
+    "@webrecorder/wabac" "github:webrecorder/wabac.js"
     bulma "^0.9.0"
     electron-log "^4.3.0"
     electron-updater "^4.3.5"

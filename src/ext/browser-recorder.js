@@ -11,13 +11,14 @@ const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 // ===========================================================================
 class BrowserRecorder extends Recorder {
-  constructor(debuggee, {collId, collLoader, waitForTabUpdate = false, openUrl = null, port = null}) {
+  constructor(debuggee, {collId, collLoader, waitForTabUpdate = false, openUrl = null, port = null, openWinMap = null}) {
     super();
 
     this.openUrl = openUrl;
     this.waitForTabUpdate = waitForTabUpdate;
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
+    this.openWinMap = openWinMap;
 
     this.collLoader = collLoader;
     this.setCollId(collId);
@@ -53,6 +54,10 @@ class BrowserRecorder extends Recorder {
         }
       }
     }
+  }
+
+  getExternalInjectURL(path) {
+    return chrome.runtime.getURL(path);
   }
 
   setCollId(collId) {
@@ -273,6 +278,11 @@ class BrowserRecorder extends Recorder {
 
     chrome.debugger.sendCommand(this.debuggee, method, params, callback);
     return promise;
+  }
+
+  handleWindowOpen(url, sessions) {
+    super.handleWindowOpen(url, sessions);
+    this.openWinMap.set(url, this.collId);
   }
 }
 

@@ -14,6 +14,8 @@ self.newRecId = null;
 let newRecUrl = null;
 let newRecCollId = null;
 
+const openWinMap = new Map();
+
 const collLoader = new CollectionLoader();
 
 const ipfsClient = new ExtIPFSClient(collLoader);
@@ -166,6 +168,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (recorder.running && changeInfo.favIconUrl) {
       recorder.loadFavIcon(changeInfo.favIconUrl);
     }
+  } else if (changeInfo.url && openWinMap.has(changeInfo.url)) {
+    const collId = openWinMap.get(changeInfo.url);
+    openWinMap.delete(changeInfo.url);
+    if (!tabId || !isValidUrl(changeInfo.url)) {
+      return;
+    }
+    startRecorder(tabId, {collId})
   }
 });
 
@@ -198,6 +207,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 async function startRecorder(tabId, opts) {
   if (!self.recorders[tabId]) {
     opts.collLoader = collLoader;
+    opts.openWinMap = openWinMap;
     self.recorders[tabId] = new BrowserRecorder({tabId}, opts);
   }
 

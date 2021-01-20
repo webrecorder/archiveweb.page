@@ -2,7 +2,7 @@
 
 <p align="center"><img src="/assets/awp-logo.svg" width="96" height="96"></p>
 
-ArchiveWeb.page is a Javascript bsaed system for high-fidelity web archiving directly in the browser.
+ArchiveWeb.page is a JavaScript based system for high-fidelity web archiving directly in the browser.
 The system can be used as a Chrome/Chromium based browser extension and also as an Electron app.
 
 The system creates, stores and replays high-fidelity web archives stored directly in the browser (via IndexedDB).
@@ -61,7 +61,7 @@ To run the Electron app dev build:
 3. Run ``yarn run start-electron`` to start the app.
 
 The Electron App version will open recording in a new window. It is is designed to support Flash, better support for IPFS sharing.
-However, it is still in development and may not work yet until the initial release it out.
+However, it is still in development and may not work yet until the initial release is out.
 
 
 ### Development workflow

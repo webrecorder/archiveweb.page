@@ -275,6 +275,9 @@ class RecPopup extends LitElement
       return html`
       <div class="error">
         <p>Sorry, there was an error starting recording on this page. Please try again or try a different page.</p>
+        <p>If the error persists, check the <a href="https://archiveweb.page/guide/troubleshooting/errors" target="_blank">Common Errors and Issues</a> page in the guide for
+          known issues and possible solutions.
+        </p>
       </div>
       `;
     }

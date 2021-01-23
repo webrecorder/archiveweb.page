@@ -630,10 +630,9 @@ class Recorder {
     }
 
     // if finished and matches current frameId, commit right away
-    if (reqresp && reqresp.payload && params.frameId === this.frameId && !isNaN(Number(reqresp.requestId))) {
-    //  console.log("top-level doc: " + params.request.url + " " + reqresp.resourceType);
-       this.removeReqResp(reqresp.requestId);
-       this.fullCommit(reqresp, sessions);
+    if (reqresp && reqresp.payload && reqresp.payload.length && params.frameId === this.frameId && !isNaN(Number(reqresp.requestId))) {
+      this.removeReqResp(reqresp.requestId);
+      this.fullCommit(reqresp, sessions);
     }
   }
 

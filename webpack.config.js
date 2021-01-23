@@ -9,7 +9,7 @@ const PACKAGE = require("./package.json");
 
 const IPFS_CORE_URL = "/ipfs-core.min.js";
 
-const BANNER = '[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3.';
+const BANNER = '[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020-2021, Webrecorder Software. Licensed under the Affero General Public License v3.';
 
 const manifest = require("./src/ext/manifest.json");
 

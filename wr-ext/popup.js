@@ -1,4 +1,4 @@
-/*! popup.js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020, Webrecorder Software. Licensed under the Affero General Public License v3. */
+/*! popup.js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020-2021, Webrecorder Software. Licensed under the Affero General Public License v3. */
 !function(e,i){for(var t in i)e[t]=i[t]}(self,function(e){var i={};function t(o){if(i[o])return i[o].exports;var a=i[o]={i:o,l:!1,exports:{}};return e[o].call(a.exports,a,a.exports,t),a.l=!0,a.exports}return t.m=e,t.c=i,t.d=function(e,i,o){t.o(e,i)||Object.defineProperty(e,i,{enumerable:!0,get:o})},t.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},t.t=function(e,i){if(1&i&&(e=t(e)),8&i)return e;if(4&i&&"object"==typeof e&&e&&e.__esModule)return e;var o=Object.create(null);if(t.r(o),Object.defineProperty(o,"default",{enumerable:!0,value:e}),2&i&&"string"!=typeof e)for(var a in e)t.d(o,a,function(i){return e[i]}.bind(null,a));return o},t.n=function(e){var i=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(i,"a",i),i},t.o=function(e,i){return Object.prototype.hasOwnProperty.call(e,i)},t.p="",t(t.s=255)}({0:function(e,i,t){"use strict";var o=t(8),a=t(3);function r(e,i){const{element:{content:t},parts:o}=e,a=document.createTreeWalker(t,133,null,!1);let r=s(o),n=o[r],l=-1,d=0;const c=[];let b=null;for(;a.nextNode();){l++;const e=a.currentNode;for(e.previousSibling===b&&(b=null),i.has(e)&&(c.push(e),null===b&&(b=e)),null!==b&&d++;void 0!==n&&n.index===l;)n.index=null!==b?-1:n.index-d,r=s(o,r),n=o[r]}c.forEach(e=>e.parentNode.removeChild(e))}const n=e=>{let i=11===e.nodeType?0:1;const t=document.createTreeWalker(e,133,null,!1);for(;t.nextNode();)i++;return i},s=(e,i=-1)=>{for(let t=i+1;t<e.length;t++){const i=e[t];if(Object(a.d)(i))return t}return-1};var l=t(15),d=t(14),c=t(24),b=t(9);
 /**
  * @license
@@ -204,6 +204,9 @@ class r{constructor(e,i,t){this.__parts=[],this.template=e,this.processor=i,this
       <span class="status-ready">Idle, Continue Browsing</span>`}`:this.failureMsg?o.c`
       <div class="error">
         <p>Sorry, there was an error starting recording on this page. Please try again or try a different page.</p>
+        <p>If the error persists, check the <a href="https://archiveweb.page/guide/troubleshooting/errors" target="_blank">Common Errors and Issues</a> page in the guide for
+          known issues and possible solutions.
+        </p>
       </div>
       `:this.canRecord?o.c`<i>Not Recording this Tab</i>`:this.pageUrl&&this.pageUrl.startsWith(this.extRoot)?o.c`
           <p class="is-size-7">This page is part of the extension. You can view existing archives from here.

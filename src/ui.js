@@ -277,12 +277,13 @@ class ArchiveWebApp extends ReplayWebApp
                     <p>ArchiveWeb.page allows users to create web archives directly in your browser!</p>`}
                   </div>
 
+                  <p>See the <a href="https://archiveweb.page/guide" target="_blank">ArchiveWeb.page Guide</a> for more info on how to use this tool.</p>
+
                   <p>Full source code is available at:
                     <a href="https://github.com/webrecorder/archiveweb.page" target="_blank">https://github.com/webrecorder/archiveweb.page</a>
                   </p>
 
                   <p>ArchiveWeb.page is part of the <a href="https://webrecorder.net/" target="_blank">Webrecorder Project</a>.</p>
-                  <p>This project is still in beta and some features may not work yet.</p>
 
                   <h3>Privacy Policy</h3>
                   <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, this archive data is stored directly in the browser.

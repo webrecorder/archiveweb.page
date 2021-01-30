@@ -794,15 +794,17 @@ class WrRecCollInfo extends LitElement
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = `https://ipfs.io/ipfs/${hash}/`;
+    const url = `https://dweb.link/ipfs/${hash}/`;
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);
   }
 
   onCopyIPFSLink() {
+    const ipfsPath = this.ipfsURL.slice(0, this.ipfsURL.lastIndexOf("/") + 1);
+
     this.showShareMenu = false;
-    navigator.clipboard.writeText(this.ipfsURL);
+    navigator.clipboard.writeText(ipfsPath);
   }
 
   async doDelete() {

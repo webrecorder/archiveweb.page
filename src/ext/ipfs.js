@@ -30,13 +30,15 @@ class ExtIPFSClient extends IPFSClient
     await this.initIPFS();
 
     if (isPin) {
-      const dl = new Downloader({coll});
+      const filename = "webarchive.wacz";
+
+      const dl = new Downloader({coll, filename});
       const dlResponse = await dl.download();
 
       if (!coll.config.metadata.ipfsPins) {
         coll.config.metadata.ipfsPins = [];
       }
-      
+
       const swContent = await this.fetchBuffer("sw.js");
       const uiContent = await this.fetchBuffer("ui.js");
 

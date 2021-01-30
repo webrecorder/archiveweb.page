@@ -1,5 +1,6 @@
 "use strict";
 
+import { postToGetUrl } from '@webrecorder/wabac/src/utils';
 import { getStatusText } from 'http-status-codes';
 
 
@@ -147,6 +148,19 @@ class RequestResponseInfo
       respHeaders.headersDict["x-wabac-preset-cookie"] = cookie;
     }
 
+    if (this.postData) {
+      const convData = {
+        url: this.url,
+        headers: reqHeaders.headers,
+        method: this.method,
+        postData: this.postData,
+      }
+      if (postToGetUrl(convData)) {
+        this.url = convData.url;
+        this.method = "GET";
+      }
+    }
+
     const data = {url: this.url,
                   ts: this.ts,
                   status: this.status,
@@ -161,31 +175,6 @@ class RequestResponseInfo
 
     if (this.method !== "GET") {
       data.method = this.method;
-    }
-
-    if (this.postData) {
-      const requestMime = (reqHeaders.headers.get("content-type") || "").split(";")[0];
-
-      if (this.method === "POST") {
-        let query = null;
-
-        switch (requestMime) {
-          case "application/x-www-form-urlencoded":
-            query = this.postData;
-            break;
-
-          case "application/json":
-            query = "__wb_json_data=" + this.postData.replace(/\n/g, "");
-            break;
-        }
-
-        if (query)  {
-          data.url += (data.url.indexOf("?") > 0 ? "&" : "?") + query;
-          data.method = "GET";
-        } else {
-          data.postData = this.postData;
-        }
-      }
     }
 
     return data;

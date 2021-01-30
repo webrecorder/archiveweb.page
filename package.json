@@ -1,6 +1,6 @@
 {
   "name": "ArchiveWeb.page",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",

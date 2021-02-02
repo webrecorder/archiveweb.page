@@ -1,4 +1,4 @@
-import {app, session, BrowserWindow, BrowserView, ipcMain} from 'electron';
+import {app, session, BrowserWindow, BrowserView, ipcMain, dialog} from 'electron';
 import { ElectronRecorder } from './electron-recorder';
 
 import { ElectronReplayApp, STATIC_PREFIX } from 'replaywebpage/src/electron-replay-app';
@@ -64,7 +64,50 @@ class ElectronRecorderApp extends ElectronReplayApp
     return "replay/index.html";
   }
 
-  createRecordWindow(url, collId = "") {
+  createMainWindow(argv) {
+    const theWindow = super.createMainWindow(argv);
+
+    theWindow.on("close", async (event) => {
+      if (this.recorders.size) {
+        event.preventDefault();
+        event.returnValue = false;
+        this.handleClose(theWindow);
+        return false;
+      }
+    });
+
+    return theWindow;
+  }
+
+  async handleClose(theWindow) {
+    const res = await dialog.showMessageBox(theWindow, {
+      type: "question",
+      buttons: ["Cancel", "Stop Recording and Quit"],
+      defaultId: 1,
+      cancelId: 0,
+      title: "Stop Recording and Quit",
+      message: `There are still ${this.recorders.size} active recording sessions. Stop all and quit?`
+    });
+
+    // not closing
+    if (!res.response) {
+      return;
+    }
+
+    const promises = [];
+
+    for (const rec of this.recorders.values()) {
+      promises.push(rec.shutdownPromise);
+      //rec.detach();
+      rec.recWindow.close();
+    }
+
+    await Promise.all(promises);
+
+    app.exit(0);
+  }
+
+  createRecordWindow(url, collId = "", startRec = true) {
     console.log("start rec window: " + url);
 
     const recWindow = new BrowserWindow({
@@ -74,57 +117,133 @@ class ElectronRecorderApp extends ElectronReplayApp
       show: true,
       webPreferences: {
         enableRemoteModule: true,
-        nodeIntegration: true
+        nodeIntegration: true,
+        contextIsolation: false
       }
     });
 
     const view = new BrowserView({webPreferences: {
         partition: "persist:wr",
-        plugins: true
+        plugins: true,
+        contextIsolation: true
       }
     });
 
-    recWindow.loadURL(STATIC_PREFIX + "locbar.html#" + view.webContents.id);
+    const id = view.webContents.id;
+
+    recWindow.loadURL(STATIC_PREFIX + "locbar.html#" + id);
 
     const HEADER_HEIGHT = 73;
     recWindow.addBrowserView(view);
     view.setBounds({ x: 0, y: HEADER_HEIGHT, width: this.screenSize.width, height: this.screenSize.height - HEADER_HEIGHT });
     view.setAutoResize({width: true, height: true});
     recWindow.setSize(this.screenSize.width, this.screenSize.height);
+    
     recWindow.maximize();
 
-    const recorder = new ElectronRecorder(view.webContents, this.mainWindow.webContents, collId);
+    const popupView = new BrowserView({webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }});
 
-    recWindow.on('close', (event) => {
+    let popupShown = false;
+
+    function setPopupBounds() {
+      const bounds = recWindow.getBounds();
+      popupView.setBounds({ x: bounds.width - 400, y: HEADER_HEIGHT - 22, width: 400, height: 300 });
+      //popupView.webContents.openDevTools();
+    }
+
+    ipcMain.on("popup-toggle-" + id, (event) => {
+      if (!popupShown) {
+        recWindow.addBrowserView(popupView);
+        setPopupBounds();
+        popupView.webContents.loadURL(STATIC_PREFIX + "app-popup.html#" + id).then(() => {
+          popupView.webContents.send("popup", {
+            type: "status",
+            recording: false,
+            collId,
+            pageUrl: url});
+        });
+      } else {
+        recWindow.removeBrowserView(popupView);
+      }
+      popupShown = !popupShown;
+    });
+
+    recWindow.on('resize', (event) => {
+      if (popupShown) {
+        setPopupBounds();
+      }
+    });
+
+    const recorder = new ElectronRecorder({
+      recWC: view.webContents,
+      appWC: this.mainWindow.webContents,
+      recWindow,
+      collId,
+      popup: popupView,
+      staticPrefix: this.staticContentPath
+    });
+
+    recWindow.on("close", (event) => {
       console.log("closing...")
       event.preventDefault();
-      recorder.detach().then(() => {
-        recWindow.destroy()
-        this.recorders.delete(view.webContents.id);
+      recorder.shutdown().then(() => {
+        this.recorders.delete(id);
       });
+    });
+
+    popupView.webContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
+      event.preventDefault();
+      if (url.startsWith(STATIC_PREFIX)) {
+        this.mainWindow.loadURL(url);
+        this.mainWindow.show();
+      }
+    });
+
+    ipcMain.on("popup-msg-" + id, async (event, msg) => {
+      switch (msg.type) {
+        case "startRecording":
+          await recorder.attach();
+          view.webContents.reload();
+          break;
+
+        case "stopRecording":
+          await recorder.detach();
+          break;
+      }
     });
 
     view.webContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
       event.preventDefault();
-      event.newGuest = this.createRecordWindow(url);
+      event.newGuest = this.createRecordWindow(url, collId);
       console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);
     });
 
     view.webContents.on("destroyed", () => {
-      this.recorders.delete(view.webContents.id);
+      this.recorders.delete(id);
     });
 
-    view.webContents.loadURL("about:blank").then(() => {
+    (async () => {
+      await view.webContents.loadURL("about:blank");
+
       view.webContents.clearHistory();
-      this.recorders.set(view.webContents.id, recorder);
-      recorder.attach();
+      this.recorders.set(id, recorder);
+      if (startRec) {
+        await recorder.attach();
+      }
 
       if (process.env.NODE_ENV === "development") {
         view.webContents.openDevTools();
       }
 
-      return recorder.started;
-    }).then(() => view.webContents.loadURL(url));
+      try {
+        view.webContents.loadURL(url);
+      } catch (e) {
+        console.warn("Load Failed", e);
+      }
+    })();
 
     return recWindow;
   }

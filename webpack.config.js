@@ -61,6 +61,7 @@ const electronMainConfig = (env, argv) => {
       new CopyPlugin({
         patterns: [
           { from: 'wr-ext/replay/', to: 'replay/' },
+          { from: 'wr-ext/ruffle/', to: 'ruffle/' },
           { from: 'node_modules/bcrypto/build/Release/bcrypto.node', to: 'build' },
           { from: 'node_modules/leveldown/prebuilds/', to: 'prebuilds' },
         ],
@@ -102,6 +103,7 @@ const electronRendererConfig = (env, argv) => {
     target: "electron-renderer",
     entry: {
       'locationbar': './src/electron/locationbar.js',
+      'app-popup': './src/electron/app-popup.js',
     },
 
     output: {
@@ -116,7 +118,11 @@ const electronRendererConfig = (env, argv) => {
       new CopyPlugin({
         patterns: [
           { from: 'src/electron/locbar.html', to: '' },
+          { from: 'src/electron/app-popup.html', to: '' },
         ]
+      }),
+      new webpack.DefinePlugin({
+        __IPFS_CORE_URL__: JSON.stringify("")
       })
     ],
 

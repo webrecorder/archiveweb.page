@@ -46,6 +46,10 @@ ipcRenderer.on('add-resource', async (event, data, pageInfo, collId) => {
 
   // increment page size
   db.addPage(pageInfo);
+
+  if (writtenSize) {
+    ipcRenderer.send("inc-size", writtenSize);
+  }
 });
 
 

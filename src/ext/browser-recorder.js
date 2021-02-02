@@ -181,7 +181,6 @@ class BrowserRecorder extends Recorder {
 
     if (this.port) {
       const status = this.getStatusMsg();
-      status.collId = this.collId;
       this.port.postMessage(status);
     }
   }

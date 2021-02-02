@@ -27,6 +27,14 @@ async function ensureDefaultColl(collLoader)
   return colls;
 }
 
+// ===========================================================================
+async function listAllMsg(collLoader) {
+  const colls = await ensureDefaultColl(collLoader);
+  const msg = {type: "collections"};
+  msg.collId = localStorage.getItem("defaultCollId");
+  msg.collections = colls.map(coll => ({id: coll.name, title: coll.config.metadata.title}));
+  return msg;
+}
 
 // ===========================================================================
 async function ensureDefaultCollAndIPFS(collLoader) {
@@ -184,4 +192,4 @@ async function detectLocalIPFS(ports, retries) {
   return null;
 }
 
-export { ensureDefaultColl, ensureDefaultCollAndIPFS, checkPins, ipfsAddPin, ipfsAddWithReplay, ipfsUnpinAll, detectLocalIPFS };
+export { ensureDefaultColl, ensureDefaultCollAndIPFS, checkPins, ipfsAddPin, ipfsAddWithReplay, ipfsUnpinAll, detectLocalIPFS, listAllMsg };

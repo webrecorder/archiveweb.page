@@ -44,7 +44,7 @@ class RecPopup extends LitElement
 
     this.collDrop = "";
 
-    this.extRoot = chrome.runtime.getURL("");
+    this.allowCreate = true;
   }
 
   static get properties() {
@@ -67,6 +67,16 @@ class RecPopup extends LitElement
   }
 
   firstUpdated() {
+    document.addEventListener("click", (event) => {
+      if (this.collDrop === "show") {
+        this.collDrop = "";
+      }
+    });
+
+    this.registerMessages();
+  }
+
+  registerMessages() {
     this.port = chrome.runtime.connect({name: "popup-port"});
 
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -77,53 +87,55 @@ class RecPopup extends LitElement
           this.recording = (result.indexOf("Recording:") >= 0);
         });
 
-        this.port.postMessage({tabId: this.tabId, type: "startUpdates"});
-      }
-    });
-
-    document.addEventListener("click", (event) => {
-      if (this.collDrop === "show") {
-        this.collDrop = "";
+        this.sendMessage({tabId: this.tabId, type: "startUpdates"});
       }
     });
 
     this.port.onMessage.addListener((message) => {
-      switch (message.type) {
-        case "status":
-          this.recording = message.recording;
-          this.status = message;
-          if (message.pageUrl) {
-            this.pageUrl = message.pageUrl;
-          }
-          if (message.pageTs) {
-            this.pageTs = message.pageTs;
-          }
-          this.failureMsg = message.failureMsg;
-          if (this.collId !== message.collId) {
-            this.collId = message.collId;
-            this.collTitle = this.findTitleFor(this.collId);
-            localStorage.setItem(`${this.tabId}-collId`, this.collId);
-          }
-          break;
-
-        case "collections":
-          this.collections = message.collections;
-          this.collId = localStorage.getItem(`${this.tabId}-collId`);
-          this.collTitle = "";
-          if (this.collId) {
-            this.collTitle = this.findTitleFor(this.collId);
-          }
-          // may no longer be valid, try default id
-          if (!this.collTitle) {
-            this.collId = message.collId;
-            this.collTitle = this.findTitleFor(this.collId);
-          }
-          if (!this.collTitle) {
-            this.collTitle = "[No Title]";
-          }
-          break;
-        }
+      this.onMessage(message);
     });
+  }
+
+  sendMessage(message) {
+    this.port.postMessage(message);
+  }
+
+  onMessage(message) {
+    switch (message.type) {
+      case "status":
+        this.recording = message.recording;
+        this.status = message;
+        if (message.pageUrl) {
+          this.pageUrl = message.pageUrl;
+        }
+        if (message.pageTs) {
+          this.pageTs = message.pageTs;
+        }
+        this.failureMsg = message.failureMsg;
+        if (this.collId !== message.collId) {
+          this.collId = message.collId;
+          this.collTitle = this.findTitleFor(this.collId);
+          localStorage.setItem(`${this.tabId}-collId`, this.collId);
+        }
+        break;
+
+      case "collections":
+        this.collections = message.collections;
+        this.collId = localStorage.getItem(`${this.tabId}-collId`);
+        this.collTitle = "";
+        if (this.collId) {
+          this.collTitle = this.findTitleFor(this.collId);
+        }
+        // may no longer be valid, try default id
+        if (!this.collTitle) {
+          this.collId = message.collId;
+          this.collTitle = this.findTitleFor(this.collId);
+        }
+        if (!this.collTitle) {
+          this.collTitle = "[No Title]";
+        }
+        break;
+    }
   }
 
   findTitleFor(match) {
@@ -161,11 +173,19 @@ class RecPopup extends LitElement
     return chrome.runtime.getURL("replay/index.html");
   }
 
+  get extRoot() {
+    return chrome.runtime.getURL("");
+  }
+
   getCollPage() {
     const sourceParams = new URLSearchParams();
     sourceParams.set("source", "local://" + this.collId);
 
     return this.getHomePage() + "?" + sourceParams.toString();
+  }
+
+  get notRecordingMessage() {
+    return "Not Recording this Tab";
   }
 
   static get styles() {
@@ -259,6 +279,11 @@ class RecPopup extends LitElement
       .error p {
         margin-bottom: 1em;
       }
+
+      .error-msg {
+        font-family: monospace;
+        font-style: italic;
+      }
     `);
   }
 
@@ -275,6 +300,7 @@ class RecPopup extends LitElement
       return html`
       <div class="error">
         <p>Sorry, there was an error starting recording on this page. Please try again or try a different page.</p>
+        <p class="error-msg">Error Details: <i>${this.failureMsg}</i></p>
         <p>If the error persists, check the <a href="https://archiveweb.page/guide/troubleshooting/errors" target="_blank">Common Errors and Issues</a> page in the guide for
           known issues and possible solutions.
         </p>
@@ -287,7 +313,7 @@ class RecPopup extends LitElement
         return html`
           <p class="is-size-7">This page is part of the extension. You can view existing archives from here.
           To start a new recording, click the
-          "<wr-icon .src="${wrRec}"></wr-icon>" button and enter a new URL.
+          <wr-icon .src="${wrRec}"></wr-icon> button and enter a new URL.
           </p>
         `;
       }
@@ -295,7 +321,7 @@ class RecPopup extends LitElement
       return html`<i>Can't record this page.</i>`;
     }
 
-    return html`<i>Not Recording this Tab</i>`;
+    return html`<i>${this.notRecordingMessage}</i>`;
   }
 
   renderDropdown() {
@@ -314,12 +340,13 @@ class RecPopup extends LitElement
         ${!this.recording ? html`
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
+            ${this.allowCreate ? html`
             <a @click="${(e) => this.collDrop = "create"}" class="dropdown-item">
               <span class="icon is-small">
                 <wr-icon .src="${fasPlus}"></wr-icon>
               </span>Create New Archive...
             </a>
-            <hr class="dropdown-divider">
+            <hr class="dropdown-divider">` : ``}
             ${this.collections.map((coll) => html`
               <a @click=${this.onSelectColl} data-title="${coll.title}" data-id="${coll.id}" class="dropdown-item">${coll.title}</a>
             `)}
@@ -407,15 +434,11 @@ class RecPopup extends LitElement
   }
 
   onStart() {
-    this.port.postMessage({type: "startRecording", collId: this.collId});
+    this.sendMessage({type: "startRecording", collId: this.collId});
   }
 
   onStop() {
-    this.port.postMessage({type: "stopRecording"});
-  }
-
-  onViewPages() {
-    chrome.tabs.create({url: chrome.runtime.getURL("replay/index.html") });
+    this.sendMessage({type: "stopRecording"});
   }
 
   onSelectColl(event) {
@@ -435,7 +458,7 @@ class RecPopup extends LitElement
   onNewColl() {
     localStorage.removeItem(`${this.tabId}-collId`);
 
-    this.port.postMessage({
+    this.sendMessage({
       tabId: this.tabId,
       type: "newColl",
       title: this.renderRoot.querySelector("#new-name").value

@@ -2,7 +2,7 @@ import { BrowserRecorder } from './browser-recorder';
 
 import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 
-import { detectLocalIPFS, ensureDefaultColl } from '../utils';
+import { detectLocalIPFS, ensureDefaultColl, listAllMsg } from '../utils';
 
 import { ExtIPFSClient } from './ipfs';
 
@@ -66,14 +66,6 @@ function popupHandler(port) {
   let tabId = null;
 
   port.onMessage.addListener(async (message) => {
-    async function listAll() {
-      const colls = await ensureDefaultColl(collLoader);
-      const msg = {type: "collections"};
-      msg.collId = localStorage.getItem("defaultCollId");
-      msg.collections = colls.map(coll => ({id: coll.name, title: coll.config.metadata.title}));
-      port.postMessage(msg);
-    }
-
     switch (message.type) {
       case "startUpdates":
         tabId = message.tabId;
@@ -81,7 +73,7 @@ function popupHandler(port) {
           self.recorders[tabId].port = port;
           self.recorders[tabId].doUpdateStatus();
         }
-        listAll();
+        port.postMessage(await listAllMsg(collLoader));
         break;
 
       case "startRecording":
@@ -93,9 +85,9 @@ function popupHandler(port) {
         break;
 
       case "newColl":
-        collLoader.initNewColl({title: message.title}).then((newColl) => {
+        collLoader.initNewColl({title: message.title}).then(async (newColl) => {
           localStorage.setItem("defaultCollId", newColl.name);
-          listAll();
+          port.postMessage(await listAllMsg(collLoader));
         });
         break;
     }

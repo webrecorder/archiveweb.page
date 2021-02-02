@@ -1,7 +1,7 @@
 {
   "name": "Webrecorder ArchiveWeb.page",
   "description": "Create high-fidelity web archives directly in your browser",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
     "debugger",
@@ -24,7 +24,6 @@
     "32": "icon.png",
     "128": "icon.png"
   },
-  "incognito": "split",
   "browser_action": {
     "default_icon": {
       "32": "icon.png"

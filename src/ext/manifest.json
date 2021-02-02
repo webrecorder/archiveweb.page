@@ -12,7 +12,6 @@
     "32": "$ICON",
     "128": "$ICON"
   },
-  "incognito": "split",
   "browser_action": {
     "default_icon": {
       "32": "$ICON"

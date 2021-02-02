@@ -1,23 +1,44 @@
 import { Recorder } from '../recorder';
 
+import path from 'path';
+import fs from 'fs';
+import mime from 'mime-types';
+
 const DEBUG = false;
+
+const PROXY_URL = "https://proxy.archiveweb.page/"
 
 
 // ===========================================================================
 class ElectronRecorder extends Recorder
 {
-  constructor(webContents, mainWC, collId) {
+  constructor({recWC, appWC, collId, staticPrefix, recWindow, popup}) {
     super();
-    this.mainWC = mainWC;
+    this.appWC = appWC;
     this.collId = collId;
 
-    this.webContents = webContents;
-    this.debugger = webContents.debugger;
+    this.popup = popup;
+
+    this.staticPrefix = staticPrefix;
+
+    this.recWC = recWC;
+    this.debugger = recWC.debugger;
+
+    this.recWindow = recWindow;
+    this.frameWC = recWindow.webContents;
 
     this.flatMode = true;
 
-    this.webContents.on("did-navigate", (event, url) => {
+    this.shutdownPromise = new Promise((resolve) => this._shutdownResolve = resolve);
+
+    this.recWC.on("did-navigate", (event, url) => {
       this.didNavigateInitPage(url);
+    });
+
+    this.appWC.on("ipc-message", (event, channel, ...args) => {
+      if (channel === "inc-size") {
+        this.sizeNew += args[0];
+      }
     });
 
     this.debugger.on("detach", (event, reason) => {
@@ -33,40 +54,31 @@ class ElectronRecorder extends Recorder
       this.processMessage(message, params, sessions);
     });
 
-    this.webContents.on('page-favicon-updated', (event, favicons) => {
+    this.recWC.on('page-favicon-updated', (event, favicons) => {
       this.favicons = favicons;
       for (const icon of favicons) {
-        //this.webContents.send("async-fetch", {url: icon});
+        //this.recWC.send("async-fetch", {url: icon});
         this.doAsyncFetch({url: icon});
       }
     });
   }
 
-  async loadOpenUrl(openUrl) {
-    if (!openUrl) {
-      openUrl = this.openUrl;
-    }
+  async shutdown() {
+    await this.detach();
+    this.recWindow.destroy();
+    this._shutdownResolve();
+  }
 
-    let expression;
-
-    await this.started;
-
-    console.log("loading " + openUrl);
-
-    if (openUrl) {
-      expression = `window.location.href = "${openUrl}";`;
-    } else {
-      return;
-    }
-    try {
-      await this.send("Runtime.evaluate", {expression});
-    } catch (e) {
-      console.error(e);
-    }
+  getExternalInjectURL(path) {
+    return PROXY_URL + path;
   }
 
   // Electron seems to not always pass through Page.frameNavigated events, so handle via 'did-navigate' instead
   didNavigateInitPage(url) {
+    if (!this.running || url === "about:blank") {
+      return;
+    }
+    
     if (this.nextFrameId) {
       if (this.nextFrameId != this.frameId) {
         this.historyMap = {};
@@ -76,19 +88,12 @@ class ElectronRecorder extends Recorder
       this.nextFrameId = null;
     }
 
-    this.pageInfo = {
-      id: this.newPageId(),
-      url,
-      ts: 0,
-      title: "",
-      text: "",
-      size: 0,
-      finished: false,
-      favIconUrl: "",
-      mime: "",
-    };
+    this._initNewPage(url, "");
+  }
 
-    this._pdfTextDone = null;
+  initPage(params, sessions) {
+    // not called consistently, so just using didNavigateInitPage
+    return false;
   }
 
   async processMessage(method, params, sessions) {
@@ -107,6 +112,60 @@ class ElectronRecorder extends Recorder
     }
   }
 
+  async handlePaused(params, sessions) {
+    if (!params.request.url.startsWith(PROXY_URL)) {
+      return await super.handlePaused(params, sessions);
+    }
+
+    this.removeReqResp(params.networkId || params.requestId);
+
+    //console.log(params.request.method + " " + params.request.url);
+    const headers = new Headers(params.request.headers);
+
+    // try serve static file from app dir
+    let filename = params.request.url.slice(PROXY_URL.length).split("?", 1)[0];
+    filename = filename.split("#", 1)[0];
+
+    let ext = path.extname(filename);
+    if (!ext) {
+      ext = ".html";
+      filename += ext;
+    }
+
+    const fullPath = path.join(this.staticPrefix, filename);
+
+    console.log("fullPath: " + fullPath);
+
+    const data = await fs.promises.readFile(fullPath);
+
+    const base64Str = data.toString("base64");
+
+    const responseHeaders = [];
+
+    const origin = headers.get("origin");
+
+    const mimeType = mime.contentType(ext);
+
+    if (origin) {
+      responseHeaders.push({name: "Access-Control-Allow-Origin", value: origin});
+    }
+
+    if (mimeType) {
+      responseHeaders.push({name: "Content-Type", value: mimeType});
+    }
+
+    try {
+      await this.send("Fetch.fulfillRequest",
+        {"requestId": params.requestId,
+         "responseCode": 200,
+         "responseHeaders": responseHeaders,
+         "body": base64Str
+        }, sessions);
+    } catch (e) {
+
+    } 
+  }
+
   _doDetach() {
     this.debugger.detach();
   }
@@ -120,10 +179,18 @@ class ElectronRecorder extends Recorder
 
   _doStop() {
     // send msg
+    this.doUpdateStatus();
   }
 
   doUpdateStatus() {
-    //console.log(this.getStatusMsg());
+    const stats = this.getStatusMsg();
+    //console.log(stats);
+    if (this.frameWC) {
+      this.frameWC.send("stats", stats);
+    }
+    if (this.popup && this.popup.webContents) {
+      this.popup.webContents.send("popup", stats);
+    }
   }
 
   getFavIcon() {
@@ -136,13 +203,19 @@ class ElectronRecorder extends Recorder
   }
 
   async _doAddResource(data) {
-    //TODO: get result if actually added
-    this.mainWC.send("add-resource", data, this.pageInfo, this.collId);
+    // if (data.url.startsWith(PROXY_URL)) {
+    //   return 0;
+    // }
+
+    console.log("res", data.url);
+
+    // size incremented asynchronously
+    this.appWC.send("add-resource", data, this.pageInfo, this.collId);
     return 0;
   }
 
   _doAddPage(pageInfo) {
-    this.mainWC.send("add-page", this.pageInfo, this.collId);
+    this.appWC.send("add-page", this.pageInfo, this.collId);
   }
 
   _doSendCommand(method, params, promise) {

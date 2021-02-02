@@ -10,7 +10,7 @@ import fasMenuV from '@fortawesome/fontawesome-free/svgs/solid/ellipsis-v.svg';
 
 import wrLogo from '../../assets/wr-logo.svg';
 
-//import { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import { webContents } from '@electron/remote';
 
 
@@ -40,6 +40,8 @@ class LocationBar extends LitElement
     } else {
       this.initWC();
     }
+
+    this.initStats();
   }
 
   initWC() {
@@ -74,6 +76,17 @@ class LocationBar extends LitElement
     });
   }
 
+  initStats() {
+    this.stats = null;
+    this.numPending = 0;
+
+    ipcRenderer.on("stats", (event, stats) => {
+      this.stats = stats;
+      this.recording = stats.recording;
+      this.numPending = stats.numPending;
+    });
+  }
+
   static get properties() {
     return {
       isLoading: { type: Boolean },
@@ -81,7 +94,11 @@ class LocationBar extends LitElement
       url: { type: String },
 
       canGoBack: { type: Boolean },
-      canGoForward: { type: Boolean }
+      canGoForward: { type: Boolean },
+
+      stats: { type: Object },
+      numPending: { type: Number },
+      recording: { type: Boolean }
     }
   }
 
@@ -132,6 +149,33 @@ class LocationBar extends LitElement
         padding: 0 1.5em 0 1.0em;
       }
 
+      #wr-button .icon {
+        position: relative;
+      }
+
+      .overlay {
+        position: absolute;
+        z-index: 20;
+        width: 16px;
+        height: 16px;
+        bottom: 0px;
+        right: 0px;
+        margin-right: -4px;
+        margin-bottom: -4px;
+        border: 1px solid black;
+        border-radius: 3px;
+        font-size: 9px;
+        color: white;
+      }
+
+      .overlay-idle {
+        background-color: #64e986;
+      }
+
+      .overlay-waiting {
+        background-color: #bb9f08;
+      }
+
     `);
   }
 
@@ -168,16 +212,25 @@ class LocationBar extends LitElement
             </span>` : html``}
           </div>
         </form>
-        <a id="wr-button" role="button" class="button is-borderless">
+        <a id="wr-button" role="button" class="button is-borderless" @click="${this.onTogglePopup}">
           <span class="icon is-small">
             ${!this.isLoading ? html`
             <fa-icon id="wrlogo" size="1.8em" .svg="${wrLogo}" aria-hidden="true"></fa-icon>` : html`
             <wr-anim-logo id="wrlogo" size="1.8em" .svg="${wrLogo}" aria-hidden="true"></wr-anim-logo>`
             }
+            ${this.recording ? html`
+              ${!this.numPending ? html`
+              <span class="overlay overlay-idle"></span>` : html`
+              <span class="overlay overlay-waiting">${this.numPending}</span>
+              `}` : ``}
           </span>
         </a>
       </div>
     </nav>`;
+  }
+
+  onTogglePopup() {
+    ipcRenderer.send("popup-toggle-" + this.wcId);
   }
 
   tryNextIcon() {

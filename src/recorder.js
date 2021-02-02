@@ -22,10 +22,10 @@ class Recorder {
 
     this.flatMode = false;
 
+    this.collId = "";
+
     this.pendingRequests = {};
     this.numPending = 0;
-
-    this.injectScripts = [autofetcher, this.addExternalInject("ruffle/ruffle.js")];
 
     this.running = false;
 
@@ -151,8 +151,13 @@ class Recorder {
       pageUrl: this.pageInfo.url,
       pageTs: this.pageInfo.ts,
       failureMsg: this.failureMsg,
+      collId: this.collId,
       type: "status"
     }
+  }
+
+  get injectScripts() {
+    return [autofetcher, this.addExternalInject("ruffle/ruffle.js")];
   }
 
   async start() {
@@ -163,6 +168,7 @@ class Recorder {
     }
 
     await this.sessionInit([]);
+    this.failureMsg = null;
   }
 
   async sessionInit(sessions) {
@@ -473,7 +479,7 @@ class Recorder {
 
   initPage(params, sessions) {
     if (params.frame.parentId) {
-      return;
+      return false;
     }
 
     //console.log("Page.frameNavigated: " + params.frame.url + " " + params.frame.id);
@@ -484,16 +490,27 @@ class Recorder {
     this.frameId = params.frame.id;
     this.loaderId = params.frame.loaderId;
 
+    this._initNewPage(params.frame.url, params.frame.mimeType);
+
+    const reqresp = this.removeReqResp(this.loaderId);
+    if (reqresp) {
+      this.fullCommit(reqresp, sessions);
+    }
+
+    return true;
+  }
+
+  _initNewPage(url, mime) {
     this.pageInfo = {
       id: this.newPageId(),
-      url: params.frame.url,
+      url,
       ts: 0,
       title: "",
       text: "",
       size: 0,
       finished: false,
       favIconUrl: "",
-      mime: params.frame.mimeType
+      mime,
     };
 
     this.numPages++;
@@ -501,11 +518,6 @@ class Recorder {
     this._fetchUrls.clear();
 
     this._pdfTextDone = null;
-
-    const reqresp = this.removeReqResp(this.loaderId);
-    if (reqresp) {
-      this.fullCommit(reqresp, sessions);
-    }
   }
 
   loadFavIcon(favIconUrl, sessions) {
@@ -611,7 +623,9 @@ class Recorder {
         reqresp = await this.handleFetchResponse(params, sessions);
     
         try {
-          continued = await this.rewriteResponse(params, reqresp, sessions);
+          if (reqresp && reqresp.payload) {
+            continued = await this.rewriteResponse(params, reqresp, sessions);
+          }
         } catch (e) {
           console.error("Fetch rewrite failed for: " + params.request.url);
           console.error(e);
@@ -960,7 +974,7 @@ class Recorder {
     let payload;
 
     if (reqresp.status === 206) {
-      this.doAsyncFetch(reqresp, sessions);
+      sleep(500).then(() => this.doAsyncFetch(reqresp, sessions));
       reqresp.payload = null;
       return null;
     }

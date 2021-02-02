@@ -1,7 +1,6 @@
 "use strict";
 
-import { postToGetUrl } from '@webrecorder/wabac/src/utils';
-import { getStatusText } from 'http-status-codes';
+import { postToGetUrl, getStatusText } from '@webrecorder/wabac/src/utils';
 
 
 // ===========================================================================

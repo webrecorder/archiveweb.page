@@ -100,27 +100,27 @@ class Downloader
     this.fileStats = [];
   }
 
-  download() {
+  download(sizeCallback = null) {
     switch (this.format) {
       case "wacz":
-        return this.downloadWACZ(this.filename);
+        return this.downloadWACZ(this.filename, sizeCallback);
 
       case "warc":
-        return this.downloadWARC(this.filename);
+        return this.downloadWARC(this.filename, sizeCallback);
 
       default:
         return {"error": "invalid 'format': must be wacz or warc"};
     }
   }
 
-  downloadWARC(filename) {
+  downloadWARC(filename, sizeCallback = null) {
     filename = (filename || "webarchive").split(".")[0] + ".warc";
 
     const dl = this;
 
     const rs = new ReadableStream({
       start(controller) {
-        dl.queueWARC(controller, filename);  
+        dl.queueWARC(controller, filename, sizeCallback);
       }
     });
 
@@ -144,17 +144,23 @@ class Downloader
     }
   }
 
-  async queueWARC(controller, filename) {
+  async queueWARC(controller, filename, sizeCallback) {
     await this.loadResources();
 
     const metadata = this.metadata;
 
     for await (const chunk of this.generateWARC(filename, metadata)) {
       controller.enqueue(chunk);
+      if (sizeCallback) {
+        sizeCallback(chunk.length);
+      }
     }
 
     for await (const chunk of this.generateTextWARC(filename)) {
       controller.enqueue(chunk);
+      if (sizeCallback) {
+        sizeCallback(chunk.length);
+      }
     }
 
     controller.close();
@@ -175,7 +181,7 @@ class Downloader
     });
   }
 
-  async downloadWACZ(filename) {
+  async downloadWACZ(filename, sizeCallback) {
     const zip = new JSZip();
 
     filename = (filename || "webarchive").split(".")[0] + ".wacz";
@@ -202,6 +208,9 @@ class Downloader
         zip.generateInternalStream({type:"uint8array", streamFiles: true})
         .on('data', (data, metadata) => {
           controller.enqueue(data);
+          if (sizeCallback) {
+            sizeCallback(data.length);
+          }
           //console.log(metadata);
         })
         .on('error', (error) => {

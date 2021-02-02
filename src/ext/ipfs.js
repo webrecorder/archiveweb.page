@@ -2,13 +2,17 @@ import { IPFSClient } from "@webrecorder/wabac/src/ipfs";
 import { Downloader } from "../downloader";
 import { ensureDefaultCollAndIPFS, ipfsAddWithReplay, ipfsUnpinAll, checkPins } from "../utils";
 
+import ipfsHttpClient from 'ipfs-http-client';
+
 
 // ===========================================================================
 class ExtIPFSClient extends IPFSClient
 {
-  constructor(collLoader) {
+  constructor(collLoader, localApiUrl) {
     super(true);
     this.collLoader = collLoader;
+    this.sharedNode = false;
+    this.localApiUrl = localApiUrl;
   }
 
   async init() {
@@ -17,11 +21,27 @@ class ExtIPFSClient extends IPFSClient
     if (validPins.size) {
       await this.initIPFS();
 
-      await checkPins(this, validPins);
+      if (!this.sharedNode) {
+        await checkPins(this, validPins);
+      }
     }
   }
 
-  async ipfsPinUnpin(collId, isPin) {
+  async _doInitIPFS() {
+    this.ipfs = await this._initHttpClient();
+    if (!this.ipfs) {
+      await super._doInitIPFS();
+    }
+  }
+
+  async _initHttpClient() {
+    const ipfs = ipfsHttpClient(this.localApiUrl);
+    this.customPreload = false;
+    this.sharedNode = true;
+    return ipfs;
+  }
+
+  async ipfsPinUnpin(collId, isPin, progress = null) {
     const coll = await this.collLoader.loadColl(collId);
     if (!coll) {
       return {error: "collection_not_found"};
@@ -33,7 +53,7 @@ class ExtIPFSClient extends IPFSClient
       const filename = "webarchive.wacz";
 
       const dl = new Downloader({coll, filename});
-      const dlResponse = await dl.download();
+      const dlResponse = await dl.download(progress);
 
       if (!coll.config.metadata.ipfsPins) {
         coll.config.metadata.ipfsPins = [];

@@ -498,6 +498,7 @@ class WrRecCollInfo extends LitElement
     this.shareWait = false;
     this.showShareMenu = false;
     this.shareWarn = false;
+    this.shareProgress = 0;
   }
 
   static get properties() {
@@ -508,6 +509,7 @@ class WrRecCollInfo extends LitElement
       shareWait: { type: Boolean },
       showShareMenu: { type: Boolean },
       shareWarn: { type: Boolean },
+      shareProgress: { type: Number }
     }
   }
 
@@ -553,6 +555,12 @@ class WrRecCollInfo extends LitElement
     .button-row *:not(:last-child) {
       margin-right: 0.5em;
     }
+
+    .progress.is-small.mini {
+      height: 2px;
+      margin-top: 2px;
+      width: calc(100% - 0.5em);
+    }
     
     `);
   }
@@ -578,6 +586,8 @@ class WrRecCollInfo extends LitElement
   render() {
     const coll = this.coll;
     const detailed = this.detailed;
+
+    const ipfsAPI = localStorage.getItem("ipfsLocalURL");
 
     return html`
       <div class="columns">
@@ -618,44 +628,51 @@ class WrRecCollInfo extends LitElement
           <div class="button-row is-flex">
             ${this.ipfsURL ? html`
 
-              <div class="dropdown is-up ${this.showShareMenu ? 'is-active' : ''}">
-                <div class="dropdown-trigger">
-                  <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? 'is-loading' : ''}"" aria-haspopup="true" aria-controls="dropdown-menu">
-                    <span>Sharing!</span>
-                    <span class="icon">
-                      <fa-icon .svg=${fasCaretUp}></fa-icon>
-                    </span>
-                  </button>
-                </div>
-                <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
-                  <div class="dropdown-content">
-                    <a @click="${this.onPin}" class="dropdown-item">
-                      <span class="icon is-small">
-                        <fa-icon .svg="${fasReshare}"></fa-icon>
+              <div class="is-flex is-flex-direction-column">
+                <div class="dropdown is-up ${this.showShareMenu ? 'is-active' : ''}">
+                  <div class="dropdown-trigger">
+                    <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? 'is-loading' : ''}"" aria-haspopup="true" aria-controls="dropdown-menu">
+                      <span>Sharing!</span>
+                      <span class="icon">
+                        <fa-icon .svg=${fasCaretUp}></fa-icon>
                       </span>
-                      Reshare Latest
-                    </a>
-                    <hr class="dropdown-divider"/>
-                    <a @click="${this.onCopyIPFSLink}" class="dropdown-item">
-                      <span class="icon is-small">
-                        <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                      </span>
-                      Copy IPFS URL
-                    </a>
-                    <a @click="${this.onCopyGatewayLink}" class="dropdown-item">
+                    </button>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
+                    <div class="dropdown-content">
+                      <div class="dropdown-item">
+                        <i class="is-size-7">${ipfsAPI ? `Sharing via local IPFS on ${ipfsAPI}` : "Sharing via in-browser IPFS"}</i>
+                      </div>
+                      <hr class="dropdown-divider"/>
+                      <a @click="${this.onPin}" class="dropdown-item">
+                        <span class="icon is-small">
+                          <fa-icon .svg="${fasReshare}"></fa-icon>
+                        </span>
+                        Reshare Latest
+                      </a>
+                      <hr class="dropdown-divider"/>
+                      <a @click="${this.onCopyIPFSLink}" class="dropdown-item">
+                        <span class="icon is-small">
+                          <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                        </span>
+                        Copy IPFS URL
+                      </a>
+                      <a @click="${this.onCopyRWPLink}" class="dropdown-item">
+                        <span class="icon is-small">
+                          <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                        </span>
+                        Copy Shareable ReplayWeb.page Link
+                      </a>
+                      <a @click="${this.onCopyGatewayLink}" class="has-text-weight-bold dropdown-item">
                       <span class="icon is-small">
                         <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
                       </span>
                       Copy Shareable IPFS Gateway Link
                     </a>
-                    <a @click="${this.onCopyRWPLink}" class="has-text-weight-bold dropdown-item">
-                      <span class="icon is-small">
-                        <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                      </span>
-                      Copy Shareable ReplayWeb.page Link
-                    </a>
+                    </div>
                   </div>
                 </div>
+                <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
               </div>
 
               <button class="button is-small" @click="${this.onUnpin}">
@@ -667,12 +684,15 @@ class WrRecCollInfo extends LitElement
 
               `: html`
             
-              <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPinOrWarn}">
-                <span class="icon is-small">
-                  <fa-icon .svg="${fasShare}"></fa-icon>
-                </span>
-                <span>Start Sharing</span>
-              </button>
+              <div class="is-flex is-flex-direction-column">
+                <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPinOrWarn}">
+                  <span class="icon is-small">
+                    <fa-icon .svg="${fasShare}"></fa-icon>
+                  </span>
+                  <span>Start Sharing</span>
+                </button>
+                <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
+              </div>
             `}
           </div>
         </div>
@@ -749,7 +769,7 @@ class WrRecCollInfo extends LitElement
     if (json.ipfsURL) {
       this.ipfsURL = json.ipfsURL;
     }
-    this.onCopyRWPLink();
+    this.onCopyGatewayLink();
     this.shareWait = false;
   }
 
@@ -777,6 +797,14 @@ class WrRecCollInfo extends LitElement
     return new Promise((resolve) => {
       const port = chrome.runtime.connect({name: "share-port"});
       port.onMessage.addListener((message) => {
+        if (message.progress) {
+          console.log(message);
+          this.shareProgress = message.size;
+          //this.requestUpdate();
+          return;
+        }
+
+        this.shareProgress = 0;
         resolve(message);
       });
       port.postMessage({collId, pin});

@@ -167,7 +167,8 @@ const extensionConfig = (env, argv) => {
       new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2),
       new webpack.DefinePlugin({
         __SW_NAME__: JSON.stringify("sw.js"),
-        __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL)
+        __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL),
+        __IPFS_HTTP_CLIENT_URL__: JSON.stringify("")
       }),
       new CopyPlugin({
         patterns: [

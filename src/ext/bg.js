@@ -2,7 +2,7 @@ import { BrowserRecorder } from './browser-recorder';
 
 import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 
-import { ensureDefaultColl } from '../utils';
+import { detectLocalIPFS, ensureDefaultColl } from '../utils';
 
 import { ExtIPFSClient } from './ipfs';
 
@@ -18,7 +18,7 @@ const openWinMap = new Map();
 
 const collLoader = new CollectionLoader();
 
-const ipfsClient = new ExtIPFSClient(collLoader);
+let ipfsClient = null;
 
 
 // ===========================================================================
@@ -43,8 +43,15 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 function shareHandler(port) {
+  let size = 0;
+
   port.onMessage.addListener(async (message) => {
-    const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin);
+    function progress(incSize) {
+      size += incSize;
+      port.postMessage({size, progress: true});
+    }
+
+    const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin, progress);
     port.postMessage(resp);
     port.disconnect();
   });
@@ -291,4 +298,35 @@ chrome.runtime.onInstalled.addListener(main);
 
 
 // ===========================================================================
-ipfsClient.init();
+async function initIpfs() {
+  const localApiUrl = await detectLocalIPFS();
+
+  ipfsClient = new ExtIPFSClient(collLoader, localApiUrl);
+
+  if (localApiUrl) {
+    console.log("Local IPFS Node: " + localApiUrl);
+
+    chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
+      const { requestHeaders } = details;
+
+      for (const header of requestHeaders) {
+        if (header.name.toLowerCase() === "origin") {
+          header.value = localApiUrl;
+          return {requestHeaders};
+        }
+      }
+
+      details.requestHeaders.push({name: "Origin", value: localApiUrl});
+      return {requestHeaders};
+    },
+    {urls: [localApiUrl + "/*"]},
+    ["blocking", "requestHeaders", "extraHeaders"]
+    );
+  }
+
+  localStorage.setItem("ipfsLocalURL", localApiUrl ? localApiUrl : "");
+
+  ipfsClient.init();
+}
+
+initIpfs();

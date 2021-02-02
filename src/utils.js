@@ -48,6 +48,11 @@ async function ensureDefaultCollAndIPFS(collLoader) {
 async function checkPins(ipfsClient, validPins) {
   const invalidPins = [];
 
+  // don't do anything with pinned data on a shared node
+  if (ipfsClient.sharedNode) {
+    return;
+  }
+
   for await (const {cid, type} of ipfsClient.ipfs.pin.ls({type: "recursive"})) {
     const hash = cid.toString();
 
@@ -155,4 +160,25 @@ async function ipfsUnpinAll(ipfsClient, pinList) {
   return null;
 }
 
-export { ensureDefaultColl, ensureDefaultCollAndIPFS, checkPins, ipfsAddPin, ipfsAddWithReplay, ipfsUnpinAll };
+
+// ===========================================================================
+async function detectLocalIPFS() {
+  if (!navigator.brave || !await navigator.brave.isBrave()) {
+    return null;
+  }
+
+  for (const port of [45001, 45002, 45003, 45004, 45005]) {
+    const origin = `http://127.0.0.1:${port}`;
+    try {
+      const resp = await fetch(origin + "/api/v0/version");
+      if (resp.status === 405) {
+        return origin;
+      }
+    } catch (e) {
+    }
+  }
+
+  return null;
+}
+
+export { ensureDefaultColl, ensureDefaultCollAndIPFS, checkPins, ipfsAddPin, ipfsAddWithReplay, ipfsUnpinAll, detectLocalIPFS };

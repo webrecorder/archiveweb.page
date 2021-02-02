@@ -3,15 +3,16 @@
   "description": "Create high-fidelity web archives directly in your browser",
   "version": "$VERSION",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "unlimitedStorage", "<all_urls>", "ipfs"],
+  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "unlimitedStorage", "webRequest", "webRequestBlocking", "ipfs", "<all_urls>"],
   "background": { 
     "scripts": ["bg.js"],
-    "persistent": false
+    "persistent": true
   },
   "icons": {
     "32": "$ICON",
     "128": "$ICON"
   },
+  "incognito": "split",
   "browser_action": {
     "default_icon": {
       "32": "$ICON"

@@ -162,20 +162,23 @@ async function ipfsUnpinAll(ipfsClient, pinList) {
 
 
 // ===========================================================================
-async function detectLocalIPFS() {
-  if (!navigator.brave || !await navigator.brave.isBrave()) {
-    return null;
-  }
+async function detectLocalIPFS(ports, retries) {
+  for (let i = 0; i < retries; i++) {
+    for (const port of ports) {
+      const origin = `http://127.0.0.1:${port}`;
 
-  for (const port of [45001, 45002, 45003, 45004, 45005]) {
-    const origin = `http://127.0.0.1:${port}`;
-    try {
-      const resp = await fetch(origin + "/api/v0/version");
-      if (resp.status === 405) {
-        return origin;
+      try {
+        const resp = await fetch(origin + "/api/v0/version");
+        if (resp.status === 405) {
+          return origin;
+        }
+      } catch (e) {
       }
-    } catch (e) {
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log("Retrying local IPFS...")
   }
 
   return null;

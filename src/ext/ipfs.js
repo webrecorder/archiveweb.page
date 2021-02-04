@@ -1,6 +1,6 @@
 import { IPFSClient } from "@webrecorder/wabac/src/ipfs";
 import { Downloader } from "../downloader";
-import { ensureDefaultCollAndIPFS, ipfsAddWithReplay, ipfsUnpinAll, checkPins } from "../utils";
+import { ensureDefaultCollAndIPFS, ipfsAddWithReplay, ipfsUnpinAll, checkPins, detectLocalIPFS } from "../utils";
 
 import ipfsHttpClient from 'ipfs-http-client';
 
@@ -35,6 +35,41 @@ class ExtIPFSClient extends IPFSClient
   }
 
   async _initHttpClient() {
+    if (!this.localApiUrl) {
+      if (navigator.brave && await navigator.brave.isBrave()) {
+        // wait up to 30 seconds for ipfs node to boot
+        this.localApiUrl = await detectLocalIPFS([45001, 45002, 45003, 45004, 45005], 30);
+      }
+    }
+
+    if (!this.localApiUrl) {
+      console.log("Using Embedded IPFS Node");
+      return null;
+    }
+
+    const localApiUrl = this.localApiUrl;
+
+    console.log("Local IPFS Node: " + this.localApiUrl);
+
+    chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
+      const { requestHeaders } = details;
+
+      for (const header of requestHeaders) {
+        if (header.name.toLowerCase() === "origin") {
+          header.value = localApiUrl;
+          return {requestHeaders};
+        }
+      }
+
+      details.requestHeaders.push({name: "Origin", value: localApiUrl});
+      return {requestHeaders};
+    },
+    {urls: [localApiUrl + "/*"]},
+    ["blocking", "requestHeaders", "extraHeaders"]
+    );
+
+    localStorage.setItem("ipfsLocalURL", this.localApiUrl ? this.localApiUrl : "");
+
     const ipfs = ipfsHttpClient(this.localApiUrl);
     this.customPreload = false;
     this.sharedNode = true;

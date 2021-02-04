@@ -299,32 +299,7 @@ chrome.runtime.onInstalled.addListener(main);
 
 // ===========================================================================
 async function initIpfs() {
-  const localApiUrl = await detectLocalIPFS();
-
-  ipfsClient = new ExtIPFSClient(collLoader, localApiUrl);
-
-  if (localApiUrl) {
-    console.log("Local IPFS Node: " + localApiUrl);
-
-    chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
-      const { requestHeaders } = details;
-
-      for (const header of requestHeaders) {
-        if (header.name.toLowerCase() === "origin") {
-          header.value = localApiUrl;
-          return {requestHeaders};
-        }
-      }
-
-      details.requestHeaders.push({name: "Origin", value: localApiUrl});
-      return {requestHeaders};
-    },
-    {urls: [localApiUrl + "/*"]},
-    ["blocking", "requestHeaders", "extraHeaders"]
-    );
-  }
-
-  localStorage.setItem("ipfsLocalURL", localApiUrl ? localApiUrl : "");
+  ipfsClient = new ExtIPFSClient(collLoader);
 
   ipfsClient.init();
 }

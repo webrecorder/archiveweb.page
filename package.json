@@ -1,6 +1,6 @@
 {
   "name": "ArchiveWeb.page",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -68,7 +68,8 @@
       "dist/*.html",
       "dist/prebuilds/${platform}-${arch}/*",
       "dist/build/*",
-      "dist/replay/*"
+      "dist/replay/*",
+      "dist/ruffle/*"
     ],
     "dmg": {
       "title": "ArchiveWeb.page"

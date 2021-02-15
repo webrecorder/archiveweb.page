@@ -11,7 +11,7 @@ jobs:
         os: [macos-10.14, ubuntu-latest]
         platform: [windows, linux]
         exclude:
-          - os: macos-latest
+          - os: macos-10.14
             platform: windows
 
     steps:

@@ -75,7 +75,10 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
-      "target": "dmg",
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
@@ -97,7 +100,7 @@
       ]
     },
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "extraResources": [
         "plugins-win"
       ]

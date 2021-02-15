@@ -1032,7 +1032,7 @@ ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-any-signal@^2.0.0, any-signal@^2.1.0, any-signal@^2.1.1:
+any-signal@^2.1.0, any-signal@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/any-signal/-/any-signal-2.1.1.tgz#6458f7ce08cfdd8df21953016ae03ca129b07e35"
   integrity sha512-kjyMTtHQsB3yZAVDZlLVucPJnmnrXhamB/rm3Td3jse5Q+16FXXolP4elWU0yLFDyrxTkjjDXtIdjSPiEznf3w==
@@ -4428,15 +4428,6 @@ ipfs-block-service@^0.18.0:
     err-code "^2.0.0"
     streaming-iterables "^5.0.2"
 
-ipfs-core-types@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ipfs-core-types/-/ipfs-core-types-0.2.1.tgz#460bf2116477ce621995468c962c685dbdc4ac6f"
-  integrity sha512-q93+93qSybku6woZaajE9mCrHeVoMzNtZ7S5m/zx0+xHRhnoLlg8QNnGGsb5/+uFQt/RiBArsIw/Q61K9Jwkzw==
-  dependencies:
-    cids "^1.1.5"
-    multiaddr "^8.0.0"
-    peer-id "^0.14.1"
-
 ipfs-core-types@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/ipfs-core-types/-/ipfs-core-types-0.3.0.tgz#244ce1db49ba60b88f505de6cc8e2565d4c534ab"
@@ -4445,27 +4436,6 @@ ipfs-core-types@^0.3.0:
     cids "^1.1.5"
     multiaddr "^8.0.0"
     peer-id "^0.14.1"
-
-ipfs-core-utils@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/ipfs-core-utils/-/ipfs-core-utils-0.6.1.tgz#59d1ca9ff4a33bbf6497c4abe024573c3fd7d784"
-  integrity sha512-UFIklwE3CFcsNIhYFDuz0qB7E2QtdFauRfc76kskgiqhGWcjqqiDeND5zBCrAy0u8UMaDqAbFl02f/mIq1yKXw==
-  dependencies:
-    any-signal "^2.0.0"
-    blob-to-it "^1.0.1"
-    browser-readablestream-to-it "^1.0.1"
-    cids "^1.1.5"
-    err-code "^2.0.3"
-    ipfs-core-types "^0.2.1"
-    ipfs-utils "^5.0.0"
-    it-all "^1.0.4"
-    it-map "^1.0.4"
-    it-peekable "^1.0.1"
-    multiaddr "^8.0.0"
-    multiaddr-to-uri "^6.0.0"
-    parse-duration "^0.4.4"
-    timeout-abort-controller "^1.1.1"
-    uint8arrays "^1.1.0"
 
 ipfs-core-utils@^0.7.1:
   version "0.7.1"
@@ -4557,19 +4527,20 @@ ipfs-core@^0.5.2:
     streaming-iterables "^5.0.2"
     uint8arrays "^2.0.5"
 
-ipfs-http-client@^48.2.2:
-  version "48.2.2"
-  resolved "https://registry.yarnpkg.com/ipfs-http-client/-/ipfs-http-client-48.2.2.tgz#b570fb99866f94df1c394a6101a2eb750ff46599"
-  integrity sha512-f3ppfWe913SJLvunm0UgqdA1dxVZSGQJPaEVJtqgjxPa5x0fPDiBDdo60g2MgkW1W6bhF9RGlxvHHIE9sv/tdg==
+ipfs-http-client@^49.0.2:
+  version "49.0.2"
+  resolved "https://registry.yarnpkg.com/ipfs-http-client/-/ipfs-http-client-49.0.2.tgz#b74c2fd24f2395a40a9eaf4b8e5906157605eb9d"
+  integrity sha512-Q7OOFO2laqL2hZCDGVSF+ObQ/xptO6L/qbe0WkXfM1OZypw2Bah1BbChPTjmDTrXeicNYgua85EbQqtv1C/WSw==
   dependencies:
-    any-signal "^2.0.0"
+    abort-controller "^3.0.0"
+    any-signal "^2.1.2"
     bignumber.js "^9.0.0"
     cids "^1.1.5"
     debug "^4.1.1"
     form-data "^3.0.0"
-    ipfs-core-types "^0.2.1"
-    ipfs-core-utils "^0.6.1"
-    ipfs-utils "^5.0.0"
+    ipfs-core-types "^0.3.0"
+    ipfs-core-utils "^0.7.1"
+    ipfs-utils "^6.0.1"
     ipld-block "^0.11.0"
     ipld-dag-cbor "^0.17.0"
     ipld-dag-pb "^0.20.0"
@@ -4578,16 +4549,16 @@ ipfs-http-client@^48.2.2:
     it-map "^1.0.4"
     it-tar "^1.2.2"
     it-to-stream "^0.1.2"
-    merge-options "^2.0.0"
+    merge-options "^3.0.4"
     multiaddr "^8.0.0"
     multibase "^3.0.0"
     multicodec "^2.0.1"
     multihashes "^3.0.1"
     nanoid "^3.1.12"
-    native-abort-controller "~0.0.3"
+    native-abort-controller "^1.0.3"
     parse-duration "^0.4.4"
     stream-to-it "^0.2.2"
-    uint8arrays "^1.1.0"
+    uint8arrays "^2.0.5"
 
 ipfs-repo-migrations@^6.0.0:
   version "6.0.0"
@@ -6929,7 +6900,7 @@ napi-macros@~2.0.0:
   resolved "https://registry.yarnpkg.com/napi-macros/-/napi-macros-2.0.0.tgz#2b6bae421e7b96eb687aa6c77a7858640670001b"
   integrity sha512-A0xLykHtARfueITVDernsAWdtIMbOJgKgcluwENp3AlsKN/PloyO10HtmoqnFAQAcxPkgZN7wdfPfEd0zNGxbg==
 
-native-abort-controller@0.0.3, native-abort-controller@~0.0.3:
+native-abort-controller@0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/native-abort-controller/-/native-abort-controller-0.0.3.tgz#4c528a6c9c7d3eafefdc2c196ac9deb1a5edf2f8"
   integrity sha512-YIxU5nWqSHG1Xbu3eOu3pdFRD882ivQpIcu6AiPVe2oSVoRbfYW63DVkZm3g1gHiMtZSvZzF6THSzTGEBYl8YA==

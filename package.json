@@ -15,7 +15,7 @@
     "hash-wasm": "^4.4.1",
     "http-status-codes": "^1.4.0",
     "ipfs-core": "^0.5.2",
-    "ipfs-http-client": "^48.2.2",
+    "ipfs-http-client": "^49.0.2",
     "jszip": "^3.5.0",
     "keyword-mark-element": "^0.1.2",
     "lodash": "^4.17.20",

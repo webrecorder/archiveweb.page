@@ -47,7 +47,7 @@ jobs:
               if [ "$GITHUB_REF" == "refs/heads/main" ]; then
                 export YARN_BUILD_CMD="release"
               else
-                export YARN_BUILD_CMD="release"
+                export YARN_BUILD_CMD="dist"
               fi
 
               if [ "$RUNNER_OS" == "Linux" ]; then

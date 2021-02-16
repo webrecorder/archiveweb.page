@@ -1,0 +1,96 @@
+name: Build/release
+
+on: push
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-10.14, ubuntu-latest]
+        platform: [windows, linux]
+        exclude:
+          - os: macos-10.14
+            platform: windows
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Cache Dirs
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/electron
+            ~/.cache/electron-builder
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Run Build
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          PLATFORM: ${{ matrix.platform }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        run: |
+              if [ "$GITHUB_REF" == "refs/heads/main" ]; then
+                export YARN_BUILD_CMD="release"
+              else
+                export YARN_BUILD_CMD="dist"
+              fi
+
+              if [ "$RUNNER_OS" == "Linux" ]; then
+                if [ "$PLATFORM" == "linux" ]; then
+                  #mkdir -p plugins-linux;
+                  #pushd plugins-linux;
+                  #wget "https://s3.amazonaws.com/webrecorder-builds/flashplugin/libpepflashplayer.so";
+                  #popd;
+
+                  docker run --rm \
+                    -e GH_TOKEN=${GH_TOKEN} \
+                    -e YARN_BUILD_CMD=${YARN_BUILD_CMD} \
+                    -v ${PWD}:/project \
+                    -v ~/.cache/electron:/root/.cache/electron \
+                    -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+                    electronuserland/builder:wine \
+                    /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn install && yarn run $YARN_BUILD_CMD --linux --x64"
+                else
+                  #mkdir -p plugins-win;
+                  #pushd plugins-win;
+                  #wget "https://s3.amazonaws.com/webrecorder-builds/flashplugin/pepflashplayer-x86_64.dll";
+                  #wget "https://s3.amazonaws.com/webrecorder-builds/flashplugin/pepflashplayer-x86.dll";
+                  #popd;
+
+                  docker run --rm \
+                    -e GH_TOKEN=${GH_TOKEN} \
+                    -e WIN_CSC_LINK=${WIN_CSC_LINK} \
+                    -e WIN_CSC_KEY_PASSWORD=${WIN_CSC_KEY_PASSWORD} \
+                    -e YARN_BUILD_CMD=${YARN_BUILD_CMD} \
+                    -v ${PWD}:/project \
+                    -v ~/.cache/electron:/root/.cache/electron \
+                    -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+                    electronuserland/builder:wine \
+                    /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn install && yarn run $YARN_BUILD_CMD --win --x64 --ia32"
+                fi
+              else
+                #mkdir -p plugins-mac;
+                #pushd plugins-mac;
+                #wget "https://s3.amazonaws.com/webrecorder-builds/flashplugin/PepperFlashPlayer.plugin.zip";
+                #unzip PepperFlashPlayer.plugin.zip;
+                #rm PepperFlashPlayer.plugin.zip;
+                #popd;
+                yarn install
+                yarn run $YARN_BUILD_CMD
+              fi
+               

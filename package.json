@@ -1,6 +1,6 @@
 {
   "name": "ArchiveWeb.page",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -15,7 +15,7 @@
     "hash-wasm": "^4.4.1",
     "http-status-codes": "^1.4.0",
     "ipfs-core": "^0.5.2",
-    "ipfs-http-client": "^48.2.2",
+    "ipfs-http-client": "^49.0.2",
     "jszip": "^3.5.0",
     "keyword-mark-element": "^0.1.2",
     "lodash": "^4.17.20",
@@ -37,7 +37,7 @@
     "sass-loader": "^8.0.2",
     "svg-inline-loader": "^0.8.2",
     "to-string-loader": "^1.1.6",
-    "webpack": "^4.41.5",
+    "webpack": "4.46.0",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0",
     "webpack-extension-reloader": "^1.1.4"
@@ -68,14 +68,18 @@
       "dist/*.html",
       "dist/prebuilds/${platform}-${arch}/*",
       "dist/build/*",
-      "dist/replay/*"
+      "dist/replay/*",
+      "dist/ruffle/*"
     ],
     "dmg": {
       "title": "ArchiveWeb.page"
     },
     "mac": {
       "category": "public.app-category.utilities",
-      "target": "dmg",
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
@@ -97,7 +101,7 @@
       ]
     },
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "extraResources": [
         "plugins-win"
       ]

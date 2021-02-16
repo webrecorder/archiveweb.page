@@ -39,8 +39,8 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     app.userAgentFallback = desktopUA;
 
-    ipcMain.on("start-rec", (event, url, collId) => {
-      this.createRecordWindow(url, collId);
+    ipcMain.on("start-rec", (event, url, collId, startRec) => {
+      this.createRecordWindow(url, collId, startRec);
     });
 
     ipcMain.on("start-ipfs", (event, validPins) => {
@@ -217,7 +217,7 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     view.webContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
       event.preventDefault();
-      event.newGuest = this.createRecordWindow(url, collId);
+      event.newGuest = this.createRecordWindow(url, collId, startRec);
       console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);
     });
 

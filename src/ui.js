@@ -232,7 +232,7 @@ class ArchiveWebApp extends ReplayWebApp
         </div>
       </div>
 
-      <form class="is-flex" @submit="${this.onStartRecord}">
+      <form class="is-flex is-flex-direction-row" @submit="${this.onStartRecord}">
         <div class="field has-addons">
           <p class="control is-expanded">
             <input class="input" type="url" required
@@ -248,6 +248,10 @@ class ArchiveWebApp extends ReplayWebApp
             </button>
           </div>
         </div>
+        ${IS_APP ? html`
+        <label class="checkbox">
+          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without recording.)</span>
+        </label>` : ``}
       </form>
     </wr-modal>`;
   }
@@ -264,7 +268,7 @@ class ArchiveWebApp extends ReplayWebApp
             <section class="modal-card-body">
               <div class="container">
                 <div class="content">
-                  <div style="display: flex">
+                  <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${wrLogo}"></fa-icon>
                       <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? 'App' : 'Extension'} v${__VERSION__}</div>
@@ -359,7 +363,9 @@ class ArchiveWebApp extends ReplayWebApp
         collId: this.selCollId,
       });
     } else if (window.archivewebpage && window.archivewebpage.record) {
-      window.archivewebpage.record(url, this.selCollId);
+      const previewCheckbox = this.renderRoot.querySelector("#preview");
+      const startRec = !(previewCheckbox && previewCheckbox.checked);
+      window.archivewebpage.record(url, this.selCollId, startRec);
     }
     return false;
   }

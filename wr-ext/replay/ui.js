@@ -2526,7 +2526,7 @@ Please try a different browser.\n
         </div>
       </div>
 
-      <form class="is-flex" @submit="${this.onStartRecord}">
+      <form class="is-flex is-flex-direction-row" @submit="${this.onStartRecord}">
         <div class="field has-addons">
           <p class="control is-expanded">
             <input class="input" type="url" required
@@ -2542,6 +2542,10 @@ Please try a different browser.\n
             </button>
           </div>
         </div>
+        ${b?a.c`
+        <label class="checkbox">
+          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without recording.)</span>
+        </label>`:""}
       </form>
     </wr-modal>`}renderAbout(){return a.c`
       <div class="modal is-active">
@@ -2554,7 +2558,7 @@ Please try a different browser.\n
             <section class="modal-card-body">
               <div class="container">
                 <div class="content">
-                  <div style="display: flex">
+                  <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${Ct.a}"></fa-icon>
                       <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.5.7"}</div>
@@ -2601,7 +2605,7 @@ Please try a different browser.\n
             </section>
           </div>
         </div>
-      </div>`}async onShowDrop(e){const t=await fetch("./wabac/api/index"),i=await t.json();this.colls=i.colls,this.showCollDrop=!0,e.stopPropagation()}async onNewColl(e){const t=this.renderRoot.querySelector("#new-name").value,i=JSON.stringify({metadata:{title:t}}),a=await fetch("./wabac/api/create",{method:"POST",body:i}),r=await a.json();console.log(r)}onSelectColl(e){this.selCollId=e.currentTarget.getAttribute("data-id"),this.selCollTitle=e.currentTarget.getAttribute("data-title"),this.showCollDrop=!1}onShowStart(e){this.selCollId=e.detail.coll,this.selCollTitle=e.detail.title,this.recordShown=!0}onStartRecord(e){e.preventDefault();const t=this.renderRoot.querySelector("#url").value;return this.recordShown=!1,self.chrome&&self.chrome.runtime?chrome.runtime.sendMessage({msg:"startNew",url:t,collId:this.selCollId}):window.archivewebpage&&window.archivewebpage.record&&window.archivewebpage.record(t,this.selCollId),!1}}class At extends a.a{constructor(){super(),this.detailed=!1,this.ipfsURL=null,this.shareWait=!1,this.showShareMenu=!1,this.shareWarn=!1,this.shareProgress=0}static get properties(){return{coll:{type:Object},detailed:{type:Boolean},ipfsURL:{type:String},shareWait:{type:Boolean},showShareMenu:{type:Boolean},shareWarn:{type:Boolean},shareProgress:{type:Number}}}static get styles(){return u(a.b`
+      </div>`}async onShowDrop(e){const t=await fetch("./wabac/api/index"),i=await t.json();this.colls=i.colls,this.showCollDrop=!0,e.stopPropagation()}async onNewColl(e){const t=this.renderRoot.querySelector("#new-name").value,i=JSON.stringify({metadata:{title:t}}),a=await fetch("./wabac/api/create",{method:"POST",body:i}),r=await a.json();console.log(r)}onSelectColl(e){this.selCollId=e.currentTarget.getAttribute("data-id"),this.selCollTitle=e.currentTarget.getAttribute("data-title"),this.showCollDrop=!1}onShowStart(e){this.selCollId=e.detail.coll,this.selCollTitle=e.detail.title,this.recordShown=!0}onStartRecord(e){e.preventDefault();const t=this.renderRoot.querySelector("#url").value;if(this.recordShown=!1,self.chrome&&self.chrome.runtime)chrome.runtime.sendMessage({msg:"startNew",url:t,collId:this.selCollId});else if(window.archivewebpage&&window.archivewebpage.record){const e=this.renderRoot.querySelector("#preview"),i=!(e&&e.checked);window.archivewebpage.record(t,this.selCollId,i)}return!1}}class At extends a.a{constructor(){super(),this.detailed=!1,this.ipfsURL=null,this.shareWait=!1,this.showShareMenu=!1,this.shareWarn=!1,this.shareProgress=0}static get properties(){return{coll:{type:Object},detailed:{type:Boolean},ipfsURL:{type:String},shareWait:{type:Boolean},showShareMenu:{type:Boolean},shareWarn:{type:Boolean},shareProgress:{type:Number}}}static get styles(){return u(a.b`
     :host {
       overflow: visible;
     }

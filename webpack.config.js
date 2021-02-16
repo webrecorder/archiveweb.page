@@ -6,6 +6,7 @@ const GenerateJsonPlugin = require('generate-json-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const PACKAGE = require("./package.json");
+const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
 
 const IPFS_CORE_URL = "/ipfs-core.min.js";
 
@@ -166,12 +167,11 @@ const extensionConfig = (env, argv) => {
 
     plugins: [
       new MiniCssExtractPlugin(),
-      new webpack.DefinePlugin({
-        __VERSION__: JSON.stringify(PACKAGE.version)
-      }),
       new webpack.BannerPlugin(BANNER),
       new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2),
       new webpack.DefinePlugin({
+        __VERSION__: JSON.stringify(PACKAGE.version),
+        __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
         __SW_NAME__: JSON.stringify("sw.js"),
         __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL),
         __IPFS_HTTP_CLIENT_URL__: JSON.stringify("")

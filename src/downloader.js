@@ -453,7 +453,7 @@ class Downloader
     const type = "warcinfo";
 
     const info = {
-      "software": "Webrecorder wabac.js/warcio.js",
+      "software": `Webrecorder ArchiveWeb.page ${__VERSION__} (via warcio.js ${__WARCIO_VERSION__})`,
       "format": "WARC File Format 1.1",
       "isPartOf": this.metadata.title || this.collId,
     };

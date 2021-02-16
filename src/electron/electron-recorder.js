@@ -134,8 +134,6 @@ class ElectronRecorder extends Recorder
 
     const fullPath = path.join(this.staticPrefix, filename);
 
-    console.log("fullPath: " + fullPath);
-
     const data = await fs.promises.readFile(fullPath);
 
     const base64Str = data.toString("base64");
@@ -145,6 +143,8 @@ class ElectronRecorder extends Recorder
     const origin = headers.get("origin");
 
     const mimeType = mime.contentType(ext);
+
+    console.log("PROXY (not recording): " + fullPath);
 
     if (origin) {
       responseHeaders.push({name: "Access-Control-Allow-Origin", value: origin});
@@ -167,7 +167,13 @@ class ElectronRecorder extends Recorder
   }
 
   _doDetach() {
-    this.debugger.detach();
+    try {
+      this.debugger.detach();
+    } catch (e) {
+      console.warn(e);
+    }
+
+    return Promise.resolve();
   }
 
   _doAttach() {
@@ -207,7 +213,7 @@ class ElectronRecorder extends Recorder
     //   return 0;
     // }
 
-    console.log("res", data.url);
+    //console.log("res", data.url);
 
     // size incremented asynchronously
     this.appWC.send("add-resource", data, this.pageInfo, this.collId);

@@ -124,8 +124,8 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     const view = new BrowserView({webPreferences: {
         partition: "persist:wr",
-        plugins: true,
-        contextIsolation: true
+        plugins: false,
+        contextIsolation: true,
       }
     });
 

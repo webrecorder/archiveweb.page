@@ -9,6 +9,8 @@ The system creates, stores and replays high-fidelity web archives stored directl
 
 For more detailed info on how to use the extension (and the app when it is available), see the: [ArchiveWeb.page User Guide](https://archiveweb.page/guide/)
 
+The initial app release is available on the [Releases page](https://github.com/webrecorder/archiveweb.page/releases)
+
 ### Architecture
 
 The extension makes use of the Chrome debugging protocol to capture and save network traffic, and extends the [ReplayWeb.page](https://github.com/webrecorder/replayweb.page) UI and the [wabac.js](https://github.com/ikreymer/wabac.js) service worker system for replay and storage.
@@ -48,11 +50,11 @@ For development, it is recommended to use the dev build of the extension:
 4. Click the extension icon to show the extension popup, start recording, etc... The dev build of the extension will be grey to differntiate from the production version.
 
 
-## Using the Electron App (in development)
+## Using the Electron App (in beta)
 
-The Electron app version is still in development and no production release exists yet.
+The Electron app version is in beta and the latest release can be downloaded from the [Releases page](https://github.com/webrecorder/archiveweb.page/releases)
 
-To run the Electron app dev build:
+To run the Electron app development build:
 
 1. Clone this repo.
 

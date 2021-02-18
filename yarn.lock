@@ -43,11 +43,6 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
-"@electron/remote@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@electron/remote/-/remote-1.0.2.tgz#34e1450db6951d980f91728698f90ccce212a958"
-  integrity sha512-h/hDZoHDS5Rclw8kGWa16P029huVunuOzBtuvFOK49JbFTneK3EUnme4JdoCyjCZH1H3fGM5MyQHuCKkQkE3nw==
-
 "@fortawesome/fontawesome-free@^5.13.0":
   version "5.13.0"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.13.0.tgz#fcb113d1aca4b471b709e8c9c168674fbd6e06d9"

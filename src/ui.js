@@ -43,6 +43,7 @@ class ArchiveWebApp extends ReplayWebApp
       colls: { type: Array },
       selCollId: { type: String },
       selCollTitle: { type: String },
+      recordUrl: { type: String }
     }
   }
 
@@ -213,30 +214,21 @@ class ArchiveWebApp extends ReplayWebApp
     <wr-modal @modal-closed="${(e) => this.recordShown = false}" title="Start Recording">
       <div class="dropdown-row">
         <span>Archive To:&nbsp;</span>
-        <div class="dropdown ${this.showCollDrop ? 'is-active' : ''}">
-          <div class="dropdown-trigger">
-            <button @click="${this.onShowDrop}" class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
-              <span>${this.selCollTitle}</span>
-              <span class="icon">
-                <fa-icon .svg=${fasCaretDown}></fa-icon>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-              ${this.colls.map((coll) => html`
-                <a @click=${this.onSelectColl} data-title="${coll.title}" data-id="${coll.id}" class="dropdown-item">${coll.title}</a>
-              `)}
-            </div>
-          </div>
+        <div class="select is-small">
+          <select @change="${this.onSelectColl}">
+          ${this.colls.map((coll) => html`
+            <option value="${coll.id}"
+            ?selected="${this.selCollId === coll.id}"
+            >${coll.title}</option>`)}
+          </select>
         </div>
       </div>
 
-      <form class="is-flex is-flex-direction-row" @submit="${this.onStartRecord}">
+      <form class="is-flex is-flex-direction-column" @submit="${this.onStartRecord}">
         <div class="field has-addons">
           <p class="control is-expanded">
             <input class="input" type="url" required
-            name="url" id="url" value="https://example.com/"
+            name="url" id="url" value="${this.recordUrl}"
             placeholder="Enter a URL to Start Recording">
           </p>
           <div class="control">
@@ -318,16 +310,6 @@ class ArchiveWebApp extends ReplayWebApp
       </div>`;
   }
 
-  async onShowDrop(event) {
-    const resp = await fetch("./wabac/api/index");
-    const data = await resp.json();
-
-    this.colls = data.colls;
-
-    this.showCollDrop = true;
-    event.stopPropagation();
-  }
-
   async onNewColl(event) {
     const title = this.renderRoot.querySelector("#new-name").value;
 
@@ -339,15 +321,22 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   onSelectColl(event) {
-    this.selCollId = event.currentTarget.getAttribute("data-id");
-    this.selCollTitle = event.currentTarget.getAttribute("data-title");
-    this.showCollDrop = false;
+    //this.selCollId = event.currentTarget.getAttribute("data-id");
+    //this.selCollTitle = event.currentTarget.getAttribute("data-title");
+    //this.showCollDrop = false;
+    this.selCollId = event.currentTarget.value;
   }
 
-  onShowStart(event) {
+  async onShowStart(event) {
     this.selCollId = event.detail.coll;
-    this.selCollTitle = event.detail.title;
+    //this.selCollTitle = event.detail.title;
+    this.recordUrl = event.detail.url || "https://example.com/"
     this.recordShown = true;
+
+    const resp = await fetch("./wabac/api/index");
+    const data = await resp.json();
+
+    this.colls = data.colls;
   }
 
   onStartRecord(event) {
@@ -405,7 +394,8 @@ class WrRecColl extends Coll
   onShowStart() {
     const coll = this.coll;
     const title = this.collInfo.title;
-    this.dispatchEvent(new CustomEvent("show-start", {detail: {coll, title}}));
+    const url = this.tabData.url;
+    this.dispatchEvent(new CustomEvent("show-start", {detail: {coll, title, url}}));
   }
 }
 

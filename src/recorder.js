@@ -930,8 +930,8 @@ class Recorder {
 
       const opts = {};
 
-      if (request.getResponseHeadersDict) {
-        opts.headers = request.getResponseHeadersDict().headers;
+      if (request.getRequestHeadersDict) {
+        opts.headers = request.getRequestHeadersDict().headers;
         opts.headers.delete("range");
       }
 
@@ -951,7 +951,7 @@ class Recorder {
 
       if (data) {
         await this.commitResource(data, request.pageInfo);
-        console.log("Done Async Load: " + request.url);
+        console.log(`Done Async Load (${resp.status}) ${request.url}`);
 
         if (this.pageInfo !== request.pageInfo) {
           await this.commitPage(request.pageInfo);

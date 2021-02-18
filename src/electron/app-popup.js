@@ -1,5 +1,5 @@
-import { ipcRenderer } from "electron";
-import { RecPopup } from "../ext/popup";
+//import { ipcRenderer } from "electron";
+import { RecPopup } from "../popup";
 
 import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
 import { listAllMsg } from "../utils";
@@ -13,14 +13,17 @@ class AppRecPopup extends RecPopup
 
     this.collLoader = new CollectionLoader();
 
-    this.tabId = window.location.hash && Number(window.location.hash.slice(1));
+    //this.tabId = 0;//window.location.hash && Number(window.location.hash.slice(1));
 
     this.allowCreate = false;
+
+    this.msg = null;
   }
 
   static get properties() {
     return {
-      ...RecPopup.properties
+      ...RecPopup.properties,
+      msg: { type: Object },
     }
   }
 
@@ -32,10 +35,18 @@ class AppRecPopup extends RecPopup
     });
   }
 
+  updated(changedProperties) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has("msg")) {
+      this.onMessage(this.msg);
+    }
+  }
+
   registerMessages() {
-    ipcRenderer.on("popup", (event, message) => {
-      this.onMessage(message);
-    });
+    // ipcRenderer.on("popup", (event, message) => {
+    //   this.onMessage(message);
+    // });
   }
 
   sendMessage(message) {
@@ -44,7 +55,8 @@ class AppRecPopup extends RecPopup
       return;
     }
 
-    ipcRenderer.send("popup-msg-" + this.tabId, message);
+    //ipcRenderer.send("popup-msg-" + this.tabId, message);
+    this.dispatchEvent(new CustomEvent("send-msg", {detail: message}));
   }
 
   async makeNewColl(message) {

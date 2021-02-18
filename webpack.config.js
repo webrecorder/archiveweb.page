@@ -5,6 +5,7 @@ const ExtensionReloader  = require('webpack-extension-reloader');
 const GenerateJsonPlugin = require('generate-json-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
+const APP_FILE_SERVE_PREFIX = "http://files.replayweb.page/";
 const PACKAGE = require("./package.json");
 const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
 
@@ -56,7 +57,8 @@ const electronMainConfig = (env, argv) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        __IPFS_CORE_URL__: JSON.stringify("")
+        __IPFS_CORE_URL__: JSON.stringify(""),
+        __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
       }),
       new webpack.BannerPlugin(BANNER),
       new CopyPlugin({
@@ -92,7 +94,8 @@ const electronPreloadConfig = (env, argv) => {
       // this needs to be defined, but not actually used, as electron app uses
       // ipfs-core from node
       new webpack.DefinePlugin({
-        __IPFS_CORE_URL__: JSON.stringify("")
+        __IPFS_CORE_URL__: JSON.stringify(""),
+        __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
       }),
     ]
   }
@@ -101,10 +104,9 @@ const electronPreloadConfig = (env, argv) => {
 const electronRendererConfig = (env, argv) => {
   return {
     mode: 'production',
-    target: "electron-renderer",
+    target: "web",
     entry: {
-      'locationbar': './src/electron/locationbar.js',
-      'app-popup': './src/electron/app-popup.js',
+      'rec-window': './src/electron/rec-window.js',
     },
 
     output: {
@@ -118,12 +120,13 @@ const electronRendererConfig = (env, argv) => {
       new MiniCssExtractPlugin(),
       new CopyPlugin({
         patterns: [
-          { from: 'src/electron/locbar.html', to: '' },
-          { from: 'src/electron/app-popup.html', to: '' },
+          { from: 'src/electron/rec-preload.js', to: '' },
+          { from: 'src/electron/rec-window.html', to: '' },
         ]
       }),
       new webpack.DefinePlugin({
-        __IPFS_CORE_URL__: JSON.stringify("")
+        __IPFS_CORE_URL__: JSON.stringify(""),
+        __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
       })
     ],
 
@@ -153,7 +156,7 @@ const extensionConfig = (env, argv) => {
     entry: {
       'bg': './src/ext/bg.js',
       'ui': './src/ui.js',
-      'popup': './src/ext/popup.js',
+      'popup': './src/popup.js',
       'sw': './src/sw/main.js'
     },
     output: {

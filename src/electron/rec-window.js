@@ -1,24 +1,22 @@
-import { LitElement, html, css, wrapCss, rwpLogo, clickOnSpacebarPress } from 'replaywebpage/src/misc';
+import { LitElement, html, css, wrapCss, clickOnSpacebarPress } from 'replaywebpage/src/misc';
 
 import fasRefresh from '@fortawesome/fontawesome-free/svgs/solid/redo-alt.svg';
-import fasFullscreen from '@fortawesome/fontawesome-free/svgs/solid/desktop.svg';
-import fasUnfullscreen from '@fortawesome/fontawesome-free/svgs/solid/compress-arrows-alt.svg';
+//import fasFullscreen from '@fortawesome/fontawesome-free/svgs/solid/desktop.svg';
+//import fasUnfullscreen from '@fortawesome/fontawesome-free/svgs/solid/compress-arrows-alt.svg';
 
 import fasLeft from '@fortawesome/fontawesome-free/svgs/solid/arrow-left.svg';
 import fasRight from '@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg';
-import fasMenuV from '@fortawesome/fontawesome-free/svgs/solid/ellipsis-v.svg';
+//import fasMenuV from '@fortawesome/fontawesome-free/svgs/solid/ellipsis-v.svg';
 
 import wrLogo from '../../assets/wr-logo.svg';
 
-import { ipcRenderer } from 'electron';
-import { webContents } from '@electron/remote';
+import './app-popup';
 
-
-class LocationBar extends LitElement
+class RecWindowUI extends LitElement
 {
   constructor() {
     super();
-    this.url = "";
+    this.url = "about:blank";
     this.isLoading = false;
     this.favIconUrl = null;
     this.favIcons = null;
@@ -26,64 +24,21 @@ class LocationBar extends LitElement
     this.canGoBack = false;
     this.canGoForward = false;
 
-    this.wcId = window.location.hash && Number(window.location.hash.slice(1));
-
-    if (isNaN(this.wcId)) {
-      console.warn("No webContents Id!");
-      this.wc = null;
-    } else {
-      this.wc = webContents.fromId(this.wcId);
-    }
-
-    if (!this.wc) {
-      console.warn("No WebContents");
-    } else {
-      this.initWC();
-    }
+    this.showPopup = false;
 
     this.initStats();
-  }
-
-  initWC() {
-    this.url = this.wc.getURL();
-
-    this.wc.on("did-start-loading", () => this.isLoading = true);
-    this.wc.on("did-stop-loading", () => this.isLoading = false);
-
-    this.wc.on('page-favicon-updated', (event, favIcons) => {
-      this.favIcons = favIcons;
-      this.favIconUrl = (this.favIcons && this.favIcons.length) ? this.favIcons.shift() : null;
-    });
-
-    this.wc.on('will-navigate', (event, url) => {
-      this.url = url;
-
-      this.canGoBack = this.wc.canGoBack();
-      this.canGoForward = this.wc.canGoForward();
-    });
-
-    this.wc.on('did-navigate', (event, url) => {
-      this.url = url;
-
-      this.canGoBack = this.wc.canGoBack();
-      this.canGoForward = this.wc.canGoForward();
-      this.isLoading = false;
-    });
-
-    this.wc.on('did-navigate-in-page', () => {
-      this.canGoBack = this.wc.canGoBack();
-      this.canGoForward = this.wc.canGoForward();
-    });
   }
 
   initStats() {
     this.stats = null;
     this.numPending = 0;
 
-    ipcRenderer.on("stats", (event, stats) => {
-      this.stats = stats;
-      this.recording = stats.recording;
-      this.numPending = stats.numPending;
+    window.addEventListener("message", (event) => {
+      if (event.data.stats) {
+        this.stats = event.data.stats;
+        this.recording = this.stats.recording;
+        this.numPending = this.stats.numPending;
+      }
     });
   }
 
@@ -98,7 +53,10 @@ class LocationBar extends LitElement
 
       stats: { type: Object },
       numPending: { type: Number },
-      recording: { type: Boolean }
+      recording: { type: Boolean },
+
+      showPopup: { type: Boolean },
+      wcId: { type: Number }
     }
   }
 
@@ -109,8 +67,27 @@ class LocationBar extends LitElement
         height: 100%;
       }
 
+      webview {
+        width: 100%;
+        height: 100%;
+      }
+
+      wr-app-popup {
+        z-index: 200;
+        width: 400px;
+        background: white;
+        position: fixed;
+        height: 300px;
+        box-sizing: content-box;
+        top: 50px;
+        right: 0px;
+        padding: 8px;
+        border: 1px grey;
+        box-shadow: grey 1px 1px 4px;
+      }
+
       .location-bar {
-        margin: 4px 4px 4px 0px;
+        margin: 4px 4px 0px 0px;
         padding-bottom: 4px;
         width: 100%;
         background-color: white;
@@ -204,7 +181,7 @@ class LocationBar extends LitElement
           </span>
         </a>
         <form @submit="${this.onSubmit}">
-          <div class="control is-expanded ${this.favIconUrl ? 'has-icons-left' : ''}">
+          <div class="control is-expanded ${this.favIconUrl ? 'has-icons-left' : 'has-icons-left'}">
             <input id="url" class="input" type="url" @keydown="${this.onKeyDown}" @blur="${this.onLostFocus}" .value="${this.url}" placeholder="Enter text to search or a URL to replay"/>
             ${this.favIconUrl ? html`
             <span class="favicon icon is-small is-left">
@@ -214,10 +191,7 @@ class LocationBar extends LitElement
         </form>
         <a id="wr-button" role="button" class="button is-borderless" @click="${this.onTogglePopup}">
           <span class="icon is-small">
-            ${!this.isLoading ? html`
-            <fa-icon id="wrlogo" size="1.8em" .svg="${wrLogo}" aria-hidden="true"></fa-icon>` : html`
-            <wr-anim-logo id="wrlogo" size="1.8em" .svg="${wrLogo}" aria-hidden="true"></wr-anim-logo>`
-            }
+            <fa-icon id="wrlogo" size="1.8em" .svg="${wrLogo}" aria-hidden="true"></fa-icon>
             ${this.recording ? html`
               ${!this.numPending ? html`
               <span class="overlay overlay-idle"></span>` : html`
@@ -226,41 +200,109 @@ class LocationBar extends LitElement
           </span>
         </a>
       </div>
-    </nav>`;
+    </nav>
+    ${this.renderWebView()}
+    ${this.renderPopup()}
+    `;
+  }
+
+  renderWebView() {
+    return html`
+    <webview
+    partition="persist:wr"
+    @did-start-loading="${(e) => this.isLoading = true}"
+    @did-stop-loading="${(e) => this.isLoading = false}"
+    @page-favicon-updated="${this.onFaviconUpdated}"
+    @will-navigate="${this.onWillNavigate}"
+    @did-navigate="${this.onDidNavigate}"
+    @did-navigate-in-page="${this.onDidNavigateInPage}"
+    src="about:blank">
+    </webview>`;
+  }
+
+  renderPopup() {
+    if (!this.showPopup) {
+      return;
+    }
+
+    return html`
+    <wr-app-popup .msg="${this.stats}" @send-msg="${this.onSendMsg}">
+    </wr-app-popup>
+    `;
+  }
+
+  onSendMsg(event) {
+    const msg = event.detail;
+
+    const webview = this.renderRoot.querySelector("webview");
+
+    if (webview && window.archivewebpage.sendMsg) {
+      window.archivewebpage.sendMsg(webview.getWebContentsId(), msg);
+    }
+  }
+
+  onFaviconUpdated(event) {
+    this.favIcons = event.favicons;
+    this.tryNextIcon();
+  }
+
+  onWillNavigate(event) {
+    this.url = event.url;
+
+    this.canGoBack = event.currentTarget.canGoBack();
+    this.canGoForward = event.currentTarget.canGoForward();
+  }
+
+  onDidNavigate(event) {
+    this.url = event.url;
+
+    this.canGoBack = event.currentTarget.canGoBack();
+    this.canGoForward = event.currentTarget.canGoForward();
+    this.isLoading = false;
+  }
+
+  onDidNavigateInPage(event) {
+    this.canGoBack = event.currentTarget.canGoBack();
+    this.canGoForward = event.currentTarget.canGoForward();
   }
 
   onTogglePopup() {
-    ipcRenderer.send("popup-toggle-" + this.wcId);
+    //ipcRenderer.send("popup-toggle-" + this.wcId);
+    this.showPopup = !this.showPopup;
   }
 
-  tryNextIcon() {
+  async tryNextIcon() {
     this.favIconUrl = (this.favIcons && this.favIcons.length) ? this.favIcons.shift() : null;
   }
 
   onGoBack() {
-    if (this.wc && this.canGoBack) {
-      this.wc.goBack();
+    const webview = this.renderRoot.querySelector("webview");
+    if (webview && this.canGoBack) {
+      webview.goBack();
     }
   }
 
   onGoForward() {
-    if (this.wc && this.canGoForward) {
-      this.wc.goForward();
+    const webview = this.renderRoot.querySelector("webview");
+    if (webview && this.canGoForward) {
+      webview.goForward();
     }
   }
 
   onRefresh() {
-    if (this.wc) {
-      this.wc.reload();
+    const webview = this.renderRoot.querySelector("webview");
+    if (webview) {
+      webview.reload();
     }
   }
 
   onSubmit(event) {
     event.preventDefault();
     const input = this.renderRoot.querySelector("input");
+    const webview = this.renderRoot.querySelector("webview");
 
-    if (input.value) {
-      this.wc.loadURL(input.value);
+    if (webview && input.value) {
+      webview.loadURL(input.value);
     } else {
       input.value = this.url;
     }
@@ -280,6 +322,6 @@ class LocationBar extends LitElement
   }
 }
 
-customElements.define("wr-rec-location", LocationBar);
+customElements.define("wr-rec-ui", RecWindowUI);
 
-export { LocationBar };
+export { RecWindowUI };

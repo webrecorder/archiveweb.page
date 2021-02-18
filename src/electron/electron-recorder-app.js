@@ -1,4 +1,4 @@
-import {app, session, BrowserWindow, BrowserView, ipcMain, dialog} from 'electron';
+import {app, session, BrowserWindow, BrowserView, ipcMain, dialog, autoUpdater} from 'electron';
 import { ElectronRecorder } from './electron-recorder';
 
 import { ElectronReplayApp, STATIC_PREFIX } from 'replaywebpage/src/electron-replay-app';
@@ -9,7 +9,11 @@ import { PassThrough } from 'stream';
 import fs from 'fs';
 import util from 'util';
 
+
 import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from '../utils';
+
+
+app.commandLine.appendSwitch('disable-features', 'CrossOriginOpenerPolicy');
 
 
 // ===========================================================================
@@ -55,7 +59,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       this.ipfsUnpin(event, reqId, pinList);
     });
 
-    require('@electron/remote/main').initialize();
+    //require('@electron/remote/main').initialize();
 
     super.onAppReady();
   }
@@ -112,73 +116,35 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     const recWindow = new BrowserWindow({
       width: this.screenSize.width,
-      height: this.screenSize.height - 1,
+      height: this.screenSize.height,
       isMaximized: true,
       show: true,
       webPreferences: {
-        enableRemoteModule: true,
-        nodeIntegration: true,
-        contextIsolation: false
-      }
-    });
-
-    const view = new BrowserView({webPreferences: {
-        partition: "persist:wr",
-        plugins: false,
         contextIsolation: true,
+        webviewTag: true,
+        preload: path.join(__dirname, "rec-preload.js")
       }
     });
 
-    const id = view.webContents.id;
-
-    recWindow.loadURL(STATIC_PREFIX + "locbar.html#" + id);
-
-    const HEADER_HEIGHT = 73;
-    recWindow.addBrowserView(view);
-    view.setBounds({ x: 0, y: HEADER_HEIGHT, width: this.screenSize.width, height: this.screenSize.height - HEADER_HEIGHT });
-    view.setAutoResize({width: true, height: true});
-    recWindow.setSize(this.screenSize.width, this.screenSize.height);
-    
-    recWindow.maximize();
-
-    const popupView = new BrowserView({webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
-    }});
-
-    let popupShown = false;
-
-    function setPopupBounds() {
-      const bounds = recWindow.getBounds();
-      popupView.setBounds({ x: bounds.width - 400, y: HEADER_HEIGHT - 22, width: 400, height: 300 });
-      //popupView.webContents.openDevTools();
-    }
-
-    ipcMain.on("popup-toggle-" + id, (event) => {
-      if (!popupShown) {
-        recWindow.addBrowserView(popupView);
-        setPopupBounds();
-        popupView.webContents.loadURL(STATIC_PREFIX + "app-popup.html#" + id).then(() => {
-          popupView.webContents.send("popup", {
-            type: "status",
-            recording: false,
-            collId,
-            pageUrl: url});
-        });
-      } else {
-        recWindow.removeBrowserView(popupView);
-      }
-      popupShown = !popupShown;
+    recWindow.webContents.on("did-attach-webview", (event, contents) => {
+      this.initRecorder(recWindow, contents, url, collId, startRec);
     });
 
-    recWindow.on('resize', (event) => {
-      if (popupShown) {
-        setPopupBounds();
-      }
-    });
+    recWindow.loadURL(STATIC_PREFIX + "rec-window.html");
+
+    return recWindow;
+  }
+
+  checkUpdates() {
+    autoUpdater.allowPrerelease = true;
+    super.checkUpdates();
+  }
+
+  async initRecorder(recWindow, recWebContents, url, collId, startRec, popupView = null) {
+    const id = recWebContents.id;
 
     const recorder = new ElectronRecorder({
-      recWC: view.webContents,
+      recWC: recWebContents,
       appWC: this.mainWindow.webContents,
       recWindow,
       collId,
@@ -194,7 +160,9 @@ class ElectronRecorderApp extends ElectronReplayApp
       });
     });
 
-    popupView.webContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
+    const newWinContents = popupView ? popupView.webContents : recWindow.webContents;
+
+    newWinContents.on("new-window", (event, url) => {
       event.preventDefault();
       if (url.startsWith(STATIC_PREFIX)) {
         this.mainWindow.loadURL(url);
@@ -206,7 +174,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       switch (msg.type) {
         case "startRecording":
           await recorder.attach();
-          view.webContents.reload();
+          recWebContents.reload();
           break;
 
         case "stopRecording":
@@ -215,37 +183,41 @@ class ElectronRecorderApp extends ElectronReplayApp
       }
     });
 
-    view.webContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
+    recWebContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
       event.preventDefault();
       event.newGuest = this.createRecordWindow(url, collId, startRec);
       console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);
     });
 
-    view.webContents.on("destroyed", () => {
+    recWebContents.on("destroyed", () => {
       this.recorders.delete(id);
     });
 
-    (async () => {
-      await view.webContents.loadURL("about:blank");
+    //await recWebContents.loadURL("about:blank");
 
-      view.webContents.clearHistory();
-      this.recorders.set(id, recorder);
-      if (startRec) {
-        await recorder.attach();
-      }
+    recWebContents.clearHistory();
 
-      if (process.env.NODE_ENV === "development") {
-        view.webContents.openDevTools();
-      }
+    this.recorders.set(id, recorder);
+    if (startRec) {
+      await recorder.attach();
+    } else {
+      newWinContents.send("stats", {
+        type: "status",
+        recording: false,
+        collId,
+        pageUrl: url
+      });
+    }
 
-      try {
-        view.webContents.loadURL(url);
-      } catch (e) {
-        console.warn("Load Failed", e);
-      }
-    })();
+    if (process.env.NODE_ENV === "development") {
+      //recWebContents.openDevTools();
+    }
 
-    return recWindow;
+    try {
+      recWebContents.loadURL(url);
+    } catch (e) {
+      console.warn("Load Failed", e);
+    }
   }
 
   async ipfsStart(validPins) {

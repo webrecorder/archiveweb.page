@@ -24,13 +24,33 @@ const moduleSettings =  {
   },
   {
     test: /\.s(a|c)ss$/,
-    loaders: ['to-string-loader', 'css-loader', 'sass-loader']
+    use: ['to-string-loader', 'css-loader', 'sass-loader']
   },
   {
     test: /(dist\/wombat.js|src\/wombatWorkers.js|autofetcher.js|ruffle.js)$/i,
-    loaders: 'raw-loader',
+    use: 'raw-loader',
   }
 ]};
+
+const fallbackResolves = {
+  /*
+  Module not found: Error: Can't resolve 'stream' in 'archiveweb.page/node_modules/wbn/node_modules/cbor/vendor/binary-parse-stream'
+
+    BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default.
+    This is no longer the case. Verify if you need this module and configure a polyfill for it.
+
+    If you want to include a polyfill, you need to:
+      - add a fallback 'resolve.fallback: { "stream": require.resolve("stream-browserify") }'
+      - install 'stream-browserify'
+    If you don't want to include a polyfill, you can use an empty module like this:
+      resolve.fallback: { "stream": false }
+  */
+  // these handpicked from https://github.com/Richienb/node-polyfill-webpack-plugin/blob/master/index.js
+  stream: require.resolve("stream-browserify"),
+  util: require.resolve("util"),
+  buffer: require.resolve("buffer"),
+  process: "process/browser"
+}
 
 
 const electronMainConfig = (env, argv) => {
@@ -45,7 +65,7 @@ const electronMainConfig = (env, argv) => {
         "abort-controller": "abort-controller/dist/abort-controller.js",
         "dlv": "dlv/dist/dlv.js",
         "bignumber.js": "bignumber.js/bignumber.js"
-      }
+      },
     },
     output: {
       path: path.join(__dirname, 'dist'),
@@ -115,6 +135,9 @@ const electronRendererConfig = (env, argv) => {
       libraryTarget: 'global',
       globalObject: 'self'
     },
+    resolve: {
+      fallback: fallbackResolves
+    },
 
     plugins: [
       new MiniCssExtractPlugin(),
@@ -159,6 +182,9 @@ const extensionConfig = (env, argv) => {
       'popup': './src/popup.js',
       'sw': './src/sw/main.js'
     },
+    resolve: {
+      fallback: fallbackResolves
+    },
     output: {
       path: path.join(__dirname, 'wr-ext'),
       filename: (chunkData) => {
@@ -172,12 +198,16 @@ const extensionConfig = (env, argv) => {
       new MiniCssExtractPlugin(),
       new webpack.BannerPlugin(BANNER),
       new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2),
+      new webpack.ProvidePlugin({
+        Buffer: ["buffer", "Buffer"],
+        "process": "process/browser"
+      }),
       new webpack.DefinePlugin({
         __VERSION__: JSON.stringify(PACKAGE.version),
         __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
         __SW_NAME__: JSON.stringify("sw.js"),
         __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL),
-        __IPFS_HTTP_CLIENT_URL__: JSON.stringify("")
+        __IPFS_HTTP_CLIENT_URL__: JSON.stringify(""),
       }),
       new CopyPlugin({
         patterns: [

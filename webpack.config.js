@@ -15,6 +15,14 @@ const BANNER = '[name].js is part of the Webrecorder Extension (https://replaywe
 
 const manifest = require("./src/ext/manifest.json");
 
+const defaultDefines = {
+  __VERSION__: JSON.stringify(PACKAGE.version),
+  __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
+  __SW_NAME__: JSON.stringify("sw.js"),
+  __IPFS_CORE_URL__: JSON.stringify(""),
+  __IPFS_HTTP_CLIENT_URL__: JSON.stringify("")
+};
+
 
 const moduleSettings =  {
   rules: [
@@ -56,10 +64,7 @@ const electronMainConfig = (env, argv) => {
       __filename: false,
     },
     plugins: [
-      new webpack.DefinePlugin({
-        __IPFS_CORE_URL__: JSON.stringify(""),
-        __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
-      }),
+      new webpack.DefinePlugin(defaultDefines),
       new webpack.BannerPlugin(BANNER),
       new CopyPlugin({
         patterns: [
@@ -91,12 +96,7 @@ const electronPreloadConfig = (env, argv) => {
       filename: '[name].js'
     },
     plugins: [
-      // this needs to be defined, but not actually used, as electron app uses
-      // ipfs-core from node
-      new webpack.DefinePlugin({
-        __IPFS_CORE_URL__: JSON.stringify(""),
-        __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
-      }),
+      new webpack.DefinePlugin(defaultDefines),
     ]
   }
 };
@@ -124,10 +124,7 @@ const electronRendererConfig = (env, argv) => {
           { from: 'src/electron/rec-window.html', to: '' },
         ]
       }),
-      new webpack.DefinePlugin({
-        __IPFS_CORE_URL__: JSON.stringify(""),
-        __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
-      })
+      new webpack.DefinePlugin(defaultDefines),
     ],
 
     module: moduleSettings,
@@ -172,12 +169,8 @@ const extensionConfig = (env, argv) => {
       new MiniCssExtractPlugin(),
       new webpack.BannerPlugin(BANNER),
       new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2),
-      new webpack.DefinePlugin({
-        __VERSION__: JSON.stringify(PACKAGE.version),
-        __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
-        __SW_NAME__: JSON.stringify("sw.js"),
+      new webpack.DefinePlugin({...defaultDefines,
         __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL),
-        __IPFS_HTTP_CLIENT_URL__: JSON.stringify("")
       }),
       new CopyPlugin({
         patterns: [

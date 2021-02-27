@@ -193,7 +193,7 @@ class Recorder {
       await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
       await this.send("Network.setBypassServiceWorker", {bypass: true}, sessions);
       // another option: clear cache, but don't disable
-      //await this.send("Network.clearBrowserCache", null, sessions);
+      await this.send("Network.clearBrowserCache", null, sessions);
     } catch (e) {
       console.warn("Session Init Error: ");
       console.log(e);
@@ -935,7 +935,12 @@ class Recorder {
         opts.headers.delete("range");
       }
 
-      const resp = await fetch(request.url, opts);
+      let resp = await fetch(request.url, opts);
+      if (resp.status !== 200) {
+        console.warn(`async fetch error ${resp.status}, retrying without headers`);
+        resp = await fetch(request.url);
+      }
+
       const payload = await resp.arrayBuffer();
 
       const reqresp = new RequestResponseInfo(fetchId);

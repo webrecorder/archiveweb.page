@@ -1,6 +1,8 @@
 "use strict";
 
-import { postToGetUrl, getStatusText } from '@webrecorder/wabac/src/utils';
+import { getStatusText } from '@webrecorder/wabac/src/utils';
+
+import { postToGetUrl } from 'warcio';
 
 
 // ===========================================================================
@@ -155,8 +157,8 @@ class RequestResponseInfo
         postData: this.postData,
       }
       if (postToGetUrl(convData)) {
+        this.requestBody = convData.requestBody;
         this.url = convData.url;
-        this.method = "GET";
       }
     }
 

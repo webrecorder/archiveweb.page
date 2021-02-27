@@ -6,7 +6,7 @@ import { Deflate } from 'pako';
 
 import { createMD5 } from 'hash-wasm';
 
-import { WARCRecord, WARCSerializer } from 'warcio';
+import { WARCRecord, WARCSerializer, getSurt } from 'warcio';
 
 import { getTSMillis, getStatusText } from '@webrecorder/wabac/src/utils';
 
@@ -18,6 +18,8 @@ const WACZ_VERSION = "1.0.0";
 const encoder = new TextEncoder();
 
 const EMPTY = new Uint8Array([]);
+
+const SPLIT_REQUEST_Q_RX = /(.*?)[?&](?:__wb_method=|__wb_post=)[^&]+&(.*)/;
 
 async function* getPayload(payload) {
   yield payload;
@@ -294,6 +296,7 @@ class Downloader
     function getCDX(resource, filename, raw) {
 
       const data = {
+        url: resource.url,
         digest: resource.digest,
         mime: resource.mime,
         offset: resource.offset,
@@ -302,7 +305,18 @@ class Downloader
         status: resource.status
       }
 
-      const cdx = `${resource.url} ${resource.timestamp} ${JSON.stringify(data)}\n`;
+      if (resource.method && resource.method !== "GET") {
+        const m = resource.url.match(SPLIT_REQUEST_Q_RX);
+        if (m) {
+          data.url = m[1];
+          data.requestBody = m[2];
+        }
+        data.method = resource.method;
+      }
+
+      const surt = getSurt(resource.url);
+
+      const cdx = `${surt} ${resource.timestamp} ${JSON.stringify(data)}\n`;
 
       if (!raw) {
         return cdx;
@@ -362,7 +376,7 @@ class Downloader
       }
 
       if (!key) {
-        key = resource.url + " " + resource.timestamp;
+        key = cdx.split(" {", 1)[0];
       }
 
       if (++count === this.linesPerBlock) {

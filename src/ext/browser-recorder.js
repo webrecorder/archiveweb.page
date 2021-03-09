@@ -130,21 +130,22 @@ class BrowserRecorder extends Recorder {
 
       await this.start();
       this.failureMsg = null;
-    
-      let expression;
-    
+
       if (this.openUrl) {
-        expression = `window.location.href = "${this.openUrl}";`;
+        await this.send("Page.navigate", {
+          url: this.openUrl,
+        });
       } else {
-        expression = "window.location.reload()";
+        await this.send("Page.reload", {
+          ignoreCache: true,
+          scriptToEvaluateOnLoad: this.getInjectScript()
+        });
       }
-    
-      await this.send("Runtime.evaluate", {expression});
 
       this.doUpdateStatus();
 
     } catch (msg) {
-      this.failureMsg = chrome.runtime.lastError.message;
+      this.failureMsg = chrome.runtime.lastError ? chrome.runtime.lastError.message : msg;
       this.doUpdateStatus();
       throw msg;
     }

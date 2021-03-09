@@ -3,11 +3,13 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite';
 import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo';
 
-import autofetcher from './autofetcher.js';
+import autofetcher from './autofetcher';
 
 const encoder = new TextEncoder("utf-8");
 
 const MAX_CONCURRENT_FETCH = 6;
+
+const MAIN_INJECT_URL = "__awp_main_inject__";
 
 
 // ===========================================================================
@@ -17,9 +19,7 @@ function sleep(time) {
 
 // ===========================================================================
 class Recorder {
-  constructor(contentScriptUrl) {
-    this.contentScriptUrl = contentScriptUrl;
-
+  constructor() {
     this.flatMode = false;
 
     this.collId = "";
@@ -67,6 +67,13 @@ class Recorder {
       });
     })();
     `
+  }
+
+  getInjectScript() {
+    return autofetcher + `
+${this.addExternalInject("ruffle/ruffle.js")}
+window.addEventListener("beforeunload", () => {});
+`;
   }
 
   async detach() {
@@ -131,11 +138,11 @@ class Recorder {
   }
 
   updateStatus() {
-    //const sizeMsg = prettyBytes(this.size);
-
     this.numPending = Object.keys(this.pendingRequests).length + this._fetchPending.size;
 
-    //console.log(Object.values(this.pendingRequests).map((x) => x.status + " " + x.fetch + " " + x.requestId + " " + x.url + " "));
+    if (this.numPending === 0 && this._loadedDoneResolve) {
+      this._loadedDoneResolve();
+    }
 
     this.doUpdateStatus();
   }
@@ -156,16 +163,42 @@ class Recorder {
     }
   }
 
-  get injectScripts() {
-    return [autofetcher, this.addExternalInject("ruffle/ruffle.js")];
+  async _doInjectTopFrame() {
+    const source = `${this.getInjectScript()}\n//# sourceURL=${MAIN_INJECT_URL}`;
+    await this.send("Page.addScriptToEvaluateOnNewDocument", {source});
+  }
+
+  pageEval(name, expression, sessions = []) {
+    expression += "\n\n//# sourceURL=" + name;
+    return this.send("Runtime.evaluate", {
+      expression,
+      userGesture: true,
+      allowUnsafeEvalBlockedByCSP: true,
+      //replMode: true,
+      awaitPromise: true,
+      //returnByValue: true,
+    },
+    sessions);
+  }
+
+  async _doInjectIframe(sessions) {
+    try {
+      //console.log("inject to: " + sessions[0]);
+      await this.pageEval("__awp_iframe_inject__", this.getInjectScript(), sessions);
+
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  loaded() {
+    this._loaded = new Promise(resolve => this._loadedDoneResolve = resolve);
   }
 
   async start() {
     await this.send("Page.enable");
 
-    for (const source of this.injectScripts) {
-      await this.send("Page.addScriptToEvaluateOnNewDocument", {source});
-    }
+    await this._doInjectTopFrame();
 
     await this.sessionInit([]);
     this.failureMsg = null;
@@ -234,6 +267,9 @@ class Recorder {
           }
 
           console.log("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url + " " + params.sessionId);
+
+          await this._doInjectIframe(sessions);
+
         } catch (e) {
           console.log(e);
           console.warn("Error attaching target: " + params.targetInfo.type + " " + params.targetInfo.url);
@@ -241,7 +277,7 @@ class Recorder {
         break;
 
       case "Target.detachedFromTarget":
-        //console.log("Detaching: " + params.sessionId);
+        console.log("Detaching from: " + params.sessionId);
         this.sessionSet.delete(params.sessionId);
         break;
 
@@ -402,7 +438,7 @@ class Recorder {
 
     // determine if this is the unload from the injected content script
     // if not, unpause but don't extract full text
-    const ourUnload = (this.contentScriptUrl && params.callFrames[0].url === this.contentScriptUrl);
+    const ourUnload = (params.callFrames[0].url === MAIN_INJECT_URL);
 
     if (ourUnload) {
       domNodes = await this.getFullText();
@@ -881,7 +917,7 @@ class Recorder {
 
     console.log("Start Async Load: " + request.url);
 
-    const result = await this.send("Runtime.evaluate", {expression, awaitPromise: true}, sessions);
+    const result = await this.pageEval("__awp_async_fetch__", expression, sessions);
     console.log("Async Fetch Result: " + JSON.stringify(result));
   }
 

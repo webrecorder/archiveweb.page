@@ -77,7 +77,7 @@ function popupHandler(port) {
         break;
 
       case "startRecording":
-        startRecorder(tabId, {collId: message.collId, port});
+        startRecorder(tabId, {collId: message.collId, port}, message.url);
         break;
 
       case "stopRecording":
@@ -142,7 +142,7 @@ chrome.tabs.onCreated.addListener((tab) => {
     if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl});
+    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl}, openUrl);
   }
 });
 
@@ -173,7 +173,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (!tabId || !isValidUrl(changeInfo.url)) {
       return;
     }
-    startRecorder(tabId, {collId})
+    startRecorder(tabId, {collId}, changeInfo.url);
   }
 });
 
@@ -203,7 +203,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 // ===========================================================================
-async function startRecorder(tabId, opts) {
+async function startRecorder(tabId, opts, startUrl) {
   if (!self.recorders[tabId]) {
     opts.collLoader = collLoader;
     opts.openWinMap = openWinMap;

@@ -399,6 +399,7 @@ class RecPopup extends LitElement
           ${this.canRecord ? html`
           ${this.renderDropdown()}
           <button
+           ?disabled=${this.collDrop === "create"}
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
             <span class="icon">
               ${!this.recording ? html`
@@ -434,7 +435,7 @@ class RecPopup extends LitElement
   }
 
   onStart() {
-    this.sendMessage({type: "startRecording", collId: this.collId});
+    this.sendMessage({type: "startRecording", collId: this.collId, url: this.pageUrl});
   }
 
   onStop() {

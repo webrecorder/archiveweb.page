@@ -431,7 +431,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <wr-anim-logo class="logo" size="48px"></wr-anim-logo>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.5.10"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.5.11"}</div>
                     </div>
 
                     ${b?a.c`
@@ -1210,7 +1210,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.5.10"})</span>
+                <span class="menu-version">(${"0.5.11"})</span>
               </a>
             </div>
           </div>
@@ -1519,8 +1519,8 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
           <div class="has-text-left">
           <div class="error has-text-danger">${this.error}</div>
           <div>
-          ${this.embed?a.c`
-          <a class="button is-warning" @click=${e=>window.parent.location.reload()}>Try Again</a>`:a.c`
+          <a class="button is-warning" @click=${e=>window.parent.location.reload()}>Try Again</a>
+          ${this.embed?a.c``:a.c`
           <a href="/" class="button is-warning">Back</a>`}
           </div>`;case"permission_needed":return a.c`
         <div class="has-text-left">
@@ -2344,7 +2344,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
         `):a.c`<tr class="section"><td colspan="4"><i>No Results Found.</i></td></tr>`}
       </tbody>
     </table>
-      `}onSort(e){e.preventDefault();const t=e.currentTarget.getAttribute("data-key");t===this.sortKey?this.sortDesc=!this.sortDesc:(this.sortDesc=!1,this.sortKey=t)}onSortChanged(e){this.sortedResults=e.detail.sortedData,this.sortKey=e.detail.sortKey,this.sortDesc=e.detail.sortDesc}onReplay(e){e.preventDefault();const t={url:e.currentTarget.getAttribute("data-url"),ts:e.currentTarget.getAttribute("data-ts")};return this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:t}})),!1}}customElements.define("wr-coll-resources",ct);var dt=document.currentScript&&document.currentScript.src;class ht extends a.a{constructor(){super(),this.replaybase=window.location.origin+"/replay/",this.swName="sw.js",this.view="replay",this.ts="",this.url="",this.query="",this.config="",this.coll="",this.paramString=null,this.deepLink=!1,this.swInited=!1,this.embed=null,this.reloadCount=0}static get properties(){return{url:{type:String},ts:{type:String},query:{type:String},source:{type:String},view:{type:String},embed:{type:String},replaybase:{type:String},swName:{type:String},title:{type:String},coll:{type:String},config:{type:String},swInited:{type:Boolean},paramString:{type:String},hashString:{type:String},deepLink:{type:Boolean},noSW:{type:Boolean}}}async doRegister(){try{await S(this.swName,this.replaybase),console.log("done"),this.swInited=!0}catch(e){console.log(e),this.noSW=!0}}firstUpdated(){this.doRegister(),window.addEventListener("message",e=>{const t=this.renderRoot.querySelector("iframe");if(t&&e.source===t.contentWindow){if(e.data.title&&(this.title=e.data.title),!this.deepLink)return;const t=new URLSearchParams(e.data),i=new URL(window.location.href);i.hash="#"+t.toString(),window.history.replaceState({},"",i)}}),this.deepLink&&(this.updateFromHash(),window.addEventListener("hashchange",e=>this.updateFromHash()))}updateFromHash(){const e=new URLSearchParams(window.location.hash.slice(1));e.has("url")&&(this.url=e.get("url")),e.has("ts")&&(this.ts=e.get("ts")),e.has("query")&&(this.query=e.get("query")),e.has("view")&&(this.view=e.get("view"))}updated(e){(e.has("url")||e.has("ts")||e.has("query")||e.has("view")||e.has("source"))&&(this.embed=this.embed||"default",this.paramString=new URLSearchParams({source:this.source,customColl:this.coll,config:this.config,basePageUrl:window.location.href.split("#")[0],embed:this.embed}).toString(),this.hashString=new URLSearchParams({url:this.url,ts:this.ts,query:this.query,view:this.view}).toString())}static get styles(){return u(a.b`
+      `}onSort(e){e.preventDefault();const t=e.currentTarget.getAttribute("data-key");t===this.sortKey?this.sortDesc=!this.sortDesc:(this.sortDesc=!1,this.sortKey=t)}onSortChanged(e){this.sortedResults=e.detail.sortedData,this.sortKey=e.detail.sortKey,this.sortDesc=e.detail.sortDesc}onReplay(e){e.preventDefault();const t={url:e.currentTarget.getAttribute("data-url"),ts:e.currentTarget.getAttribute("data-ts")};return this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:t}})),!1}}customElements.define("wr-coll-resources",ct);var dt=document.currentScript&&document.currentScript.src;class ht extends a.a{constructor(){super(),this.replaybase="./replay/",this.swName="sw.js",this.view="replay",this.ts="",this.url="",this.query="",this.config="",this.coll="",this.paramString=null,this.deepLink=!1,this.swInited=!1,this.embed=null,this.reloadCount=0}static get properties(){return{url:{type:String},ts:{type:String},query:{type:String},source:{type:String},view:{type:String},embed:{type:String},replaybase:{type:String},swName:{type:String},title:{type:String},coll:{type:String},config:{type:String},swInited:{type:Boolean},paramString:{type:String},hashString:{type:String},deepLink:{type:Boolean},noSW:{type:Boolean}}}async doRegister(){try{await S(this.swName,this.replaybase),console.log("done"),this.swInited=!0}catch(e){console.log(e),this.noSW=!0}}firstUpdated(){this.doRegister(),window.addEventListener("message",e=>{const t=this.renderRoot.querySelector("iframe");if(t&&e.source===t.contentWindow){if(e.data.title&&(this.title=e.data.title),!this.deepLink)return;const t=new URLSearchParams(e.data),i=new URL(window.location.href);i.hash="#"+t.toString(),window.history.replaceState({},"",i)}}),this.deepLink&&(this.updateFromHash(),window.addEventListener("hashchange",e=>this.updateFromHash()))}updateFromHash(){const e=new URLSearchParams(window.location.hash.slice(1));e.has("url")&&(this.url=e.get("url")),e.has("ts")&&(this.ts=e.get("ts")),e.has("query")&&(this.query=e.get("query")),e.has("view")&&(this.view=e.get("view"))}updated(e){(e.has("url")||e.has("ts")||e.has("query")||e.has("view")||e.has("source"))&&(this.embed=this.embed||"default",this.paramString=new URLSearchParams({source:this.source,customColl:this.coll,config:this.config,basePageUrl:window.location.href.split("#")[0],embed:this.embed}).toString(),this.hashString=new URLSearchParams({url:this.url,ts:this.ts,query:this.query,view:this.view}).toString())}static get styles(){return u(a.b`
       .logo {
         margin: 1em;
         flex-grow: 1;
@@ -2552,7 +2552,7 @@ Please try a different browser.\n
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${zt.a}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.5.10"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.5.11"}</div>
                     </div>
 
                     ${b?a.c`

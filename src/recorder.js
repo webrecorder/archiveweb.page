@@ -553,10 +553,6 @@ class Recorder {
       this.fullCommit(reqresp, sessions);
     }
 
-    if (!this.firstPageStarted) {
-      this.initFirstPage();
-    }
-
     return true;
   }
 
@@ -586,6 +582,10 @@ class Recorder {
     this._fetchUrls.clear();
 
     this._pdfTextDone = null;
+
+    if (!this.firstPageStarted) {
+      this.initFirstPage();
+    }
   }
 
   loadFavIcon(favIconUrl, sessions) {

@@ -107,7 +107,9 @@ class RecPopup extends LitElement
     switch (message.type) {
       case "status":
         this.recording = message.recording;
-        this.waitingForStart = !message.firstPageStarted;
+        if (this.waitingForStart && message.firstPageStarted) {
+          this.waitingForStart = false;
+        }
         this.status = message;
         if (message.pageUrl) {
           this.pageUrl = message.pageUrl;

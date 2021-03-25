@@ -1,13 +1,14 @@
 import { LitElement, html, css, wrapCss, IS_APP, clickOnSpacebarPress } from 'replaywebpage/src/misc';
 
 // replaywebpage imports
-import { ReplayWebApp, CollIndex, Coll, Embed, Loader } from 'replaywebpage';
+import { ReplayWebApp, CollIndex, Coll, Embed, Loader, CollInfo } from 'replaywebpage';
 
 import prettyBytes from 'pretty-bytes';
 
 import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
 import fasDownload from '@fortawesome/fontawesome-free/svgs/solid/download.svg';
 import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
+import fasCopy from '@fortawesome/fontawesome-free/svgs/regular/copy.svg';
 import fasCaretUp from '@fortawesome/fontawesome-free/svgs/solid/caret-up.svg';
 import fasShare from '@fortawesome/fontawesome-free/svgs/solid/share.svg';
 import fasReshare from '@fortawesome/fontawesome-free/svgs/solid/retweet.svg';
@@ -54,7 +55,25 @@ class ArchiveWebApp extends ReplayWebApp
     this.sourceUrl = pageParams.get("source") || "";
   }
 
+  onStartLoad(event) {
+    this.sourceUrl = event.detail.sourceUrl;
+    this.loadInfo = event.detail;
+  }
+
+  onCollLoaded(event) {
+    this.loadInfo = null;
+    if (event.detail.sourceUrl && event.detail.sourceUrl !== this.sourceUrl) {
+      this.sourceUrl = event.detail.sourceUrl;
+      this.pageParams.set("source", this.sourceUrl);
+      window.location.search = this.pageParams.toString();
+    }
+  }
+
   getLoadInfo(sourceUrl) {
+    if (this.loadInfo) {
+      return this.loadInfo;
+    }
+
     const customColl = sourceUrl.startsWith("local://") ? sourceUrl.slice("local://".length) : sourceUrl;
 
     return {customColl};
@@ -91,6 +110,11 @@ class ArchiveWebApp extends ReplayWebApp
       .less-padding {
         padding-top: 1.0em;
         padding-bottom: 1.0em;
+      }
+
+      .message-header {
+        background-color: #ddddff;
+        color: black;
       }
 
       div.field.has-addons {
@@ -146,17 +170,17 @@ class ArchiveWebApp extends ReplayWebApp
     return html`
       <section class="section less-padding">
         <div class="columns">
-          <div class="column">
-            <div class="message is-small is-9">
-              <div class="message-header" style="background-color: #ddddff; color: black">New Web Archive</div>
-              <div class="extra-padding message-body">
+          <div class="column is-5">
+            <div class="message is-small">
+              <div class="message-header">Create New Web Archive</div>
+              <div class="message-body">
                 <form class="is-flex" @submit="${this.onNewColl}">
                   <div class="field has-addons">
                     <div class="control is-expanded">
                       <input class="input is-small" id="new-name" type="text" required placeholder="Enter New Archive Name">
                     </div>
                     <div class="control">
-                      <button class="button is-small" type="submit">
+                      <button class="button is-primary is-small" type="submit">
                         <span class="icon">
                           <fa-icon .svg=${fasPlus}></fa-icon>
                         </span>
@@ -168,12 +192,8 @@ class ArchiveWebApp extends ReplayWebApp
               </div>
             </div>
           </div>
-          <div class="column is-3 is-hidden-mobile">
-            <div class="message is-small">
-              <div class="message-body">
-                The ArchiveWeb.page ${IS_APP ? "App" : "Chrome extension"} allows you to create web archives directly in your browser!  
-              </div>
-            </div>
+          <div class="column is-7">
+            <wr-chooser .newFullImport="${true}" sizeClass="is-small" @load-start=${this.onStartLoad}></wr-chooser>
           </div>
         </div>
       </section>
@@ -317,7 +337,6 @@ class ArchiveWebApp extends ReplayWebApp
     const body = JSON.stringify({"metadata": {title}});
     const resp = await fetch("./wabac/api/create", {method, body});
     const data = await resp.json();
-    console.log(data);
   }
 
   onSelectColl(event) {
@@ -485,7 +504,7 @@ class WrRecCollIndex extends CollIndex
 }
 
 //============================================================================
-class WrRecCollInfo extends LitElement
+class WrRecCollInfo extends CollInfo
 {
   constructor() {
     super();
@@ -510,7 +529,11 @@ class WrRecCollInfo extends LitElement
   }
 
   static get styles() {
-    return wrapCss(css`
+    return wrapCss(WrRecCollInfo.compStyles);
+  }
+
+  static get compStyles() {
+    return css`
     :host {
       overflow: visible;
     }
@@ -557,8 +580,9 @@ class WrRecCollInfo extends LitElement
       margin-top: 2px;
       width: calc(100% - 0.5em);
     }
-    
-    `);
+
+    ${CollInfo.compStyles}
+    `;
   }
 
   firstUpdated() {
@@ -567,7 +591,6 @@ class WrRecCollInfo extends LitElement
 
   updated(changedProps) {
     if (changedProps.has("coll") && this.coll) {
-
       // Fix for loading single collection from previous versions
       if (this.coll.id === "main.archive" && this.coll.sourceUrl !== "local://main.archive") {
         this.coll = {...this.coll, sourceUrl: "local://main.archive"};
@@ -598,12 +621,12 @@ class WrRecCollInfo extends LitElement
         </div>
 
         <div class="column is-2"><p class="minihead">Date Created</p>${coll.ctime ? new Date(coll.ctime).toLocaleString() : ""}</div>
-        
+
         <div class="column is-1"><p class="minihead">Total Size</p>
         ${prettyBytes(Number(coll.size || 0))}
         </div>
 
-        <div class="column is-2">
+        <div class="column is-1">
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
             <button @click="${this.onDownload}" class="button is-small" title="Download">
@@ -619,7 +642,7 @@ class WrRecCollInfo extends LitElement
           </div>
         </div>
         
-        <div class="column is-size-7">
+        <div class="column">
           <p class="minihead">Sharing (via IPFS)</p>
           <div class="button-row is-flex">
             ${this.ipfsURL ? html`
@@ -692,6 +715,15 @@ class WrRecCollInfo extends LitElement
             `}
           </div>
         </div>
+
+        ${coll.loadUrl ? html`
+        <div class="column is-3">
+        <p class="minihead">Imported From</p>
+        ${coll.loadUrl}
+        <a @click="${(e) => this.onCopy(e, coll.loadUrl)}" class="copy"><fa-icon .svg="${fasCopy}"/></a>
+        </div>` : ``}
+        
+
       </div>
       ${this.shareWarn ? this.renderShareWarn(): ''}
       `;

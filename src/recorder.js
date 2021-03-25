@@ -30,8 +30,8 @@ class Recorder {
     this.running = false;
 
     this.frameId = null;
-    this.pageCount = 0;
     this.pageInfo = {size: 0};
+    this.firstPageStarted = false;
 
     this.sizeNew = 0;
     this.sizeTotal = 0;
@@ -70,10 +70,26 @@ class Recorder {
   }
 
   getInjectScript() {
-    return autofetcher + `
-${this.addExternalInject("ruffle/ruffle.js")}
-window.addEventListener("beforeunload", () => {});
-`;
+    return autofetcher + `;window.addEventListener("beforeunload", () => {});` + this.getFlashInjectScript();
+  }
+
+  getFlashInjectScript() {
+    return `
+    (() => {
+      const description = "Shockwave Flash 32.0 r0";
+      const enabledPlugin = { description };
+      navigator.plugins["Shockwave Flash"] = { description };
+      function addPlugin(type, suffixes) {
+        const mime = { enabledPlugin, description: "", type, suffixes};
+        navigator.mimeTypes[type] = mime;
+        navigator.mimeTypes[navigator.mimeTypes.length] = mime;
+      }
+      addPlugin("application/futuresplash", "sp1");
+      addPlugin("application/x-shockwave-flash2-preview", "swf");
+      addPlugin("application/x-shockwave-flash", "swf");
+      addPlugin("application/vnd.adobe.flash-movie", "swf");
+    })();
+    ` + this.addExternalInject("ruffle/ruffle.js");
   }
 
   async detach() {
@@ -150,6 +166,7 @@ window.addEventListener("beforeunload", () => {});
   getStatusMsg() {
     return {
       recording: this.running,
+      firstPageStarted: this.firstPageStarted,
       sizeTotal: this.sizeTotal,
       sizeNew: this.sizeNew,
       numUrls: this.numUrls,
@@ -196,11 +213,14 @@ window.addEventListener("beforeunload", () => {});
   }
 
   async start() {
+    this.firstPageStarted = false;
+
     await this.send("Page.enable");
 
     await this._doInjectTopFrame();
 
     await this.sessionInit([]);
+
     this.failureMsg = null;
   }
 
@@ -533,7 +553,19 @@ window.addEventListener("beforeunload", () => {});
       this.fullCommit(reqresp, sessions);
     }
 
+    if (!this.firstPageStarted) {
+      this.initFirstPage();
+    }
+
     return true;
+  }
+
+  async initFirstPage() {
+    // Enable unload pause only on first full page that is being recorded
+    await this.send("Debugger.enable");
+    await this.send("DOMDebugger.setEventListenerBreakpoint", {'eventName': 'beforeunload'});
+    this.updateStatus();
+    this.firstPageStarted = true;
   }
 
   _initNewPage(url, mime) {
@@ -594,13 +626,7 @@ window.addEventListener("beforeunload", () => {});
 
     await this.commitPage(this.pageInfo, results[0], false);
 
-    // Enable unload pause only on first full page that is being recorded
-    if (!this.pageCount++) {
-      await this.send("Debugger.enable");
-      await this.send("DOMDebugger.setEventListenerBreakpoint", {'eventName': 'beforeunload'});
-    }
-
-    await this.updateStatus();
+    this.updateStatus();
   }
 
   async updateHistory(sessions) {

@@ -45,6 +45,8 @@ class RecPopup extends LitElement
     this.collDrop = "";
 
     this.allowCreate = true;
+
+    this.waitingForStart = false;
   }
 
   static get properties() {
@@ -56,6 +58,7 @@ class RecPopup extends LitElement
 
       recording: { type: Boolean },
       status: { type: Object },
+      waitingForStart: { type: Boolean },
 
       replayUrl: { type: String },
       pageUrl: { type: String },
@@ -104,6 +107,7 @@ class RecPopup extends LitElement
     switch (message.type) {
       case "status":
         this.recording = message.recording;
+        this.waitingForStart = !message.firstPageStarted;
         this.status = message;
         if (message.pageUrl) {
           this.pageUrl = message.pageUrl;
@@ -321,6 +325,10 @@ class RecPopup extends LitElement
       return html`<i>Can't record this page.</i>`;
     }
 
+    if (this.waitingForStart) {
+      return html`<i>Recording will start after the page reloads...</i>`;
+    }
+
     return html`<i>${this.notRecordingMessage}</i>`;
   }
 
@@ -399,7 +407,7 @@ class RecPopup extends LitElement
           ${this.canRecord ? html`
           ${this.renderDropdown()}
           <button
-           ?disabled=${this.collDrop === "create"}
+           ?disabled=${this.collDrop === "create" || (!this.recording && this.waitingForStart)}
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
             <span class="icon">
               ${!this.recording ? html`
@@ -436,10 +444,12 @@ class RecPopup extends LitElement
 
   onStart() {
     this.sendMessage({type: "startRecording", collId: this.collId, url: this.pageUrl});
+    this.waitingForStart = true;
   }
 
   onStop() {
     this.sendMessage({type: "stopRecording"});
+    this.waitingForStart = false;
   }
 
   onSelectColl(event) {

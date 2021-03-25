@@ -1,4 +1,4 @@
-
+(() => {
 const SRC_SET_SELECTOR = 'img[srcset], img[data-srcset], img[data-src], ' +  
 'video[srcset], video[data-srcset], video[data-src], audio[srcset], audio[data-srcset], audio[data-src], ' +
 'picture > source[srcset], picture > source[data-srcset], picture > source[data-src], ' +
@@ -195,4 +195,9 @@ class AutoFetcher
   }
 }
 
-new AutoFetcher().init();
+if (!self.__awp_autofetch__) {
+  new AutoFetcher().init();
+  self.__awp_autofetch__ = true;
+}
+
+})();

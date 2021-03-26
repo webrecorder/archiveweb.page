@@ -808,10 +808,10 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@^2.6.6", "@webrecorder/wabac@^2.6.7":
-  version "2.6.7"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.6.7.tgz#c60dd4d59a27c11888ef4ce13ec31470a5d49629"
-  integrity sha512-Y1xrarSpxj+YO2OYz8Vl+F/jnRrYbthU/v5tgb8XgVfFI92ioQkyscQ4govQBnItQ5C3V9OXkwI68IIU0v0c0A==
+"@webrecorder/wabac@^2.6.8":
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.6.8.tgz#d838a352fe8251dba7a457b77d4c462ef6065b0d"
+  integrity sha512-84fGQoJ6cXPx/m3sAhWsouyLURuisLYY1T1hxT4A6lqR+iLQw2G3ip0PX3uml3jssBmfNsi+TGlyhwAuyWwyhg==
   dependencies:
     "@webrecorder/wombat" "^3.1.2"
     brotli "github:foliojs/brotli.js"
@@ -8360,13 +8360,13 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.3.12:
-  version "1.3.12"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.3.12.tgz#dc89eedf775c125410e770f90d9ffb5110dc6070"
-  integrity sha512-tpP8TUrrHQUoK0o0k+lLiejXJDiPLEFsUCdehr6wA2NJ8HzwfvFw2bOwjmPmFFtiK5u5WFMQCoo2svqTiVDk+w==
+replaywebpage@^1.3.14:
+  version "1.3.14"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.3.14.tgz#56f089c0525cb9c64204515491994a2dea121465"
+  integrity sha512-xThoSv7xe2M4gEPhVV+co4/aQEJr0CaIxLz3yu5e8b5L1D4HYQiDGh9luhN5Z/dUJOvF7rvNHfjXNNegkRyCcA==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "^2.6.6"
+    "@webrecorder/wabac" "^2.6.8"
     bulma "^0.9.0"
     electron-log "^4.3.0"
     electron-updater "^4.3.5"

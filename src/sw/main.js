@@ -7,4 +7,4 @@ const defaultConfig = {
   baseUrlSourcePrefix: "/replay/index.html"
 };
 
-self.sw = new SWReplay(null, ExtAPI, false, defaultConfig);
+self.sw = new SWReplay({ApiClass: ExtAPI, defaultConfig});

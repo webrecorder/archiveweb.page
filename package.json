@@ -1,12 +1,13 @@
 {
   "name": "ArchiveWeb.page",
-  "version": "0.5.13",
+  "version": "0.6.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
   "author": "Webrecorder Software",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.10.0",
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@webrecorder/wabac": "^2.6.8",
     "bulma": "^0.9.1",

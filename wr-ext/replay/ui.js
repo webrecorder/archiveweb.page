@@ -431,7 +431,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <wr-anim-logo class="logo" size="48px"></wr-anim-logo>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.5.13"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.5.14"}</div>
                     </div>
 
                     ${b?a.c`
@@ -1210,7 +1210,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.5.13"})</span>
+                <span class="menu-version">(${"0.5.14"})</span>
               </a>
             </div>
           </div>
@@ -2553,7 +2553,7 @@ Please try a different browser.\n
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${zt.a}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.5.13"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.5.14"}</div>
                     </div>
 
                     ${b?a.c`

@@ -1,9 +1,8 @@
-import { html, css, wrapCss, IS_APP } from 'replaywebpage/src/misc';
+import { html, css, wrapCss, IS_APP, apiPrefix } from 'replaywebpage/src/misc';
 
 // replaywebpage imports
 import { ReplayWebApp, Embed, Loader } from 'replaywebpage';
 
-import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
 import fasHelp from '@fortawesome/fontawesome-free/svgs/solid/question-circle.svg';
 
 //import wrText from '../assets/webrecorder-text.svg';
@@ -23,7 +22,6 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.currTab = "archives";
-    this.showSyncEditor = false;
   }
 
   get appName() {
@@ -41,8 +39,6 @@ class ArchiveWebApp extends ReplayWebApp
       selCollTitle: { type: String },
       recordUrl: { type: String },
       currTab: { type: String },
-
-      showSyncEditor: { type: Boolean }
     }
   }
 
@@ -108,11 +104,6 @@ class ArchiveWebApp extends ReplayWebApp
       .less-padding {
         padding-top: 1.0em;
         padding-bottom: 1.0em;
-      }
-
-      .message-header {
-        background-color: #ddddff;
-        color: black;
       }
 
       div.field.has-addons {
@@ -186,7 +177,6 @@ class ArchiveWebApp extends ReplayWebApp
 
       ${this.currTab === 'archives' ? html`
       <wr-rec-coll-index
-       apiPrefix="${this.baseApiPrefix}"
        dateName="Date Created"
        headerName="Current Web Archives"
        @show-start=${this.onShowStart}
@@ -194,63 +184,19 @@ class ArchiveWebApp extends ReplayWebApp
        >
       </wr-rec-coll-index>` : ``}
       ${this.currTab === 'cred' ? this.renderCredTab() : ''}
-     `
-     
-     
+     `;     
      ;
   }
 
   renderCredTab() {
     return html`
-    <wr-store-cred apiPrefix="${this.baseApiPrefix}"></wr-store-cred>
+    <wr-store-cred></wr-store-cred>
     `;
   }
 
   renderAddTab() {
     return html`
-    <section class="section less-padding">
-      <div class="columns">
-        <div class="column is-5">
-          <div class="message is-small">
-            <div class="message-header">Create New Web Archive</div>
-            <div class="message-body">
-              <form class="is-flex is-flex-direction-column" @submit="${this.onNewColl}">
-                <div class="field">
-                  <div class="control is-expanded">
-                    <input class="input is-small" id="new-name" type="text" required placeholder="Enter the Title for this Archive">
-                  </div>
-                </div>
-                <div class="field">
-                  <div class="control">
-                    <label class="checkbox">
-                      <input id="preview" type="checkbox" @change="${(e) => this.showSyncEditor = e.currentTarget.checked}" ?checked="${this.showSyncEditor}">
-                      Create a Synched Archive
-                    </label>
-                  </div>
-                </div>
-                ${this.showSyncEditor ? html`
-                <div class="field">
-                  <wr-sync-config apiPrefix="${this.baseApiPrefix}"></wr-sync-config>
-                </div>` : ''}
-                <div class="field">
-                  <div class="control">
-                    <button class="button is-primary is-small" type="submit">
-                      <span class="icon">
-                        <fa-icon .svg=${fasPlus}></fa-icon>
-                      </span>
-                      <span>Create New</span>
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="column is-7">
-          <wr-chooser .newFullImport="${true}" sizeClass="is-small" @load-start=${this.onStartLoad}></wr-chooser>
-        </div>
-      </div>
-    </section>
+    <wr-new-coll @coll-created="${() => this.currTab = 'archives'}"></wr-new-coll>
     `;
   }
 
@@ -268,8 +214,6 @@ class ArchiveWebApp extends ReplayWebApp
     .appLogo="${this.mainLogo}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
-    baseApiPrefix="${this.baseApiPrefix}"
-    baseReplayPrefix="${this.baseReplayPrefix}"
     @replay-favicons=${this.onFavIcons}
     @update-title=${this.onTitle}
     @coll-loaded=${this.onCollLoaded}
@@ -378,15 +322,6 @@ class ArchiveWebApp extends ReplayWebApp
       </div>`;
   }
 
-  async onNewColl(event) {
-    const title = this.renderRoot.querySelector("#new-name").value;
-
-    const method = "POST";
-    const body = JSON.stringify({"metadata": {title}});
-    const resp = await fetch("./wabac/api/c/create", {method, body});
-    const data = await resp.json();
-  }
-
   onSelectColl(event) {
     //this.selCollId = event.currentTarget.getAttribute("data-id");
     //this.selCollTitle = event.currentTarget.getAttribute("data-title");
@@ -400,7 +335,7 @@ class ArchiveWebApp extends ReplayWebApp
     this.recordUrl = event.detail.url || "https://example.com/"
     this.recordShown = true;
 
-    const resp = await fetch("./wabac/api/c/index");
+    const resp = await fetch(`${apiPrefix}/coll-index`);
     const data = await resp.json();
 
     this.colls = data.colls;

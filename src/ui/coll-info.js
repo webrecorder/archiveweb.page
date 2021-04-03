@@ -1,6 +1,6 @@
 import { CollIndex, Coll, CollInfo } from 'replaywebpage';
 
-import { html, css, wrapCss, clickOnSpacebarPress } from 'replaywebpage/src/misc';
+import { html, css, wrapCss, clickOnSpacebarPress, apiPrefix } from 'replaywebpage/src/misc';
 
 import prettyBytes from 'pretty-bytes';
 
@@ -159,7 +159,7 @@ class WrRecCollInfo extends CollInfo
       shareWait: { type: Boolean },
       showShareMenu: { type: Boolean },
       shareWarn: { type: Boolean },
-      shareProgress: { type: Number }
+      shareProgress: { type: Number },
     }
   }
 
@@ -401,11 +401,11 @@ class WrRecCollInfo extends CollInfo
     //params.set("filename", this.coll.title);
     params.set("pages", "all");
 
-    window.location.href = `/replay/wabac/api/${this.coll.id}/dl?` + params.toString();
+    window.location.href = `${apiPrefix}/c/${this.coll.id}/dl?` + params.toString();
   }
 
   async onSync() {
-    await fetch(`/replay/wabac/api/${this.coll.id}/sync`);
+    await fetch(`${apiPrefix}/c/${this.coll.id}/sync`);
   }
 
   onShowShareMenu(event) {
@@ -512,7 +512,7 @@ class WrRecCollInfo extends CollInfo
       await this.ipfsApi(this.coll.id, false);
     }
 
-    const resp = await fetch(`./wabac/api/${this.coll.id}`, {method: 'DELETE'});
+    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: 'DELETE'});
     if (resp.status === 200) {
       const json = await resp.json();
       this.colls = json.colls;

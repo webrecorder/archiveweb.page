@@ -24,7 +24,8 @@ class ExtAPI extends API
       'getCred': "cred/:cred",
       'listCreds': "creds",
       'deleteCred': ["cred/:cred", "DELETE"],
-      'testCred': ["test-cred", "POST"]
+      'testCred': ["test-cred", "POST"],
+      'testCredPathExists': "test-cred"
     };
   }
 
@@ -99,10 +100,10 @@ class ExtAPI extends API
         return {valid, checkTs};
       }
 
-      case "testBucket": {
+      case "testCredPathExists": {
         const credData = await this.credManager.get(params._query.get("cred"));
         const sync = new S3Sync(credData);
-        const res = await sync.newCollCheck(params._query.get("path"));
+        const res = await sync.checkCollExists(params._query.get("collId"));
         return res;
       }
     }

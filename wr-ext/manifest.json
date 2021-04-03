@@ -11,6 +11,7 @@
     "unlimitedStorage",
     "webRequest",
     "webRequestBlocking",
+    "alarms",
     "ipfs",
     "<all_urls>"
   ],

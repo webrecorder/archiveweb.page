@@ -15,6 +15,9 @@ export class S3Sync
         secretAccessKey: credData.secretAccessKey
       }
     });
+    const res = this.parseBucketPath(credData.bucketAndPath);
+    this.bucket = res.bucket;
+    this.path = res.path + "/";
   }
 
   parseBucketPath(fullPath) {
@@ -36,10 +39,10 @@ export class S3Sync
     });
   }
 
-  async head(bucket, path) {
+  async head(path) {
     try {
       await this.s3.headObject({
-        Bucket: bucket,
+        Bucket: this.bucket,
         Key: path
       });
       return true;
@@ -48,11 +51,26 @@ export class S3Sync
     }
   }
 
-  async isBucketValid(bucketAndPath) {
-    const { bucket } = this.parseBucketPath(bucketAndPath);
+  async put(dlresponse, isPublic = false) {
+    const blob = await dlresponse.blob();
 
+    const params = {
+      Bucket: this.bucket,
+      Key: this.path + dlresponse.filename,
+      Body: blob,
+    };
+
+    if (isPublic) {
+      params.ACL = "public-read";
+    }
+  
+    const data = await this.s3.putObject(params);
+    console.log(data);
+  }
+
+  async isBucketValid() {
     try {
-      await this.s3.headBucket({Bucket: bucket});
+      await this.s3.headBucket({Bucket: this.bucket});
       return true;
     } catch (e) {
       console.log(e);
@@ -60,22 +78,21 @@ export class S3Sync
     }
   }
 
-  async newCollCheck(fullPath) {
-    let {bucket, path} = this.parseBucketPath(fullPath);
-
-    if (!await this.isBucketValid(bucket)) {
-      return {"error": "bucket_not_found"};
+  async checkCollExists(collId) {
+    const valid = await this.isBucketValid();
+    if (!valid) {
+      return {valid, exists: false};
     }
 
-    if (path) {
+    let path = this.path + "/" + collId;
+
+    if (!path.endsWith("/")) {
       path += "/";
     }
 
-    if (await this.head(bucket, path + "swac.json")) {
-      return {"error": "already_exists"};
-    }
+    const exists = await this.head(path + "swac.json");
 
-    return {};
+    return {valid, exists};
   }
 }
 

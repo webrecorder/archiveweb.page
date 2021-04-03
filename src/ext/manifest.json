@@ -3,7 +3,7 @@
   "description": "Create high-fidelity web archives directly in your browser",
   "version": "$VERSION",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "unlimitedStorage", "webRequest", "webRequestBlocking", "ipfs", "<all_urls>"],
+  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "unlimitedStorage", "webRequest", "webRequestBlocking", "alarms", "ipfs", "<all_urls>"],
   "background": { 
     "scripts": ["bg.js"],
     "persistent": true

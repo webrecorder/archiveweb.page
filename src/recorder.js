@@ -3,6 +3,8 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite';
 import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo';
 
+import { PAGE_STATE_NEED_REMOTE_SYNC, PAGE_STATE_NOT_FINISHED } from '@webrecorder/wabac/src/utils';
+
 import autofetcher from './autofetcher';
 
 const encoder = new TextEncoder("utf-8");
@@ -490,7 +492,7 @@ class Recorder {
       console.warn("No Full Text Update");
     }
 
-    currPage.finished = finished;
+    currPage.state = finished ? PAGE_STATE_NOT_FINISHED : PAGE_STATE_NEED_REMOTE_SYNC;
 
     return this._doAddPage(currPage);
   }

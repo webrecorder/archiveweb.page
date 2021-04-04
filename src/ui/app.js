@@ -9,6 +9,7 @@ import fasHelp from '@fortawesome/fontawesome-free/svgs/solid/question-circle.sv
 
 import { wrRec } from './coll-info';
 import './credui';
+import './coll-index';
 import wrLogo from '../../assets/awp-logo.svg';
 
 
@@ -22,6 +23,7 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.currTab = "archives";
+    this.storages = [];
   }
 
   get appName() {
@@ -39,6 +41,20 @@ class ArchiveWebApp extends ReplayWebApp
       selCollTitle: { type: String },
       recordUrl: { type: String },
       currTab: { type: String },
+      storages: { type: Array }
+    }
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+    this.loadCreds();
+  }
+
+  async loadCreds() {
+    const resp = await fetch(`${apiPrefix}/creds`);
+    const res = await resp.json();
+    if (res.creds) {
+      this.storages = res.creds.map(cred => cred.name);
     }
   }
 
@@ -177,12 +193,44 @@ class ArchiveWebApp extends ReplayWebApp
 
       ${this.currTab === 'archives' ? html`
       <wr-rec-coll-index
-       dateName="Date Created"
-       headerName="Current Web Archives"
-       @show-start=${this.onShowStart}
-       style="overflow: visible"
-       >
-      </wr-rec-coll-index>` : ``}
+        .includeNew=${true}
+        .includeImport=${true}
+        .newFullImport=${true}
+        typeFilter="archive"
+        dateName="Date Created"
+        headerName="Local Web Archives"
+        @show-start=${this.onShowStart}
+        style="overflow: visible"
+        >
+      </wr-rec-coll-index>
+
+
+      ${this.storages.map(cred => html`
+        <wr-rec-coll-index
+          .includeNew=${true}
+          typeFilter="sync"
+          dateName="Date Created"
+          headerName="${cred} Shared Collections"
+          cred=${cred}
+          @show-start=${this.onShowStart}
+          style="overflow: visible; --panel-color: rgb(221, 221, 255)"
+          >
+        </wr-rec-coll-index>
+      `)}
+      
+      <wr-rec-coll-index
+        typeFilter="remote"
+        dateName="Date Loaded"
+        headerName="Remote Read-Only Web Archives"
+        .includeImport=${true}
+        .newFullImport=${false}
+        @show-start=${this.onShowStart}
+        style="overflow: visible; --panel-color: #cff3ff"
+        >
+      </wr-rec-coll-index>
+      
+      
+      ` : ``}
       ${this.currTab === 'cred' ? this.renderCredTab() : ''}
      `;     
      ;

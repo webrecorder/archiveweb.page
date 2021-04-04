@@ -135,7 +135,7 @@ class WrStorageCred extends LitElement
             <div class="control">
               <input id="name" name="name" class="input is-small" type="text"
               @change="${(e) => this.currCred = {...this.currCred, bucketAndPath: e.currentTarget.value, checkTs: 0}}" .value="${this.currCred.bucketAndPath || ""}"
-              pattern="[\\w-/%]+" required placeholder="s3://bucket/path/to/webarchives/">
+              pattern="[\\w/.-]+" required placeholder="s3://bucket/path/to/webarchives/">
             </div>
           </div>
           <div class="field">
@@ -245,7 +245,8 @@ class WrStorageCred extends LitElement
     this.currCred = null;
   }
 
-  async onTestCred() {
+  async onTestCred(event) {
+    event.preventDefault();
     const resp = await fetch(`${apiPrefix}/test-cred`, {
       method: "POST",
       body: JSON.stringify(this.currCred)

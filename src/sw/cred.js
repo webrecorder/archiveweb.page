@@ -1,19 +1,25 @@
+import { randomId } from "@webrecorder/wabac/src/utils";
 import { openDB } from "idb/with-async-ittr.js";
 
 const CRED_DB = "_store-cred";
 const CRED_STORE = "credentials";
 
-export class Credentials
+
+// ====================================================================
+export class SimpleDB
 {
-  constructor() {
-    this.version = 1;
-    this.init();
+  constructor({dbname, mainStore, key, version = 1}) {
+    this.dbname = dbname;
+    this.mainStore = mainStore;
+    this.key = key;
+    this.version = version;
+    this._ready = this.init();
   }
 
   async init() {
     let oldVersion = 0;
 
-    this.db = await openDB(CRED_DB, this.version, {
+    this.db = await openDB(this.dbname, this.version, {
       upgrade: (db, oldV, newV, tx) => {
         oldVersion = oldV;
         this._initDB(db, oldV, newV, tx);
@@ -24,24 +30,28 @@ export class Credentials
 
   _initDB(db, oldV/*, newV, tx*/) {
     if (!oldV) {
-      db.createObjectStore(CRED_STORE, { keyPath: "name" });
+      db.createObjectStore(this.mainStore, { keyPath: this.key });
     }
   }
 
-  listAll() {
-    return this.db.getAll(CRED_STORE)
+  async listAll() {
+    await this._ready;
+    return await this.db.getAll(this.mainStore)
   }
 
-  get(name) {
-    return this.db.get(CRED_STORE, name);
+  async get(name) {
+    await this._ready;
+    return await this.db.get(this.mainStore, name);
   }
 
-  delete(name) {
-    return this.db.delete(CRED_STORE, name);
+  async delete(name) {
+    await this._ready;
+    return this.db.delete(this.mainStore, name);
   }
 
-  update(value) {
-    return this.db.put(CRED_STORE, value);
+  async update(value) {
+    await this._ready;
+    return await this.db.put(this.mainStore, value);
   }
 
   close() {
@@ -50,4 +60,36 @@ export class Credentials
       this.db = null;
     }
   }
+}
+
+// ====================================================================
+export class Credentials extends SimpleDB
+{
+  constructor() {
+    super({dbname: CRED_DB, mainStore: CRED_STORE});
+  }
+}
+
+
+// ====================================================================
+export class IdStore extends SimpleDB
+{
+  constructor() {
+    super({dbname: "id", mainStore: "id", key: "id"});
+  }
+
+  async getId() {
+    let result = await this.get(this.key);
+    if (!result) {
+      result = {};
+      result[this.key] = randomId();
+      await this.update(result);
+    }
+    return result;
+  }
+}
+
+export function getUID() {
+  const store = new IdStore();
+  return store.getId();
 }

@@ -12,6 +12,7 @@ const defaultConfig = {
 };
 
 
+// ===============================================================================
 class ShareableCollections extends SWCollections
 {
   constructor(...args) {
@@ -34,13 +35,28 @@ class ShareableCollections extends SWCollections
     return collection;
   }
 
+  async loadS3(sync) {
+    const credData = await this.credManager.get(sync.cred);
+    const s3 = new S3Sync(credData);
+    return s3;
+  }
+
+  async initNewColl(metadata, extraConfig) {
+    if (extraConfig && extraConfig.sync) {
+      const s3 = await this.loadS3(extraConfig.sync);
+      await s3.createNewColl(extraConfig.sync.collId);
+    }
+
+    return super.initNewColl(metadata, extraConfig);
+  }
+
   async deleteColl(name, keepFileHandle = false) {
     this.stopSync(name);
     return await super.deleteColl(name, keepFileHandle);
   }
 
   startSync(collection, name, syncdata) {
-    this.syncs[name] = setInterval(() => this._doSync(collection, syncdata), 30000);
+    this.syncs[name] = setInterval(() => this._doSync(collection, name, syncdata), 30000);
   }
 
   stopSync(name) {
@@ -51,8 +67,7 @@ class ShareableCollections extends SWCollections
   }
 
   async _doSync(coll, sync) {
-    const credData = await this.credManager.get(sync.cred);
-    const s3 = new S3Sync(credData);
+    const s3 = await this.loadS3(sync);
 
     const pages = await coll.store.getPagesWithState(PAGE_STATE_NEED_REMOTE_SYNC);
 
@@ -70,7 +85,7 @@ class ShareableCollections extends SWCollections
 
     const resp = await dl.download();
 
-    await s3.put(resp);
+    await s3.put(await resp.blob(), resp.filename);
 
     for (const page of pages) {
       page.state = PAGE_STATE_SYNCED;

@@ -1,4 +1,4 @@
-import { CollIndex, Coll, CollInfo } from 'replaywebpage';
+import { Coll, CollInfo } from 'replaywebpage';
 
 import { html, css, wrapCss, clickOnSpacebarPress, apiPrefix } from 'replaywebpage/src/misc';
 
@@ -50,91 +50,6 @@ class WrRecColl extends Coll
     const title = this.collInfo.title;
     const url = this.tabData.url;
     this.dispatchEvent(new CustomEvent("show-start", {detail: {coll, title, url}}));
-  }
-}
-
-//============================================================================
-class WrRecCollIndex extends CollIndex
-{
-  constructor() {
-    super();
-    this.deleteConfirm = null;
-  }
-
-  firstUpdated() {
-    this.loadColls();
-
-    this._poll = setInterval(() => this.loadColls(), 10000);
-  }
-
-  static get properties() {
-    return {
-      ...CollIndex.properties,
-
-      deleteConfirm: { type: Object }
-    }
-  }
-
-  renderCollInfo(coll) {
-    return html`
-    <wr-rec-coll-info
-      style="overflow: visible" data-coll="${coll.id}" .coll=${coll}>
-    </wr-rec-coll-info>`;
-  }
-
-  render() {
-    return html`
-    ${super.render()}
-    ${this.renderDeleteConfirm()}
-    `;
-  }
-
-  renderDeleteConfirm() {
-    if (!this.deleteConfirm) {
-      return null;
-    }
-
-    return html`
-    <wr-modal bgClass="has-background-grey-lighter" @modal-closed="${(e) => this.deleteConfirm = null}" title="Confirm Delete">
-      <p>Are you sure you want to permanentely delete the archive <b>${this.deleteConfirm.title}</b>
-      (Size: <b>${prettyBytes(this.deleteConfirm.size)}</b>)</p>
-      <button @click="${this.doDelete}"class="button is-danger">Delete</button>
-      <button @click="${(e) => this.deleteConfirm = null}" class="button">Cancel</button>
-    </wr-modal>`;
-  }
-
-  onDeleteColl(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (!this.sortedColls) {
-      return;
-    }
-
-    const index = Number(event.currentTarget.getAttribute("data-coll-index"));
-
-    this.deleteConfirm = this.sortedColls[index];
-  }
-
-  async doDelete() {
-    if (!this.deleteConfirm) {
-      return;
-    }
-
-    this._deleting[this.deleteConfirm.sourceUrl] = true;
-    this.requestUpdate();
-
-    const info = this.renderRoot.querySelector(`wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`);
-
-    if (info) {
-      await info.doDelete();
-    }
-
-    this.deleteConfirm = null;
-  }
-
-  renderEmpty() {
-    return html`No Archives. Click "Create New" above to create a new archive and start recording!`;
   }
 }
 
@@ -269,11 +184,6 @@ class WrRecCollInfo extends CollInfo
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
             </button>
-            <button @click="${this.onSync}" class="button is-small" title="Sync">
-              <span class="icon is-small">
-                <fa-icon aria-hidden="true" .svg="${fasSync}"></fa-icon>
-              </span>
-            </button>
             <button @click="${this.onShowStart}" class="button is-small" title="Start Recording...">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${wrRec}"></fa-icon>
@@ -404,9 +314,9 @@ class WrRecCollInfo extends CollInfo
     window.location.href = `${apiPrefix}/c/${this.coll.id}/dl?` + params.toString();
   }
 
-  async onSync() {
-    await fetch(`${apiPrefix}/c/${this.coll.id}/sync`);
-  }
+  // async onSync() {
+  //   await fetch(`${apiPrefix}/c/${this.coll.id}/sync`);
+  // }
 
   onShowShareMenu(event) {
     event.preventDefault();
@@ -521,8 +431,6 @@ class WrRecCollInfo extends CollInfo
 }
 
 customElements.define('wr-rec-coll', WrRecColl);
-
-customElements.define('wr-rec-coll-index', WrRecCollIndex);
 customElements.define('wr-rec-coll-info', WrRecCollInfo);
 
-export { WrRecColl, WrRecCollInfo, WrRecCollIndex, wrRec };
+export { WrRecColl, WrRecCollInfo, wrRec };

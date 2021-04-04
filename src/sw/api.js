@@ -25,7 +25,8 @@ class ExtAPI extends API
       'listCreds': "creds",
       'deleteCred': ["cred/:cred", "DELETE"],
       'testCred': ["test-cred", "POST"],
-      'testCredPathExists': "test-cred"
+      'testCredPathExists': "test-cred",
+      "listCredRoot": "cred-list/:cred"
     };
   }
 
@@ -105,6 +106,12 @@ class ExtAPI extends API
         const sync = new S3Sync(credData);
         const res = await sync.checkCollExists(params._query.get("collId"));
         return res;
+      }
+
+      case "listCredRoot": {
+        const credData = await this.credManager.get(params.cred);
+        const sync = new S3Sync(credData);
+        const res = await sync.ls();
       }
     }
 

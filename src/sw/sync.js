@@ -1,5 +1,5 @@
-import { S3, PutObjectCommand, PutBucketCorsCommand } from "@aws-sdk/client-s3";
-
+import { S3 } from "@aws-sdk/client-s3";
+import { getUID } from "./cred";
 
 self.window = self;
 
@@ -39,11 +39,11 @@ export class S3Sync
     });
   }
 
-  async head(path) {
+  async head(path = "") {
     try {
       await this.s3.headObject({
         Bucket: this.bucket,
-        Key: path
+        Key: this.path + path
       });
       return true;
     } catch (e) {
@@ -51,13 +51,24 @@ export class S3Sync
     }
   }
 
-  async put(dlresponse, isPublic = false) {
-    const blob = await dlresponse.blob();
+  async ls(path = "") {
+    try {
+      const res = await this.s3.listObjectsV2({
+        Bucket: this.bucket,
+        Key: this.path + path,
+        Delimiter: "/"
+      });
+      console.log(res);
+    } catch (e) {
 
+    }
+  }
+
+  async put(content, filename, isPublic = false) {
     const params = {
       Bucket: this.bucket,
-      Key: this.path + dlresponse.filename,
-      Body: blob,
+      Key: this.path + filename,
+      Body: content,
     };
 
     if (isPublic) {
@@ -94,49 +105,29 @@ export class S3Sync
 
     return {valid, exists};
   }
-}
 
+  async createNewColl(path) {
+    const data = {
+      "createdBy": await getUID()
+    };
 
+    await this.put(JSON.stringify(), path + "/coll.json");
+  }
 
-export async function doUpload(dlresponse) {
-  s3 = new S3Client({
-    endpoint: "https://nyc3.digitaloceanspaces.com",
-    region: " ",
-    bucketEndpoint: false,
-    credentials: {
-      accessKeyId: "DYEYLRDXHGDQEPGQPNBA",
-      secretAccessKey: "+DMsnrV4nB0Jbr6OG9ZPFmRdc48y9iN8HSYj5JTkuNk"
-    }
-  });
+  async setCORS() {
+    const params = {
+      Bucket: this.bucket,
+      CORSConfiguration: {
+        CORSRules: [{
+          AllowedOrigins: ["*"],
+          AllowedMethods: ["HEAD", "GET"],
+          AllowedHeaders: ["*"],
+          ExposeHeaders: ["Content-Length", "Content-Range", "Content-Encoding"]
+        }]
+      }
+    };
 
-  const blob = await dlresponse.blob();
-
-  const params = {
-    Bucket: "wr-test",
-    Key: "coll/" + dlresponse.filename,
-    Body: blob,
-    ACL: "public-read",
-  };
-
-  const data = await s3.send(new PutObjectCommand(params));
-  console.log(data);
-
-  await setCORS();
-}
-
-export async function setCORS() {
-  const params = {
-    Bucket: "wr-test",
-    CORSConfiguration: {
-      CORSRules: [{
-        AllowedOrigins: ["*"],
-        AllowedMethods: ["HEAD", "GET"],
-        AllowedHeaders: ["*"],
-        ExposeHeaders: ["Content-Length", "Content-Range", "Content-Encoding"]
-      }]
-    }
-  };
-
-  const data = await s3.send(new PutBucketCorsCommand(params));
-  console.log(data);
+    const data = await this.s3.putBucketCors(params);
+    console.log(data);
+  }
 }

@@ -1,16 +1,20 @@
-import { html, css, wrapCss, IS_APP, apiPrefix } from 'replaywebpage/src/misc';
+import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/src/misc";
 
 // replaywebpage imports
-import { ReplayWebApp, Embed, Loader } from 'replaywebpage';
+import { ReplayWebApp, Embed, Loader } from "replaywebpage";
 
-import fasHelp from '@fortawesome/fontawesome-free/svgs/solid/question-circle.svg';
+import fasHelp from "@fortawesome/fontawesome-free/svgs/solid/question-circle.svg";
 
 //import wrText from '../assets/webrecorder-text.svg';
 
-import { wrRec } from './coll-info';
-import './credui';
-import './coll-index';
-import wrLogo from '../../assets/awp-logo.svg';
+import { wrRec } from "./coll-info";
+import "./credui";
+import "./coll-index";
+import wrLogo from "../../assets/awp-logo.svg";
+
+
+// eslint-disable-next-line no-undef
+const VERSION = __VERSION__;
 
 
 //============================================================================
@@ -42,7 +46,7 @@ class ArchiveWebApp extends ReplayWebApp
       recordUrl: { type: String },
       currTab: { type: String },
       storages: { type: Array }
-    }
+    };
   }
 
   firstUpdated() {
@@ -158,8 +162,8 @@ class ArchiveWebApp extends ReplayWebApp
     <a href="https://archiveweb.page/guide" target="_blank" class="navbar-item is-size-6">
     <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon><span>&nbsp;User Guide</span>
 
-    <a href="?about" @click="${(e) => { e.preventDefault(); this.showAbout = true} }"class="navbar-item is-size-6">About
-    </a>`
+    <a href="?about" @click="${(e) => { e.preventDefault(); this.showAbout = true;} }"class="navbar-item is-size-6">About
+    </a>`;
   }
 
   renderNavBrand() {
@@ -176,22 +180,22 @@ class ArchiveWebApp extends ReplayWebApp
       <section class="section less-padding">
         <div class="tabs is-boxed">
           <ul>
-            <li class="${this.currTab === 'archives' ? 'is-active': ''}">
-              <a @click="${(e) => this.currTab = 'archives'}">Archives</a>
+            <li class="${this.currTab === "archives" ? "is-active": ""}">
+              <a @click="${() => this.currTab = "archives"}">Archives</a>
             </li>
-            <li class="${this.currTab === 'add' ? 'is-active': ''}">
-              <a @click="${(e) => this.currTab = 'add'}">Add Archives</a>
+            <li class="${this.currTab === "add" ? "is-active": ""}">
+              <a @click="${() => this.currTab = "add"}">Add Archives</a>
             </li>
-            <li class="${this.currTab === 'cred' ? 'is-active': ''}">
-              <a @click="${(e) => this.currTab = 'cred'}">Storage Credentials</a>
+            <li class="${this.currTab === "cred" ? "is-active": ""}">
+              <a @click="${() => this.currTab = "cred"}">Storage Credentials</a>
             </li>
           </ul>
         </div>
       </section>
 
-      ${this.currTab === 'add' ? this.renderAddTab() : ''}
+      ${this.currTab === "add" ? this.renderAddTab() : ""}
 
-      ${this.currTab === 'archives' ? html`
+      ${this.currTab === "archives" ? html`
       <wr-rec-coll-index
         .includeNew=${true}
         .includeImport=${true}
@@ -204,11 +208,10 @@ class ArchiveWebApp extends ReplayWebApp
         >
       </wr-rec-coll-index>
 
-
       ${this.storages.map(cred => html`
         <wr-rec-coll-index
           .includeNew=${true}
-          typeFilter="sync"
+          typeFilter="sync:${cred}"
           dateName="Date Created"
           headerName="${cred} Shared Collections"
           cred=${cred}
@@ -230,10 +233,10 @@ class ArchiveWebApp extends ReplayWebApp
       </wr-rec-coll-index>
       
       
-      ` : ``}
-      ${this.currTab === 'cred' ? this.renderCredTab() : ''}
+      ` : ""}
+      ${this.currTab === "cred" ? this.renderCredTab() : ""}
      `;     
-     ;
+     
   }
 
   renderCredTab() {
@@ -244,13 +247,13 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderAddTab() {
     return html`
-    <wr-new-coll @coll-created="${() => this.currTab = 'archives'}"></wr-new-coll>
+    <wr-new-coll @coll-created="${() => this.currTab = "archives"}"></wr-new-coll>
     `;
   }
 
   render() {
     return html`
-    ${this.recordShown ? this.renderStartModal() : ``}
+    ${this.recordShown ? this.renderStartModal() : ""}
     ${super.render()}`;
   }
 
@@ -266,12 +269,12 @@ class ArchiveWebApp extends ReplayWebApp
     @update-title=${this.onTitle}
     @coll-loaded=${this.onCollLoaded}
     @show-start=${this.onShowStart}
-    @about-show=${(e) => this.showAbout = true}></wr-rec-coll>`;
+    @about-show=${() => this.showAbout = true}></wr-rec-coll>`;
   }
 
   renderStartModal() {
     return html`
-    <wr-modal @modal-closed="${(e) => this.recordShown = false}" title="Start Recording">
+    <wr-modal @modal-closed="${() => this.recordShown = false}" title="Start Recording">
       <div class="dropdown-row">
         <span>Archive To:&nbsp;</span>
         <div class="select is-small">
@@ -303,7 +306,7 @@ class ArchiveWebApp extends ReplayWebApp
         ${IS_APP ? html`
         <label class="checkbox">
           <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without recording.)</span>
-        </label>` : ``}
+        </label>` : ""}
       </form>
     </wr-modal>`;
   }
@@ -314,7 +317,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="modal-background" @click="${this.onAboutClose}"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">About ArchiveWeb.page ${IS_APP ? 'App' : 'Extension'}</p>
+              <p class="modal-card-title">About ArchiveWeb.page ${IS_APP ? "App" : "Extension"}</p>
               <button class="delete" aria-label="close" @click="${this.onAboutClose}"></button>
             </header>
             <section class="modal-card-body">
@@ -323,7 +326,7 @@ class ArchiveWebApp extends ReplayWebApp
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${wrLogo}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? 'App' : 'Extension'} v${__VERSION__}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? "App" : "Extension"} v${VERSION}</div>
                     </div>
 
                     ${IS_APP ? html`
@@ -380,7 +383,7 @@ class ArchiveWebApp extends ReplayWebApp
   async onShowStart(event) {
     this.selCollId = event.detail.coll;
     //this.selCollTitle = event.detail.title;
-    this.recordUrl = event.detail.url || "https://example.com/"
+    this.recordUrl = event.detail.url || "https://example.com/";
     this.recordShown = true;
 
     const resp = await fetch(`${apiPrefix}/coll-index`);
@@ -410,6 +413,6 @@ class ArchiveWebApp extends ReplayWebApp
   }
 }
 
-customElements.define('archive-web-page-app', ArchiveWebApp);
+customElements.define("archive-web-page-app", ArchiveWebApp);
 
 export { ArchiveWebApp, Loader, Embed };

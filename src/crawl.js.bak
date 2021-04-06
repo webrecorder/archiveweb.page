@@ -1,0 +1,46 @@
+export class Crawl
+{
+  constructor(id) {
+    this.id = id;
+    this.frontier = new Set();
+    this.crawlQ = [];
+  }
+
+  async run(url, recorder) {
+    this.url = url;
+    this.origin = new URL(url).origin;
+
+    const driver = async () => {
+      await recorder.loaded();
+
+      const behres = await recorder.runBehaviors();
+
+      const result = await recorder.send("Runtime.evaluate", {
+        expression: "[...document.querySelectorAll(\"a[href]\")].map(elem => elem.href)",
+        returnByValue:  true
+      });
+
+      console.log(result);
+
+      for (const url of result.result.value) {
+        if (this.frontier.has(url)) {
+          continue;
+        }
+        if (!url.startsWith(this.origin)) {
+          continue;
+        }
+        this.crawlQ.push(url);
+        this.frontier.add(url);
+      }
+    };
+
+    await driver();
+
+    while (this.crawlQ.length > 0) {
+      const url = this.crawlQ.shift();
+      await recorder.send("Page.navigate", {url});
+      console.log("Loading: " + url);
+      await driver();
+    }
+  }
+}

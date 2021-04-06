@@ -1,14 +1,14 @@
-import JSZip from 'jszip';
+import JSZip from "jszip";
 
-import { PassThrough } from 'stream';
+import { PassThrough } from "stream";
 
-import { Deflate } from 'pako';
+import { Deflate } from "pako";
 
-import { createMD5 } from 'hash-wasm';
+import { createMD5 } from "hash-wasm";
 
-import { WARCRecord, WARCSerializer, getSurt } from 'warcio';
+import { WARCRecord, WARCSerializer, getSurt } from "warcio";
 
-import { getTSMillis, getStatusText } from '@webrecorder/wabac/src/utils';
+import { getTSMillis, getStatusText } from "@webrecorder/wabac/src/utils";
 
 
 
@@ -100,18 +100,20 @@ class Downloader
     this.hasher = null;
 
     this.fileStats = [];
+
+    this.finalHash = null;
   }
 
   download(sizeCallback = null) {
     switch (this.format) {
-      case "wacz":
-        return this.downloadWACZ(this.filename, sizeCallback);
+    case "wacz":
+      return this.downloadWACZ(this.filename, sizeCallback);
 
-      case "warc":
-        return this.downloadWARC(this.filename, sizeCallback);
+    case "warc":
+      return this.downloadWARC(this.filename, sizeCallback);
 
-      default:
-        return {"error": "invalid 'format': must be wacz or warc"};
+    default:
+      return {"error": "invalid 'format': must be wacz or warc"};
     }
   }
 
@@ -169,7 +171,7 @@ class Downloader
   }
 
   addFile(zip, filename, generator, compressed = false) {
-    const stats = {filename, size: 0}
+    const stats = {filename, size: 0};
 
     if (filename !== "datapackage.json") {
       this.fileStats.push(stats);
@@ -178,7 +180,7 @@ class Downloader
     const data = new ResumePassThrough(generator, stats, this.hasher);
 
     zip.file(filename, data, {
-      compression: compressed ? 'DEFLATE' : 'STORE',
+      compression: compressed ? "DEFLATE" : "STORE",
       binary: !compressed
     });
   }
@@ -205,24 +207,31 @@ class Downloader
     
     this.addFile(zip, "datapackage.json", this.generateDataPackage());
 
+    const totalHasher = await createMD5();
+    totalHasher.init();
+
+    const downloader = this;
+
     const rs = new ReadableStream({
       start(controller) {
         zip.generateInternalStream({type:"uint8array", streamFiles: true})
-        .on('data', (data, metadata) => {
-          controller.enqueue(data);
-          if (sizeCallback) {
-            sizeCallback(data.length);
-          }
+          .on("data", (data) => {
+            totalHasher.update(data);
+            controller.enqueue(data);
+            if (sizeCallback) {
+              sizeCallback(data.length);
+            }
           //console.log(metadata);
-        })
-        .on('error', (error) => {
-          console.log(error);
-          controller.close();
-        })
-        .on('end', () => {
-          controller.close();
-        })
-        .resume();
+          })
+          .on("error", (error) => {
+            console.log(error);
+            controller.close();
+          })
+          .on("end", () => {
+            controller.close();
+            downloader.finalHash = totalHasher.digest("hex");
+          })
+          .resume();
       }
     });
 
@@ -303,7 +312,7 @@ class Downloader
         length: resource.length,
         filename,
         status: resource.status
-      }
+      };
 
       if (resource.method && resource.method !== "GET") {
         const m = resource.url.match(SPLIT_REQUEST_Q_RX);
@@ -370,7 +379,7 @@ class Downloader
       return data;
     }
 
-    for await (const [resource, cdx] of this.generateCDX(true)) {
+    for await (const [, cdx] of this.generateCDX(true)) {
       if (!chunkDeflater) {
         chunkDeflater = new Deflate({gzip: true});
       }
@@ -406,7 +415,7 @@ class Downloader
           bytes: stats.size,
         },
         hashing: "md5"
-      }
+      };
     });
 
     root.wacz_version = WACZ_VERSION;
@@ -448,15 +457,15 @@ class Downloader
     }
   }
 
-  async getLists() {
-    try {
-      const lists = await this.db.getAllCuratedByList();
-      console.log(lists);
-      return yaml.safeDump(lists, {skipInvalid: true});
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  // async getLists() {
+  //   try {
+  //     const lists = await this.db.getAllCuratedByList();
+  //     console.log(lists);
+  //     return yaml.safeDump(lists, {skipInvalid: true});
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
 
   async* generateIDX() {
     yield this.indexLines.join("\n");
@@ -467,6 +476,7 @@ class Downloader
     const type = "warcinfo";
 
     const info = {
+      // eslint-disable-next-line no-undef
       "software": `Webrecorder ArchiveWeb.page ${__VERSION__} (via warcio.js ${__WARCIO_VERSION__})`,
       "format": "WARC File Format 1.1",
       "isPartOf": this.metadata.title || this.collId,
@@ -600,7 +610,7 @@ class Downloader
     resource.url = url;
 
     const type = "resource";
-    const warcHeaders = {"Content-Type": 'text/plain; charset="UTF-8"'};
+    const warcHeaders = {"Content-Type": "text/plain; charset=\"UTF-8\""};
     const warcVersion = "WARC/1.1";
 
     const payload = getPayload(encoder.encode(resource.text));

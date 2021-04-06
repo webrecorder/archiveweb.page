@@ -1,5 +1,7 @@
-import { ElectronRecorderApp } from './electron-recorder-app';
-import path from 'path';
+/*eslint-env node */
+
+import { ElectronRecorderApp } from "./electron-recorder-app";
+import path from "path";
 
 
 // ===========================================================================

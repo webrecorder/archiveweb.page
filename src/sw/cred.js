@@ -17,11 +17,11 @@ export class SimpleDB
   }
 
   async init() {
-    let oldVersion = 0;
+    //let oldVersion = 0;
 
     this.db = await openDB(this.dbname, this.version, {
       upgrade: (db, oldV, newV, tx) => {
-        oldVersion = oldV;
+        //oldVersion = oldV;
         this._initDB(db, oldV, newV, tx);
       },
       blocking: (e) => { if (!e || e.newVersion === null) { this.close(); }}
@@ -36,7 +36,7 @@ export class SimpleDB
 
   async listAll() {
     await this._ready;
-    return await this.db.getAll(this.mainStore)
+    return await this.db.getAll(this.mainStore);
   }
 
   async get(name) {
@@ -66,7 +66,7 @@ export class SimpleDB
 export class Credentials extends SimpleDB
 {
   constructor() {
-    super({dbname: CRED_DB, mainStore: CRED_STORE});
+    super({dbname: CRED_DB, mainStore: CRED_STORE, key: "name"});
   }
 }
 
@@ -75,21 +75,23 @@ export class Credentials extends SimpleDB
 export class IdStore extends SimpleDB
 {
   constructor() {
-    super({dbname: "id", mainStore: "id", key: "id"});
+    super({dbname: "uid", mainStore: "uid", key: "id"});
   }
 
   async getId() {
     let result = await this.get(this.key);
     if (!result) {
-      result = {};
-      result[this.key] = randomId();
+      const value = randomId();
+      const id = "id";
+      result = {id, value};
       await this.update(result);
     }
-    return result;
+    return result.value;
   }
 }
 
+const idstore = new IdStore();
+
 export function getUID() {
-  const store = new IdStore();
-  return store.getId();
+  return idstore.getId();
 }

@@ -2,7 +2,7 @@ import { IPFSClient } from "@webrecorder/wabac/src/ipfs";
 import { Downloader } from "../downloader";
 import { ensureDefaultCollAndIPFS, ipfsAddWithReplay, ipfsUnpinAll, checkPins, detectLocalIPFS } from "../utils";
 
-import ipfsHttpClient from 'ipfs-http-client';
+import ipfsHttpClient from "ipfs-http-client";
 
 
 // ===========================================================================

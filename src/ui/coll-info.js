@@ -1,31 +1,31 @@
-import { Coll, CollInfo } from 'replaywebpage';
+import { Coll, CollInfo } from "replaywebpage";
 
-import { html, css, wrapCss, clickOnSpacebarPress, apiPrefix } from 'replaywebpage/src/misc';
+import { html, css, wrapCss, clickOnSpacebarPress, apiPrefix } from "replaywebpage/src/misc";
 
-import prettyBytes from 'pretty-bytes';
+import prettyBytes from "pretty-bytes";
 
-import fasDownload from '@fortawesome/fontawesome-free/svgs/solid/download.svg';
-import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
-import fasSync from '@fortawesome/fontawesome-free/svgs/solid/sync.svg';
-import fasCopy from '@fortawesome/fontawesome-free/svgs/regular/copy.svg';
-import fasCaretUp from '@fortawesome/fontawesome-free/svgs/solid/caret-up.svg';
-import fasShare from '@fortawesome/fontawesome-free/svgs/solid/share.svg';
-import fasReshare from '@fortawesome/fontawesome-free/svgs/solid/retweet.svg';
-import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
+import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
+//import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
+//import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync.svg";
+import fasCopy from "@fortawesome/fontawesome-free/svgs/regular/copy.svg";
+import fasCaretUp from "@fortawesome/fontawesome-free/svgs/solid/caret-up.svg";
+import fasShare from "@fortawesome/fontawesome-free/svgs/solid/share.svg";
+import fasReshare from "@fortawesome/fontawesome-free/svgs/solid/retweet.svg";
+import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 
-import wrRec from '../../assets/recLogo.svg';
+import wrRec from "../../assets/recLogo.svg";
 
 //============================================================================
 class WrRecColl extends Coll
 {
   renderExtraToolbar(isDropdown = false) {
     if (isDropdown) {
-      return '';
+      return "";
     }
 
     return html`
     <a href="#" role="button"
-    class="${!isDropdown ? 'button narrow is-borderless' : 'dropdown-item is-hidden-tablet'}"
+    class="${!isDropdown ? "button narrow is-borderless" : "dropdown-item is-hidden-tablet"}"
       title="Start Recording" aria-label="Start Recording" aria-controls="record"
       @click="${this.onShowStart}" @keyup="${clickOnSpacebarPress}">
       <span class="icon is-small">
@@ -75,7 +75,7 @@ class WrRecCollInfo extends CollInfo
       showShareMenu: { type: Boolean },
       shareWarn: { type: Boolean },
       shareProgress: { type: Number },
-    }
+    };
   }
 
   static get styles() {
@@ -198,9 +198,9 @@ class WrRecCollInfo extends CollInfo
             ${this.ipfsURL ? html`
 
               <div class="is-flex is-flex-direction-column">
-                <div class="dropdown is-up ${this.showShareMenu ? 'is-active' : ''}">
+                <div class="dropdown is-up ${this.showShareMenu ? "is-active" : ""}">
                   <div class="dropdown-trigger">
-                    <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? 'is-loading' : ''}"" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? "is-loading" : ""}"" aria-haspopup="true" aria-controls="dropdown-menu">
                       <span>Sharing!</span>
                       <span class="icon">
                         <fa-icon .svg=${fasCaretUp}></fa-icon>
@@ -254,7 +254,7 @@ class WrRecCollInfo extends CollInfo
               `: html`
             
               <div class="is-flex is-flex-direction-column">
-                <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPinOrWarn}">
+                <button class="button is-small ${this.shareWait ? "is-loading" : ""}" @click="${this.onPinOrWarn}">
                   <span class="icon is-small">
                     <fa-icon .svg="${fasShare}"></fa-icon>
                   </span>
@@ -271,17 +271,17 @@ class WrRecCollInfo extends CollInfo
         <p class="minihead">Imported From</p>
         ${coll.loadUrl}
         <a @click="${(e) => this.onCopy(e, coll.loadUrl)}" class="copy"><fa-icon .svg="${fasCopy}"/></a>
-        </div>` : ``}
+        </div>` : ""}
         
 
       </div>
-      ${this.shareWarn ? this.renderShareWarn(): ''}
+      ${this.shareWarn ? this.renderShareWarn(): ""}
       `;
   }
 
   renderShareWarn() {
     return html`
-    <wr-modal bgClass="has-background-warning" @modal-closed="${(e) => this.shareWarn = false}" title="Start Sharing?">
+    <wr-modal bgClass="has-background-warning" @modal-closed="${() => this.shareWarn = false}" title="Start Sharing?">
       <div class="content is-size-7">
         <p>
           Do you want to share the all the pages in the archive "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
@@ -301,7 +301,7 @@ class WrRecCollInfo extends CollInfo
         </label>
       </div>
       <button @click="${this.onPin}"class="button is-primary">Share</button>
-      <button @click="${(e) => this.shareWarn = false}" class="button">Cancel</button>
+      <button @click="${() => this.shareWarn = false}" class="button">Cancel</button>
     </wr-modal>`;
   }
 
@@ -422,7 +422,7 @@ class WrRecCollInfo extends CollInfo
       await this.ipfsApi(this.coll.id, false);
     }
 
-    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: 'DELETE'});
+    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: "DELETE"});
     if (resp.status === 200) {
       const json = await resp.json();
       this.colls = json.colls;
@@ -430,7 +430,7 @@ class WrRecCollInfo extends CollInfo
   }
 }
 
-customElements.define('wr-rec-coll', WrRecColl);
-customElements.define('wr-rec-coll-info', WrRecCollInfo);
+customElements.define("wr-rec-coll", WrRecColl);
+customElements.define("wr-rec-coll-info", WrRecCollInfo);
 
 export { WrRecColl, WrRecCollInfo, wrRec };

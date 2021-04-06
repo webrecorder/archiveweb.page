@@ -1,17 +1,19 @@
-const path = require('path');
-const webpack = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ExtensionReloader  = require('webpack-extension-reloader');
-const GenerateJsonPlugin = require('generate-json-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+/*eslint-env node */
 
-const APP_FILE_SERVE_PREFIX = "http://files.replayweb.page/";
+const path = require("path");
+const webpack = require("webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+//const ExtensionReloader  = require("webpack-extension-reloader");
+const GenerateJsonPlugin = require("generate-json-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+
+//const APP_FILE_SERVE_PREFIX = "http://files.replayweb.page/";
 const PACKAGE = require("./package.json");
 const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
 
 const IPFS_CORE_URL = "/ipfs-core.min.js";
 
-const BANNER = '[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020-2021, Webrecorder Software. Licensed under the Affero General Public License v3.';
+const BANNER = "[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020-2021, Webrecorder Software. Licensed under the Affero General Public License v3.";
 
 const manifest = require("./src/ext/manifest.json");
 
@@ -26,27 +28,27 @@ const defaultDefines = {
 
 const moduleSettings =  {
   rules: [
-  {
-    test:  /\.svg$/,
-    loader: 'svg-inline-loader'
-  },
-  {
-    test: /\.s(a|c)ss$/,
-    loaders: ['to-string-loader', 'css-loader', 'sass-loader']
-  },
-  {
-    test: /(dist\/wombat.js|src\/wombatWorkers.js|autofetcher.js|ruffle.js)$/i,
-    loaders: 'raw-loader',
-  }
-]};
+    {
+      test:  /\.svg$/,
+      loader: "svg-inline-loader"
+    },
+    {
+      test: /\.s(a|c)ss$/,
+      loaders: ["to-string-loader", "css-loader", "sass-loader"]
+    },
+    {
+      test: /(dist\/wombat.js|src\/wombatWorkers.js|autofetcher.js|ruffle.js)$/i,
+      loaders: "raw-loader",
+    }
+  ]};
 
 
-const electronMainConfig = (env, argv) => {
+const electronMainConfig = (/*env, argv*/) => {
   return {
-    target: 'electron-main',
-    mode: 'production',
+    target: "electron-main",
+    mode: "production",
     entry: {
-      'electron': './src/electron/electron-rec-main.js',
+      "electron": "./src/electron/electron-rec-main.js",
     },
     resolve: {
       alias: {
@@ -56,8 +58,8 @@ const electronMainConfig = (env, argv) => {
       }
     },
     output: {
-      path: path.join(__dirname, 'dist'),
-      filename: '[name].js'
+      path: path.join(__dirname, "dist"),
+      filename: "[name].js"
     },
     node: {
       __dirname: false,
@@ -68,10 +70,10 @@ const electronMainConfig = (env, argv) => {
       new webpack.BannerPlugin(BANNER),
       new CopyPlugin({
         patterns: [
-          { from: 'wr-ext/replay/', to: 'replay/' },
-          { from: 'wr-ext/ruffle/', to: 'ruffle/' },
-          { from: 'node_modules/bcrypto/build/Release/bcrypto.node', to: 'build' },
-          { from: 'node_modules/leveldown/prebuilds/', to: 'prebuilds' },
+          { from: "wr-ext/replay/", to: "replay/" },
+          { from: "wr-ext/ruffle/", to: "ruffle/" },
+          { from: "node_modules/bcrypto/build/Release/bcrypto.node", to: "build" },
+          { from: "node_modules/leveldown/prebuilds/", to: "prebuilds" },
         ],
       }),
     ],
@@ -80,55 +82,55 @@ const electronMainConfig = (env, argv) => {
       "utf-8-validate": "utf-8-validate",
     },
     module: moduleSettings,
-  }
+  };
 };
 
 
-const electronPreloadConfig = (env, argv) => {
+const electronPreloadConfig = (/*env, argv*/) => {
   return {
-    target: 'electron-preload',
-    mode: 'production',
+    target: "electron-preload",
+    mode: "production",
     entry: {
-      'preload': './src/electron/electron-rec-preload.js',
+      "preload": "./src/electron/electron-rec-preload.js",
     },
     output: {
-      path: path.join(__dirname, 'dist'),
-      filename: '[name].js'
+      path: path.join(__dirname, "dist"),
+      filename: "[name].js"
     },
     plugins: [
       new webpack.DefinePlugin(defaultDefines),
     ]
-  }
+  };
 };
 
-const electronRendererConfig = (env, argv) => {
+const electronRendererConfig = (/*env, argv*/) => {
   return {
-    mode: 'production',
+    mode: "production",
     target: "web",
     entry: {
-      'rec-window': './src/electron/rec-window.js',
+      "rec-window": "./src/electron/rec-window.js",
     },
 
     output: {
-      path: path.join(__dirname, 'dist'),
-      filename: '[name].js',
-      libraryTarget: 'global',
-      globalObject: 'self'
+      path: path.join(__dirname, "dist"),
+      filename: "[name].js",
+      libraryTarget: "global",
+      globalObject: "self"
     },
 
     plugins: [
       new MiniCssExtractPlugin(),
       new CopyPlugin({
         patterns: [
-          { from: 'src/electron/rec-preload.js', to: '' },
-          { from: 'src/electron/rec-window.html', to: '' },
+          { from: "src/electron/rec-preload.js", to: "" },
+          { from: "src/electron/rec-window.html", to: "" },
         ]
       }),
       new webpack.DefinePlugin(defaultDefines),
     ],
 
     module: moduleSettings,
-  }
+  };
 };
 
 
@@ -137,50 +139,50 @@ const extensionConfig = (env, argv) => {
 
   const generateManifest = (name, value) => {
     switch (value) {
-      case "$VERSION":
-        return PACKAGE.version;
+    case "$VERSION":
+      return PACKAGE.version;
 
-      case "$ICON":
-        return icon;
+    case "$ICON":
+      return icon;
     }
 
     return value;
   };
 
   return {
-    mode: 'production',
+    mode: "production",
     target: "web",
     entry: {
-      'bg': './src/ext/bg.js',
-      'ui': './src/ui/app.js',
-      'popup': './src/popup.js',
-      'sw': './src/sw/main.js'
+      "bg": "./src/ext/bg.js",
+      "ui": "./src/ui/app.js",
+      "popup": "./src/popup.js",
+      "sw": "./src/sw/main.js"
     },
     output: {
-      path: path.join(__dirname, 'wr-ext'),
+      path: path.join(__dirname, "wr-ext"),
       filename: (chunkData) => {
-        return !['sw', 'ui'].includes(chunkData.chunk.name) ? '[name].js': './replay/[name].js';
+        return !["sw", "ui"].includes(chunkData.chunk.name) ? "[name].js": "./replay/[name].js";
       },
-      libraryTarget: 'global',
-      globalObject: 'self'
+      libraryTarget: "global",
+      globalObject: "self"
     },
 
     plugins: [
       new MiniCssExtractPlugin(),
       new webpack.BannerPlugin(BANNER),
-      new GenerateJsonPlugin('manifest.json', manifest, generateManifest, 2),
+      new GenerateJsonPlugin("manifest.json", manifest, generateManifest, 2),
       new webpack.DefinePlugin({...defaultDefines,
         __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL),
       }),
       new CopyPlugin({
         patterns: [
-          { from: 'node_modules/ipfs-core/dist/index.min.js', to: 'ipfs-core.min.js' },
+          { from: "node_modules/ipfs-core/dist/index.min.js", to: "ipfs-core.min.js" },
         ]
       })
     ],
 
     module: moduleSettings,
-  }
+  };
 };
 
 

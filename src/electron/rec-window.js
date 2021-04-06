@@ -1,16 +1,16 @@
-import { LitElement, html, css, wrapCss, clickOnSpacebarPress } from 'replaywebpage/src/misc';
+import { LitElement, html, css, wrapCss, clickOnSpacebarPress } from "replaywebpage/src/misc";
 
-import fasRefresh from '@fortawesome/fontawesome-free/svgs/solid/redo-alt.svg';
+import fasRefresh from "@fortawesome/fontawesome-free/svgs/solid/redo-alt.svg";
 //import fasFullscreen from '@fortawesome/fontawesome-free/svgs/solid/desktop.svg';
 //import fasUnfullscreen from '@fortawesome/fontawesome-free/svgs/solid/compress-arrows-alt.svg';
 
-import fasLeft from '@fortawesome/fontawesome-free/svgs/solid/arrow-left.svg';
-import fasRight from '@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg';
+import fasLeft from "@fortawesome/fontawesome-free/svgs/solid/arrow-left.svg";
+import fasRight from "@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg";
 //import fasMenuV from '@fortawesome/fontawesome-free/svgs/solid/ellipsis-v.svg';
 
-import wrLogo from '../../assets/wr-logo.svg';
+import wrLogo from "../../assets/wr-logo.svg";
 
-import './app-popup';
+import "./app-popup";
 
 class RecWindowUI extends LitElement
 {
@@ -57,7 +57,7 @@ class RecWindowUI extends LitElement
 
       showPopup: { type: Boolean },
       wcId: { type: Number }
-    }
+    };
   }
 
   static get styles() {
@@ -163,25 +163,25 @@ class RecWindowUI extends LitElement
         <a href="#" role="button" class="button is-borderless" @click="${this.onGoBack}" @keyup="${clickOnSpacebarPress}"
                 title="Back" aria-label="Back">
           <span class="icon is-small">
-            <fa-icon size="1.0em" class="${this.canGoBack ? '' : 'grey-disabled'}" aria-hidden="true" .svg="${fasLeft}"></fa-icon>
+            <fa-icon size="1.0em" class="${this.canGoBack ? "" : "grey-disabled"}" aria-hidden="true" .svg="${fasLeft}"></fa-icon>
           </span>
         </a>
         <a href="#" role="button" class="button is-borderless" @click="${this.onGoForward}" @keyup="${clickOnSpacebarPress}"
                 title="Forward" aria-label="Forward">
           <span class="icon is-small">
-            <fa-icon size="1.0em" class="${this.canGoForward ? '' : 'grey-disabled'}" aria-hidden="true" .svg="${fasRight}"></fa-icon>
+            <fa-icon size="1.0em" class="${this.canGoForward ? "" : "grey-disabled"}" aria-hidden="true" .svg="${fasRight}"></fa-icon>
           </span>
         </a>
-        <a href="#" role="button" id="refresh" class="button is-borderless ${this.isLoading ? 'is-loading' : ''}" @click="${this.onRefresh}" @keyup="${clickOnSpacebarPress}"
+        <a href="#" role="button" id="refresh" class="button is-borderless ${this.isLoading ? "is-loading" : ""}" @click="${this.onRefresh}" @keyup="${clickOnSpacebarPress}"
                 title="Reload" aria-label="Reload">
           <span class="icon is-small">
             ${!this.isLoading ? html`
             <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${fasRefresh}"></fa-icon>
-            ` : ``}
+            ` : ""}
           </span>
         </a>
         <form @submit="${this.onSubmit}">
-          <div class="control is-expanded ${this.favIconUrl ? 'has-icons-left' : 'has-icons-left'}">
+          <div class="control is-expanded ${this.favIconUrl ? "has-icons-left" : "has-icons-left"}">
             <input id="url" class="input" type="url" @keydown="${this.onKeyDown}" @blur="${this.onLostFocus}" .value="${this.url}" placeholder="Enter text to search or a URL to replay"/>
             ${this.favIconUrl ? html`
             <span class="favicon icon is-small is-left">
@@ -196,7 +196,7 @@ class RecWindowUI extends LitElement
               ${!this.numPending ? html`
               <span class="overlay overlay-idle"></span>` : html`
               <span class="overlay overlay-waiting">${this.numPending}</span>
-              `}` : ``}
+              `}` : ""}
           </span>
         </a>
       </div>
@@ -210,8 +210,8 @@ class RecWindowUI extends LitElement
     return html`
     <webview
     partition="persist:wr"
-    @did-start-loading="${(e) => this.isLoading = true}"
-    @did-stop-loading="${(e) => this.isLoading = false}"
+    @did-start-loading="${() => this.isLoading = true}"
+    @did-stop-loading="${() => this.isLoading = false}"
     @page-favicon-updated="${this.onFaviconUpdated}"
     @will-navigate="${this.onWillNavigate}"
     @did-navigate="${this.onDidNavigate}"

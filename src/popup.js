@@ -1,17 +1,17 @@
-import { LitElement, html, css, unsafeCSS } from 'lit-element';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
-import bulma from 'bulma/bulma.sass';
+import { LitElement, html, css, unsafeCSS } from "lit-element";
+import { unsafeSVG } from "lit-html/directives/unsafe-svg";
+import bulma from "bulma/bulma.sass";
 
-import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
-import fasBox from '@fortawesome/fontawesome-free/svgs/solid/square.svg';
-import fasHome from '@fortawesome/fontawesome-free/svgs/solid/home.svg';
-import fasCheck from '@fortawesome/fontawesome-free/svgs/solid/check.svg';
-import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
-import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
+import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
+import fasBox from "@fortawesome/fontawesome-free/svgs/solid/square.svg";
+import fasHome from "@fortawesome/fontawesome-free/svgs/solid/home.svg";
+import fasCheck from "@fortawesome/fontawesome-free/svgs/solid/check.svg";
+import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
+import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
 
-import wrRec from '../assets/recLogo.svg';
+import wrRec from "../assets/recLogo.svg";
 
-import prettyBytes from 'pretty-bytes';
+import prettyBytes from "pretty-bytes";
 
 const allCss = unsafeCSS(bulma);
 function wrapCss(custom) {
@@ -66,11 +66,11 @@ class RecPopup extends LitElement
 
       canRecord: { type: Boolean },
       failureMsg: { type: String }
-    }
+    };
   }
 
   firstUpdated() {
-    document.addEventListener("click", (event) => {
+    document.addEventListener("click", () => {
       if (this.collDrop === "show") {
         this.collDrop = "";
       }
@@ -105,42 +105,42 @@ class RecPopup extends LitElement
 
   onMessage(message) {
     switch (message.type) {
-      case "status":
-        this.recording = message.recording;
-        if (this.waitingForStart && message.firstPageStarted) {
-          this.waitingForStart = false;
-        }
-        this.status = message;
-        if (message.pageUrl) {
-          this.pageUrl = message.pageUrl;
-        }
-        if (message.pageTs) {
-          this.pageTs = message.pageTs;
-        }
-        this.failureMsg = message.failureMsg;
-        if (this.collId !== message.collId) {
-          this.collId = message.collId;
-          this.collTitle = this.findTitleFor(this.collId);
-          localStorage.setItem(`${this.tabId}-collId`, this.collId);
-        }
-        break;
+    case "status":
+      this.recording = message.recording;
+      if (this.waitingForStart && message.firstPageStarted) {
+        this.waitingForStart = false;
+      }
+      this.status = message;
+      if (message.pageUrl) {
+        this.pageUrl = message.pageUrl;
+      }
+      if (message.pageTs) {
+        this.pageTs = message.pageTs;
+      }
+      this.failureMsg = message.failureMsg;
+      if (this.collId !== message.collId) {
+        this.collId = message.collId;
+        this.collTitle = this.findTitleFor(this.collId);
+        localStorage.setItem(`${this.tabId}-collId`, this.collId);
+      }
+      break;
 
-      case "collections":
-        this.collections = message.collections;
-        this.collId = localStorage.getItem(`${this.tabId}-collId`);
-        this.collTitle = "";
-        if (this.collId) {
-          this.collTitle = this.findTitleFor(this.collId);
-        }
-        // may no longer be valid, try default id
-        if (!this.collTitle) {
-          this.collId = message.collId;
-          this.collTitle = this.findTitleFor(this.collId);
-        }
-        if (!this.collTitle) {
-          this.collTitle = "[No Title]";
-        }
-        break;
+    case "collections":
+      this.collections = message.collections;
+      this.collId = localStorage.getItem(`${this.tabId}-collId`);
+      this.collTitle = "";
+      if (this.collId) {
+        this.collTitle = this.findTitleFor(this.collId);
+      }
+      // may no longer be valid, try default id
+      if (!this.collTitle) {
+        this.collId = message.collId;
+        this.collTitle = this.findTitleFor(this.collId);
+      }
+      if (!this.collTitle) {
+        this.collTitle = "[No Title]";
+      }
+      break;
     }
   }
 
@@ -164,7 +164,7 @@ class RecPopup extends LitElement
       
       const params = new URLSearchParams();
       params.set("url", this.pageUrl);
-      params.set("ts", new Date(this.pageTs).toISOString().replace(/[-:TZ.]/g, ''));
+      params.set("ts", new Date(this.pageTs).toISOString().replace(/[-:TZ.]/g, ""));
       params.set("view", "pages");
 
       this.replayUrl = this.getCollPage() + "#" + params.toString();
@@ -338,7 +338,7 @@ class RecPopup extends LitElement
     return html`
     <div class="coll-select">
       <div class="is-size-7">${this.recording ? "Recording" : "Record"} To:&nbsp;</div>
-      <div class="dropdown ${this.collDrop === "show" ? 'is-active' : ''}">
+      <div class="dropdown ${this.collDrop === "show" ? "is-active" : ""}">
         <div class="dropdown-trigger">
           <button @click="${this.onShowDrop}" class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
             <span>${this.collTitle}</span>
@@ -351,12 +351,12 @@ class RecPopup extends LitElement
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             ${this.allowCreate ? html`
-            <a @click="${(e) => this.collDrop = "create"}" class="dropdown-item">
+            <a @click="${() => this.collDrop = "create"}" class="dropdown-item">
               <span class="icon is-small">
                 <wr-icon .src="${fasPlus}"></wr-icon>
               </span>Create New Archive...
             </a>
-            <hr class="dropdown-divider">` : ``}
+            <hr class="dropdown-divider">` : ""}
             ${this.collections.map((coll) => html`
               <a @click=${this.onSelectColl} data-title="${coll.title}" data-id="${coll.id}" class="dropdown-item">${coll.title}</a>
             `)}
@@ -383,7 +383,7 @@ class RecPopup extends LitElement
           <button class="button is-small is-outlined" type="submit">
             <wr-icon .src=${fasCheck}></wr-icon>
           </button>
-          <button @click="${(e) => this.collDrop = ""}" class="button is-small is-outlined" type="button">
+          <button @click="${() => this.collDrop = ""}" class="button is-small is-outlined" type="button">
             <wr-icon .src=${fasX}></wr-icon>
           </button>
         </div>
@@ -416,15 +416,15 @@ class RecPopup extends LitElement
                 <wr-icon .src=${wrRec}></wr-icon>` : html`
                 <wr-icon .src=${fasBox}></wr-icon>`}
             </span>
-            <span>${!this.recording ? 'Start' : 'Stop'}</span>
+            <span>${!this.recording ? "Start" : "Stop"}</span>
           </button>
-          ` : ``}
+          ` : ""}
         </div>
         ${this.renderCollCreate()}
         <div class="view-row is-marginless">
           <div>
             ${this.canRecord ? html`
-            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ``}
+            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ""}
           </div>
         </div>
 
@@ -432,7 +432,7 @@ class RecPopup extends LitElement
         <div class="view-row underline">
           <div class="session-head">Recorded in this tab</div>
           ${this.replayUrl ? 
-            html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>` : ``}
+    html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>` : ""}
         </div>
         <table class="status">
           <tr><td>Size:</td><th>${prettyBytes(this.status.sizeNew)}</th></tr>
@@ -493,7 +493,7 @@ class WrIcon extends LitElement
     return {
       src: { type: Object },
       size: { type: String }
-    }
+    };
   }
 
   render() {
@@ -503,7 +503,7 @@ class WrIcon extends LitElement
   }
 }
 
-customElements.define('wr-icon', WrIcon);
-customElements.define('wr-popup-viewer', RecPopup);
+customElements.define("wr-icon", WrIcon);
+customElements.define("wr-popup-viewer", RecPopup);
 
 export { RecPopup };

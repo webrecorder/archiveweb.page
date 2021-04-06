@@ -61,7 +61,7 @@ async function checkPins(ipfsClient, validPins) {
     return;
   }
 
-  for await (const {cid, type} of ipfsClient.ipfs.pin.ls({type: "recursive"})) {
+  for await (const {cid} of ipfsClient.ipfs.pin.ls({type: "recursive"})) {
     const hash = cid.toString();
 
     if (!validPins.has(hash)) {
@@ -71,14 +71,15 @@ async function checkPins(ipfsClient, validPins) {
 
   if (invalidPins.length) {
     console.log(`Removing ${invalidPins.length} invalid pins...`);
+    // eslint-disable-next-line no-unused-vars
     for await (const unpin of ipfsClient.ipfs.pin.rmAll(invalidPins));
-    console.log(`Running GC`);
+    console.log("Running GC");
     await ipfsClient.runGC();
   }
 
   if (ipfsClient.customPreload) {
     for (const pin of validPins) {
-      console.log(`Preloading pin: ${pin}`)
+      console.log(`Preloading pin: ${pin}`);
       await ipfsClient.cacheDirToPreload(pin);
     }
   }
@@ -109,7 +110,7 @@ async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, swContent, u
     {path: "ui.js", content: uiContent},
     {path: "sw.js", content: swContent},
     {path: "index.html",
-     content: encoder.encode(`
+      content: encoder.encode(`
      <!doctype html>
      <html class="no-overflow">
      <head>
@@ -181,12 +182,13 @@ async function detectLocalIPFS(ports, retries) {
           return origin;
         }
       } catch (e) {
+        // skip, no local ipfs here
       }
 
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Retrying local IPFS...")
+    console.log("Retrying local IPFS...");
   }
 
   return null;

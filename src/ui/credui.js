@@ -1,6 +1,6 @@
-import { LitElement, html, css, wrapCss, apiPrefix } from 'replaywebpage/src/misc';
+import { LitElement, html, css, wrapCss, apiPrefix } from "replaywebpage/src/misc";
 
-import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
+import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
 
 
 // ===========================================================================
@@ -20,7 +20,7 @@ class WrStorageCred extends LitElement
       currCred: { type: Object },
       isNew: { type: Boolean },
       fullPath: { type: String },
-    }
+    };
   }
 
   firstUpdated() {
@@ -92,9 +92,9 @@ class WrStorageCred extends LitElement
             <ul class="menu-list">
               ${this.credentials && this.credentials.length ? this.credentials.map((cred) => html`
               <li>
-              <a class="${this.currCred === cred ? 'is-active' : ''} is-flex" @click="${() => this.onEdit(cred)}">
+              <a class="${this.currCred === cred ? "is-active" : ""} is-flex" @click="${() => this.onEdit(cred)}">
               <span class="is-flex-auto">${cred.name}</span>
-              <button class="delete" aria-label="delete" @click="${(e) => this.onDelete(cred)}">
+              <button class="delete" aria-label="delete" @click="${() => this.onDelete(cred)}">
               </button>
               </a>
               </li>
@@ -179,7 +179,7 @@ class WrStorageCred extends LitElement
             <span class="status has-text-success">Bucket exists and credentials valided on ${new Date(this.currCred.checkTs).toLocaleString()}
             ` : this.currCred.checkTs && !this.currCred.valid ? html`
             <span class="status has-text-danger">Sorry, bucket not found or credentils not valid as of ${new Date(this.currCred.checkTs).toLocaleString()}
-            ` : ``}
+            ` : ""}
           </div>
           <div class="field is-grouped">
             <div class="control">
@@ -305,7 +305,7 @@ class WrNewColl extends LitElement
       archiveUrl: { type: String },
       title: { type: String },
       showSyncEditor: { type: Boolean }
-    }
+    };
   }
 
   firstUpdated() {
@@ -384,7 +384,7 @@ class WrNewColl extends LitElement
                   </label>
                 </div>
               </div>
-              ${this.showSyncEditor ? this.renderStorageSelect() : ''}
+              ${this.showSyncEditor ? this.renderStorageSelect() : ""}
               <div class="field">
                 <div class="control">
                   <button id="newsubmit" class="button is-primary is-small" type="submit">
@@ -436,7 +436,7 @@ class WrNewColl extends LitElement
         <button class="button is-small" @click="${this.onTestCred}">Test Storage</button>
         ${this.status ? html`
         <span class="is-pulled-right ${this.valid ? "has-text-primary" : "has-text-danger"}">${this.status}</span>
-        ` : ``}
+        ` : ""}
       </div>
     </div>
     `;
@@ -465,7 +465,7 @@ class WrNewColl extends LitElement
     const method = "POST";
     const body = JSON.stringify(data);
     const resp = await fetch(`${apiPrefix}/c/create`, {method, body});
-    const json = await resp.json();
+    await resp.json();
     this.dispatchEvent(new CustomEvent("coll-created"));
   }
 
@@ -497,5 +497,5 @@ class WrNewColl extends LitElement
   }
 }
 
-customElements.define('wr-store-cred', WrStorageCred);
-customElements.define('wr-new-coll', WrNewColl);
+customElements.define("wr-store-cred", WrStorageCred);
+customElements.define("wr-new-coll", WrNewColl);

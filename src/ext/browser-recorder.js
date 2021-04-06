@@ -1,6 +1,6 @@
 "use strict";
 
-import { Recorder }  from '../recorder';
+import { Recorder }  from "../recorder";
 
 
 // ===========================================================================
@@ -35,13 +35,13 @@ class BrowserRecorder extends Recorder {
       }
 
       this._stop();
-    }
+    };
 
     this._onCanceled = (details) => {
       if (details && details.tabId == this.tabId) {
         this.detach();
       }
-    }
+    };
 
     this._onEvent = async (tab, message, params) => {
       if (this.tabId === tab.tabId) {
@@ -53,7 +53,7 @@ class BrowserRecorder extends Recorder {
           console.log(params);
         }
       }
-    }
+    };
   }
 
   getExternalInjectURL(path) {
@@ -69,7 +69,7 @@ class BrowserRecorder extends Recorder {
   }
 
   _doDetach() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       chrome.debugger.detach(this.debuggee, () => {
         if (chrome.runtime.lastError) {
           console.warn(chrome.runtime.lastError.message);
@@ -120,7 +120,7 @@ class BrowserRecorder extends Recorder {
 
     try {
       await new Promise((resolve, reject) => {
-        chrome.debugger.attach(this.debuggee, '1.3', async () => {
+        chrome.debugger.attach(this.debuggee, "1.3", async () => {
           if (chrome.runtime.lastError) {
             reject(chrome.runtime.lastError.message);
           }
@@ -187,9 +187,9 @@ class BrowserRecorder extends Recorder {
   }
 
   _doPdfExtract() {
-    chrome.tabs.executeScript(this.tabId, {file: "pdf.min.js"}, (results) => {
-      chrome.tabs.executeScript(this.tabId, {file: "extractPDF.js"}, (results2) => {
-        const code = `extractPDF("${this.pdfURL ? this.pdfURL : ''}")`;
+    chrome.tabs.executeScript(this.tabId, {file: "pdf.min.js"}, () => {
+      chrome.tabs.executeScript(this.tabId, {file: "extractPDF.js"}, () => {
+        const code = `extractPDF("${this.pdfURL ? this.pdfURL : ""}")`;
         chrome.tabs.executeScript(this.tabId, {code});
       });
     });
@@ -203,7 +203,7 @@ class BrowserRecorder extends Recorder {
   }
 
   getFavIcon() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       chrome.tabs.get(this.tabId, (tab) => {
         resolve(tab.favIconUrl);
       });
@@ -270,7 +270,7 @@ class BrowserRecorder extends Recorder {
       } else {
         prr.reject(chrome.runtime.lastError.message);
       }
-    }
+    };
 
     if (DEBUG) {
       console.log("SEND " + JSON.stringify({command: method, params}));

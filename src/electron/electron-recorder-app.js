@@ -1,19 +1,21 @@
-import {app, session, BrowserWindow, BrowserView, ipcMain, dialog, autoUpdater} from 'electron';
-import { ElectronRecorder } from './electron-recorder';
+/*eslint-env node */
 
-import { ElectronReplayApp, STATIC_PREFIX } from 'replaywebpage/src/electron-replay-app';
+import {app, session, BrowserWindow, ipcMain, dialog, autoUpdater} from "electron";
+import { ElectronRecorder } from "./electron-recorder";
 
-import path from 'path';
-import { PassThrough } from 'stream';
+import { ElectronReplayApp, STATIC_PREFIX } from "replaywebpage/src/electron-replay-app";
 
-import fs from 'fs';
-import util from 'util';
+import path from "path";
+import { PassThrough } from "stream";
+
+import fs from "fs";
+import util from "util";
 
 
-import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from '../utils';
+import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from "../utils";
 
 
-app.commandLine.appendSwitch('disable-features', 'CrossOriginOpenerPolicy');
+app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
 
 
 // ===========================================================================
@@ -28,16 +30,16 @@ class ElectronRecorderApp extends ElectronReplayApp
   get mainWindowWebPreferences() {
     return {
       plugins: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-    }
+    };
   }
 
   onAppReady() {
     const sesh = session.defaultSession;
 
     const ua = sesh.getUserAgent();
-    const desktopUA = ua.replace(/ Electron[^\s]+/, '');
+    const desktopUA = ua.replace(/ Electron[^\s]+/, "");
 
     sesh.setUserAgent(desktopUA);
 
@@ -153,7 +155,7 @@ class ElectronRecorderApp extends ElectronReplayApp
     });
 
     recWindow.on("close", (event) => {
-      console.log("closing...")
+      console.log("closing...");
       event.preventDefault();
       recorder.shutdown().then(() => {
         this.recorders.delete(id);
@@ -172,14 +174,14 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     ipcMain.on("popup-msg-" + id, async (event, msg) => {
       switch (msg.type) {
-        case "startRecording":
-          await recorder.attach();
-          recWebContents.reload();
-          break;
+      case "startRecording":
+        await recorder.attach();
+        recWebContents.reload();
+        break;
 
-        case "stopRecording":
-          await recorder.detach();
-          break;
+      case "stopRecording":
+        await recorder.detach();
+        break;
       }
     });
 

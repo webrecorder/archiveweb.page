@@ -1,16 +1,16 @@
-"use strict";
+/*eslint-env node */
 
-import { ensureDefaultCollAndIPFS } from '../utils';
+import { ensureDefaultCollAndIPFS } from "../utils";
 
-import { loader, getColl, getDB } from 'replaywebpage/src/electron-preload';
+import { loader, getColl, getDB } from "replaywebpage/src/electron-preload";
 
-import { Downloader } from '../downloader';
+import { Downloader } from "../downloader";
 
-const { ipcRenderer, contextBridge } = require('electron');
+const { ipcRenderer, contextBridge } = require("electron");
 
 
 // ===========================================================================
-contextBridge.exposeInMainWorld('archivewebpage', {
+contextBridge.exposeInMainWorld("archivewebpage", {
   record: (url, collId, startRec) => {
     ipcRenderer.send("start-rec", url, collId, startRec);
   },
@@ -26,7 +26,7 @@ contextBridge.exposeInMainWorld('archivewebpage', {
 
 
 // ===========================================================================
-ipcRenderer.on('add-resource', async (event, data, pageInfo, collId) => {
+ipcRenderer.on("add-resource", async (event, data, pageInfo, collId) => {
   const db = await getDB(collId);
 
   let writtenSize = 0;
@@ -54,7 +54,7 @@ ipcRenderer.on('add-resource', async (event, data, pageInfo, collId) => {
 
 
 // ===========================================================================
-ipcRenderer.on('add-page', async (event, pageInfo, collId) => {
+ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
   const db = await getDB(collId);
 
   db.addPage(pageInfo);
@@ -116,7 +116,7 @@ async function handleIpfsUnpin(collId) {
   }
 
   const removeHashes = new Promise((resolve) => {
-    ipcRenderer.once(reqId, async (event) => {
+    ipcRenderer.once(reqId, async () => {
       coll.config.metadata.ipfsPins = null;
     
       await loader.updateMetadata(collId, coll.config.metadata);

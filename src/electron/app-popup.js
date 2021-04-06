@@ -1,7 +1,7 @@
 //import { ipcRenderer } from "electron";
 import { RecPopup } from "../popup";
 
-import { CollectionLoader } from '@webrecorder/wabac/src/loaders';
+import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 import { listAllMsg } from "../utils";
 
 
@@ -24,7 +24,7 @@ class AppRecPopup extends RecPopup
     return {
       ...RecPopup.properties,
       msg: { type: Object },
-    }
+    };
   }
 
   firstUpdated() {
@@ -82,4 +82,4 @@ class AppRecPopup extends RecPopup
   }
 }
 
-customElements.define('wr-app-popup', AppRecPopup);
+customElements.define("wr-app-popup", AppRecPopup);

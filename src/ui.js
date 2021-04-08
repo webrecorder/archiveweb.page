@@ -1,4 +1,4 @@
-import { LitElement, html, css, wrapCss, IS_APP, clickOnSpacebarPress } from 'replaywebpage/src/misc';
+import { LitElement, html, css, wrapCss, IS_APP, clickOnSpacebarPress, apiPrefix } from 'replaywebpage/src/misc';
 
 // replaywebpage imports
 import { ReplayWebApp, CollIndex, Coll, Embed, Loader } from 'replaywebpage';
@@ -28,6 +28,7 @@ class ArchiveWebApp extends ReplayWebApp
     this.navMenuShown = false;
     this.showCollDrop = false;
     this.colls = [];
+    this.autorun = localStorage.getItem("autorunBehaviors") === "1";
   }
 
   get appName() {
@@ -43,7 +44,8 @@ class ArchiveWebApp extends ReplayWebApp
       colls: { type: Array },
       selCollId: { type: String },
       selCollTitle: { type: String },
-      recordUrl: { type: String }
+      recordUrl: { type: String },
+      autorun: { type: Boolean },
     }
   }
 
@@ -224,6 +226,13 @@ class ArchiveWebApp extends ReplayWebApp
         </div>
       </div>
 
+      <div class="field">
+        <label class="checkbox is-size-7">
+        <input type="checkbox" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
+        Start With Autopilot
+        </label>
+      </div>
+
       <form class="is-flex is-flex-direction-column" @submit="${this.onStartRecord}">
         <div class="field has-addons">
           <p class="control is-expanded">
@@ -315,7 +324,7 @@ class ArchiveWebApp extends ReplayWebApp
 
     const method = "POST";
     const body = JSON.stringify({"metadata": {title}});
-    const resp = await fetch("./wabac/api/create", {method, body});
+    const resp = await fetch(`${apiPrefix}/c/create`, {method, body});
     const data = await resp.json();
     console.log(data);
   }
@@ -333,7 +342,7 @@ class ArchiveWebApp extends ReplayWebApp
     this.recordUrl = event.detail.url || "https://example.com/"
     this.recordShown = true;
 
-    const resp = await fetch("./wabac/api/index");
+    const resp = await fetch(`${apiPrefix}/coll-index`);
     const data = await resp.json();
 
     this.colls = data.colls;
@@ -345,11 +354,14 @@ class ArchiveWebApp extends ReplayWebApp
     
     this.recordShown = false;
 
+    localStorage.setItem("autorunBehaviors", this.autorun ? "1" : "0");
+
     if (self.chrome && self.chrome.runtime) {
       chrome.runtime.sendMessage({
         msg: "startNew",
         url,
         collId: this.selCollId,
+        autorun: this.autorun
       });
     } else if (window.archivewebpage && window.archivewebpage.record) {
       const previewCheckbox = this.renderRoot.querySelector("#preview");
@@ -729,7 +741,7 @@ class WrRecCollInfo extends LitElement
     //params.set("filename", this.coll.title);
     params.set("pages", "all");
 
-    window.location.href = `/replay/wabac/api/${this.coll.id}/dl?` + params.toString();
+    window.location.href = `/replay/${apiPrefix}/c/${this.coll.id}/dl?` + params.toString();
   }
 
   onShowShareMenu(event) {
@@ -786,10 +798,6 @@ class WrRecCollInfo extends LitElement
         window.archivewebpage.ipfsUnpin(this.coll.id));
     }
 
-    // if (useSw) {
-    //   return fetch(`./wabac/api/${this.coll.id}/ipfs/${pin ? "pin" : "unpin"}`, {method: "POST"}).then(response => response.json());
-    // }
-
     return new Promise((resolve) => {
       const port = chrome.runtime.connect({name: "share-port"});
       port.onMessage.addListener((message) => {
@@ -836,7 +844,7 @@ class WrRecCollInfo extends LitElement
       await this.ipfsApi(this.coll.id, false);
     }
 
-    const resp = await fetch(`./wabac/api/${this.coll.id}`, {method: 'DELETE'});
+    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: 'DELETE'});
     if (resp.status === 200) {
       const json = await resp.json();
       this.colls = json.colls;

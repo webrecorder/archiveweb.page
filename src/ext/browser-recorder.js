@@ -1,6 +1,6 @@
 "use strict";
 
-import { Recorder }  from '../recorder';
+import { Recorder, BEHAVIOR_RUNNING }  from '../recorder';
 
 
 // ===========================================================================
@@ -11,7 +11,8 @@ const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
 // ===========================================================================
 class BrowserRecorder extends Recorder {
-  constructor(debuggee, {collId, collLoader, waitForTabUpdate = false, openUrl = null, port = null, openWinMap = null}) {
+  constructor(debuggee, {collId, collLoader, waitForTabUpdate = false, openUrl = null, port = null, 
+                         openWinMap = null, autorun = false}) {
     super();
 
     this.openUrl = openUrl;
@@ -19,6 +20,7 @@ class BrowserRecorder extends Recorder {
     this.debuggee = debuggee;
     this.tabId = debuggee.tabId;
     this.openWinMap = openWinMap;
+    this.autorun = autorun;
 
     this.collLoader = collLoader;
     this.setCollId(collId);
@@ -156,7 +158,12 @@ class BrowserRecorder extends Recorder {
     const tabId = this.tabId;
 
     if (this.running) {
-      if (this.numPending === 0) {
+      if (this.behaviorState === BEHAVIOR_RUNNING) {
+        title = "Recording: Autopilot Running!";
+        color = "#3298dc";
+        text = " ";
+
+      } else if (this.numPending === 0) {
         title = "Recording: No URLs pending, can continue";
         color = "#64e986";
         text = " ";

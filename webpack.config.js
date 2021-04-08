@@ -35,7 +35,7 @@ const moduleSettings =  {
     loaders: ['to-string-loader', 'css-loader', 'sass-loader']
   },
   {
-    test: /(dist\/wombat.js|src\/wombatWorkers.js|autofetcher.js|ruffle.js)$/i,
+    test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|ruffle.js)$/i,
     loaders: 'raw-loader',
   }
 ]};

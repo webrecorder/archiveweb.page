@@ -3,13 +3,22 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite';
 import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo';
 
-import autofetcher from './autofetcher';
+//import autofetcher from './autofetcher';
+import behaviors from "browsertrix-behaviors/dist/behaviors.js";
 
 const encoder = new TextEncoder("utf-8");
 
 const MAX_CONCURRENT_FETCH = 6;
 
 const MAIN_INJECT_URL = "__awp_main_inject__";
+
+const BEHAVIOR_WAIT_LOAD = "wait_load";
+const BEHAVIOR_READY_START = "ready";
+const BEHAVIOR_PAUSED = "paused";
+export const BEHAVIOR_RUNNING = "running";
+const BEHAVIOR_DONE = "done";
+
+const BEHAVIOR_LOG_FUNC = "__bx_log";
 
 
 // ===========================================================================
@@ -46,6 +55,8 @@ class Recorder {
     this._fetchQueue = [];
     this._fetchUrls = new Set();
 
+    this._bindings = {};
+
     this._pdfTextDone = null;
     this.pdfURL = null;
 
@@ -54,7 +65,23 @@ class Recorder {
     this.id = 1;
     this.sessionSet = new Set();
 
+    this.behaviorInitStr = JSON.stringify({
+      autofetch: true,
+      autoplay: true,
+      autoscroll: true,
+      siteSpecific: true,
+      log: BEHAVIOR_LOG_FUNC
+    });
+
+    this.behaviorState = BEHAVIOR_WAIT_LOAD;
+    this.behaviorData = null;
+    this.autorun = false;
+
     this._bgFetchId = setInterval(() => this.doBackgroundFetch(), 10000);
+  }
+
+  setAutoRunBehavior(autorun) {
+    this.autorun = autorun;
   }
 
   addExternalInject(path) {
@@ -70,7 +97,10 @@ class Recorder {
   }
 
   getInjectScript() {
-    return autofetcher + `;window.addEventListener("beforeunload", () => {});` + this.getFlashInjectScript();
+    return behaviors + `;
+    self.__bx_behaviors.init(${this.behaviorInitStr});
+
+    window.addEventListener("beforeunload", () => {});` + this.getFlashInjectScript();
   }
 
   getFlashInjectScript() {
@@ -94,6 +124,10 @@ class Recorder {
 
   async detach() {
     const domNodes = await this.getFullText();
+
+    if (this.behaviorState === BEHAVIOR_RUNNING) {
+      this.toggleBehaviors();
+    }
 
     try {
       await Promise.all(this._fetchPending.values());
@@ -167,6 +201,9 @@ class Recorder {
     return {
       recording: this.running,
       firstPageStarted: this.firstPageStarted,
+      behaviorState: this.behaviorState,
+      behaviorData: this.behaviorData,
+      autorun: this.autorun,
       sizeTotal: this.sizeTotal,
       sizeNew: this.sizeNew,
       numUrls: this.numUrls,
@@ -181,7 +218,21 @@ class Recorder {
   }
 
   async _doInjectTopFrame() {
-    const source = `${this.getInjectScript()}\n//# sourceURL=${MAIN_INJECT_URL}`;
+    await this.newDocEval(MAIN_INJECT_URL, this.getInjectScript());
+
+    await this.exposeFunction(BEHAVIOR_LOG_FUNC, ({data, type}) => {
+      switch (type) {
+        case "info":
+          this.behaviorData = data;
+          //console.log("bx log", JSON.stringify(data));
+          this.updateStatus();
+          break;
+      }
+    });
+  }
+
+  async newDocEval(name, source) {
+    source += "\n\n//# sourceURL=" + name;
     await this.send("Page.addScriptToEvaluateOnNewDocument", {source});
   }
 
@@ -208,14 +259,51 @@ class Recorder {
     }
   }
 
+  async toggleBehaviors() {
+    switch (this.behaviorState) {
+      case BEHAVIOR_WAIT_LOAD:
+      case BEHAVIOR_DONE:
+        break;
+
+      case BEHAVIOR_READY_START:
+        this.pageEval("__awp_behavior_run__", "self.__bx_behaviors.run();").then(() => this.behaviorState = BEHAVIOR_DONE);
+        this.behaviorState = BEHAVIOR_RUNNING;
+        break;
+
+      case BEHAVIOR_RUNNING:
+        this.pageEval("__awp_behavior_unpause__", "self.__bx_behaviors.pause();");
+        this.behaviorState = BEHAVIOR_PAUSED;
+        break;
+
+      case BEHAVIOR_PAUSED:
+        this.pageEval("__awp_behavior_unpause__", "self.__bx_behaviors.unpause();");
+        this.behaviorState = BEHAVIOR_RUNNING;
+        break;
+    }
+
+    this.updateStatus();
+  }
+
+  async exposeFunction(name, func, sessions = [])
+  { 
+    this._bindings[name] = func;
+    await this.send("Runtime.addBinding", {name}, sessions);
+
+    //await this.newDocEval("__awp_binding_wrap__", `
+    //self._${name} = (args) => self.${name}(JSON.stringify(args));`, sessions);
+  }
+
   loaded() {
     this._loaded = new Promise(resolve => this._loadedDoneResolve = resolve);
+    return this._loaded;
   }
 
   async start() {
     this.firstPageStarted = false;
 
     await this.send("Page.enable");
+
+    await this.send("Runtime.enable");
 
     await this._doInjectTopFrame();
 
@@ -387,6 +475,12 @@ class Recorder {
       case "Media.playerEventsAdded":
         this.parseMediaEventsAdded(params, sessions);
         break;
+
+      case "Runtime.bindingCalled":
+        if (this._bindings[params.name]) {
+          this._bindings[params.name](JSON.parse(params.payload));
+        }
+        break;
   
       default:
         //if (method.startsWith("Target.")) {
@@ -470,6 +564,10 @@ class Recorder {
       await this.send("Debugger.resume");
     } catch(e) {
       console.warn(e);
+    }
+
+    if (this.behaviorState === BEHAVIOR_RUNNING) {
+      await this.toggleBehaviors();
     }
 
     if (ourUnload) {
@@ -577,6 +675,9 @@ class Recorder {
       mime,
     };
 
+    this.behaviorState = BEHAVIOR_WAIT_LOAD;
+    this.behaviorData = null;
+
     this.numPages++;
 
     this._fetchUrls.clear();
@@ -586,6 +687,8 @@ class Recorder {
     if (!this.firstPageStarted) {
       this.initFirstPage();
     }
+
+    this.behaviorState = BEHAVIOR_WAIT_LOAD;
   }
 
   loadFavIcon(favIconUrl, sessions) {
@@ -615,6 +718,8 @@ class Recorder {
 
     this.pageInfo.title = result.entries[id].title || result.entries[id].url;
 
+    const pageInfo = this.pageInfo;
+
     const results = await Promise.all([
       this.getFullText(),
       this.getFavIcon(),
@@ -627,6 +732,17 @@ class Recorder {
     await this.commitPage(this.pageInfo, results[0], false);
 
     this.updateStatus();
+
+    await this.loaded();
+
+    // don't mark as ready if page changed
+    if (pageInfo === this.pageInfo) {
+      this.behaviorState = BEHAVIOR_READY_START;
+
+      if (this.autorun) {
+        await this.toggleBehaviors();
+      }
+    }
   }
 
   async updateHistory(sessions) {
@@ -721,6 +837,10 @@ class Recorder {
 
     if (!payload.length) {
       return false;
+    }
+    
+    if (reqresp.url.indexOf("base.js") > 0) {
+      console.log("base.js");
     }
 
     let newString = null;

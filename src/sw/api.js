@@ -13,7 +13,7 @@ class ExtAPI extends API
   get routes() {
     return {
       ...super.routes,
-      'downloadPages': ':coll/dl',
+      'downloadPages': 'c/:coll/dl',
     };
   }
 

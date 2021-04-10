@@ -7,6 +7,7 @@ import fasBox from '@fortawesome/fontawesome-free/svgs/solid/square.svg';
 import fasPlay from '@fortawesome/fontawesome-free/svgs/solid/play.svg';
 import fasPause from '@fortawesome/fontawesome-free/svgs/solid/pause.svg';
 import fasHome from '@fortawesome/fontawesome-free/svgs/solid/home.svg';
+import fasQ from '@fortawesome/fontawesome-free/svgs/solid/question.svg';
 import fasCheck from '@fortawesome/fontawesome-free/svgs/solid/check.svg';
 import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
 import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
@@ -256,7 +257,7 @@ class RecPopup extends LitElement
       }
 
       .autopilot {
-        justify-content: flex-end;
+        justify-content: center;
       }
 
       .coll-select {
@@ -422,16 +423,18 @@ class RecPopup extends LitElement
     `;
   }
 
-  renderOptions() {
+  renderStartOpt() {
+    if (this.recording) {
+      return "";
+    }
+
     return html`
-    <div class="coll-select">
       <div class="field">
         <label class="checkbox is-size-7">
           <input type="checkbox" ?disabled="${this.recording}" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
         Start With Autopilot
         </label>
       </div>
-    </div>
     `;
   }
 
@@ -467,6 +470,11 @@ class RecPopup extends LitElement
           <p class="rec-state">
           ${this.renderStatus()}
           </p>
+          <a target="_blank" href="https://archiveweb.page/guide/usage/during-capture.html" class="smallest button is-small is-inverted">
+            <span class="icon is-small">
+              <wr-icon size="1.0em" title="Guide" .src="${fasQ}"></wr-icon>
+            </span>
+          </a>
           <a target="_blank" href="${this.getHomePage()}" class="smallest button is-small is-inverted">
             <span class="icon is-small">
               <wr-icon size="1.0em" title="Home - All Archives" .src="${fasHome}"></wr-icon>
@@ -476,7 +484,6 @@ class RecPopup extends LitElement
         <div class="view-row">
           ${this.canRecord ? html`
           ${this.renderCollDropdown()}
-          ${this.renderOptions()}
           <button
            ?disabled=${this.collDrop === "create" || (!this.recording && this.waitingForStart)}
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
@@ -495,6 +502,7 @@ class RecPopup extends LitElement
             ${this.canRecord ? html`
             <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ``}
           </div>
+          ${this.renderStartOpt()}
         </div>
 
         ${this.recording ? html`
@@ -537,7 +545,7 @@ class RecPopup extends LitElement
   get behaviorsButtonLabel() {
     switch (this.behaviorState) {
       case BEHAVIOR_WAIT_LOAD:
-        return "Waiting for page to load...";
+        return "Autopilot: Waiting for page to load...";
       
       case BEHAVIOR_READY_START:
         return html`

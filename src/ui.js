@@ -353,20 +353,23 @@ class ArchiveWebApp extends ReplayWebApp
     const url = this.renderRoot.querySelector("#url").value;
     
     this.recordShown = false;
+    const autorun = this.autorun;
 
-    localStorage.setItem("autorunBehaviors", this.autorun ? "1" : "0");
+    const collId = this.selCollId;
+
+    localStorage.setItem("autorunBehaviors", autorun ? "1" : "0");
 
     if (self.chrome && self.chrome.runtime) {
       chrome.runtime.sendMessage({
         msg: "startNew",
         url,
-        collId: this.selCollId,
-        autorun: this.autorun
+        collId,
+        autorun,
       });
     } else if (window.archivewebpage && window.archivewebpage.record) {
       const previewCheckbox = this.renderRoot.querySelector("#preview");
       const startRec = !(previewCheckbox && previewCheckbox.checked);
-      window.archivewebpage.record(url, this.selCollId, startRec);
+      window.archivewebpage.record({url, collId, startRec, autorun});
     }
     return false;
   }

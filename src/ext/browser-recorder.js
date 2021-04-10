@@ -1,6 +1,7 @@
 "use strict";
 
-import { Recorder, BEHAVIOR_RUNNING }  from '../recorder';
+import { BEHAVIOR_RUNNING } from '../consts';
+import { Recorder }  from '../recorder';
 
 
 // ===========================================================================

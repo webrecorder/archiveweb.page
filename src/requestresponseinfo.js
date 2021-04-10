@@ -158,7 +158,8 @@ class RequestResponseInfo
       }
       if (postToGetUrl(convData)) {
         this.requestBody = convData.requestBody;
-        this.url = convData.url;
+        // truncate to first 2048 to avoid extra long URLs
+        this.url = convData.url.slice(0, 2048);
       }
     }
 

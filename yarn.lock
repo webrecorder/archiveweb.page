@@ -810,7 +810,7 @@
 
 "@webrecorder/wabac@github:webrecorder/wabac.js#multi-wacz":
   version "2.7.0-beta.0"
-  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/7d707ff95b5dfd184d8e3edae971553aca3e7990"
+  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/2a2f64d7c3d45fc77611f95dc58451439594733f"
   dependencies:
     "@webrecorder/wombat" "^3.1.2"
     brotli "github:foliojs/brotli.js"
@@ -1623,7 +1623,7 @@ browserify-zlib@^0.2.0:
 
 "browsertrix-behaviors@github:webrecorder/browsertrix-behaviors#interactive-fixes":
   version "0.1.0"
-  resolved "https://codeload.github.com/webrecorder/browsertrix-behaviors/tar.gz/a951460b831bf73bce5a781059792871c27436c7"
+  resolved "https://codeload.github.com/webrecorder/browsertrix-behaviors/tar.gz/91ccc9d5a519a40da53b7fbf9d8312d582f3d444"
 
 buffer-crc32@~0.2.3:
   version "0.2.13"
@@ -10009,23 +10009,10 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-warcio@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/warcio/-/warcio-1.4.1.tgz#6d289f37044eda58e369db2bed18cdaf6f9f7beb"
-  integrity sha512-4Kue2T+Zt93L/CyBSFh3sHF7NgR+DER5FQHoU0uGBR6abcqBqQ+mE22OE6fpjSReZMx2jIeiAQLD8XQzPq3P3g==
-  dependencies:
-    "@peculiar/webcrypto" "^1.1.1"
-    esm "^3.2.25"
-    hi-base32 "^0.5.0"
-    node-fetch "^2.6.0"
-    pako "^1.0.11"
-    uuid-random "^1.3.0"
-    yargs "^15.3.1"
-
-warcio@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/warcio/-/warcio-1.4.2.tgz#48ff77a61de6112de8acadf655400074e2c13df8"
-  integrity sha512-trdD7EiPGFsoYuiAC+jzbYQuM/9P2ZK9q7mUc6HAMVkhTsPEluWrgq3q0q3Uv7s3pS345nIt2NU9de/PQNCfLg==
+warcio@^1.4.2, warcio@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/warcio/-/warcio-1.4.3.tgz#9cfa3264c4c2b80a0a5955fa0fd7f85f7418d799"
+  integrity sha512-zyhFDt/OmzkNGCaUJaFNrAia9NAPIJmmxtGypqDjH1tVloWSp4tvrj1mQ3CgMiZ0nbrFYwrLVGzMfBTul6gnDg==
   dependencies:
     "@peculiar/webcrypto" "^1.1.1"
     esm "^3.2.25"

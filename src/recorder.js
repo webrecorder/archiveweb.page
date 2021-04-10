@@ -3,8 +3,14 @@ import { RequestResponseInfo } from './requestresponseinfo.js';
 import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite';
 import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo';
 
-//import autofetcher from './autofetcher';
 import behaviors from "browsertrix-behaviors/dist/behaviors.js";
+
+import {
+  BEHAVIOR_WAIT_LOAD,
+  BEHAVIOR_READY_START,
+  BEHAVIOR_RUNNING,
+  BEHAVIOR_PAUSED,
+  BEHAVIOR_DONE } from "./consts";
 
 const encoder = new TextEncoder("utf-8");
 
@@ -12,14 +18,7 @@ const MAX_CONCURRENT_FETCH = 6;
 
 const MAIN_INJECT_URL = "__awp_main_inject__";
 
-const BEHAVIOR_WAIT_LOAD = "wait_load";
-const BEHAVIOR_READY_START = "ready";
-const BEHAVIOR_PAUSED = "paused";
-export const BEHAVIOR_RUNNING = "running";
-const BEHAVIOR_DONE = "done";
-
 const BEHAVIOR_LOG_FUNC = "__bx_log";
-
 
 // ===========================================================================
 function sleep(time) {
@@ -241,6 +240,7 @@ class Recorder {
     return this.send("Runtime.evaluate", {
       expression,
       userGesture: true,
+      includeCommandLineAPI: true,
       allowUnsafeEvalBlockedByCSP: true,
       //replMode: true,
       awaitPromise: true,
@@ -462,6 +462,12 @@ class Recorder {
 
       case "Page.windowOpen":
         this.handleWindowOpen(params.url, sessions);
+        break;
+
+      case "Page.javascriptDialogOpening":
+        if (this.behaviorState === BEHAVIOR_RUNNING) {
+          await this.send("Page.handleJavaScriptDialog", {accept: false});
+        }
         break;
 
       case "Debugger.paused":

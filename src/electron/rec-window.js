@@ -11,6 +11,7 @@ import fasRight from '@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg';
 import wrLogo from '../../assets/wr-logo.svg';
 
 import './app-popup';
+import { BEHAVIOR_RUNNING } from '../consts';
 
 class RecWindowUI extends LitElement
 {
@@ -38,6 +39,7 @@ class RecWindowUI extends LitElement
         this.stats = event.data.stats;
         this.recording = this.stats.recording;
         this.numPending = this.stats.numPending;
+        this.autorun = this.stats.behaviorState === BEHAVIOR_RUNNING;
       }
     });
   }
@@ -54,6 +56,7 @@ class RecWindowUI extends LitElement
       stats: { type: Object },
       numPending: { type: Number },
       recording: { type: Boolean },
+      autorun: { type: Boolean },
 
       showPopup: { type: Boolean },
       wcId: { type: Number }
@@ -77,7 +80,7 @@ class RecWindowUI extends LitElement
         width: 400px;
         background: white;
         position: fixed;
-        height: 300px;
+        height: fit-content;
         box-sizing: content-box;
         top: 50px;
         right: 0px;
@@ -153,6 +156,10 @@ class RecWindowUI extends LitElement
         background-color: #bb9f08;
       }
 
+      .overlay-auto {
+        background-color: #3298dc;
+      }
+
     `);
   }
 
@@ -193,10 +200,11 @@ class RecWindowUI extends LitElement
           <span class="icon is-small">
             <fa-icon id="wrlogo" size="1.8em" .svg="${wrLogo}" aria-hidden="true"></fa-icon>
             ${this.recording ? html`
-              ${!this.numPending ? html`
-              <span class="overlay overlay-idle"></span>` : html`
-              <span class="overlay overlay-waiting">${this.numPending}</span>
-              `}` : ``}
+              ${this.autorun ? html`<span class="overlay overlay-auto"></span>` :
+                !this.numPending ? html`
+                <span class="overlay overlay-idle"></span>` : html`
+                <span class="overlay overlay-waiting">${this.numPending}</span>
+                `}` : ``}
           </span>
         </a>
       </div>

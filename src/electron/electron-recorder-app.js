@@ -43,8 +43,8 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     app.userAgentFallback = desktopUA;
 
-    ipcMain.on("start-rec", (event, url, collId, startRec) => {
-      this.createRecordWindow(url, collId, startRec);
+    ipcMain.on("start-rec", (event, opts) => {
+      this.createRecordWindow(opts);
     });
 
     ipcMain.on("start-ipfs", (event, validPins) => {
@@ -111,7 +111,7 @@ class ElectronRecorderApp extends ElectronReplayApp
     app.exit(0);
   }
 
-  createRecordWindow(url, collId = "", startRec = true) {
+  createRecordWindow({url, collId = "", startRec = true, autorun = false} = {}) {
     console.log("start rec window: " + url);
 
     const recWindow = new BrowserWindow({
@@ -127,7 +127,7 @@ class ElectronRecorderApp extends ElectronReplayApp
     });
 
     recWindow.webContents.on("did-attach-webview", (event, contents) => {
-      this.initRecorder(recWindow, contents, url, collId, startRec);
+      this.initRecorder(recWindow, contents, url, collId, startRec, autorun);
     });
 
     recWindow.loadURL(STATIC_PREFIX + "rec-window.html");
@@ -140,7 +140,7 @@ class ElectronRecorderApp extends ElectronReplayApp
     super.checkUpdates();
   }
 
-  async initRecorder(recWindow, recWebContents, url, collId, startRec, popupView = null) {
+  async initRecorder(recWindow, recWebContents, url, collId, startRec, autorun, popupView = null) {
     const id = recWebContents.id;
 
     const recorder = new ElectronRecorder({
@@ -148,6 +148,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       appWC: this.mainWindow.webContents,
       recWindow,
       collId,
+      autorun,
       popup: popupView,
       staticPrefix: this.staticContentPath
     });
@@ -185,7 +186,7 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     recWebContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
       event.preventDefault();
-      event.newGuest = this.createRecordWindow(url, collId, startRec);
+      event.newGuest = this.createRecordWindow({url, collId, startRec});
       console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);
     });
 

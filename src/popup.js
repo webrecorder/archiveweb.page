@@ -15,17 +15,17 @@ import wrRec from '../assets/recLogo.svg';
 
 import prettyBytes from 'pretty-bytes';
 
+import {
+  BEHAVIOR_WAIT_LOAD,
+  BEHAVIOR_READY_START,
+  BEHAVIOR_RUNNING,
+  BEHAVIOR_PAUSED,
+  BEHAVIOR_DONE } from "./consts";
+
 const allCss = unsafeCSS(bulma);
 function wrapCss(custom) {
   return [allCss, custom];
 }
-
-const BEHAVIOR_WAIT_LOAD = "wait_load";
-const BEHAVIOR_READY_START = "ready";
-const BEHAVIOR_PAUSED = "paused";
-const BEHAVIOR_RUNNING = "running";
-const BEHAVIOR_DONE = "done";
-
 
 // ===========================================================================
 class RecPopup extends LitElement

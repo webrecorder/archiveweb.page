@@ -9,7 +9,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@webrecorder/wabac": "github:webrecorder/wabac.js#multi-wacz",
-    "browsertrix-behaviors": "github:webrecorder/browsertrix-behaviors#interactive-fixes",
+    "browsertrix-behaviors": "^0.1.0",
     "bulma": "^0.9.1",
     "flexsearch": "^0.6.32",
     "hash-wasm": "^4.4.1",

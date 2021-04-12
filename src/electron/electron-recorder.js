@@ -12,7 +12,7 @@ const PROXY_URL = "https://proxy.archiveweb.page/"
 // ===========================================================================
 class ElectronRecorder extends Recorder
 {
-  constructor({recWC, appWC, collId, staticPrefix, recWindow, popup}) {
+  constructor({recWC, appWC, collId, staticPrefix, recWindow, popup, autorun}) {
     super();
     this.appWC = appWC;
     this.collId = collId;
@@ -28,6 +28,8 @@ class ElectronRecorder extends Recorder
     this.frameWC = recWindow.webContents;
 
     this.flatMode = true;
+
+    this.autorun = autorun;
 
     this.shutdownPromise = new Promise((resolve) => this._shutdownResolve = resolve);
 

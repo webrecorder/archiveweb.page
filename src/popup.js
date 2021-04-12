@@ -4,7 +4,10 @@ import bulma from 'bulma/bulma.sass';
 
 import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
 import fasBox from '@fortawesome/fontawesome-free/svgs/solid/square.svg';
+import fasPlay from '@fortawesome/fontawesome-free/svgs/solid/play.svg';
+import fasPause from '@fortawesome/fontawesome-free/svgs/solid/pause.svg';
 import fasHome from '@fortawesome/fontawesome-free/svgs/solid/home.svg';
+import fasQ from '@fortawesome/fontawesome-free/svgs/solid/question.svg';
 import fasCheck from '@fortawesome/fontawesome-free/svgs/solid/check.svg';
 import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
 import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
@@ -13,11 +16,17 @@ import wrRec from '../assets/recLogo.svg';
 
 import prettyBytes from 'pretty-bytes';
 
+import {
+  BEHAVIOR_WAIT_LOAD,
+  BEHAVIOR_READY_START,
+  BEHAVIOR_RUNNING,
+  BEHAVIOR_PAUSED,
+  BEHAVIOR_DONE } from "./consts";
+
 const allCss = unsafeCSS(bulma);
 function wrapCss(custom) {
   return [allCss, custom];
 }
-
 
 // ===========================================================================
 class RecPopup extends LitElement
@@ -47,6 +56,9 @@ class RecPopup extends LitElement
     this.allowCreate = true;
 
     this.waitingForStart = false;
+    this.behaviorState = BEHAVIOR_WAIT_LOAD;
+    this.behaviorMsg = "";
+    this.autorun = localStorage.getItem("autorunBehaviors") === "1";
   }
 
   static get properties() {
@@ -65,7 +77,12 @@ class RecPopup extends LitElement
       pageTs: { type: Number },
 
       canRecord: { type: Boolean },
-      failureMsg: { type: String }
+      failureMsg: { type: String },
+
+      behaviorState: { type: String },
+      behaviorResults: { type: Object },
+      behaviorMsg: { type: String },
+      autorun: { type: Boolean }
     }
   }
 
@@ -111,6 +128,10 @@ class RecPopup extends LitElement
           this.waitingForStart = false;
         }
         this.status = message;
+        this.behaviorState = message.behaviorState;
+        this.behaviorMsg = message.behaviorData && message.behaviorData.msg || "Starting...";
+        this.behaviorResults = message.behaviorData && message.behaviorData.state;
+        this.autorun = message.autorun;
         if (message.pageUrl) {
           this.pageUrl = message.pageUrl;
         }
@@ -235,12 +256,26 @@ class RecPopup extends LitElement
         font-size: 1.1em;
       }
 
+      .autopilot {
+        justify-content: center;
+      }
+
       .coll-select {
         align-items: center;
       }
 
       .dropdown-item {
         width: initial !important;
+      }
+
+      .coll.button {
+        max-width: 120px;
+      }
+
+      .coll.button span {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
 
       .flex-form {
@@ -268,9 +303,26 @@ class RecPopup extends LitElement
         padding-left: 0.5em;
       }
 
+      .status {
+        font-variant-caps: all-small-caps;
+      }
+
+      .status-sep {
+        border-bottom: 1px solid black;
+        width: 100%;
+        height: 10px;
+      }
+
       .status-ready {
         color: #459558;
         font-style: italic;
+      }
+
+      .status-autopilot {
+        color: #3298dc;
+        max-width: 330px;
+        text-overflow: wrap;
+        word-break: break-all;
       }
 
       .status-pending {
@@ -294,11 +346,15 @@ class RecPopup extends LitElement
   }
 
   renderStatus() {
-    if (this.recording) {
-      return html`<b>Recording:&nbsp;</b>
-        ${this.status && this.status.numPending ? html`
+    if (this.behaviorState === BEHAVIOR_RUNNING) {
+      return html`<span class="status-autopilot">Auto Recording, ${this.behaviorMsg}</span>`;
+    }
+
+    if (this.recording) {    
+      return html`<b>Recording:&nbsp;</b>${this.status && this.status.numPending ? html`
       <span class="status-pending">${this.status.numPending} URLs pending, please wait before loading a new page.</span>
-    ` : html`
+     ` :
+     html`
       <span class="status-ready">Idle, Continue Browsing</span>`}`;
     }
 
@@ -334,13 +390,13 @@ class RecPopup extends LitElement
     return html`<i>${this.notRecordingMessage}</i>`;
   }
 
-  renderDropdown() {
+  renderCollDropdown() {
     return html`
     <div class="coll-select">
       <div class="is-size-7">${this.recording ? "Recording" : "Record"} To:&nbsp;</div>
       <div class="dropdown ${this.collDrop === "show" ? 'is-active' : ''}">
         <div class="dropdown-trigger">
-          <button @click="${this.onShowDrop}" class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
+          <button @click="${this.onShowDrop}" class="coll button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
             <span>${this.collTitle}</span>
             <span class="icon is-small">
               <wr-icon .src="${fasCaretDown}"></wr-icon>
@@ -364,6 +420,21 @@ class RecPopup extends LitElement
         </div>` : html``}
       </div>
     </div>
+    `;
+  }
+
+  renderStartOpt() {
+    if (this.recording) {
+      return "";
+    }
+
+    return html`
+      <div class="field">
+        <label class="checkbox is-size-7">
+          <input type="checkbox" ?disabled="${this.recording}" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
+        Start With Autopilot
+        </label>
+      </div>
     `;
   }
 
@@ -399,6 +470,11 @@ class RecPopup extends LitElement
           <p class="rec-state">
           ${this.renderStatus()}
           </p>
+          <a target="_blank" href="https://archiveweb.page/guide/usage/during-capture.html" class="smallest button is-small is-inverted">
+            <span class="icon is-small">
+              <wr-icon size="1.0em" title="Guide" .src="${fasQ}"></wr-icon>
+            </span>
+          </a>
           <a target="_blank" href="${this.getHomePage()}" class="smallest button is-small is-inverted">
             <span class="icon is-small">
               <wr-icon size="1.0em" title="Home - All Archives" .src="${fasHome}"></wr-icon>
@@ -407,7 +483,7 @@ class RecPopup extends LitElement
         </div>
         <div class="view-row">
           ${this.canRecord ? html`
-          ${this.renderDropdown()}
+          ${this.renderCollDropdown()}
           <button
            ?disabled=${this.collDrop === "create" || (!this.recording && this.waitingForStart)}
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
@@ -426,7 +502,18 @@ class RecPopup extends LitElement
             ${this.canRecord ? html`
             <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ``}
           </div>
+          ${this.renderStartOpt()}
         </div>
+
+        ${this.recording ? html`
+        <div class="view-row autopilot">
+          <button @click="${this.onBehaviorToggle}"
+          ?disabled="${this.behaviorState === BEHAVIOR_WAIT_LOAD || this.behaviorState === BEHAVIOR_DONE}"
+          class="button ${this.behaviorState === BEHAVIOR_DONE ? 'is-success' : 'is-info'} is-small">
+          ${this.behaviorsButtonLabel}
+          </button>
+        </div>
+        ` : ``}
 
         ${this.status && this.status.sizeTotal ? html`
         <div class="view-row underline">
@@ -434,18 +521,57 @@ class RecPopup extends LitElement
           ${this.replayUrl ? 
             html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>` : ``}
         </div>
-        <table class="status">
-          <tr><td>Size:</td><th>${prettyBytes(this.status.sizeNew)}</th></tr>
-          <tr><td>Size Loaded:</td><th>${prettyBytes(this.status.sizeTotal)}</th></tr>
-          <tr><td>Pages:</td><th>${this.status.numPages}</th></tr>
-          <tr><td>URLs:</td><th>${this.status.numUrls}</th></tr>
-        </table>` : html``}
+        <div class="view-row">
+          <table class="status">
+            <tr><td>Size Stored:</td><th>${prettyBytes(this.status.sizeNew)}</th></tr>
+            <tr><td>Size Loaded:</td><th>${prettyBytes(this.status.sizeTotal)}</th></tr>
+            <tr><td>Pages:</td><th>${this.status.numPages}</th></tr>
+            <tr><td>URLs:</td><th>${this.status.numUrls}</th></tr>
+
+            ${this.behaviorResults && this.behaviorState !== BEHAVIOR_WAIT_LOAD 
+              && this.behaviorState !== BEHAVIOR_READY_START ? html`
+            <tr class="status-sep"><td></td><td></td></tr>
+            ${Object.entries(this.behaviorResults).map(([name, value]) => html`
+            <tr><td>${name}</td><th>${value}</th></tr>`
+            )}` : ``}
+
+          </table>
+        </div>
+        ` : html``}
       </div>
     `;
   }
 
+  get behaviorsButtonLabel() {
+    switch (this.behaviorState) {
+      case BEHAVIOR_WAIT_LOAD:
+        return "Autopilot: Waiting for page to load...";
+      
+      case BEHAVIOR_READY_START:
+        return html`
+        <wr-icon style="fill: white" .src="${fasPlay}"></wr-icon>
+        &nbsp;Start Autopilot!`;
+
+      case BEHAVIOR_RUNNING:
+        return html`
+        <wr-icon style="fill: white" .src="${fasPause}"></wr-icon>
+        &nbsp;Pause Autopilot`;
+
+      case BEHAVIOR_PAUSED:
+        return html`
+        <wr-icon style="fill: white" .src="${fasPlay}"></wr-icon>
+        &nbsp;Unpause Autopilot`;
+
+      case BEHAVIOR_DONE:
+        return html`
+        <wr-icon style="fill: white" .src="${fasCheck}"></wr-icon>
+        &nbsp;Autopilot Done`;
+    }
+  }
+
   onStart() {
-    this.sendMessage({type: "startRecording", collId: this.collId, url: this.pageUrl});
+    this.sendMessage({type: "startRecording", collId: this.collId, url: this.pageUrl, autorun: this.autorun});
+    localStorage.setItem("autorunBehaviors", this.autorun ? "1" : "0");
     this.waitingForStart = true;
   }
 
@@ -460,6 +586,10 @@ class RecPopup extends LitElement
     this.collDrop = "";
 
     localStorage.setItem(`${this.tabId}-collId`, this.collId);
+  }
+
+  onBehaviorToggle() {
+    this.sendMessage({type: "toggleBehaviors"});
   }
 
   onShowDrop(event)  {

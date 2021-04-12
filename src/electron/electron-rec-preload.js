@@ -11,8 +11,8 @@ const { ipcRenderer, contextBridge } = require('electron');
 
 // ===========================================================================
 contextBridge.exposeInMainWorld('archivewebpage', {
-  record: (url, collId, startRec) => {
-    ipcRenderer.send("start-rec", url, collId, startRec);
+  record: (opts) => {
+    ipcRenderer.send("start-rec", opts);
   },
 
   ipfsPin: (collId) => {

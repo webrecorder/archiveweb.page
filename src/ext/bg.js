@@ -13,6 +13,7 @@ self.newRecId = null;
 
 let newRecUrl = null;
 let newRecCollId = null;
+let autorun = false;
 
 const openWinMap = new Map();
 
@@ -76,12 +77,18 @@ function popupHandler(port) {
         port.postMessage(await listAllMsg(collLoader));
         break;
 
-      case "startRecording":
-        startRecorder(tabId, {collId: message.collId, port}, message.url);
+      case "startRecording": {
+        const {collId, autorun} = message;
+        startRecorder(tabId, {collId, port, autorun}, message.url);
         break;
+      }
 
       case "stopRecording":
         stopRecorder(tabId);
+        break;
+
+      case "toggleBehaviors":
+        toggleBehaviors(tabId);
         break;
 
       case "newColl":
@@ -142,7 +149,8 @@ chrome.tabs.onCreated.addListener((tab) => {
     if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl}, openUrl);
+    const autorun = isAutoRunBehaviors();
+    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl, autorun}, openUrl);
   }
 });
 
@@ -164,16 +172,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       }
     }
 
-    if (recorder.running && changeInfo.favIconUrl) {
-      recorder.loadFavIcon(changeInfo.favIconUrl);
-    }
+    // if (recorder.running && changeInfo.favIconUrl) {
+    //   recorder.loadFavIcon(changeInfo.favIconUrl);
+    // }
   } else if (changeInfo.url && openWinMap.has(changeInfo.url)) {
     const collId = openWinMap.get(changeInfo.url);
     openWinMap.delete(changeInfo.url);
     if (!tabId || !isValidUrl(changeInfo.url)) {
       return;
     }
-    startRecorder(tabId, {collId}, changeInfo.url);
+    const autorun = isAutoRunBehaviors();
+    startRecorder(tabId, {collId, autorun}, changeInfo.url);
   }
 });
 
@@ -208,6 +217,8 @@ async function startRecorder(tabId, opts, startUrl) {
     opts.collLoader = collLoader;
     opts.openWinMap = openWinMap;
     self.recorders[tabId] = new BrowserRecorder({tabId}, opts);
+  } else {
+    self.recorders[tabId].setAutoRunBehavior(opts.autorun);
   }
 
   let err = null;
@@ -237,6 +248,16 @@ function stopRecorder(tabId) {
 }
 
 // ===========================================================================
+function toggleBehaviors(tabId) {
+  if (self.recorders[tabId]) {
+    self.recorders[tabId].toggleBehaviors();
+    return true;
+  }
+
+  return false;
+}
+
+// ===========================================================================
 function isRecording(tabId) {
   return self.recorders[tabId] && self.recorders[tabId].running;
 }
@@ -244,6 +265,11 @@ function isRecording(tabId) {
 // ===========================================================================
 function isValidUrl(url) {
   return url && (url === "about:blank" || url.startsWith("https:") || url.startsWith("http:"));
+}
+
+// ===========================================================================
+function isAutoRunBehaviors() {
+  return localStorage.getItem("autorunBehaviors") === "1";
 }
 
 // ===========================================================================
@@ -280,6 +306,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     case "startNew":
       newRecUrl = message.url;
       newRecCollId = message.collId;
+      autorun = message.autorun;
       chrome.tabs.create({url: "about:blank"});
       break;
     }

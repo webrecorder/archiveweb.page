@@ -1621,10 +1621,10 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browsertrix-behaviors@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.1.0.tgz#202aabac6dcc2b15fe4777c3cc99d3d0cc042191"
-  integrity sha512-AfED59t8b7couu5Vzcy76BoWqCyHtYfmaR5t8ic1MoSfzz40d5WS4HfZqUWvOcoqsUfpJhjlc9R7nCptpQ6tNQ==
+browsertrix-behaviors@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.1.1.tgz#9b1b44698a6742ecb369a93354837f01307113d2"
+  integrity sha512-x7BbuUy3y0yVrXjbNGJT9uS5Pk1nWE9N/2ovre9z7ldV7tzjZBkWGkE14W2iZsuj4mMpJlnpIsAJMcOaYYTowA==
 
 buffer-crc32@~0.2.3:
   version "0.2.13"

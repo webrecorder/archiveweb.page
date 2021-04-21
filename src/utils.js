@@ -87,7 +87,10 @@ async function checkPins(ipfsClient, validPins) {
 
 // ===========================================================================
 async function ipfsAddPin(ipfsClient, path, content) {
-  const resp = await ipfsClient.ipfs.add({path, content}, {wrapWithDirectory: true});
+  const resp = await ipfsClient.ipfs.add({path, content}, {
+    wrapWithDirectory: true,
+    trickle: true
+  });
 
   const hash = resp.cid.toString();
 
@@ -133,7 +136,10 @@ async function ipfsAddWithReplay(ipfsClient, waczPath, waczContent, swContent, u
 
   fileData.push({path: waczPath, content: waczContent});
 
-  const resp = await ipfsClient.ipfs.addAll(fileData, {wrapWithDirectory: true});
+  const resp = await ipfsClient.ipfs.addAll(fileData, {
+    wrapWithDirectory: true,
+    trickle: true
+  });
 
   let hash;
   let size = 0;

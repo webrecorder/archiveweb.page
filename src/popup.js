@@ -56,6 +56,7 @@ class RecPopup extends LitElement
     this.allowCreate = true;
 
     this.waitingForStart = false;
+    this.waitingForStop = false;
     this.behaviorState = BEHAVIOR_WAIT_LOAD;
     this.behaviorMsg = "";
     this.autorun = localStorage.getItem("autorunBehaviors") === "1";
@@ -87,7 +88,7 @@ class RecPopup extends LitElement
   }
 
   firstUpdated() {
-    document.addEventListener("click", (event) => {
+    document.addEventListener("click", () => {
       if (this.collDrop === "show") {
         this.collDrop = "";
       }
@@ -126,6 +127,9 @@ class RecPopup extends LitElement
         this.recording = message.recording;
         if (this.waitingForStart && message.firstPageStarted) {
           this.waitingForStart = false;
+        }
+        if (this.waitingForStop && !message.recording && !message.stopping) {
+          this.waitingForStop = false;
         }
         this.status = message;
         this.behaviorState = message.behaviorState;
@@ -350,9 +354,9 @@ class RecPopup extends LitElement
       return html`<span class="status-autopilot">Auto Recording, ${this.behaviorMsg}</span>`;
     }
 
-    if (this.recording) {    
-      return html`<b>Recording:&nbsp;</b>${this.status && this.status.numPending ? html`
-      <span class="status-pending">${this.status.numPending} URLs pending, please wait before loading a new page.</span>
+    if (this.recording) {
+      return html`<b>${this.waitingForStop ? "Finishing " : ""} Recording:&nbsp;</b>${this.status && this.status.numPending ? html`
+      <span class="status-pending">${this.status.numPending} URLs pending${this.waitingForStop ? '.' : ', please wait before loading a new page.'}</span>
      ` :
      html`
       <span class="status-ready">Idle, Continue Browsing</span>`}`;
@@ -485,7 +489,7 @@ class RecPopup extends LitElement
           ${this.canRecord ? html`
           ${this.renderCollDropdown()}
           <button
-           ?disabled=${this.collDrop === "create" || (!this.recording && this.waitingForStart)}
+           ?disabled=${this.actionButtonDisabled}
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
             <span class="icon">
               ${!this.recording ? html`
@@ -542,6 +546,14 @@ class RecPopup extends LitElement
     `;
   }
 
+  get actionButtonDisabled() {
+    if (this.collDrop === "create") {
+      return true;
+    }
+
+    return !this.recording ? this.waitingForStart : this.waitingForStop;
+  }
+
   get behaviorsButtonLabel() {
     switch (this.behaviorState) {
       case BEHAVIOR_WAIT_LOAD:
@@ -578,6 +590,7 @@ class RecPopup extends LitElement
   onStop() {
     this.sendMessage({type: "stopRecording"});
     this.waitingForStart = false;
+    this.waitingForStop = true;
   }
 
   onSelectColl(event) {

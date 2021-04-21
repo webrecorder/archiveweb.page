@@ -668,18 +668,12 @@ class WrRecCollInfo extends LitElement
                         </span>
                         Copy IPFS URL
                       </a>
-                      <a @click="${this.onCopyRWPLink}" class="dropdown-item">
+                      <a @click="${this.onCopyRWPLink}" class="has-text-weight-bold dropdown-item">
                         <span class="icon is-small">
                           <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
                         </span>
                         Copy Shareable ReplayWeb.page Link
                       </a>
-                      <a @click="${this.onCopyGatewayLink}" class="has-text-weight-bold dropdown-item">
-                      <span class="icon is-small">
-                        <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                      </span>
-                      Copy Shareable IPFS Gateway Link
-                    </a>
                     </div>
                   </div>
                 </div>

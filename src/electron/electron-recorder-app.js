@@ -181,6 +181,10 @@ class ElectronRecorderApp extends ElectronReplayApp
         case "stopRecording":
           await recorder.detach();
           break;
+
+        case "toggleBehaviors":
+          await recorder.toggleBehaviors();
+          break;
       }
     });
 

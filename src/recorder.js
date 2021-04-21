@@ -36,6 +36,7 @@ class Recorder {
     this.numPending = 0;
 
     this.running = false;
+    this.stopping = false;
 
     this.frameId = null;
     this.pageInfo = {size: 0};
@@ -122,6 +123,8 @@ class Recorder {
   }
 
   async detach() {
+    this.stopping = true;
+
     const domNodes = await this.getFullText();
 
     if (this.behaviorState === BEHAVIOR_RUNNING) {
@@ -129,7 +132,10 @@ class Recorder {
     }
 
     try {
-      await Promise.all(this._fetchPending.values());
+      await Promise.race([
+        Promise.all(this._fetchPending.values()),
+        sleep(15000)
+      ]);
     } catch(e) {
       console.log(e);
     }
@@ -164,6 +170,7 @@ class Recorder {
     await this._doAttach();
 
     this.running = true;
+    this.stopping = false;
 
     this._updateId = setInterval(() => this.updateStatus(), 1000);
 
@@ -187,9 +194,10 @@ class Recorder {
   }
 
   updateStatus() {
-    this.numPending = Object.keys(this.pendingRequests).length + this._fetchPending.size;
+    const networkPending = Object.keys(this.pendingRequests).length;
+    this.numPending = networkPending + this._fetchPending.size;
 
-    if (this.numPending === 0 && this._loadedDoneResolve) {
+    if (networkPending === 0 && this._loadedDoneResolve) {
       this._loadedDoneResolve();
     }
 
@@ -212,6 +220,7 @@ class Recorder {
       pageTs: this.pageInfo.ts,
       failureMsg: this.failureMsg,
       collId: this.collId,
+      stopping: this.stopping,
       type: "status"
     }
   }
@@ -1091,7 +1100,7 @@ class Recorder {
   }
 
   async doBackgroundFetch() {
-    if (!this._fetchQueue.length || this._fetchPending.size >= MAX_CONCURRENT_FETCH) {
+    if (!this._fetchQueue.length || this._fetchPending.size >= MAX_CONCURRENT_FETCH || this.stopping) {
       return;
     }
 
@@ -1157,10 +1166,10 @@ class Recorder {
     } catch(e) {
       console.log(e);
       this._fetchUrls.delete(request.url);
+    } finally {
+      doneResolve();
+      this._fetchPending.delete(fetchId);
     }
-
-    doneResolve();
-    this._fetchPending.delete(fetchId);
   }
 
   async fetchPayloads(params, reqresp, sessions, method) {

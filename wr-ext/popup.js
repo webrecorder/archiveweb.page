@@ -391,7 +391,7 @@ const o=`{{lit-${String(Math.random()).slice(2)}}}`,a=`\x3c!--${o}--\x3e`,r=new 
         <div class="view-row">
           ${this.canRecord?o.c`
           ${this.renderCollDropdown()}
-          <button
+          <button autofocus
            ?disabled=${this.actionButtonDisabled}
            @click="${this.recording?this.onStop:this.onStart}" class="button">
             <span class="icon">

@@ -488,7 +488,7 @@ class RecPopup extends LitElement
         <div class="view-row">
           ${this.canRecord ? html`
           ${this.renderCollDropdown()}
-          <button
+          <button autofocus
            ?disabled=${this.actionButtonDisabled}
            @click="${!this.recording ? this.onStart : this.onStop}" class="button">
             <span class="icon">

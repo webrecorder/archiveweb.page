@@ -4,6 +4,9 @@ import { getStatusText } from '@webrecorder/wabac/src/utils';
 
 import { postToGetUrl } from 'warcio';
 
+// max URL length for post/put payload-converted URLs
+const MAX_URL_LENGTH = 4096;
+
 
 // ===========================================================================
 class RequestResponseInfo
@@ -158,8 +161,8 @@ class RequestResponseInfo
       }
       if (postToGetUrl(convData)) {
         this.requestBody = convData.requestBody;
-        // truncate to first 2048 to avoid extra long URLs
-        this.url = convData.url.slice(0, 2048);
+        // truncate to avoid extra long URLs
+        this.url = convData.url.slice(0, MAX_URL_LENGTH);
       }
     }
 

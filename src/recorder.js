@@ -65,6 +65,10 @@ class Recorder {
     this.id = 1;
     this.sessionSet = new Set();
 
+    this._cachePageInfo = null;
+    this._cacheSessionNew = 0;
+    this._cacheSessionTotal = 0;
+
     this.behaviorInitStr = JSON.stringify({
       autofetch: true,
       autoplay: true,
@@ -147,18 +151,24 @@ class Recorder {
     await this._stop(domNodes);
   }
 
-  _stop(domNodes = null) {
-    clearInterval(this._updateId);
-    clearInterval(this._cleanupId);
+  async _stop(domNodes = null) {
+    clearInterval(this._updateStatusId);
+    clearInterval(this._loopId);
 
     this.flushPending();
     this.running = false;
     this.pendingRequests = {};
     this.numPending = 0;
 
-    this._doStop();
+    await this.commitPage(this.pageInfo, domNodes, true);
 
-    return this.commitPage(this.pageInfo, domNodes, true);
+    if (this._cleaningUp) {
+      await this._cleanupStaleWait;
+    } else {
+      await this.doUpdateLoop();
+    }
+
+    this._doStop();
   }
 
   async attach() {
@@ -172,24 +182,54 @@ class Recorder {
     this.running = true;
     this.stopping = false;
 
-    this._updateId = setInterval(() => this.updateStatus(), 1000);
+    this._cachePageInfo = null;
+    this._cacheSessionNew = 0;
+    this._cacheSessionTotal = 0;
+    this._cleaningUp = false;
+    this._cleanupStaleWait = null;
 
-    this._cleanupId = setInterval(() => this.cleanupStale(), 10000);
+    this._updateStatusId = setInterval(() => this.updateStatus(), 1000);
+
+    this._loopId = setInterval(() => this.updateLoop(), 10000);
   };
 
-  cleanupStale() {
-    for (const key of Object.keys(this.pendingRequests)) {
-      const reqresp = this.pendingRequests[key];
+  updateLoop() {
+    if (!this._cleaningUp) {
+      this._cleanupStaleWait = this.doUpdateLoop();
+    }
+  }
 
-      if ((new Date() - reqresp._created) > 20000) {
-        if (this.noResponseForStatus(reqresp.status)) {
-          console.log("Dropping stale: " + key);
-        } else {
-          console.log(`Committing stale ${reqresp.status} ${reqresp.url}`);
-          this.fullCommit(reqresp, []);
+  async doUpdateLoop() {
+    this._cleaningUp = true;
+
+    try {
+      for (const key of Object.keys(this.pendingRequests)) {
+        const reqresp = this.pendingRequests[key];
+
+        if ((new Date() - reqresp._created) > 20000) {
+          if (this.noResponseForStatus(reqresp.status)) {
+            console.log("Dropping stale: " + key);
+          } else {
+            console.log(`Committing stale ${reqresp.status} ${reqresp.url}`);
+            await this.fullCommit(reqresp, []);
+          }
+          delete this.pendingRequests[key];
         }
-        delete this.pendingRequests[key];
       }
+
+      if (this._cachePageInfo) {
+        await this._doAddPage(this._cachePageInfo);
+        this._cachePageInfo = null;
+      }
+
+      if (this._cacheSessionTotal > 0) {
+        await this._doIncSizes(this._cacheSessionTotal, this._cacheSessionNew);
+        this._cacheSessionTotal = 0;
+        this._cacheSessionNew = 0;
+      }
+
+    } finally {
+      this._cleaningUp = false;
     }
   }
 
@@ -605,10 +645,14 @@ class Recorder {
 
     currPage.finished = finished;
 
-    return this._doAddPage(currPage);
+    const res = this._doAddPage(currPage);
+    if (currPage === this._cachePageInfo) {
+      this._cachePageInfo = null;
+    }
+    return res;
   }
 
-  commitResource(data, pageInfo) {
+  async commitResource(data, pageInfo) {
     const payloadSize = data.payload.length;
     pageInfo = pageInfo || this.pageInfo;
     pageInfo.size += payloadSize;
@@ -616,7 +660,13 @@ class Recorder {
     this.sizeTotal += payloadSize;
     this.numUrls++;
 
-    this._doAddResource(data).then((writtenSize) => this.sizeNew += writtenSize);
+    const writtenSize = await this._doAddResource(data);
+
+    this.sizeNew += writtenSize;
+
+    this._cachePageInfo = pageInfo;
+    this._cacheSessionTotal += payloadSize;
+    this._cacheSessionNew += writtenSize;
   }
 
   receiveMessageFromTarget(params, sessions) {
@@ -965,7 +1015,7 @@ class Recorder {
   }
 
   async fullCommit(reqresp, sessions) {
-    const requestId = reqresp.requestId;
+    //const requestId = reqresp.requestId;
 
     // let doneResolve;
 

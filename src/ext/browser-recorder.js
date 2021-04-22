@@ -64,7 +64,7 @@ class BrowserRecorder extends Recorder {
   }
 
   setCollId(collId) {
-    if (collId !== this.collId) {
+    if (collId !== this.collId || !this.db) {
       this.collId = collId;
       this.db = null;
       this._initDB = this.collLoader.loadColl(this.collId);
@@ -87,6 +87,12 @@ class BrowserRecorder extends Recorder {
     
     chrome.debugger.onDetach.removeListener(this._onDetached);
     chrome.debugger.onEvent.removeListener(this._onEvent);
+
+    if (this.db) {
+      this.db.close();
+      this.db = null;
+      this._initDB = null;
+    }
 
     if (!this.tabId) {
       return;
@@ -246,10 +252,10 @@ class BrowserRecorder extends Recorder {
     // increment size counter only if committed
     //incrArchiveSize('dedup', writtenSize);
     //incrArchiveSize('total', payloadSize);
-    this.collLoader.updateSize(this.collId, payloadSize, writtenSize);
+    // this.collLoader.updateSize(this.collId, payloadSize, writtenSize);
 
     // increment page size
-    await this._doAddPage(this.pageInfo);
+    // await this._doAddPage(this.pageInfo);
 
     return writtenSize;
   }
@@ -259,7 +265,13 @@ class BrowserRecorder extends Recorder {
       console.warn("Empty Page, Skipping");
       return;
     }
-    return this.db.addPage(pageInfo);
+    if (this.db) {
+      return this.db.addPage(pageInfo);
+    }
+  }
+
+  _doIncSizes(totalSize, writtenSize) {
+    this.collLoader.updateSize(this.collId, totalSize, writtenSize);
   }
 
   _doSendCommand(method, params, promise) {

@@ -37,9 +37,10 @@ class ElectronRecorder extends Recorder
       this.didNavigateInitPage(url);
     });
 
-    this.appWC.on("ipc-message", (event, channel, ...args) => {
+    this.appWC.on("ipc-message", (event, channel, size) => {
       if (channel === "inc-size") {
-        this.sizeNew += args[0];
+        this.sizeNew += size;
+        this._cacheSessionNew += size;
       }
     });
 
@@ -217,13 +218,17 @@ class ElectronRecorder extends Recorder
 
     //console.log("res", data.url);
 
-    // size incremented asynchronously
-    this.appWC.send("add-resource", data, this.pageInfo, this.collId);
+    // size updated asynchronously via 'inc-size' event
+    this.appWC.send("add-resource", data, this.collId);
     return 0;
   }
 
   _doAddPage(pageInfo) {
     this.appWC.send("add-page", this.pageInfo, this.collId);
+  }
+
+  _doIncSizes(totalSize, writtenSize) {
+    this.appWC.send("inc-sizes", totalSize, writtenSize, this.collId);
   }
 
   _doSendCommand(method, params, promise) {

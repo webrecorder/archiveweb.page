@@ -26,15 +26,15 @@ contextBridge.exposeInMainWorld('archivewebpage', {
 
 
 // ===========================================================================
-ipcRenderer.on('add-resource', async (event, data, pageInfo, collId) => {
+ipcRenderer.on('add-resource', async (event, data, collId) => {
   const db = await getDB(collId);
 
-  let writtenSize = 0;
   const payloadSize = data.payload.length;
+  let writtenSize = 0;
 
   try {
     if (await db.addResource(data)) {
-      writtenSize = payloadSize;
+      writtenSize += payloadSize;
     }
   } catch (e) {
     console.warn(`Commit error for ${data.url} @ ${data.ts} ${data.mime}`);
@@ -42,10 +42,10 @@ ipcRenderer.on('add-resource', async (event, data, pageInfo, collId) => {
     return;
   }
 
-  loader.updateSize(collId, payloadSize, writtenSize);
+  //loader.updateSize(collId, payloadSize, writtenSize);
 
   // increment page size
-  db.addPage(pageInfo);
+  //db.addPage(pageInfo);
 
   if (writtenSize) {
     ipcRenderer.send("inc-size", writtenSize);
@@ -59,6 +59,14 @@ ipcRenderer.on('add-page', async (event, pageInfo, collId) => {
 
   db.addPage(pageInfo);
   console.log("add-page", pageInfo);
+});
+
+
+// ===========================================================================
+ipcRenderer.on('inc-sizes', async (event, totalSize, writtenSize, collId) => {
+  if (totalSize > 0) {
+    loader.updateSize(collId, totalSize, writtenSize);
+  }
 });
 
 

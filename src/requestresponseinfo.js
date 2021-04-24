@@ -7,6 +7,8 @@ import { postToGetUrl } from 'warcio';
 // max URL length for post/put payload-converted URLs
 const MAX_URL_LENGTH = 4096;
 
+const EXCLUDE_HEADERS = ["content-encoding", "transfer-encoding"];
+
 
 // ===========================================================================
 class RequestResponseInfo
@@ -224,6 +226,9 @@ class RequestResponseInfo
       headersDict = {};
 
       for (const header of headersList) {
+        if (EXCLUDE_HEADERS.includes(header.name.toLowerCase())) {
+          continue;
+        }
         headersDict[header.name] = header.value.replace(/\n/g, ', ');
       }
     }
@@ -240,6 +245,9 @@ class RequestResponseInfo
       for (const key of Object.keys(headersDict)) {
         if (key[0] === ":") {
           delete headersDict[key];
+          continue;
+        }
+        if (EXCLUDE_HEADERS.includes(key.toLowerCase())) {
           continue;
         }
         headersDict[key] = headersDict[key].replace(/\n/g, ', ');

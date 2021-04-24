@@ -8,12 +8,9 @@ import { v5 as uuidv5 } from 'uuid';
 
 import { createSHA256 } from 'hash-wasm';
 
-import { fromByteArray as encodeBase64, toByteArray as decodeBase64 } from 'base64-js';
-
 import { WARCRecord, WARCSerializer } from 'warcio';
 
 import { getTSMillis, getStatusText } from '@webrecorder/wabac/src/utils';
-
 
 
 // ===========================================================================
@@ -77,7 +74,7 @@ class ResumePassThrough extends PassThrough
 // ===========================================================================
 class Downloader
 {
-  constructor({coll, format = "wacz", filename = null, pageList = null}) {
+  constructor({coll, format = "wacz", filename = null, pageList = null, signer = null}) {
     this.db = coll.store;
     this.pageList = pageList;
     this.collId = coll.name;
@@ -110,9 +107,10 @@ class Downloader
     this.fileHasher = null;
     this.recordHasher = null;
 
-    this.fileStats = [];
+    this.datapackageDigest = null;
+    this.signer = signer;
 
-    this.finalChecksum = null;
+    this.fileStats = [];
   }
 
   download(sizeCallback = null) {
@@ -162,9 +160,7 @@ class Downloader
   async queueWARC(controller, filename, sizeCallback) {
     await this.loadResources();
 
-    const metadata = this.metadata;
-
-    for await (const chunk of this.generateWARC(filename, metadata)) {
+    for await (const chunk of this.generateWARC(filename)) {
       controller.enqueue(chunk);
       if (sizeCallback) {
         sizeCallback(chunk.length);
@@ -218,7 +214,7 @@ class Downloader
     this.hashType = "sha256";
 
     this.addFile(zip, "pages/pages.jsonl", this.generatePages(), true);
-    this.addFile(zip, "archive/data.warc", this.generateWARC(filename + "#/archive/data.warc", null, true), false);
+    this.addFile(zip, "archive/data.warc", this.generateWARC(filename + "#/archive/data.warc", true), false);
     //this.addFile(zip, "archive/text.warc", this.generateTextWARC(filename + "#/archive/text.warc"), false);
 
     // don't use compressed index if we'll have a single block, need to have at least enough for 2 blocks
@@ -231,7 +227,7 @@ class Downloader
     
     this.addFile(zip, "datapackage.json", this.generateDataPackage());
 
-    this.addFile(zip, "sig.json", this.generateSignature());
+    this.addFile(zip, "datapackage-digest.json", this.generateDataManifest());
 
     const rs = new ReadableStream({
       start(controller) {
@@ -264,13 +260,13 @@ class Downloader
     return response;
   }
 
-  async* generateWARC(filename, metadata, digestRecord = false)  {
+  async* generateWARC(filename, digestRecord = false)  {
     try {
       let offset = 0;
 
       // if filename provided, add warcinfo
       if (filename) {
-        const warcinfo = await this.createWARCInfo(filename, metadata);
+        const warcinfo = await this.createWARCInfo(filename);
         yield warcinfo;
         offset += warcinfo.length;
       }
@@ -432,16 +428,28 @@ class Downloader
     }
   }
 
-  async* generateSignature() {
+  async* generateDataManifest() {
     const digest = this.datapackageDigest;
-    const {signature, publicKey} = await this.signData(digest);
 
     const path = "datapackage.json";
 
-    const sig = {path, digest, signature, publicKey};
+    const data = {path, digest};
 
-    const res = JSON.stringify(sig, null, 2);
-    console.log(res);
+    if (this.signer) {
+      try {
+        const {signature, publicKey} = await this.signer.sign(digest);
+        data.signature = signature;
+        data.publicKey = publicKey;
+
+        this.signer.close();
+        this.signer = null;
+      } catch(e) {
+        // failed to sign
+        console.log(e);
+      }
+    }
+
+    const res = JSON.stringify(data, null, 2);
 
     yield res;
   }
@@ -474,7 +482,7 @@ class Downloader
     if (this.modifiedDate) {
       root.modified = this.modifiedDate;
     }
-    root.config = {decodeResponses: false};
+    //root.config = {decodeResponses: false};
 
     const datapackageText = JSON.stringify(root, null, 2);
     this.datapackageDigest = this.recordDigest(datapackageText);
@@ -529,7 +537,7 @@ class Downloader
     return `Webrecorder ArchiveWeb.page ${__VERSION__} (via warcio.js ${__WARCIO_VERSION__})`;
   }
 
-  async createWARCInfo(filename, metadata) {
+  async createWARCInfo(filename) {
     const warcVersion = "WARC/1.1";
     const type = "warcinfo";
 
@@ -539,9 +547,7 @@ class Downloader
       "isPartOf": this.metadata.title || this.collId,
     };
 
-    if (metadata) {
-      info["json-metadata"] = JSON.stringify(metadata);
-    }
+    //info["json-metadata"] = JSON.stringify(metadata);
 
     const warcHeaders = {
       "WARC-Record-ID": this.getWARCRecordUUID(JSON.stringify(info))
@@ -554,12 +560,34 @@ class Downloader
     return buffer;
   }
 
+  removeEncodingHeaders(headersMap) {
+    let count = 0;
+    for (const [name, value] of Object.entries(headersMap)) {
+      const lowerName = name.toLowerCase();
+      if (lowerName === "content-encoding") {
+        delete headersMap[name];
+        if (++count === 2) {
+          break;
+        }
+      }
+      if (lowerName === "transfer-encoding") {
+        delete headersMap[name];
+        if (++count === 2) {
+          break;
+        }
+      }
+    }
+  }
+
   async createWARCRecord(resource) {
     const url = resource.url;
     const date = new Date(resource.ts).toISOString();
     resource.timestamp = getTSMillis(date);
     const httpHeaders = resource.respHeaders;
     const warcVersion = "WARC/1.1";
+
+    // remove aas never preserved in browser-based capture
+    this.removeEncodingHeaders(httpHeaders);
 
     const pageId = resource.pageId;
 
@@ -689,52 +717,6 @@ class Downloader
       resource.digest = record.warcPayloadDigest;
     }
     return buffer;
-  }
-
-  async signData(string) {
-    let keyPair;
-    let keys = this._loadKeys();
-
-    if (!keys) {
-      keyPair = await crypto.subtle.generateKey({
-        name: "ECDSA",
-        namedCurve: "P-384"
-      }, true, ["sign", "verify"]);
-
-      const privateKey = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
-      const publicKey = await crypto.subtle.exportKey("spki", keyPair.publicKey);
-      keys = {
-        private: encodeBase64(new Uint8Array(privateKey)),
-        public: encodeBase64(new Uint8Array(publicKey))
-      };
-
-      this._saveKeys(keys);
-    } else {
-      const privateKey = decodeBase64(keys.private);
-      const publicKey = decodeBase64(keys.public);
-
-      keyPair = {};
-      keyPair.privateKey = await crypto.subtle.importKey("pkcs8", privateKey);
-      keyPair.publicKey = await crypto.subtle.importKey("spki", publicKey);
-    }
-
-    let signature = await crypto.subtle.sign({
-      name: "ECDSA",
-      hash: "SHA-256"
-    }, keyPair.privateKey,
-    new TextEncoder().encode(string));
-
-    signature = encodeBase64(new Uint8Array(signature));
-
-    return { signature, publicKey: keys.public };
-  }
-
-  _saveKeys(keys) {
-
-  }
-
-  _loadKeys() {
-    return null;
   }
 }
 

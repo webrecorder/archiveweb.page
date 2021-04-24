@@ -4,22 +4,30 @@ import { PassThrough } from 'stream';
 
 import { Deflate } from 'pako';
 
-import { createMD5 } from 'hash-wasm';
+import { v5 as uuidv5 } from 'uuid';
 
-import { WARCRecord, WARCSerializer, getSurt } from 'warcio';
+import { createSHA256 } from 'hash-wasm';
+
+import { fromByteArray as encodeBase64, toByteArray as decodeBase64 } from 'base64-js';
+
+import { WARCRecord, WARCSerializer } from 'warcio';
 
 import { getTSMillis, getStatusText } from '@webrecorder/wabac/src/utils';
 
 
 
 // ===========================================================================
-const WACZ_VERSION = "1.0.0";
+const WACZ_VERSION = "1.1.0";
 
 const encoder = new TextEncoder();
 
 const EMPTY = new Uint8Array([]);
 
 const SPLIT_REQUEST_Q_RX = /(.*?)[?&](?:__wb_method=|__wb_post=)[^&]+&(.*)/;
+
+const LINES_PER_BLOCK = 1024;
+
+const UUID_NAMESPACE = "f9ec3936-7f66-4461-bec4-34f4495ea242";
 
 async function* getPayload(payload) {
   yield payload;
@@ -75,6 +83,9 @@ class Downloader
     this.collId = coll.name;
     this.metadata = coll.config.metadata;
 
+    this.createdDate = new Date(coll.config.ctime).toISOString();
+    this.modifiedDate = coll.config.metadata.mtime ? new Date(coll.config.metadata.mtime).toISOString() : null;
+
     this.format = format;
 
     this.filename = filename;
@@ -92,14 +103,16 @@ class Downloader
     this.resources = [];
     this.textResources = [];
 
-    // compressed index
+    // compressed index (idx) entries
     this.indexLines = [];
-    this.linesPerBlock = 2048;
 
     this.digestsVisted = {};
-    this.hasher = null;
+    this.fileHasher = null;
+    this.recordHasher = null;
 
     this.fileStats = [];
+
+    this.finalChecksum = null;
   }
 
   download(sizeCallback = null) {
@@ -175,12 +188,22 @@ class Downloader
       this.fileStats.push(stats);
     }
 
-    const data = new ResumePassThrough(generator, stats, this.hasher);
+    const data = new ResumePassThrough(generator, stats, this.fileHasher);
 
     zip.file(filename, data, {
       compression: compressed ? 'DEFLATE' : 'STORE',
       binary: !compressed
     });
+  }
+
+  recordDigest(data) {
+    this.recordHasher.init();
+    this.recordHasher.update(data);
+    return this.hashType + ":" + this.recordHasher.digest("hex");
+  }
+
+  getWARCRecordUUID(name) {
+    return `<urn:uuid:${uuidv5(name, UUID_NAMESPACE)}>`;
   }
 
   async downloadWACZ(filename, sizeCallback) {
@@ -190,13 +213,16 @@ class Downloader
 
     await this.loadResources();
 
-    this.hasher = await createMD5();
+    this.fileHasher = await createSHA256();
+    this.recordHasher = await createSHA256();
+    this.hashType = "sha256";
 
     this.addFile(zip, "pages/pages.jsonl", this.generatePages(), true);
-    this.addFile(zip, "archive/data.warc", this.generateWARC(filename + "#/archive/data.warc"), false);
-    this.addFile(zip, "archive/text.warc", this.generateTextWARC(filename + "#/archive/text.warc"), false);
+    this.addFile(zip, "archive/data.warc", this.generateWARC(filename + "#/archive/data.warc", null, true), false);
+    //this.addFile(zip, "archive/text.warc", this.generateTextWARC(filename + "#/archive/text.warc"), false);
 
-    if (this.resources.length <= this.linesPerBlock) {
+    // don't use compressed index if we'll have a single block, need to have at least enough for 2 blocks
+    if (this.resources.length < (2 * LINES_PER_BLOCK)) {
       this.addFile(zip, "indexes/index.cdx", this.generateCDX(), true);
     } else {
       this.addFile(zip, "indexes/index.cdx.gz", this.generateCompressedCDX("index.cdx.gz"), false);
@@ -204,6 +230,8 @@ class Downloader
     }
     
     this.addFile(zip, "datapackage.json", this.generateDataPackage());
+
+    this.addFile(zip, "sig.json", this.generateSignature());
 
     const rs = new ReadableStream({
       start(controller) {
@@ -236,7 +264,7 @@ class Downloader
     return response;
   }
 
-  async* generateWARC(filename, metadata)  {
+  async* generateWARC(filename, metadata, digestRecord = false)  {
     try {
       let offset = 0;
 
@@ -255,10 +283,15 @@ class Downloader
           continue;
         }
 
+        // response record
         yield records[0];
         offset += records[0].length;
         resource.length = records[0].length;
+        if (digestRecord) {
+          resource.recordDigest = this.recordDigest(records[0]);
+        }
 
+        // request record, if any
         if (records.length > 1) {
           yield records[1];
           offset += records[1].length;
@@ -293,16 +326,20 @@ class Downloader
   }
 
   async* generateCDX(raw = false) {
-    function getCDX(resource, filename, raw) {
+    const getCDX = (resource, filename, raw) => {
 
       const data = {
-        url: resource.url,
+        //url: resource.url,
         digest: resource.digest,
         mime: resource.mime,
         offset: resource.offset,
         length: resource.length,
-        filename,
+        recordDigest: resource.recordDigest,
         status: resource.status
+      }
+
+      if (filename) {
+        data.filename = filename;
       }
 
       if (resource.method && resource.method !== "GET") {
@@ -314,9 +351,10 @@ class Downloader
         data.method = resource.method;
       }
 
-      const surt = getSurt(resource.url);
+      //const surt = getSurt(resource.url);
+      const url = resource.url;
 
-      const cdx = `${surt} ${resource.timestamp} ${JSON.stringify(data)}\n`;
+      const cdx = `${url} ${resource.timestamp} ${JSON.stringify(data)}\n`;
 
       if (!raw) {
         return cdx;
@@ -333,11 +371,11 @@ class Downloader
         yield getCDX(resource, "data.warc", raw);
       }
 
-      for await (const resource of this.textResources) {
-        resource.mime = "text/plain";
-        resource.status = 200;
-        yield getCDX(resource, "text.warc", raw);
-      }
+      // for await (const resource of this.textResources) {
+      //   resource.mime = "text/plain";
+      //   resource.status = 200;
+      //   yield getCDX(resource, "text.warc", raw);
+      // }
 
     } catch (e) {
       console.warn(e);
@@ -353,11 +391,12 @@ class Downloader
 
     const dl = this;
 
-    function finishChunk() {   
+    const finishChunk = () => {
       const data = chunkDeflater.result;
       const length = data.length;
+      const digest = dl.recordDigest(data);
   
-      const idx = key + " " + JSON.stringify({offset, length, filename});
+      const idx = key + " " + JSON.stringify({offset, length, digest, filename});
 
       dl.indexLines.push(idx);
   
@@ -379,7 +418,7 @@ class Downloader
         key = cdx.split(" {", 1)[0];
       }
 
-      if (++count === this.linesPerBlock) {
+      if (++count === LINES_PER_BLOCK) {
         chunkDeflater.push(cdx, true);
         yield finishChunk();
       } else {
@@ -393,6 +432,21 @@ class Downloader
     }
   }
 
+  async* generateSignature() {
+    const digest = this.datapackageDigest;
+    const {signature, publicKey} = await this.signData(digest);
+
+    const path = "datapackage.json";
+
+    const sig = {path, digest, signature, publicKey};
+
+    const res = JSON.stringify(sig, null, 2);
+    console.log(res);
+
+    yield res;
+  }
+
+
   async* generateDataPackage() {
     const root = {};
 
@@ -401,21 +455,30 @@ class Downloader
     root.resources = this.fileStats.map((stats) => {
       return {
         path: stats.filename,
-        stats: {
-          hash: stats.hash,
-          bytes: stats.size,
-        },
-        hashing: "md5"
+        hash: this.hashType + ":" + stats.hash,
+        bytes: stats.size,
       }
     });
 
     root.wacz_version = WACZ_VERSION;
 
-    root.metadata = this.metadata;
+    if (this.metadata.title) {
+      root.title = this.metadata.title;
+    }
+    if (this.metadata.desc) {
+      root.description = this.metadata.desc;
+    }
 
-    root.config = {useSurt: false, decodeResponses: false};
+    root.software = this.softwareString;
+    root.created = this.createdDate;
+    if (this.modifiedDate) {
+      root.modified = this.modifiedDate;
+    }
+    root.config = {decodeResponses: false};
 
-    yield JSON.stringify(root, null, 2);
+    const datapackageText = JSON.stringify(root, null, 2);
+    this.datapackageDigest = this.recordDigest(datapackageText);
+    yield datapackageText;
   }
 
   async* generatePages() {
@@ -462,12 +525,16 @@ class Downloader
     yield this.indexLines.join("\n");
   }
 
+  get softwareString() {
+    return `Webrecorder ArchiveWeb.page ${__VERSION__} (via warcio.js ${__WARCIO_VERSION__})`;
+  }
+
   async createWARCInfo(filename, metadata) {
     const warcVersion = "WARC/1.1";
     const type = "warcinfo";
 
     const info = {
-      "software": `Webrecorder ArchiveWeb.page ${__VERSION__} (via warcio.js ${__WARCIO_VERSION__})`,
+      "software": this.softwareString,
       "format": "WARC File Format 1.1",
       "isPartOf": this.metadata.title || this.collId,
     };
@@ -476,7 +543,13 @@ class Downloader
       info["json-metadata"] = JSON.stringify(metadata);
     }
 
-    const record = await WARCRecord.createWARCInfo({filename, type, warcVersion}, info);
+    const warcHeaders = {
+      "WARC-Record-ID": this.getWARCRecordUUID(JSON.stringify(info))
+    };
+
+    const date = this.createdDate;
+
+    const record = await WARCRecord.createWARCInfo({filename, type, date, warcHeaders, warcVersion}, info);
     const buffer = await WARCSerializer.serialize(record, {gzip: true});
     return buffer;
   }
@@ -489,16 +562,6 @@ class Downloader
     const warcVersion = "WARC/1.1";
 
     const pageId = resource.pageId;
-
-    const warcHeaders = {"WARC-Page-ID": pageId};
-
-    if (resource.extraOpts && Object.keys(resource.extraOpts).length) {
-      warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(resource.extraOpts);
-    }
-
-    if (resource.digest) {
-      warcHeaders["WARC-Payload-Digest"] = resource.digest;
-    }
 
     let payload = resource.payload;
     let type = null;
@@ -554,6 +617,19 @@ class Downloader
 
     const statusline = `HTTP/1.1 ${status} ${statusText}`;
 
+    const warcHeaders = {
+      "WARC-Record-ID": this.getWARCRecordUUID(type + ":" + resource.timestamp + "/" + resource.url),
+      "WARC-Page-ID": pageId,
+    };
+
+    if (resource.extraOpts && Object.keys(resource.extraOpts).length) {
+      warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(resource.extraOpts);
+    }
+
+    if (resource.digest) {
+      warcHeaders["WARC-Payload-Digest"] = resource.digest;
+    }
+
     const record = await WARCRecord.create({
       url, date, type, warcVersion, warcHeaders, statusline, httpHeaders,
       refersToUrl, refersToDate}, getPayload(payload));
@@ -569,9 +645,11 @@ class Downloader
     const records = [buffer];
 
     if (resource.reqHeaders) {
+      const type = "request";
       const reqWarcHeaders = {
+        "WARC-Record-ID": this.getWARCRecordUUID(type + ":" + resource.timestamp + "/" + resource.url),
         "WARC-Page-ID": pageId,
-        "WARC-Concurrent-To": record.warcHeader("WARC-Record-ID")
+        "WARC-Concurrent-To": record.warcHeader("WARC-Record-ID"),
       };
 
       const method = resource.method || "GET";
@@ -579,8 +657,7 @@ class Downloader
       const statusline = method + " " + url.slice(urlParsed.origin.length);
 
       const reqRecord = await WARCRecord.create({
-        url, date, warcVersion,
-        type: "request",
+        url, date, warcVersion, type,
         warcHeaders: reqWarcHeaders,
         httpHeaders: resource.reqHeaders,
         statusline,
@@ -612,6 +689,52 @@ class Downloader
       resource.digest = record.warcPayloadDigest;
     }
     return buffer;
+  }
+
+  async signData(string) {
+    let keyPair;
+    let keys = this._loadKeys();
+
+    if (!keys) {
+      keyPair = await crypto.subtle.generateKey({
+        name: "ECDSA",
+        namedCurve: "P-384"
+      }, true, ["sign", "verify"]);
+
+      const privateKey = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+      const publicKey = await crypto.subtle.exportKey("spki", keyPair.publicKey);
+      keys = {
+        private: encodeBase64(new Uint8Array(privateKey)),
+        public: encodeBase64(new Uint8Array(publicKey))
+      };
+
+      this._saveKeys(keys);
+    } else {
+      const privateKey = decodeBase64(keys.private);
+      const publicKey = decodeBase64(keys.public);
+
+      keyPair = {};
+      keyPair.privateKey = await crypto.subtle.importKey("pkcs8", privateKey);
+      keyPair.publicKey = await crypto.subtle.importKey("spki", publicKey);
+    }
+
+    let signature = await crypto.subtle.sign({
+      name: "ECDSA",
+      hash: "SHA-256"
+    }, keyPair.privateKey,
+    new TextEncoder().encode(string));
+
+    signature = encodeBase64(new Uint8Array(signature));
+
+    return { signature, publicKey: keys.public };
+  }
+
+  _saveKeys(keys) {
+
+  }
+
+  _loadKeys() {
+    return null;
   }
 }
 

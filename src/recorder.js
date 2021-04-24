@@ -903,10 +903,6 @@ class Recorder {
     if (!payload.length) {
       return false;
     }
-    
-    if (reqresp.url.indexOf("base.js") > 0) {
-      console.log("base.js");
-    }
 
     let newString = null;
     let string = null;
@@ -1028,18 +1024,33 @@ class Recorder {
     try {
       const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
 
-      if (data) {
-        await this.commitResource(data);
-      }
-
       // top-level page resource
       if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
         this.pageInfo.ts = reqresp.ts;
 
         if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
           this._doPreparePDF(reqresp);
+        } else {
+          const securityOrigin = new URL(reqresp.url).origin;
+          const storageId = {securityOrigin, isLocalStorage: true};
+
+          const local = await this.send("DOMStorage.getDOMStorageItems", {storageId});
+          storageId.isLocalStorage = false;
+
+          const session = await this.send("DOMStorage.getDOMStorageItems", {storageId});
+
+          if (!data.extraOpts) {
+            data.extraOpts = {};
+          }
+
+          data.extraOpts.storage = JSON.stringify({local, session});
         }
       }
+
+      if (data) {
+        await this.commitResource(data);
+      }
+
     } catch(e) {
       console.log("error committing", e);
     }

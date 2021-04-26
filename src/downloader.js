@@ -26,6 +26,9 @@ const LINES_PER_BLOCK = 1024;
 
 const UUID_NAMESPACE = "f9ec3936-7f66-4461-bec4-34f4495ea242";
 
+const DATAPACKAGE_FILENAME = "datapackage.json";
+const DIGEST_FILENAME = "datapackage-digest.json";
+
 async function* getPayload(payload) {
   yield payload;
 }
@@ -180,7 +183,7 @@ class Downloader
   addFile(zip, filename, generator, compressed = false) {
     const stats = {filename, size: 0}
 
-    if (filename !== "datapackage.json") {
+    if (filename !== DATAPACKAGE_FILENAME && filename !== DIGEST_FILENAME) {
       this.fileStats.push(stats);
     }
 
@@ -225,9 +228,9 @@ class Downloader
       this.addFile(zip, "indexes/index.idx", this.generateIDX(), true);
     }
     
-    this.addFile(zip, "datapackage.json", this.generateDataPackage());
+    this.addFile(zip, DATAPACKAGE_FILENAME, this.generateDataPackage());
 
-    this.addFile(zip, "datapackage-digest.json", this.generateDataManifest());
+    this.addFile(zip, DIGEST_FILENAME, this.generateDataManifest());
 
     const rs = new ReadableStream({
       start(controller) {
@@ -429,11 +432,11 @@ class Downloader
   }
 
   async* generateDataManifest() {
-    const digest = this.datapackageDigest;
+    const hash = this.datapackageDigest;
 
-    const path = "datapackage.json";
+    const path = DATAPACKAGE_FILENAME;
 
-    const data = {path, digest};
+    const data = {path, hash};
 
     if (this.signer) {
       try {

@@ -440,7 +440,7 @@ class Downloader
 
     if (this.signer) {
       try {
-        const {signature, publicKey} = await this.signer.sign(digest);
+        const {signature, publicKey} = await this.signer.sign(hash);
         data.signature = signature;
         data.publicKey = publicKey;
 

@@ -128,6 +128,6 @@ export class Signer
 
   async loadKeys(id = "_userkey") {
     const res = await this._store.get(id);
-    return res.keys;
+    return res && res.keys;
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "Webrecorder ArchiveWeb.page",
   "description": "Create high-fidelity web archives directly in your browser",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
     "debugger",
@@ -32,9 +32,8 @@
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-    "pdf.min.js",
-    "pdf.worker.min.js",
     "ipfs-core.min.js",
+    "pdf/*",
     "replay/*",
     "ruffle/*"
   ],

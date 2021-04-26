@@ -4,6 +4,7 @@ import { baseRules as baseDSRules } from '@webrecorder/wabac/src/rewrite';
 import { rewriteDASH, rewriteHLS } from '@webrecorder/wabac/src/rewrite/rewriteVideo';
 
 import behaviors from "browsertrix-behaviors/dist/behaviors.js";
+import extractPDF from "./extractPDF";
 
 import {
   BEHAVIOR_WAIT_LOAD,
@@ -57,8 +58,7 @@ class Recorder {
 
     this._bindings = {};
 
-    this._pdfTextDone = null;
-    this.pdfURL = null;
+    this.pdfLoadURL = null;
 
     this.failureMsg = null;
 
@@ -129,7 +129,7 @@ class Recorder {
   async detach() {
     this.stopping = true;
 
-    const domNodes = await this.getFullText();
+    const domNodes = await this.getFullText(true);
 
     if (this.behaviorState === BEHAVIOR_RUNNING) {
       this.toggleBehaviors();
@@ -465,7 +465,15 @@ class Recorder {
         {
           const reqresp = this.removeReqResp(params.requestId);
           if (reqresp && reqresp.status !== 206) {
-            console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
+            // check if this is a false positive -- a valid download that's already been fetched
+            // the abort is just for page, but download will succeed
+            if (params.type === "Document" && 
+                params.errorText === "net::ERR_ABORTED" &&
+                reqresp.isValidBinary()) {
+              this.fullCommit(reqresp, sessions);
+            } else {
+              console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
+            }
           }
           break;
         }
@@ -551,44 +559,39 @@ class Recorder {
     this.doAsyncFetchInBrowser({url}, sessions);
   }
 
-  requestPDFText(rootNode) {
-    if (this._pdfTextDone) {
-      return;
-    }
-
-    const p = new Promise((resolve, reject) => {
-      this._pdfTextDone = resolve;
-    });
-
-    //TODO: impl
-    this._doPdfExtract();
-
-    return p;
+  isPagePDF() {
+    return this.pageInfo.mime === "application/pdf";
   }
 
-  setPDFText(text, tabUrl) {
-    if (this.running && text) {
-      if (tabUrl !== this.pageInfo.url) {
-        console.log("wrong url for pdf text: " + tabUrl);
-      } else {
-        //console.log("Got PDF Text: " + text.length);
+  async extractPDFText() {
+    let success = false;
+    console.log("pdfLoadURL", this.pdfLoadURL);
+    if (this.pdfLoadURL) {
+      const res = await this.pageEval("__awp_pdf_extract__", `
+      ${extractPDF};
 
-        this.pageInfo.text = text;
+      extractPDF("${this.pdfLoadURL}", "${this.getExternalInjectURL("")}");
+      `);
+
+      if (res.result) {
+        const {type, value} = res.result;
+        if (type === "string") {
+          this.pageInfo.text = value;
+          success = true;
+        }
       }
     }
 
-    if (this._pdfTextDone) {
-      this._pdfTextDone();
-    }
+    return success;
   }
 
-  async getFullText() {
+  async getFullText(finishing = false) {
     if (!this.pageInfo || !this.pageInfo.url) {
       return null;
     }
 
-    if (this.pageInfo.mime === "application/pdf") {
-      await this.requestPDFText();
+    if (this.isPagePDF() && !finishing) {
+      await this.extractPDFText();
       return null;
     }
 
@@ -609,8 +612,8 @@ class Recorder {
     // if not, unpause but don't extract full text
     const ourUnload = (params.callFrames[0].url === MAIN_INJECT_URL);
 
-    if (ourUnload) {
-      domNodes = await this.getFullText();
+    if (ourUnload && this.behaviorState !== BEHAVIOR_WAIT_LOAD) {
+      domNodes = await this.getFullText(true);
     }
 
     const currPage = this.pageInfo;
@@ -625,7 +628,7 @@ class Recorder {
       await this.toggleBehaviors();
     }
 
-    if (ourUnload) {
+    if (ourUnload && this.behaviorState !== BEHAVIOR_WAIT_LOAD) {
       this.flushPending();
 
       await this.commitPage(currPage, domNodes, true);
@@ -740,14 +743,14 @@ class Recorder {
       mime,
     };
 
+    this.pdfLoadURL = null;
+
     this.behaviorState = BEHAVIOR_WAIT_LOAD;
     this.behaviorData = null;
 
     this.numPages++;
 
     this._fetchUrls.clear();
-
-    this._pdfTextDone = null;
 
     if (!this.firstPageStarted) {
       this.initFirstPage();
@@ -765,6 +768,8 @@ class Recorder {
   }
 
   async updatePage(sessions) {
+    console.log("updatePage", this.pageInfo);
+
     if (!this.pageInfo) {
       console.warn("no page info!");
     }
@@ -903,10 +908,6 @@ class Recorder {
     if (!payload.length) {
       return false;
     }
-    
-    if (reqresp.url.indexOf("base.js") > 0) {
-      console.log("base.js");
-    }
 
     let newString = null;
     let string = null;
@@ -1028,24 +1029,53 @@ class Recorder {
     try {
       const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
 
-      if (data) {
-        await this.commitResource(data);
-      }
-
       // top-level page resource
       if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
         this.pageInfo.ts = reqresp.ts;
 
-        if (this.pageInfo.mime === "application/pdf" && data.mime === "application/pdf" && reqresp.payload) {
-          this._doPreparePDF(reqresp);
+        if (data.mime === "application/pdf" && reqresp.payload && this.pageInfo) {
+          // ensure set for electron
+          this.pageInfo.mime = "application/pdf";
+          this.pdfLoadURL = reqresp.url;
+        } else {
+          // handle storage
+          const storage = await this.getStorage(reqresp.url);
+
+          if (storage) {
+            if (!data.extraOpts) {
+              data.extraOpts = {};
+            }
+
+            data.extraOpts.storage = storage;
+          }
         }
       }
+
+      if (data) {
+        await this.commitResource(data);
+      }
+
     } catch(e) {
       console.log("error committing", e);
     }
 
     //doneResolve();
     //delete this._fetchPending[requestId];
+  }
+
+  async getStorage(url) {
+    // don't enable yet
+    return null;
+
+    const securityOrigin = new URL(url).origin;
+    const storageId = {securityOrigin, isLocalStorage: true};
+
+    const local = await this.send("DOMStorage.getDOMStorageItems", {storageId});
+    storageId.isLocalStorage = false;
+
+    const session = await this.send("DOMStorage.getDOMStorageItems", {storageId});
+
+    return JSON.stringify({local: local.entries, session: session.entries});
   }
 
   async handleRequestWillBeSent(params) {
@@ -1074,6 +1104,10 @@ class Recorder {
   async handleFetchResponse(params, sessions) {
     if (!params.networkId) {
       //console.warn(`No networkId for ${params.request.url} ${params.resourceType}`);
+    }
+
+    if (this.pdfLoadURL && params.request.url === this.pdfLoadURL) {
+      return null;
     }
 
     const id = params.networkId || params.requestId;

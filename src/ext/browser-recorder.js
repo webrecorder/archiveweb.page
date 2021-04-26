@@ -200,33 +200,12 @@ class BrowserRecorder extends Recorder {
     }
   }
 
-  _doPdfExtract() {
-    chrome.tabs.executeScript(this.tabId, {file: "pdf.min.js"}, (results) => {
-      chrome.tabs.executeScript(this.tabId, {file: "extractPDF.js"}, (results2) => {
-        const code = `extractPDF("${this.pdfURL ? this.pdfURL : ''}")`;
-        chrome.tabs.executeScript(this.tabId, {code});
-      });
-    });
-  }
-
-  _doPdfDone() {
-    if (this.pdfURL) {
-      URL.revokeObjectURL(this.pdfURL);
-      this.pdfURL = null;
-    }
-  }
-
   getFavIcon() {
     return new Promise((resolve, reject) => {
       chrome.tabs.get(this.tabId, (tab) => {
         resolve(tab.favIconUrl);
       });
     });
-  }
-
-  _doPreparePDF(reqresp) {
-    const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
-    this.pdfURL = URL.createObjectURL(pdfblob);
   }
 
   async _doAddResource(data) {

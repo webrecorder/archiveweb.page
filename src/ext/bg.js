@@ -297,12 +297,6 @@ async function stopForPage(pageId) {
 // ===========================================================================
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   switch (message.msg) {
-    case "pdfText":
-      if (sender.tab && sender.tab.id && self.recorders[sender.tab.id]) {
-        self.recorders[sender.tab.id].setPDFText(message.text, sender.tab.url);
-      }
-      break;
-
     case "startNew":
       newRecUrl = message.url;
       newRecCollId = message.collId;

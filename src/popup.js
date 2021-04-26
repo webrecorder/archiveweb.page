@@ -428,7 +428,7 @@ class RecPopup extends LitElement
   }
 
   renderStartOpt() {
-    if (this.recording) {
+    if (!this.canRecord || this.recording) {
       return "";
     }
 
@@ -585,6 +585,7 @@ class RecPopup extends LitElement
     this.sendMessage({type: "startRecording", collId: this.collId, url: this.pageUrl, autorun: this.autorun});
     localStorage.setItem("autorunBehaviors", this.autorun ? "1" : "0");
     this.waitingForStart = true;
+    this.waitingForStop = false;
   }
 
   onStop() {

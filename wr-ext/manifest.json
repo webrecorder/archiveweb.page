@@ -32,9 +32,8 @@
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-    "pdf.min.js",
-    "pdf.worker.min.js",
     "ipfs-core.min.js",
+    "pdf/*",
     "replay/*",
     "ruffle/*"
   ],

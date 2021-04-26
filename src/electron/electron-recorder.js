@@ -206,11 +206,6 @@ class ElectronRecorder extends Recorder
     return this.favicons && this.favicons.length ? this.favicons[0] : null;
   }
 
-  _doPreparePDF(reqresp) {
-    //const pdfblob = new Blob([reqresp.payload], {type: "application/pdf"});
-    //this.pdfURL = URL.createObjectURL(pdfblob);
-  }
-
   async _doAddResource(data) {
     // if (data.url.startsWith(PROXY_URL)) {
     //   return 0;

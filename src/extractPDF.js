@@ -1,8 +1,6 @@
 async function getPDFText(url) {
   url = url || window.location.href;
 
-  //pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-  pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL("pdf.worker.min.js");
   let doc = pdfjsLib.getDocument(url);
   doc = await doc.promise;
 
@@ -18,10 +16,16 @@ async function getPDFText(url) {
   return strings.join(" ").replace(/[\W]+/g, " ");
 }
 
-async function extractPDF(url) {
+async function extractPDF(url, baseUrl) {
   let pdfText = null;
 
   try {
+    const res = await fetch(new URL("pdf/pdf.min.js", baseUrl).href);
+    eval(await res.text());
+    
+    //pdfjsLib should now exist
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdf/pdf.worker.min.js", baseUrl).href;
+    
     if (url || document.querySelector("embed[type='application/pdf']")) {
       pdfText = await getPDFText(url);
     } else {
@@ -32,7 +36,6 @@ async function extractPDF(url) {
     pdfText = "";
   }
 
-  chrome.runtime.sendMessage({"msg": "pdfText", "text": pdfText});
-  console.log("PDF Text Sent: " + pdfText.length);
+  return pdfText;
 }
 

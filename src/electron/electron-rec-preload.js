@@ -58,7 +58,7 @@ ipcRenderer.on('add-page', async (event, pageInfo, collId) => {
   const db = await getDB(collId);
 
   db.addPage(pageInfo);
-  console.log("add-page", pageInfo);
+  //console.log("add-page", pageInfo);
 });
 
 

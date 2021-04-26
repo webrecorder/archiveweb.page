@@ -262,6 +262,28 @@ class RequestResponseInfo
 
     return {headers, headersDict};
   }
+
+  isValidBinary() {
+    if (!this.payload) {
+      return false;
+    }
+
+    const length = this.payload.length;
+
+    const { headers } = this.getResponseHeadersDict();
+    const contentType = headers.get("content-type");
+    const contentLength = headers.get("content-length");
+
+    if (Number(contentLength) !== length) {
+      return false;
+    }
+
+    if (contentType && contentType.startsWith("text/html")) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 

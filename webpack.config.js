@@ -35,7 +35,7 @@ const moduleSettings =  {
     loaders: ['to-string-loader', 'css-loader', 'sass-loader']
   },
   {
-    test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|ruffle.js)$/i,
+    test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js)$/i,
     loaders: 'raw-loader',
   }
 ]};
@@ -70,6 +70,7 @@ const electronMainConfig = (env, argv) => {
         patterns: [
           { from: 'wr-ext/replay/', to: 'replay/' },
           { from: 'wr-ext/ruffle/', to: 'ruffle/' },
+          { from: 'wr-ext/pdf/', to: 'pdf/' },
           { from: 'node_modules/bcrypto/build/Release/bcrypto.node', to: 'build' },
           { from: 'node_modules/leveldown/prebuilds/', to: 'prebuilds' },
         ],

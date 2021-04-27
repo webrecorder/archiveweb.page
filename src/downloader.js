@@ -1,16 +1,16 @@
-import JSZip from 'jszip';
+import JSZip from "jszip";
 
-import { PassThrough } from 'stream';
+import { PassThrough } from "stream";
 
-import { Deflate } from 'pako';
+import { Deflate } from "pako";
 
-import { v5 as uuidv5 } from 'uuid';
+import { v5 as uuidv5 } from "uuid";
 
-import { createSHA256 } from 'hash-wasm';
+import { createSHA256 } from "hash-wasm";
 
-import { WARCRecord, WARCSerializer } from 'warcio';
+import { WARCRecord, WARCSerializer } from "warcio";
 
-import { getTSMillis, getStatusText } from '@webrecorder/wabac/src/utils';
+import { getTSMillis, getStatusText } from "@webrecorder/wabac/src/utils";
 
 
 // ===========================================================================
@@ -118,14 +118,14 @@ class Downloader
 
   download(sizeCallback = null) {
     switch (this.format) {
-      case "wacz":
-        return this.downloadWACZ(this.filename, sizeCallback);
+    case "wacz":
+      return this.downloadWACZ(this.filename, sizeCallback);
 
-      case "warc":
-        return this.downloadWARC(this.filename, sizeCallback);
+    case "warc":
+      return this.downloadWARC(this.filename, sizeCallback);
 
-      default:
-        return {"error": "invalid 'format': must be wacz or warc"};
+    default:
+      return {"error": "invalid 'format': must be wacz or warc"};
     }
   }
 
@@ -181,7 +181,7 @@ class Downloader
   }
 
   addFile(zip, filename, generator, compressed = false) {
-    const stats = {filename, size: 0}
+    const stats = {filename, size: 0};
 
     if (filename !== DATAPACKAGE_FILENAME && filename !== DIGEST_FILENAME) {
       this.fileStats.push(stats);
@@ -190,7 +190,7 @@ class Downloader
     const data = new ResumePassThrough(generator, stats, this.fileHasher);
 
     zip.file(filename, data, {
-      compression: compressed ? 'DEFLATE' : 'STORE',
+      compression: compressed ? "DEFLATE" : "STORE",
       binary: !compressed
     });
   }
@@ -235,21 +235,21 @@ class Downloader
     const rs = new ReadableStream({
       start(controller) {
         zip.generateInternalStream({type:"uint8array", streamFiles: true})
-        .on('data', (data, metadata) => {
-          controller.enqueue(data);
-          if (sizeCallback) {
-            sizeCallback(data.length);
-          }
+          .on("data", (data) => {
+            controller.enqueue(data);
+            if (sizeCallback) {
+              sizeCallback(data.length);
+            }
           //console.log(metadata);
-        })
-        .on('error', (error) => {
-          console.log(error);
-          controller.close();
-        })
-        .on('end', () => {
-          controller.close();
-        })
-        .resume();
+          })
+          .on("error", (error) => {
+            console.log(error);
+            controller.close();
+          })
+          .on("end", () => {
+            controller.close();
+          })
+          .resume();
       }
     });
 
@@ -335,7 +335,7 @@ class Downloader
         length: resource.length,
         recordDigest: resource.recordDigest,
         status: resource.status
-      }
+      };
 
       if (filename) {
         data.filename = filename;
@@ -360,7 +360,7 @@ class Downloader
       } else {
         return [resource, cdx];
       }
-    }
+    };
 
     try {
       for await (const resource of this.resources) {
@@ -406,9 +406,9 @@ class Downloader
       key = null;
   
       return data;
-    }
+    };
 
-    for await (const [resource, cdx] of this.generateCDX(true)) {
+    for await (const [/*resource*/, cdx] of this.generateCDX(true)) {
       if (!chunkDeflater) {
         chunkDeflater = new Deflate({gzip: true});
       }
@@ -468,7 +468,7 @@ class Downloader
         path: stats.filename,
         hash: this.hashType + ":" + stats.hash,
         bytes: stats.size,
-      }
+      };
     });
 
     root.wacz_version = WACZ_VERSION;
@@ -522,6 +522,7 @@ class Downloader
     }
   }
 
+  /*
   async getLists() {
     try {
       const lists = await this.db.getAllCuratedByList();
@@ -531,12 +532,13 @@ class Downloader
       console.log(e);
     }
   }
-
+*/
   async* generateIDX() {
     yield this.indexLines.join("\n");
   }
 
   get softwareString() {
+    // eslint-disable-next-line no-undef
     return `Webrecorder ArchiveWeb.page ${__VERSION__} (via warcio.js ${__WARCIO_VERSION__})`;
   }
 
@@ -565,7 +567,7 @@ class Downloader
 
   removeEncodingHeaders(headersMap) {
     let count = 0;
-    for (const [name, value] of Object.entries(headersMap)) {
+    for (const [name] of Object.entries(headersMap)) {
       const lowerName = name.toLowerCase();
       if (lowerName === "content-encoding") {
         delete headersMap[name];
@@ -708,7 +710,7 @@ class Downloader
     resource.url = url;
 
     const type = "resource";
-    const warcHeaders = {"Content-Type": 'text/plain; charset="UTF-8"'};
+    const warcHeaders = {"Content-Type": "text/plain; charset=\"UTF-8\""};
     const warcVersion = "WARC/1.1";
 
     const payload = getPayload(encoder.encode(resource.text));

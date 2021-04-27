@@ -1,22 +1,25 @@
-import { LitElement, html, css, wrapCss, IS_APP, clickOnSpacebarPress, apiPrefix } from 'replaywebpage/src/misc';
+import { LitElement, html, css, wrapCss, IS_APP, clickOnSpacebarPress, apiPrefix } from "replaywebpage/src/misc";
 
 // replaywebpage imports
-import { ReplayWebApp, CollIndex, Coll, Embed, Loader } from 'replaywebpage';
+import { ReplayWebApp, CollIndex, Coll, Embed, Loader } from "replaywebpage";
 
-import prettyBytes from 'pretty-bytes';
+import prettyBytes from "pretty-bytes";
 
-import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
-import fasDownload from '@fortawesome/fontawesome-free/svgs/solid/download.svg';
-import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
-import fasCaretUp from '@fortawesome/fontawesome-free/svgs/solid/caret-up.svg';
-import fasShare from '@fortawesome/fontawesome-free/svgs/solid/share.svg';
-import fasReshare from '@fortawesome/fontawesome-free/svgs/solid/retweet.svg';
-import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
-import fasHelp from '@fortawesome/fontawesome-free/svgs/solid/question-circle.svg';
+import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
+import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
+//import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
+import fasCaretUp from "@fortawesome/fontawesome-free/svgs/solid/caret-up.svg";
+import fasShare from "@fortawesome/fontawesome-free/svgs/solid/share.svg";
+import fasReshare from "@fortawesome/fontawesome-free/svgs/solid/retweet.svg";
+import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
+import fasHelp from "@fortawesome/fontawesome-free/svgs/solid/question-circle.svg";
 
 //import wrText from '../assets/webrecorder-text.svg';
-import wrLogo from '../assets/awp-logo.svg';
-import wrRec from '../assets/recLogo.svg';
+import wrLogo from "../assets/awp-logo.svg";
+import wrRec from "../assets/recLogo.svg";
+
+// eslint-disable-next-line no-undef
+const VERSION = __VERSION__;
 
 
 //============================================================================
@@ -46,7 +49,7 @@ class ArchiveWebApp extends ReplayWebApp
       selCollTitle: { type: String },
       recordUrl: { type: String },
       autorun: { type: Boolean },
-    }
+    };
   }
 
   initRoute() {
@@ -131,8 +134,8 @@ class ArchiveWebApp extends ReplayWebApp
     <a href="https://archiveweb.page/guide" target="_blank" class="navbar-item is-size-6">
     <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon><span>&nbsp;User Guide</span>
 
-    <a href="?about" @click="${(e) => { e.preventDefault(); this.showAbout = true} }"class="navbar-item is-size-6">About
-    </a>`
+    <a href="?about" @click="${(e) => { e.preventDefault(); this.showAbout = true;} }"class="navbar-item is-size-6">About
+    </a>`;
   }
 
   renderNavBrand() {
@@ -192,7 +195,7 @@ class ArchiveWebApp extends ReplayWebApp
 
   render() {
     return html`
-    ${this.recordShown ? this.renderStartModal() : ``}
+    ${this.recordShown ? this.renderStartModal() : ""}
     ${super.render()}`;
   }
 
@@ -208,12 +211,12 @@ class ArchiveWebApp extends ReplayWebApp
     @update-title=${this.onTitle}
     @coll-loaded=${this.onCollLoaded}
     @show-start=${this.onShowStart}
-    @about-show=${(e) => this.showAbout = true}></wr-rec-coll>`;
+    @about-show=${() => this.showAbout = true}></wr-rec-coll>`;
   }
 
   renderStartModal() {
     return html`
-    <wr-modal @modal-closed="${(e) => this.recordShown = false}" title="Start Recording">
+    <wr-modal @modal-closed="${() => this.recordShown = false}" title="Start Recording">
       <div class="dropdown-row">
         <span>Archive To:&nbsp;</span>
         <div class="select is-small">
@@ -252,7 +255,7 @@ class ArchiveWebApp extends ReplayWebApp
         ${IS_APP ? html`
         <label class="checkbox">
           <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without recording.)</span>
-        </label>` : ``}
+        </label>` : ""}
       </form>
     </wr-modal>`;
   }
@@ -263,7 +266,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="modal-background" @click="${this.onAboutClose}"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">About ArchiveWeb.page ${IS_APP ? 'App' : 'Extension'}</p>
+              <p class="modal-card-title">About ArchiveWeb.page ${IS_APP ? "App" : "Extension"}</p>
               <button class="delete" aria-label="close" @click="${this.onAboutClose}"></button>
             </header>
             <section class="modal-card-body">
@@ -272,7 +275,7 @@ class ArchiveWebApp extends ReplayWebApp
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${wrLogo}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? 'App' : 'Extension'} v${__VERSION__}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? "App" : "Extension"} v${VERSION}</div>
                     </div>
 
                     ${IS_APP ? html`
@@ -319,7 +322,7 @@ class ArchiveWebApp extends ReplayWebApp
       </div>`;
   }
 
-  async onNewColl(event) {
+  async onNewColl() {
     const title = this.renderRoot.querySelector("#new-name").value;
 
     const method = "POST";
@@ -339,7 +342,7 @@ class ArchiveWebApp extends ReplayWebApp
   async onShowStart(event) {
     this.selCollId = event.detail.coll;
     //this.selCollTitle = event.detail.title;
-    this.recordUrl = event.detail.url || "https://example.com/"
+    this.recordUrl = event.detail.url || "https://example.com/";
     this.recordShown = true;
 
     const resp = await fetch(`${apiPrefix}/coll-index`);
@@ -381,12 +384,12 @@ class WrRecColl extends Coll
 {
   renderExtraToolbar(isDropdown = false) {
     if (isDropdown) {
-      return '';
+      return "";
     }
 
     return html`
     <a href="#" role="button"
-    class="${!isDropdown ? 'button narrow is-borderless' : 'dropdown-item is-hidden-tablet'}"
+    class="${!isDropdown ? "button narrow is-borderless" : "dropdown-item is-hidden-tablet"}"
       title="Start Recording" aria-label="Start Recording" aria-controls="record"
       @click="${this.onShowStart}" @keyup="${clickOnSpacebarPress}">
       <span class="icon is-small">
@@ -433,7 +436,7 @@ class WrRecCollIndex extends CollIndex
       ...CollIndex.properties,
 
       deleteConfirm: { type: Object }
-    }
+    };
   }
 
   renderCollInfo(coll) {
@@ -456,11 +459,11 @@ class WrRecCollIndex extends CollIndex
     }
 
     return html`
-    <wr-modal bgClass="has-background-grey-lighter" @modal-closed="${(e) => this.deleteConfirm = null}" title="Confirm Delete">
+    <wr-modal bgClass="has-background-grey-lighter" @modal-closed="${() => this.deleteConfirm = null}" title="Confirm Delete">
       <p>Are you sure you want to permanentely delete the archive <b>${this.deleteConfirm.title}</b>
       (Size: <b>${prettyBytes(this.deleteConfirm.size)}</b>)</p>
       <button @click="${this.doDelete}"class="button is-danger">Delete</button>
-      <button @click="${(e) => this.deleteConfirm = null}" class="button">Cancel</button>
+      <button @click="${() => this.deleteConfirm = null}" class="button">Cancel</button>
     </wr-modal>`;
   }
 
@@ -521,7 +524,7 @@ class WrRecCollInfo extends LitElement
       showShareMenu: { type: Boolean },
       shareWarn: { type: Boolean },
       shareProgress: { type: Number }
-    }
+    };
   }
 
   static get styles() {
@@ -640,9 +643,9 @@ class WrRecCollInfo extends LitElement
             ${this.ipfsURL ? html`
 
               <div class="is-flex is-flex-direction-column">
-                <div class="dropdown is-up ${this.showShareMenu ? 'is-active' : ''}">
+                <div class="dropdown is-up ${this.showShareMenu ? "is-active" : ""}">
                   <div class="dropdown-trigger">
-                    <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? 'is-loading' : ''}"" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? "is-loading" : ""}"" aria-haspopup="true" aria-controls="dropdown-menu">
                       <span>Sharing!</span>
                       <span class="icon">
                         <fa-icon .svg=${fasCaretUp}></fa-icon>
@@ -690,7 +693,7 @@ class WrRecCollInfo extends LitElement
               `: html`
             
               <div class="is-flex is-flex-direction-column">
-                <button class="button is-small ${this.shareWait ? 'is-loading' : ''}" @click="${this.onPinOrWarn}">
+                <button class="button is-small ${this.shareWait ? "is-loading" : ""}" @click="${this.onPinOrWarn}">
                   <span class="icon is-small">
                     <fa-icon .svg="${fasShare}"></fa-icon>
                   </span>
@@ -702,13 +705,13 @@ class WrRecCollInfo extends LitElement
           </div>
         </div>
       </div>
-      ${this.shareWarn ? this.renderShareWarn(): ''}
+      ${this.shareWarn ? this.renderShareWarn(): ""}
       `;
   }
 
   renderShareWarn() {
     return html`
-    <wr-modal bgClass="has-background-warning" @modal-closed="${(e) => this.shareWarn = false}" title="Start Sharing?">
+    <wr-modal bgClass="has-background-warning" @modal-closed="${() => this.shareWarn = false}" title="Start Sharing?">
       <div class="content is-size-7">
         <p>
           Do you want to share the all the pages in the archive "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
@@ -728,7 +731,7 @@ class WrRecCollInfo extends LitElement
         </label>
       </div>
       <button @click="${this.onPin}"class="button is-primary">Share</button>
-      <button @click="${(e) => this.shareWarn = false}" class="button">Cancel</button>
+      <button @click="${() => this.shareWarn = false}" class="button">Cancel</button>
     </wr-modal>`;
   }
 
@@ -841,7 +844,7 @@ class WrRecCollInfo extends LitElement
       await this.ipfsApi(this.coll.id, false);
     }
 
-    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: 'DELETE'});
+    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: "DELETE"});
     if (resp.status === 200) {
       const json = await resp.json();
       this.colls = json.colls;
@@ -849,12 +852,12 @@ class WrRecCollInfo extends LitElement
   }
 }
 
-customElements.define('wr-rec-coll', WrRecColl);
+customElements.define("wr-rec-coll", WrRecColl);
 
-customElements.define('wr-rec-coll-index', WrRecCollIndex);
-customElements.define('wr-rec-coll-info', WrRecCollInfo);
+customElements.define("wr-rec-coll-index", WrRecCollIndex);
+customElements.define("wr-rec-coll-info", WrRecCollInfo);
 
-customElements.define('archive-web-page-app', ArchiveWebApp);
+customElements.define("archive-web-page-app", ArchiveWebApp);
 
 //customElements.define("wr-loader", Loader);
 

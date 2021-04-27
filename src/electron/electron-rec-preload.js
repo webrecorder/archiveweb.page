@@ -1,16 +1,18 @@
+/*eslint-env node */
+
 "use strict";
 
-import { ensureDefaultCollAndIPFS } from '../utils';
+import { ensureDefaultCollAndIPFS } from "../utils";
 
-import { loader, getColl, getDB } from 'replaywebpage/src/electron-preload';
+import { loader, getColl, getDB } from "replaywebpage/src/electron-preload";
 
-import { Downloader } from '../downloader';
+import { Downloader } from "../downloader";
 
-const { ipcRenderer, contextBridge } = require('electron');
+const { ipcRenderer, contextBridge } = require("electron");
 
 
 // ===========================================================================
-contextBridge.exposeInMainWorld('archivewebpage', {
+contextBridge.exposeInMainWorld("archivewebpage", {
   record: (opts) => {
     ipcRenderer.send("start-rec", opts);
   },
@@ -26,7 +28,7 @@ contextBridge.exposeInMainWorld('archivewebpage', {
 
 
 // ===========================================================================
-ipcRenderer.on('add-resource', async (event, data, collId) => {
+ipcRenderer.on("add-resource", async (event, data, collId) => {
   const db = await getDB(collId);
 
   const payloadSize = data.payload.length;
@@ -54,7 +56,7 @@ ipcRenderer.on('add-resource', async (event, data, collId) => {
 
 
 // ===========================================================================
-ipcRenderer.on('add-page', async (event, pageInfo, collId) => {
+ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
   const db = await getDB(collId);
 
   db.addPage(pageInfo);
@@ -63,7 +65,7 @@ ipcRenderer.on('add-page', async (event, pageInfo, collId) => {
 
 
 // ===========================================================================
-ipcRenderer.on('inc-sizes', async (event, totalSize, writtenSize, collId) => {
+ipcRenderer.on("inc-sizes", async (event, totalSize, writtenSize, collId) => {
   if (totalSize > 0) {
     loader.updateSize(collId, totalSize, writtenSize);
   }
@@ -124,7 +126,7 @@ async function handleIpfsUnpin(collId) {
   }
 
   const removeHashes = new Promise((resolve) => {
-    ipcRenderer.once(reqId, async (event) => {
+    ipcRenderer.once(reqId, async () => {
       coll.config.metadata.ipfsPins = null;
     
       await loader.updateMetadata(collId, coll.config.metadata);

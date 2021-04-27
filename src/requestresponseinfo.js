@@ -1,8 +1,8 @@
 "use strict";
 
-import { getStatusText } from '@webrecorder/wabac/src/utils';
+import { getStatusText } from "@webrecorder/wabac/src/utils";
 
-import { postToGetUrl } from 'warcio';
+import { postToGetUrl } from "warcio";
 
 // max URL length for post/put payload-converted URLs
 const MAX_URL_LENGTH = 4096;
@@ -116,7 +116,7 @@ class RequestResponseInfo
   }
 
   fillResponseReceivedExtraInfo(params) {
-    this.responseHeaders = params.headers
+    this.responseHeaders = params.headers;
     if (params.headersText) {
       this.responseHeadersText = params.headersText;
     }
@@ -139,7 +139,7 @@ class RequestResponseInfo
     }
 
     if (!payload) {
-      payload = Buffer.from([]);
+      payload = new Uint8Array([]);
     }
 
     this.ts = new Date().getTime();
@@ -160,7 +160,7 @@ class RequestResponseInfo
         headers: reqHeaders.headers,
         method: this.method,
         postData: this.postData,
-      }
+      };
       if (postToGetUrl(convData)) {
         this.requestBody = convData.requestBody;
         // truncate to avoid extra long URLs
@@ -169,16 +169,16 @@ class RequestResponseInfo
     }
 
     const data = {url: this.url,
-                  ts: this.ts,
-                  status: this.status,
-                  statusText:this.statusText,
-                  pageId: pageInfo.id,
-                  payload,
-                  mime,
-                  respHeaders: respHeaders.headersDict,
-                  reqHeaders: reqHeaders.headersDict,
-                  extraOpts: this.extraOpts
-                 };
+      ts: this.ts,
+      status: this.status,
+      statusText:this.statusText,
+      pageId: pageInfo.id,
+      payload,
+      mime,
+      respHeaders: respHeaders.headersDict,
+      reqHeaders: reqHeaders.headersDict,
+      extraOpts: this.extraOpts
+    };
 
     if (this.method !== "GET") {
       data.method = this.method;
@@ -199,13 +199,13 @@ class RequestResponseInfo
     this.responseHeaders = record.respHeaders || {};
   }
 
-  getResponseHeadersText(headersDict) {
+  getResponseHeadersText() {
     let headers = `${this.protocol} ${this.status} ${this.statusText}\r\n`;
 
     for (const header of Object.keys(this.responseHeaders)) {
-       headers += `${header}: ${this.responseHeaders[header].replace(/\n/g, ', ')}\r\n`;
+      headers += `${header}: ${this.responseHeaders[header].replace(/\n/g, ", ")}\r\n`;
     }
-    headers += `\r\n`;
+    headers += "\r\n";
     return headers;
   }
 
@@ -229,7 +229,7 @@ class RequestResponseInfo
         if (EXCLUDE_HEADERS.includes(header.name.toLowerCase())) {
           continue;
         }
-        headersDict[header.name] = header.value.replace(/\n/g, ', ');
+        headersDict[header.name] = header.value.replace(/\n/g, ", ");
       }
     }
 
@@ -250,7 +250,7 @@ class RequestResponseInfo
         if (EXCLUDE_HEADERS.includes(key.toLowerCase())) {
           continue;
         }
-        headersDict[key] = headersDict[key].replace(/\n/g, ', ');
+        headersDict[key] = headersDict[key].replace(/\n/g, ", ");
       }
       try {
         headers = new Headers(headersDict);
@@ -287,10 +287,10 @@ class RequestResponseInfo
 }
 
 
-function formatHeadersText(headersText) {
-  // condense any headers containing newlines
-  return headersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ")});
-}
+//function formatHeadersText(headersText) {
+//  condense any headers containing newlines
+//  return headersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ");});
+//}
 
 
 

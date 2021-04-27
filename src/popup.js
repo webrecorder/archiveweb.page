@@ -1,20 +1,20 @@
-import { LitElement, html, css, unsafeCSS } from 'lit-element';
-import { unsafeSVG } from 'lit-html/directives/unsafe-svg';
-import bulma from 'bulma/bulma.sass';
+import { LitElement, html, css, unsafeCSS } from "lit-element";
+import { unsafeSVG } from "lit-html/directives/unsafe-svg";
+import bulma from "bulma/bulma.sass";
 
-import fasPlus from '@fortawesome/fontawesome-free/svgs/solid/plus.svg';
-import fasBox from '@fortawesome/fontawesome-free/svgs/solid/square.svg';
-import fasPlay from '@fortawesome/fontawesome-free/svgs/solid/play.svg';
-import fasPause from '@fortawesome/fontawesome-free/svgs/solid/pause.svg';
-import fasHome from '@fortawesome/fontawesome-free/svgs/solid/home.svg';
-import fasQ from '@fortawesome/fontawesome-free/svgs/solid/question.svg';
-import fasCheck from '@fortawesome/fontawesome-free/svgs/solid/check.svg';
-import fasX from '@fortawesome/fontawesome-free/svgs/solid/times.svg';
-import fasCaretDown from '@fortawesome/fontawesome-free/svgs/solid/caret-down.svg';
+import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
+import fasBox from "@fortawesome/fontawesome-free/svgs/solid/square.svg";
+import fasPlay from "@fortawesome/fontawesome-free/svgs/solid/play.svg";
+import fasPause from "@fortawesome/fontawesome-free/svgs/solid/pause.svg";
+import fasHome from "@fortawesome/fontawesome-free/svgs/solid/home.svg";
+import fasQ from "@fortawesome/fontawesome-free/svgs/solid/question.svg";
+import fasCheck from "@fortawesome/fontawesome-free/svgs/solid/check.svg";
+import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
+import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
 
-import wrRec from '../assets/recLogo.svg';
+import wrRec from "../assets/recLogo.svg";
 
-import prettyBytes from 'pretty-bytes';
+import prettyBytes from "pretty-bytes";
 
 import {
   BEHAVIOR_WAIT_LOAD,
@@ -84,7 +84,7 @@ class RecPopup extends LitElement
       behaviorResults: { type: Object },
       behaviorMsg: { type: String },
       autorun: { type: Boolean }
-    }
+    };
   }
 
   firstUpdated() {
@@ -123,49 +123,49 @@ class RecPopup extends LitElement
 
   onMessage(message) {
     switch (message.type) {
-      case "status":
-        this.recording = message.recording;
-        if (this.waitingForStart && message.firstPageStarted) {
-          this.waitingForStart = false;
-        }
-        if (this.waitingForStop && !message.recording && !message.stopping) {
-          this.waitingForStop = false;
-        }
-        this.status = message;
-        this.behaviorState = message.behaviorState;
-        this.behaviorMsg = message.behaviorData && message.behaviorData.msg || "Starting...";
-        this.behaviorResults = message.behaviorData && message.behaviorData.state;
-        this.autorun = message.autorun;
-        if (message.pageUrl) {
-          this.pageUrl = message.pageUrl;
-        }
-        if (message.pageTs) {
-          this.pageTs = message.pageTs;
-        }
-        this.failureMsg = message.failureMsg;
-        if (this.collId !== message.collId) {
-          this.collId = message.collId;
-          this.collTitle = this.findTitleFor(this.collId);
-          localStorage.setItem(`${this.tabId}-collId`, this.collId);
-        }
-        break;
+    case "status":
+      this.recording = message.recording;
+      if (this.waitingForStart && message.firstPageStarted) {
+        this.waitingForStart = false;
+      }
+      if (this.waitingForStop && !message.recording && !message.stopping) {
+        this.waitingForStop = false;
+      }
+      this.status = message;
+      this.behaviorState = message.behaviorState;
+      this.behaviorMsg = message.behaviorData && message.behaviorData.msg || "Starting...";
+      this.behaviorResults = message.behaviorData && message.behaviorData.state;
+      this.autorun = message.autorun;
+      if (message.pageUrl) {
+        this.pageUrl = message.pageUrl;
+      }
+      if (message.pageTs) {
+        this.pageTs = message.pageTs;
+      }
+      this.failureMsg = message.failureMsg;
+      if (this.collId !== message.collId) {
+        this.collId = message.collId;
+        this.collTitle = this.findTitleFor(this.collId);
+        localStorage.setItem(`${this.tabId}-collId`, this.collId);
+      }
+      break;
 
-      case "collections":
-        this.collections = message.collections;
-        this.collId = localStorage.getItem(`${this.tabId}-collId`);
-        this.collTitle = "";
-        if (this.collId) {
-          this.collTitle = this.findTitleFor(this.collId);
-        }
-        // may no longer be valid, try default id
-        if (!this.collTitle) {
-          this.collId = message.collId;
-          this.collTitle = this.findTitleFor(this.collId);
-        }
-        if (!this.collTitle) {
-          this.collTitle = "[No Title]";
-        }
-        break;
+    case "collections":
+      this.collections = message.collections;
+      this.collId = localStorage.getItem(`${this.tabId}-collId`);
+      this.collTitle = "";
+      if (this.collId) {
+        this.collTitle = this.findTitleFor(this.collId);
+      }
+      // may no longer be valid, try default id
+      if (!this.collTitle) {
+        this.collId = message.collId;
+        this.collTitle = this.findTitleFor(this.collId);
+      }
+      if (!this.collTitle) {
+        this.collTitle = "[No Title]";
+      }
+      break;
     }
   }
 
@@ -189,7 +189,7 @@ class RecPopup extends LitElement
       
       const params = new URLSearchParams();
       params.set("url", this.pageUrl);
-      params.set("ts", new Date(this.pageTs).toISOString().replace(/[-:TZ.]/g, ''));
+      params.set("ts", new Date(this.pageTs).toISOString().replace(/[-:TZ.]/g, ""));
       params.set("view", "pages");
 
       this.replayUrl = this.getCollPage() + "#" + params.toString();
@@ -356,9 +356,9 @@ class RecPopup extends LitElement
 
     if (this.recording) {
       return html`<b>${this.waitingForStop ? "Finishing " : ""} Recording:&nbsp;</b>${this.status && this.status.numPending ? html`
-      <span class="status-pending">${this.status.numPending} URLs pending${this.waitingForStop ? '.' : ', please wait before loading a new page.'}</span>
+      <span class="status-pending">${this.status.numPending} URLs pending${this.waitingForStop ? "." : ", please wait before loading a new page."}</span>
      ` :
-     html`
+        html`
       <span class="status-ready">Idle, Continue Browsing</span>`}`;
     }
 
@@ -398,7 +398,7 @@ class RecPopup extends LitElement
     return html`
     <div class="coll-select">
       <div class="is-size-7">${this.recording ? "Recording" : "Record"} To:&nbsp;</div>
-      <div class="dropdown ${this.collDrop === "show" ? 'is-active' : ''}">
+      <div class="dropdown ${this.collDrop === "show" ? "is-active" : ""}">
         <div class="dropdown-trigger">
           <button @click="${this.onShowDrop}" class="coll button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
             <span>${this.collTitle}</span>
@@ -411,12 +411,12 @@ class RecPopup extends LitElement
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             ${this.allowCreate ? html`
-            <a @click="${(e) => this.collDrop = "create"}" class="dropdown-item">
+            <a @click="${() => this.collDrop = "create"}" class="dropdown-item">
               <span class="icon is-small">
                 <wr-icon .src="${fasPlus}"></wr-icon>
               </span>Create New Archive...
             </a>
-            <hr class="dropdown-divider">` : ``}
+            <hr class="dropdown-divider">` : ""}
             ${this.collections.map((coll) => html`
               <a @click=${this.onSelectColl} data-title="${coll.title}" data-id="${coll.id}" class="dropdown-item">${coll.title}</a>
             `)}
@@ -458,7 +458,7 @@ class RecPopup extends LitElement
           <button class="button is-small is-outlined" type="submit">
             <wr-icon .src=${fasCheck}></wr-icon>
           </button>
-          <button @click="${(e) => this.collDrop = ""}" class="button is-small is-outlined" type="button">
+          <button @click="${() => this.collDrop = ""}" class="button is-small is-outlined" type="button">
             <wr-icon .src=${fasX}></wr-icon>
           </button>
         </div>
@@ -496,15 +496,15 @@ class RecPopup extends LitElement
                 <wr-icon .src=${wrRec}></wr-icon>` : html`
                 <wr-icon .src=${fasBox}></wr-icon>`}
             </span>
-            <span>${!this.recording ? 'Start' : 'Stop'}</span>
+            <span>${!this.recording ? "Start" : "Stop"}</span>
           </button>
-          ` : ``}
+          ` : ""}
         </div>
         ${this.renderCollCreate()}
         <div class="view-row is-marginless">
           <div>
             ${this.canRecord ? html`
-            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ``}
+            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ""}
           </div>
           ${this.renderStartOpt()}
         </div>
@@ -513,17 +513,17 @@ class RecPopup extends LitElement
         <div class="view-row autopilot">
           <button @click="${this.onBehaviorToggle}"
           ?disabled="${this.behaviorState === BEHAVIOR_WAIT_LOAD || this.behaviorState === BEHAVIOR_DONE}"
-          class="button ${this.behaviorState === BEHAVIOR_DONE ? 'is-success' : 'is-info'} is-small">
+          class="button ${this.behaviorState === BEHAVIOR_DONE ? "is-success" : "is-info"} is-small">
           ${this.behaviorsButtonLabel}
           </button>
         </div>
-        ` : ``}
+        ` : ""}
 
         ${this.status && this.status.sizeTotal ? html`
         <div class="view-row underline">
           <div class="session-head">Recorded in this tab</div>
           ${this.replayUrl ? 
-            html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>` : ``}
+    html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>` : ""}
         </div>
         <div class="view-row">
           <table class="status">
@@ -537,7 +537,7 @@ class RecPopup extends LitElement
             <tr class="status-sep"><td></td><td></td></tr>
             ${Object.entries(this.behaviorResults).map(([name, value]) => html`
             <tr><td>${name}</td><th>${value}</th></tr>`
-            )}` : ``}
+  )}` : ""}
 
           </table>
         </div>
@@ -556,28 +556,30 @@ class RecPopup extends LitElement
 
   get behaviorsButtonLabel() {
     switch (this.behaviorState) {
-      case BEHAVIOR_WAIT_LOAD:
-        return "Autopilot: Waiting for page to load...";
-      
-      case BEHAVIOR_READY_START:
-        return html`
+     
+    case BEHAVIOR_READY_START:
+      return html`
         <wr-icon style="fill: white" .src="${fasPlay}"></wr-icon>
         &nbsp;Start Autopilot!`;
 
-      case BEHAVIOR_RUNNING:
-        return html`
+    case BEHAVIOR_RUNNING:
+      return html`
         <wr-icon style="fill: white" .src="${fasPause}"></wr-icon>
         &nbsp;Pause Autopilot`;
 
-      case BEHAVIOR_PAUSED:
-        return html`
+    case BEHAVIOR_PAUSED:
+      return html`
         <wr-icon style="fill: white" .src="${fasPlay}"></wr-icon>
         &nbsp;Unpause Autopilot`;
 
-      case BEHAVIOR_DONE:
-        return html`
+    case BEHAVIOR_DONE:
+      return html`
         <wr-icon style="fill: white" .src="${fasCheck}"></wr-icon>
         &nbsp;Autopilot Done`;
+
+    case BEHAVIOR_WAIT_LOAD:
+    default:
+      return "Autopilot: Waiting for page to load...";
     }
   }
 
@@ -637,7 +639,7 @@ class WrIcon extends LitElement
     return {
       src: { type: Object },
       size: { type: String }
-    }
+    };
   }
 
   render() {
@@ -647,7 +649,7 @@ class WrIcon extends LitElement
   }
 }
 
-customElements.define('wr-icon', WrIcon);
-customElements.define('wr-popup-viewer', RecPopup);
+customElements.define("wr-icon", WrIcon);
+customElements.define("wr-popup-viewer", RecPopup);
 
 export { RecPopup };

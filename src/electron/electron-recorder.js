@@ -1,12 +1,14 @@
-import { Recorder } from '../recorder';
+/*eslint-env node */
 
-import path from 'path';
-import fs from 'fs';
-import mime from 'mime-types';
+import { Recorder } from "../recorder";
+
+import path from "path";
+import fs from "fs";
+import mime from "mime-types";
 
 const DEBUG = false;
 
-const PROXY_URL = "https://proxy.archiveweb.page/"
+const PROXY_URL = "https://proxy.archiveweb.page/";
 
 
 // ===========================================================================
@@ -57,7 +59,7 @@ class ElectronRecorder extends Recorder
       this.processMessage(message, params, sessions);
     });
 
-    this.recWC.on('page-favicon-updated', (event, favicons) => {
+    this.recWC.on("page-favicon-updated", (event, favicons) => {
       this.favicons = favicons;
       for (const icon of favicons) {
         //this.recWC.send("async-fetch", {url: icon});
@@ -94,7 +96,7 @@ class ElectronRecorder extends Recorder
     this._initNewPage(url, "");
   }
 
-  initPage(params, sessions) {
+  initPage(/*params, sessions*/) {
     // not called consistently, so just using didNavigateInitPage
     return false;
   }
@@ -105,13 +107,13 @@ class ElectronRecorder extends Recorder
     }
 
     switch (method) {
-      case "Page.frameStartedLoading":
-        this.nextFrameId = params.frameId;
-        break;
+    case "Page.frameStartedLoading":
+      this.nextFrameId = params.frameId;
+      break;
 
-      case "Page.frameStoppedLoading":
-        this.nextFrameId = null;
-        break;
+    case "Page.frameStoppedLoading":
+      this.nextFrameId = null;
+      break;
     }
   }
 
@@ -160,12 +162,12 @@ class ElectronRecorder extends Recorder
     try {
       await this.send("Fetch.fulfillRequest",
         {"requestId": params.requestId,
-         "responseCode": 200,
-         "responseHeaders": responseHeaders,
-         "body": base64Str
+          "responseCode": 200,
+          "responseHeaders": responseHeaders,
+          "body": base64Str
         }, sessions);
     } catch (e) {
-
+      console.warn(e);
     } 
   }
 
@@ -180,7 +182,7 @@ class ElectronRecorder extends Recorder
   }
 
   _doAttach() {
-    this.debugger.attach('1.3');
+    this.debugger.attach("1.3");
     this.started = this.start();
 
     return this.started;
@@ -218,7 +220,7 @@ class ElectronRecorder extends Recorder
     return 0;
   }
 
-  _doAddPage(pageInfo) {
+  _doAddPage() {
     this.appWC.send("add-page", this.pageInfo, this.collId);
   }
 

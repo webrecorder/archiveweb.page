@@ -1,6 +1,6 @@
 {
   "name": "archiveweb.page",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -52,7 +52,8 @@
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
-    "release": "yarn run build && electron-builder"
+    "release": "yarn run build && electron-builder",
+    "lint": "eslint ./src/ webpack.config.js"
   },
   "build": {
     "afterSign": "build/notarize.js",

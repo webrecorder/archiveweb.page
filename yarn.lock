@@ -808,10 +808,10 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.0.tgz#d1f54d7faf99aa0333c2ad805b72602dc2b95df1"
-  integrity sha512-AShk6WfVS3ZYvGfT1ernMAH2uHOemUs62NsiA/oVb6OGwUW0BCVCKkzomyQOLaYxcTqza5nWs73Z+8yVimYq6A==
+"@webrecorder/wabac@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.1.tgz#129b57f7560647c7f1376ac1ff3435ed4b926d86"
+  integrity sha512-2uv5s4nimdwlUxGVj/4Fh7Hq9Tsg4txX6H/BG0+4OVMIK6dXA6/Fq9qr+kIV9rbequ4CGvfuAczn8x9WetZM6A==
   dependencies:
     "@webrecorder/wombat" "^3.1.4"
     brotli "github:foliojs/brotli.js"
@@ -1622,10 +1622,10 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browsertrix-behaviors@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.0.tgz#35b4fead29b4138e495ccd759e2506fb7502a239"
-  integrity sha512-Kn/X2HB0/Mchz04T/CWsTr84opNG1lTpQFodYqPq0CXvdc7dHD05DgyvK4ZI+tpqa6Ul4extiQkj52p0YTR7mg==
+browsertrix-behaviors@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.1.tgz#5a3b7d2f1ed5dad5054312738c69748b8ec638b8"
+  integrity sha512-NkReAj+PMS91oewA0tpsyvQVFspsy8mhKLXT8sg33pSDGYCDVlezqPt2agKmsmG1Y2m39yOzt31L8A3v4WcJDw==
 
 buffer-crc32@~0.2.3:
   version "0.2.13"
@@ -8364,13 +8364,13 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.4.0.tgz#53d5e2b93e2d938a9fa2ac3b292c71a02342d8d3"
-  integrity sha512-NqOkoUDI6Ihx2PsZ5znzv8td17iiW6+WZKI920FJ4KsvDb6BviW6117sjV2zSfT/LFnt22IjW8uynHwmNmVnmw==
+replaywebpage@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.4.1.tgz#bac75500ee84cba5ea19bab39371ff03d0bb6732"
+  integrity sha512-GXeFnJ+TcGGmx7CVoJGmwVWAeXfNAoGAXLd0+Ln7z2mxVjYGbxzHgvhuZKIAg9XsgcVF+bGzQpe/p9+uL1GRLA==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "^2.7.0"
+    "@webrecorder/wabac" "^2.7.1"
     bulma "^0.9.2"
     electron-log "^4.3.0"
     electron-updater "^4.3.5"

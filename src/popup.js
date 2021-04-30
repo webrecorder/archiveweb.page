@@ -512,7 +512,7 @@ class RecPopup extends LitElement
         ${this.recording ? html`
         <div class="view-row autopilot">
           <button @click="${this.onBehaviorToggle}"
-          ?disabled="${this.behaviorState === BEHAVIOR_WAIT_LOAD || this.behaviorState === BEHAVIOR_DONE}"
+          ?disabled="${this.behaviorState === BEHAVIOR_WAIT_LOAD || this.behaviorState === BEHAVIOR_DONE || this.waitingForStop}"
           class="button ${this.behaviorState === BEHAVIOR_DONE ? "is-success" : "is-info"} is-small">
           ${this.behaviorsButtonLabel}
           </button>

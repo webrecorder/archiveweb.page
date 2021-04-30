@@ -415,7 +415,7 @@ const o=`{{lit-${String(Math.random()).slice(2)}}}`,a=`\x3c!--${o}--\x3e`,r=new 
         ${this.recording?o.c`
         <div class="view-row autopilot">
           <button @click="${this.onBehaviorToggle}"
-          ?disabled="${this.behaviorState===G.e||this.behaviorState===G.a}"
+          ?disabled="${this.behaviorState===G.e||this.behaviorState===G.a||this.waitingForStop}"
           class="button ${this.behaviorState===G.a?"is-success":"is-info"} is-small">
           ${this.behaviorsButtonLabel}
           </button>

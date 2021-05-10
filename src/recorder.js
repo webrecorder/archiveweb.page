@@ -81,8 +81,6 @@ class Recorder {
     this.behaviorState = BEHAVIOR_WAIT_LOAD;
     this.behaviorData = null;
     this.autorun = false;
-
-    this._bgFetchId = setInterval(() => this.doBackgroundFetch(), 10000);
   }
 
   setAutoRunBehavior(autorun) {
@@ -157,6 +155,7 @@ class Recorder {
   async _stop(domNodes = null) {
     clearInterval(this._updateStatusId);
     clearInterval(this._loopId);
+    clearInterval(this._bgFetchId);
 
     this.flushPending();
     this.running = false;
@@ -194,6 +193,8 @@ class Recorder {
     this._updateStatusId = setInterval(() => this.updateStatus(), 1000);
 
     this._loopId = setInterval(() => this.updateLoop(), 10000);
+
+    this._bgFetchId = setInterval(() => this.doBackgroundFetch(), 10000);
   }
 
   updateLoop() {
@@ -420,15 +421,30 @@ class Recorder {
       try {
         this.sessionSet.add(params.sessionId);
 
-        await this.sessionInit(sessions);
+        const type = params.targetInfo.type;
+
+        const allowAttach = type !== "service_worker";
+
+        if (allowAttach) {
+          await this.sessionInit(sessions);
+        }
 
         if (params.waitingForDebugger) {
           await this.send("Runtime.runIfWaitingForDebugger", null, sessions);
         }
 
-        console.log("Target Attached: " + params.targetInfo.type + " " + params.targetInfo.url + " " + params.sessionId);
+        if (allowAttach) {
+          console.log("Target Attached: " + type + " " + params.targetInfo.url + " " + params.sessionId);
 
-        await this._doInjectIframe(sessions);
+          if (type === "page" || type === "iframe") {
+            await this._doInjectIframe(sessions);
+          }
+        } else {
+          console.log("Not allowed attach for: " + type + " " + params.targetInfo.url + " " + params.sessionId);
+
+          const params2 = this.flatMode ? {sessionId: params.sessionId} : {targetId: params.targetInfo.targetId};
+          await this.send("Runtime.runIfWaitingForDebugger", params2, sessions);
+        }
 
       } catch (e) {
         console.log(e);
@@ -771,7 +787,7 @@ class Recorder {
   }
 
   async updatePage(sessions) {
-    console.log("updatePage", this.pageInfo);
+    //console.log("updatePage", this.pageInfo);
 
     if (!this.pageInfo) {
       console.warn("no page info!");

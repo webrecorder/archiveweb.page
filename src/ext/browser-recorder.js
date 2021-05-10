@@ -213,9 +213,9 @@ class BrowserRecorder extends Recorder {
     let writtenSize = 0;
     const payloadSize = data.payload.length;
 
-    await this.db.initing;
-
     try {
+      await this.db.initing;
+      
       if (await this.db.addResource(data)) {
         writtenSize = payloadSize;
       }

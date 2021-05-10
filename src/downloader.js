@@ -8,7 +8,7 @@ import { v5 as uuidv5 } from "uuid";
 
 import { createSHA256 } from "hash-wasm";
 
-import { WARCRecord, WARCSerializer } from "warcio";
+import { getSurt, WARCRecord, WARCSerializer } from "warcio";
 
 import { getTSMillis, getStatusText } from "@webrecorder/wabac/src/utils";
 
@@ -158,6 +158,22 @@ class Downloader
     } else {
       this.resources = await this.db.db.getAll("resources");  
     }
+
+    this.resources.sort((a, b) => {
+      if (!a.surt) {
+        a.surt = getSurt(a.url);
+      }
+
+      if (!b.surt) {
+        b.surt = getSurt(b.url);
+      }
+
+      if (a.surt == b.surt) {
+        return 0;
+      }
+
+      return a.surt < b.surt ? -1 : 1;
+    });
   }
 
   async queueWARC(controller, filename, sizeCallback) {
@@ -328,7 +344,7 @@ class Downloader
     const getCDX = (resource, filename, raw) => {
 
       const data = {
-        //url: resource.url,
+        url: resource.url,
         digest: resource.digest,
         mime: resource.mime,
         offset: resource.offset,
@@ -350,10 +366,7 @@ class Downloader
         data.method = resource.method;
       }
 
-      //const surt = getSurt(resource.url);
-      const url = resource.url;
-
-      const cdx = `${url} ${resource.timestamp} ${JSON.stringify(data)}\n`;
+      const cdx = `${resource.surt} ${resource.timestamp} ${JSON.stringify(data)}\n`;
 
       if (!raw) {
         return cdx;

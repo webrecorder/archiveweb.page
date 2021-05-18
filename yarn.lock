@@ -799,12 +799,12 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@^2.7.3":
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.3.tgz#0f997b6876a3dd33e955d72cb900297b546e2d02"
-  integrity sha512-ZP3w2LpeF2XfRWUT0wrlBXvhcP3W+hmOKw4+dQ9YCOULYJQUyHTQ79lL9cVLgpJ4HloaOVptKfbVAB5Ix2OPSQ==
+"@webrecorder/wabac@^2.7.4":
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.4.tgz#119c84cc8c5bbdc92cc302b201d6533d9a053f7e"
+  integrity sha512-7NR3SSaWYrKr8Iv6oguP8hdmgrVjFuZDpz22NFs3gGuaZ4HrC5b4SKR5F+Ai6nT5MfuN60EfWsS37M0p9bVWGQ==
   dependencies:
-    "@webrecorder/wombat" "^3.1.4"
+    "@webrecorder/wombat" "^3.1.6"
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.15.1"
     format-link-header "^3.1.1"
@@ -818,13 +818,13 @@
     parse5-html-rewriting-stream "^6.0.1"
     parse5-sax-parser "^6.0.1"
     path-parser "^6.1.0"
-    warcio "^1.4.4"
+    warcio "^1.4.6"
     wbn "^0.0.3"
 
-"@webrecorder/wombat@^3.1.4":
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.1.4.tgz#73a1c9d67c3e7d4166819a6c7b72d675b6bd685b"
-  integrity sha512-zUpJZ8AMghwUK7dN4C73hKegEEhs4GSoRd6/1ww/kmxUhDrysHH1H5uCESANU/8bulkn4ZQWdN6dxXd3vJgoxg==
+"@webrecorder/wombat@^3.1.6":
+  version "3.1.6"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.1.6.tgz#75b789f537bf5c0064fb3d8ec7146fa909e68e9a"
+  integrity sha512-40BpQT8V4XiluK9nxqmi9caiFSoVB0ZNek7l62lIfwKj9z3eeOMWVWZdUuOlyX6ZAsuiNn5CfnaWHaLaD71gpQ==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -8258,13 +8258,13 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.4.2.tgz#84c1a7df49eec30eda558149cf21c8df21e4d0f2"
-  integrity sha512-IMjCySsk/OvoxqYxX+c1xNYUn8mCcz+VeQS+FelRdHdWbRtUHf1R6TqQCc8jNJp7R0+qxi4IO2u4TRXMJrzW9Q==
+replaywebpage@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.4.3.tgz#3713ab23e2cf3c0f46804f874e67fb6932b844fa"
+  integrity sha512-GJ8FmUJ0JFZNMql+WIguBgVd40+FvGMiKz8Ld8OUFmJjSWpvqSeHkIohmrfsL2xag7Y3AqtlNKonPTaqWesqXQ==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "^2.7.3"
+    "@webrecorder/wabac" "^2.7.4"
     bulma "^0.9.2"
     electron-log "^4.3.0"
     electron-updater "^4.3.5"
@@ -9894,10 +9894,10 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-warcio@^1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/warcio/-/warcio-1.4.4.tgz#5cd942c7aca0d93b237ef27f9227ef3dec5d18ff"
-  integrity sha512-9UyVQoxxy0nRB1HmABeHEL0QMCdyiei8DjzGQxoMuPnzUtiLvtJFuJEJwwaYBNw0L71x2cQJq0l2o2r9A620YQ==
+warcio@^1.4.5:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/warcio/-/warcio-1.4.5.tgz#24ca61f799185c5d88cdd0a65d279f376b4f9a63"
+  integrity sha512-VwFBdmEQhWHmxsdyiLM0INHD1KZ2+EGYzslZXFe6JdbuTfSF/dYRQ/wEdvp+m28mydphROF6D32KfkIMRU1NZw==
   dependencies:
     "@peculiar/webcrypto" "^1.1.1"
     esm "^3.2.25"
@@ -9907,10 +9907,10 @@ warcio@^1.4.4:
     uuid-random "^1.3.0"
     yargs "^15.3.1"
 
-warcio@^1.4.5:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/warcio/-/warcio-1.4.5.tgz#24ca61f799185c5d88cdd0a65d279f376b4f9a63"
-  integrity sha512-VwFBdmEQhWHmxsdyiLM0INHD1KZ2+EGYzslZXFe6JdbuTfSF/dYRQ/wEdvp+m28mydphROF6D32KfkIMRU1NZw==
+warcio@^1.4.6:
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/warcio/-/warcio-1.4.6.tgz#56ea9a118b89b7b9c71eec493d140876f65d94ee"
+  integrity sha512-uncb/Xokc9XL4/1UMHPteAWpiLToOkcu2qhT2ivhVN1t8HwApHGAmLY4y9gqewgtO3s5aRq6T7lJ6WSP5IlA+A==
   dependencies:
     "@peculiar/webcrypto" "^1.1.1"
     esm "^3.2.25"

@@ -575,7 +575,8 @@ class Recorder {
   }
 
   handleWindowOpen(url, sessions) {
-    this.doAsyncFetchInBrowser({url}, sessions);
+    const headers = {"Referer": this.pageInfo.url};
+    this.doAsyncFetchDirect({url, headers}, sessions);
   }
 
   isPagePDF() {
@@ -1236,6 +1237,8 @@ class Recorder {
       if (request.getRequestHeadersDict) {
         opts.headers = request.getRequestHeadersDict().headers;
         opts.headers.delete("range");
+      } else if (request.headers) {
+        opts.headers = request.headers;
       }
 
       let resp = await fetch(request.url, opts);

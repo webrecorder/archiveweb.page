@@ -1,7 +1,7 @@
 {
   "name": "Webrecorder ArchiveWeb.page",
   "description": "Create high-fidelity web archives directly in your browser",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
     "debugger",

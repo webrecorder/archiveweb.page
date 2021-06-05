@@ -21,6 +21,8 @@ import wrRec from "../assets/recLogo.svg";
 // eslint-disable-next-line no-undef
 const VERSION = __VERSION__;
 
+let ipfsSharePending = 0;
+
 
 //============================================================================
 class ArchiveWebApp extends ReplayWebApp
@@ -428,7 +430,11 @@ class WrRecCollIndex extends CollIndex
   firstUpdated() {
     this.loadColls();
 
-    this._poll = setInterval(() => this.loadColls(), 10000);
+    this._poll = setInterval(() => {
+      if (!ipfsSharePending) {
+        this.loadColls();
+      }
+    }, 10000);
   }
 
   static get properties() {
@@ -798,19 +804,25 @@ class WrRecCollInfo extends LitElement
         window.archivewebpage.ipfsUnpin(this.coll.id));
     }
 
+    ipfsSharePending++;
+
     return new Promise((resolve) => {
       const port = chrome.runtime.connect({name: "share-port"});
       port.onMessage.addListener((message) => {
         if (message.progress) {
-          console.log(message);
           this.shareProgress = message.size;
-          //this.requestUpdate();
           return;
         }
 
         this.shareProgress = 0;
+        ipfsSharePending--;
         resolve(message);
       });
+
+      port.onDisconnect.addListener(() => {
+        console.log("port disconnected");
+      });
+
       port.postMessage({collId, pin});
     });
   }

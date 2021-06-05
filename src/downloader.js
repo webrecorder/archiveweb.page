@@ -14,7 +14,7 @@ import { getTSMillis, getStatusText } from "@webrecorder/wabac/src/utils";
 
 
 // ===========================================================================
-const WACZ_VERSION = "1.1.0";
+const WACZ_VERSION = "1.1.1";
 
 const encoder = new TextEncoder();
 
@@ -477,8 +477,10 @@ class Downloader
     root.profile = "data-package";
 
     root.resources = this.fileStats.map((stats) => {
+      const path = stats.filename;
       return {
-        path: stats.filename,
+        name: path.slice(path.lastIndexOf("/") + 1),
+        path,
         hash: this.hashType + ":" + stats.hash,
         bytes: stats.size,
       };

@@ -44,16 +44,25 @@ chrome.runtime.onConnect.addListener((port) => {
 
 function shareHandler(port) {
   let size = 0;
+  let disconnected = false;
 
   port.onMessage.addListener(async (message) => {
     function progress(incSize) {
       size += incSize;
-      port.postMessage({size, progress: true});
+      if (!disconnected) {
+        port.postMessage({size, progress: true});
+      }
     }
 
     const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin, progress);
-    port.postMessage(resp);
-    port.disconnect();
+    if (!disconnected) {
+      port.postMessage(resp);
+      port.disconnect();
+    }
+  });
+
+  port.onDisconnect.addListener(() => {
+    disconnected = true;
   });
 }
 

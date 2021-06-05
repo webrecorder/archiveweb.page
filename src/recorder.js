@@ -61,6 +61,8 @@ class Recorder {
 
     this.pdfLoadURL = null;
 
+    this.pixelRatio = 1;
+
     this.failureMsg = null;
 
     this.id = 1;
@@ -358,11 +360,20 @@ class Recorder {
 
     await this.send("Runtime.enable");
 
+    await this.initPixRatio();
+
     await this._doInjectTopFrame();
 
     await this.sessionInit([]);
 
     this.failureMsg = null;
+  }
+
+  async initPixRatio() {
+    const {result} = await this.pageEval("__awp_get_pix_ratio", "window.devicePixelRatio");
+    if (result && result.type === "number") {
+      this.pixelRatio = result.value;
+    }
   }
 
   async sessionInit(sessions) {
@@ -1059,14 +1070,16 @@ class Recorder {
           this.pageInfo.mime = "application/pdf";
           this.pdfLoadURL = reqresp.url;
         } else {
+          if (!data.extraOpts) {
+            data.extraOpts = {};
+          }
+
+          data.extraOpts.pixelRatio = this.pixelRatio;
+
           // handle storage
           const storage = await this.getStorage(reqresp.url);
 
           if (storage) {
-            if (!data.extraOpts) {
-              data.extraOpts = {};
-            }
-
             data.extraOpts.storage = storage;
           }
         }
@@ -1085,8 +1098,8 @@ class Recorder {
   }
 
   async getStorage(url) {
-    // don't enable yet
-    if (!this.captureStorage) {
+    // check if recording storage is allowed
+    if (!this.recordStorage) {
       return null;
     }
 

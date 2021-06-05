@@ -28,6 +28,8 @@ class BrowserRecorder extends Recorder {
 
     this.port = port;
 
+    this.recordStorage = !!self.localStorage["recordStorage"];
+
     this._onDetached = (tab, reason) => {
       if (tab && this.tabId !== tab.tabId) {
         return;

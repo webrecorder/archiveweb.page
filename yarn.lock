@@ -854,12 +854,12 @@
     warcio "^1.4.6"
     wbn "^0.0.3"
 
-"@webrecorder/wabac@^2.7.8":
-  version "2.7.8"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.8.tgz#460221a5381d09ec254737eb81f79cb06770d34f"
-  integrity sha512-1xgJ8hCxEoqbNW3a7bBIruPJOGbRaOSaxVKJbhklQsrg6Fy+tXe3KTvuteFRt9gGR2ul5uOR2n2QiCUAkgAaiw==
+"@webrecorder/wabac@^2.7.9":
+  version "2.7.9"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.9.tgz#1eaa011ab53dee124a793385e2f353ddadac114b"
+  integrity sha512-92u3eIdINhXWcddF6EVfVu+eMy4mitA9580e3CLEo3CgCtQa5mF/gIfpSYw8k8RnaE7HUWqEaNZ7QXFPIF8X/Q==
   dependencies:
-    "@webrecorder/wombat" "^3.2.0"
+    "@webrecorder/wombat" "^3.2.1"
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.15.1"
     format-link-header "^3.1.1"
@@ -881,10 +881,10 @@
   resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.1.8.tgz#fab4446ecf6f84e0ab52b31260ccbdda76fa45ce"
   integrity sha512-0kdyxV+U9P1RC3XS445czFh8nUlk8rPnMIpyYCyDBgsXTweGaZCd79FHo/83+EYnpl0YBCXHV5lt0yaT3mmLZA==
 
-"@webrecorder/wombat@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.2.0.tgz#e03525a9a0f1c8b5f59c4b0c2e37a7ed72333a57"
-  integrity sha512-iDXoBIaosIcmtl0qp2e0RC+roA5U5F2Xbwv3les8mrRXG90V9TJ5UTEzt62ZvoZ2CxsJz3S/rMC2gkYuC2DDZw==
+"@webrecorder/wombat@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.2.1.tgz#f587fbfd0910758edd13a61e461c03b348784747"
+  integrity sha512-JSoJJ1sskM1+u0zycMHwiNhQNbMFoTh8AV35mW9BjMhTU2wcKM4SHkJpKDjVBLI+KqGy1Vn44kvmde0ZZ1n7ag==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -1683,10 +1683,10 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browsertrix-behaviors@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.1.tgz#5a3b7d2f1ed5dad5054312738c69748b8ec638b8"
-  integrity sha512-NkReAj+PMS91oewA0tpsyvQVFspsy8mhKLXT8sg33pSDGYCDVlezqPt2agKmsmG1Y2m39yOzt31L8A3v4WcJDw==
+browsertrix-behaviors@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.2.tgz#50b52fcab80ecb4793827b6affaf20a50a8b6c21"
+  integrity sha512-6yuanZtGBm90gSUNAYxkbTt52ikKzs84kDH9eLVTl6Q1H2PMQJHLd4SY47fF/WU5PR0A2yRSQyuU3GAbPefLPQ==
 
 buffer-crc32@~0.2.3:
   version "0.2.13"

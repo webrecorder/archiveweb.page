@@ -832,12 +832,12 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@^2.7.7":
-  version "2.7.7"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.7.tgz#89e42fcc8d0b971209edab6e27e83e727cf60b0d"
-  integrity sha512-7uKOVcJA8h+TA3xek+EBkzm5r4SYUUPyAxwyAPoRhn+cvuJcxYUN1Q6LuK47eHwJE4dYLSJr8+b5DMHl3orzRw==
+"@webrecorder/wabac@^2.7.10":
+  version "2.7.10"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.10.tgz#50b06ea78975db489be0ac82ac288e704a9c5244"
+  integrity sha512-9NmkV3TO+vhTGhEpaqjF7gaUUsAS1zSvp84y0hpkdwDv9WefcILgiR/0PElRmDE6OpYHvsv8QzonW9BUrFMMIg==
   dependencies:
-    "@webrecorder/wombat" "^3.1.8"
+    "@webrecorder/wombat" "^3.2.2"
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.15.1"
     format-link-header "^3.1.1"
@@ -854,37 +854,10 @@
     warcio "^1.4.6"
     wbn "^0.0.3"
 
-"@webrecorder/wabac@^2.7.9":
-  version "2.7.9"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.7.9.tgz#1eaa011ab53dee124a793385e2f353ddadac114b"
-  integrity sha512-92u3eIdINhXWcddF6EVfVu+eMy4mitA9580e3CLEo3CgCtQa5mF/gIfpSYw8k8RnaE7HUWqEaNZ7QXFPIF8X/Q==
-  dependencies:
-    "@webrecorder/wombat" "^3.2.1"
-    brotli "github:foliojs/brotli.js"
-    fast-xml-parser "^3.15.1"
-    format-link-header "^3.1.1"
-    http-status-codes "^2.1.4"
-    idb "^5.0.1"
-    js-levenshtein "^1.1.6"
-    js-yaml "^3.13.1"
-    json-2-csv "^3.7.1"
-    pako "^1.0.10"
-    parse-link-header "^1.0.1"
-    parse5-html-rewriting-stream "^6.0.1"
-    parse5-sax-parser "^6.0.1"
-    path-parser "^6.1.0"
-    warcio "^1.4.6"
-    wbn "^0.0.3"
-
-"@webrecorder/wombat@^3.1.8":
-  version "3.1.8"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.1.8.tgz#fab4446ecf6f84e0ab52b31260ccbdda76fa45ce"
-  integrity sha512-0kdyxV+U9P1RC3XS445czFh8nUlk8rPnMIpyYCyDBgsXTweGaZCd79FHo/83+EYnpl0YBCXHV5lt0yaT3mmLZA==
-
-"@webrecorder/wombat@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.2.1.tgz#f587fbfd0910758edd13a61e461c03b348784747"
-  integrity sha512-JSoJJ1sskM1+u0zycMHwiNhQNbMFoTh8AV35mW9BjMhTU2wcKM4SHkJpKDjVBLI+KqGy1Vn44kvmde0ZZ1n7ag==
+"@webrecorder/wombat@^3.2.2":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.2.2.tgz#e803d6929f9c55d0e68bf0f4b363114c27695924"
+  integrity sha512-oe+EMpPZUo5YoPjvrfxrf8+z/atBh9yzr7S2xFOeXXpeBt/s62rFY84n/tuE6poIKtYHSD9Radjap7JSuE9F6w==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -1683,10 +1656,10 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browsertrix-behaviors@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.2.tgz#50b52fcab80ecb4793827b6affaf20a50a8b6c21"
-  integrity sha512-6yuanZtGBm90gSUNAYxkbTt52ikKzs84kDH9eLVTl6Q1H2PMQJHLd4SY47fF/WU5PR0A2yRSQyuU3GAbPefLPQ==
+browsertrix-behaviors@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.3.tgz#207ddbd88c54f388ad9723406982cabe772bceaf"
+  integrity sha512-4OaELMXU9bljvEsBMJrwWNLnlHsy9OIOL2ZXa0t0rcSQzAUm3HbhIWWNSh+LY0h/76mljbpsqW0kptIqgNJqvg==
 
 buffer-crc32@~0.2.3:
   version "0.2.13"
@@ -9161,13 +9134,13 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.4.4.tgz#8f6ab0e1945791847ae78444f3a981c141178cf0"
-  integrity sha512-ujA4PiGcU2QdyKIQx9En/pnj4BzFU7anU8FV3TiWjRZyBrmY8HVtyW3OvmFrBbUX/yQdRGJS1FLdg/USkpC/yQ==
+replaywebpage@^1.4.6:
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.4.6.tgz#ca6581eedd2d90cd61cdf27136a4589ac637cc4a"
+  integrity sha512-ylC/2QKZ3EwJjv1zR4071euxUN+RPM2mPaibxJjtsQjBSDNsG4xY1WDrIvU8i7fOT0/esJSsXjI5+2XgD0lGDA==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
-    "@webrecorder/wabac" "^2.7.7"
+    "@webrecorder/wabac" "^2.7.10"
     bulma "^0.9.2"
     electron-log "^4.3.0"
     electron-updater "^4.3.5"

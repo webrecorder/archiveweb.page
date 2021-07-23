@@ -1175,26 +1175,10 @@ class Recorder {
     }
   }
 
-  doAsyncFetch(request, /*sessions = []*/) {
-    //return this.doAsyncFetchInBrowser(request, sessions);
-    return this.doAsyncFetchDirect(request);
-  }
-
-  async doAsyncFetchInBrowser(request, sessions) {
-    if (this._fetchUrls.has(request.url)) {
-      console.log("Skipping, already fetching: " + request.url);
-      return;
-    }
-
+  async doAsyncFetchInBrowser(request, sessions, skipCheck = false) {
     this._fetchUrls.add(request.url);
 
-    const expression = `
-    (async (url) => {
-      console.log("Async Fetching: " + url);
-      const resp = await fetch(url, {"redirect": "manual"});
-      return resp.status;
-    })("${request.url}");
-    `;
+    const expression = `self.__bx_behaviors.doAsyncFetch("${request.url}")`;
 
     console.log("Start Async Load: " + request.url);
 
@@ -1202,7 +1186,7 @@ class Recorder {
     console.log("Async Fetch Result: " + JSON.stringify(result));
   }
 
-  async doAsyncFetchDirect(request) {
+  async doAsyncFetch(request, sessions) {
     if (!request || !this.isValidUrl(request.url)) {
       return;
     }
@@ -1213,6 +1197,7 @@ class Recorder {
     }
 
     request.pageInfo = this.pageInfo;
+    request.sessions = sessions;
 
     this._fetchQueue.push(request);
 
@@ -1258,6 +1243,11 @@ class Recorder {
       if (resp.status !== 200) {
         console.warn(`async fetch error ${resp.status}, retrying without headers`);
         resp = await fetch(request.url);
+        if (resp.status >= 400) {
+          console.warn(`async fetch returned: ${resp.status}, trying in-browser fetch`);
+          await this.doAsyncFetchInBrowser(request, request.sessions, true);
+          return;
+        }
       }
 
       const payload = await resp.arrayBuffer();

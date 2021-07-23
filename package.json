@@ -29,7 +29,7 @@
     "copy-webpack-plugin": "^6.4.0",
     "css-loader": "^3.5.3",
     "electron": "^12.0.7",
-    "electron-builder": "^22.9.1",
+    "electron-builder": "^22.11.7",
     "electron-notarize": "^1.0.0",
     "generate-json-webpack-plugin": "1.0.0",
     "mini-css-extract-plugin": "^0.9.0",
@@ -78,17 +78,17 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
-      "target": [
-        "dmg",
-        "zip"
-      ],
+      "target": [{
+        "target": "dmg",
+        "arch": "universal"
+      }, {
+        "target": "zip",
+        "arch": "universal"
+      }],
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "electronLanguages": [
-        "en"
-      ],
       "extraResources": [
         "plugins-mac"
       ]

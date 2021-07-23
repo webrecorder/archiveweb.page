@@ -44,11 +44,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         run: |
-              if [ "$GITHUB_REF" == "refs/heads/main" ]; then
+              #if [ "$GITHUB_REF" == "refs/heads/main" ]; then
+              #  export YARN_BUILD_CMD="release"
+              #else
                 export YARN_BUILD_CMD="release"
-              else
-                export YARN_BUILD_CMD="dist"
-              fi
+              #fi
 
               if [ "$RUNNER_OS" == "Linux" ]; then
                 if [ "$PLATFORM" == "linux" ]; then

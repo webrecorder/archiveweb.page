@@ -1175,7 +1175,7 @@ class Recorder {
     }
   }
 
-  async doAsyncFetchInBrowser(request, sessions, skipCheck = false) {
+  async doAsyncFetchInBrowser(request, sessions) {
     this._fetchUrls.add(request.url);
 
     const expression = `self.__bx_behaviors.doAsyncFetch("${request.url}")`;

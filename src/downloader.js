@@ -233,7 +233,7 @@ class Downloader
     this.hashType = "sha256";
 
     this.addFile(zip, "pages/pages.jsonl", this.generatePages(), true);
-    this.addFile(zip, "archive/data.warc", this.generateWARC(filename + "#/archive/data.warc", true), false);
+    this.addFile(zip, "archive/data.warc.gz", this.generateWARC(filename + "#/archive/data.warc.gz", true), false);
     //this.addFile(zip, "archive/text.warc", this.generateTextWARC(filename + "#/archive/text.warc"), false);
 
     // don't use compressed index if we'll have a single block, need to have at least enough for 2 blocks
@@ -380,7 +380,7 @@ class Downloader
         if (resource.skipped) {
           continue;
         }
-        yield getCDX(resource, "data.warc", raw);
+        yield getCDX(resource, "data.warc.gz", raw);
       }
 
       // for await (const resource of this.textResources) {

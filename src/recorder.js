@@ -627,9 +627,11 @@ class Recorder {
     }
 
     try {
-      //const startTime = new Date().getTime();
-      return await this.send("DOM.getDocument", {"depth": -1, "pierce": true});
-      //console.log(`Time getting text for ${this.pageInfo.id}: ${(new Date().getTime() - startTime)}`);
+      // wait upto 5s for getDocument, otherwise proceed
+      return await Promise.race([
+        this.send("DOM.getDocument", {"depth": -1, "pierce": true}),
+        sleep(10000)
+      ]);
     } catch(e) {
       console.log(e);
       return null;
@@ -962,10 +964,10 @@ class Recorder {
     case "text/javascript":
     case "application/javascript":
     case "application/x-javascript": {
-      string = payload.toString("utf-8");
       const rw = baseDSRules.getRewriter(params.request.url);
 
       if (rw !== baseDSRules.defaultRewriter) {
+        string = payload.toString("utf-8");
         newString = rw.rewrite(string, {live: true});
       }
       break;

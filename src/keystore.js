@@ -74,7 +74,7 @@ export class Signer
     }
   }
 
-  async sign(string) {
+  async sign(string, created) {
     let keyPair;
     let keys = await this.loadKeys();
 
@@ -119,7 +119,14 @@ export class Signer
 
     signature = encodeBase64(new Uint8Array(signature));
 
-    return { signature, publicKey: keys.public };
+    return {
+      hash: string,
+      signature,
+      publicKey: keys.public,
+      created,
+      // eslint-disable-next-line no-undef
+      software: `ArchiveWeb.page ${__VERSION__}`
+    };
   }
 
   async saveKeys(keys, id = "_userkey") {

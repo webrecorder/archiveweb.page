@@ -9,6 +9,8 @@ const MAX_URL_LENGTH = 4096;
 
 const EXCLUDE_HEADERS = ["content-encoding", "transfer-encoding"];
 
+const encoder = new TextEncoder();
+
 
 // ===========================================================================
 class RequestResponseInfo
@@ -154,6 +156,8 @@ class RequestResponseInfo
       respHeaders.headersDict["x-wabac-preset-cookie"] = cookie;
     }
 
+    const reqUrl = this.url;
+
     if (this.postData) {
       const convData = {
         url: this.url,
@@ -168,7 +172,8 @@ class RequestResponseInfo
       }
     }
 
-    const data = {url: this.url,
+    const data = {
+      url: this.url,
       ts: this.ts,
       status: this.status,
       statusText:this.statusText,
@@ -182,6 +187,14 @@ class RequestResponseInfo
 
     if (this.method !== "GET") {
       data.method = this.method;
+      if (this.postData) {
+        if (typeof(this.postData) === "string") {
+          data.requestBody = encoder.encode(this.postData);
+        } else {
+          data.requestBody = this.postData;
+        }
+        data.requestUrl = reqUrl;
+      }
     }
 
     return data;

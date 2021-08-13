@@ -453,9 +453,7 @@ class Downloader
 
     if (this.signer) {
       try {
-        const {signature, publicKey} = await this.signer.sign(hash);
-        data.signature = signature;
-        data.publicKey = publicKey;
+        data.signedData = await this.signer.sign(hash, this.createdDate);
 
         this.signer.close();
         this.signer = null;
@@ -600,10 +598,10 @@ class Downloader
   }
 
   async createWARCRecord(resource) {
-    const url = resource.url;
+    let url = resource.url;
     const date = new Date(resource.ts).toISOString();
     resource.timestamp = getTSMillis(date);
-    const httpHeaders = resource.respHeaders;
+    const httpHeaders = resource.respHeaders || {};
     const warcVersion = "WARC/1.1";
 
     // remove aas never preserved in browser-based capture
@@ -616,12 +614,26 @@ class Downloader
 
     let refersToUrl, refersToDate;
 
+    let method = "GET";
+    let requestBody;
+
+    // non-GET request/response:
+    // if original request body + original requestURL is preserved, write that with original method
+    // otherwise, just serialize the converted-to-GET form
+    if (resource.method && resource.method !== "GET" && resource.requestBody && resource.requestUrl) {
+      requestBody = resource.requestBody;
+      method = resource.method;
+      url = resource.requestUrl;
+    } else {
+      requestBody = new Uint8Array([]);
+    }
+
     const digestOriginal = this.digestsVisted[resource.digest];
 
     if (resource.digest && digestOriginal) {
 
       // if exact resource in a row, and same page, then just skip instead of writing revisit
-      if (url === this.lastUrl && pageId === this.lastPageId) {
+      if (url === this.lastUrl && pageId === this.lastPageId && method === "GET") {
         //console.log("Skip Dupe: " + url);
         return null;
       }
@@ -657,7 +669,9 @@ class Downloader
         return null;
       }
 
-      this.digestsVisted[resource.digest] = {url, date};
+      if (method === "GET") {
+        this.digestsVisted[resource.digest] = {url, date};
+      }
     }
 
     const status = resource.status || 200;
@@ -700,7 +714,6 @@ class Downloader
         "WARC-Concurrent-To": record.warcHeader("WARC-Record-ID"),
       };
 
-      const method = resource.method || "GET";
       const urlParsed = new URL(url);
       const statusline = method + " " + url.slice(urlParsed.origin.length);
 
@@ -709,7 +722,7 @@ class Downloader
         warcHeaders: reqWarcHeaders,
         httpHeaders: resource.reqHeaders,
         statusline,
-      }, getPayload(new Uint8Array([])));
+      }, getPayload(requestBody));
 
       records.push(await WARCSerializer.serialize(reqRecord, {gzip: true}));
     }

@@ -627,7 +627,7 @@ class Recorder {
     }
 
     try {
-      // wait upto 5s for getDocument, otherwise proceed
+      // wait upto 10s for getDocument, otherwise proceed
       return await Promise.race([
         this.send("DOM.getDocument", {"depth": -1, "pierce": true}),
         sleep(10000)

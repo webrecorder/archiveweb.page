@@ -24,6 +24,8 @@ class ElectronRecorderApp extends ElectronReplayApp
   constructor(opts) {
     super(opts);
 
+    this.userAgent = null;
+
     this.recorders = new Map();
   }
 
@@ -44,6 +46,7 @@ class ElectronRecorderApp extends ElectronReplayApp
     sesh.setUserAgent(desktopUA);
 
     app.userAgentFallback = desktopUA;
+    this.userAgent = desktopUA;
 
     ipcMain.on("start-rec", (event, opts) => {
       this.createRecordWindow(opts);
@@ -152,7 +155,8 @@ class ElectronRecorderApp extends ElectronReplayApp
       collId,
       autorun,
       popup: popupView,
-      staticPrefix: this.staticContentPath
+      staticPrefix: this.staticContentPath,
+      userAgent: this.userAgent,
     });
 
     recWindow.on("close", (event) => {

@@ -83,6 +83,10 @@ class Recorder {
     this.behaviorState = BEHAVIOR_WAIT_LOAD;
     this.behaviorData = null;
     this.autorun = false;
+
+    this.defaultFetchOpts = {
+      redirect: "manual"
+    };
   }
 
   setAutoRunBehavior(autorun) {
@@ -1232,7 +1236,7 @@ class Recorder {
 
       this._fetchPending.set(fetchId, pending);
 
-      const opts = {};
+      const opts = {...this.defaultFetchOpts};
 
       if (request.getRequestHeadersDict) {
         opts.headers = request.getRequestHeadersDict().headers;
@@ -1242,9 +1246,12 @@ class Recorder {
       }
 
       let resp = await fetch(request.url, opts);
-      if (resp.status !== 200) {
+      if (resp.status === 0) {
+        console.warn(`async fetch error ${resp.status}, opaque due to redirect, retrying in browser`);
+        await this.doAsyncFetchInBrowser(request, request.sessions, true);
+      } else if (resp.status >= 400) {
         console.warn(`async fetch error ${resp.status}, retrying without headers`);
-        resp = await fetch(request.url);
+        resp = await fetch(request.url, this.defaultFetchOpts);
         if (resp.status >= 400) {
           console.warn(`async fetch returned: ${resp.status}, trying in-browser fetch`);
           await this.doAsyncFetchInBrowser(request, request.sessions, true);

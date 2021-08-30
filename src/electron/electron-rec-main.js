@@ -3,6 +3,9 @@
 import { ElectronRecorderApp } from "./electron-recorder-app";
 import path from "path";
 
+import btoa from "btoa";
+global.btoa = btoa;
+
 
 // ===========================================================================
 const recorderApp = new ElectronRecorderApp({

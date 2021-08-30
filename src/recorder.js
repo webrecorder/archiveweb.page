@@ -587,7 +587,7 @@ class Recorder {
 
   handleWindowOpen(url, sessions) {
     const headers = {"Referer": this.pageInfo.url};
-    this.doAsyncFetchDirect({url, headers}, sessions);
+    this.doAsyncFetch({url, headers}, sessions);
   }
 
   isPagePDF() {

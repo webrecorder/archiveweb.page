@@ -155,7 +155,7 @@ const extensionConfig = (env, argv) => {
     target: "web",
     entry: {
       "bg": "./src/ext/bg.js",
-      "ui": "./src/ui.js",
+      "ui": "./src/ui/app.js",
       "popup": "./src/popup.js",
       "sw": "./src/sw/main.js"
     },

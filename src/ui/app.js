@@ -6,11 +6,13 @@ import { ReplayWebApp, Embed, Loader } from "replaywebpage";
 import fasHelp from "@fortawesome/fontawesome-free/svgs/solid/question-circle.svg";
 import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
 
+import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
+//import fasCog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg";
 
-//import wrText from '../assets/webrecorder-text.svg';
-
-import { wrRec } from "./coll-info";
+import "./coll-info";
 import "./coll-index";
+
+import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
 
 
@@ -38,13 +40,16 @@ class ArchiveWebApp extends ReplayWebApp
     return {
       ...ReplayWebApp.properties,
 
-      recordShown: { type: Boolean },
+      showStartRecord: { type: Boolean },
       showCollDrop: { type: Boolean },
       colls: { type: Array },
       selCollId: { type: String },
       selCollTitle: { type: String },
       recordUrl: { type: String },
       autorun: { type: Boolean },
+
+      showNew: { type: String },
+      showImport: { type: Boolean }
     };
   }
 
@@ -55,7 +60,26 @@ class ArchiveWebApp extends ReplayWebApp
     this.sourceUrl = pageParams.get("source") || "";
   }
 
+  onStartLoad(event) {
+    this.showImport = false;
+    this.sourceUrl = event.detail.sourceUrl;
+    this.loadInfo = event.detail;
+  }
+
+  onCollLoaded(event) {
+    this.loadInfo = null;
+    if (event.detail.sourceUrl && event.detail.sourceUrl !== this.sourceUrl) {
+      this.sourceUrl = event.detail.sourceUrl;
+      this.pageParams.set("source", this.sourceUrl);
+      window.location.search = this.pageParams.toString();
+    }
+  }
+
   getLoadInfo(sourceUrl) {
+    if (this.loadInfo) {
+      return this.loadInfo;
+    }
+
     const customColl = sourceUrl.startsWith("local://") ? sourceUrl.slice("local://".length) : sourceUrl;
 
     return {customColl};
@@ -109,11 +133,20 @@ class ArchiveWebApp extends ReplayWebApp
         align-items: center;
         margin-bottom: 0.5em;
       }
+
+      .infomsg {
+        margin-left: auto;
+        max-width: 300px;
+      }
   
       @media screen and (max-width: 768px) {
         #url {
           border-bottom-right-radius: 4px;
           border-top-right-radius: 4px;
+        }
+
+        .no-pad-mobile {
+          padding-right: 2px;
         }
       }
 
@@ -146,43 +179,38 @@ class ArchiveWebApp extends ReplayWebApp
   renderHomeIndex() {
     return html`
       <section class="section less-padding">
-        <div class="columns">
-          <div class="column">
-            <div class="message is-small is-9">
-              <div class="message-header" style="background-color: #ddddff; color: black">New Web Archive</div>
-              <div class="extra-padding message-body">
-                <form class="is-flex" @submit="${this.onNewColl}">
-                  <div class="field has-addons">
-                    <div class="control is-expanded">
-                      <input class="input is-small" id="new-name" type="text" required placeholder="Enter New Archive Name">
-                    </div>
-                    <div class="control">
-                      <button class="button is-small" type="submit">
-                        <span class="icon">
-                          <fa-icon .svg=${fasPlus}></fa-icon>
-                        </span>
-                        <span>Create New</span>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
+        <div class="message is-small">
+          <div class="message-body">
+            <div class="buttons">
+              <button class="button is-small no-pad-mobile" title="Create New..." @click="${() => this.showNew = "show"}">
+                <span class="icon">
+                  <fa-icon .svg=${fasPlus}></fa-icon>
+                </span>
+                <span class="is-hidden-mobile">Create New...</span>
+              </button>
+              <button class="button is-small no-pad-mobile" title="Import Existing..." @click="${() => this.showImport = true}">
+                <span class="icon">
+                  <fa-icon .svg=${fasUpload}></fa-icon>
+                </span>
+                <span class="is-hidden-mobile">Import Existing...</span>
+              </button>
+              <button class="button is-small no-pad-mobile" title="Start Recording..." ?disabled="${!this.colls}" @click="${this.onShowStart}">
+                <span class="icon">
+                  <fa-icon size="1.0em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+                </span>
+                <span class="is-hidden-mobile">Start Recording...</span>
+              </button>
+              <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to create web archives directly in your browser!</div>
             </div>
           </div>
-          <div class="column is-3 is-hidden-mobile">
-            <div class="message is-small">
-              <div class="message-body">
-                The ArchiveWeb.page ${IS_APP ? "App" : "Chrome extension"} allows you to create web archives directly in your browser!  
-              </div>
-            </div>
-          </div>
-        </div>
+        </div> 
       </section>
 
       <wr-rec-coll-index
        dateName="Date Created"
        headerName="Current Web Archives"
        @show-start=${this.onShowStart}
+       @colls-updated=${(e) => this.colls = e.detail.colls}
        style="overflow: visible"
        >
       </wr-rec-coll-index>
@@ -191,7 +219,9 @@ class ArchiveWebApp extends ReplayWebApp
 
   render() {
     return html`
-    ${this.recordShown ? this.renderStartModal() : ""}
+    ${this.showStartRecord ? this.renderStartModal() : ""}
+    ${this.showNew ? this.renderNewCollModal() : ""}
+    ${this.showImport ? this.renderImportModal() : ""}
     ${super.render()}`;
   }
 
@@ -212,15 +242,15 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderStartModal() {
     return html`
-    <wr-modal @modal-closed="${() => this.recordShown = false}" title="Start Recording">
+    <wr-modal @modal-closed="${() => this.showStartRecord = false}" title="Start Recording">
       <div class="dropdown-row">
         <span>Archive To:&nbsp;</span>
         <div class="select is-small">
           <select @change="${this.onSelectColl}">
-          ${this.colls.map((coll) => html`
+          ${this.colls && this.colls.map((coll) => html`
             <option value="${coll.id}"
             ?selected="${this.selCollId === coll.id}"
-            >${coll.title}</option>`)}
+            >${coll.title || coll.loadUrl}</option>`)}
           </select>
         </div>
       </div>
@@ -254,6 +284,34 @@ class ArchiveWebApp extends ReplayWebApp
         </label>` : ""}
       </form>
     </wr-modal>`;
+  }
+
+  renderNewCollModal() {
+    return html`
+    <wr-modal @modal-closed="${() => this.showNew = null}" title="Create New Archive">
+      <form @submit="${this.onNewColl}" class="create-new">
+        <div class="field has-addons">
+          <p class="control is-expanded">
+            <input type="text" id="new-title" name="new-title" class="input" required placeholder="Enter the title for the new archive">
+          </p>
+          <div class="control">
+            <button type="submit" class="button is-hidden-mobile is-primary ${this.showNew === "loading" ? "is-loading " : ""}" ?disabled="${this.showNew === "loading"}">Create New</button>
+          </div>
+        </div>
+      </form>
+    </wr-modal`;
+  }
+
+  renderImportModal() {
+    return html`
+    <wr-modal style="--modal-width: 740px" @modal-closed="${() => this.showImport = false}" title="Import an Existing Archive">
+      <wr-chooser
+        style="flex: auto"
+        .newFullImport="${true}"
+        noHead="${true}"
+        @load-start=${this.onStartLoad}>
+      </wr-chooser>
+    </wr-modal`;
   }
 
   renderAbout() {
@@ -318,14 +376,21 @@ class ArchiveWebApp extends ReplayWebApp
       </div>`;
   }
 
-  async onNewColl() {
-    const title = this.renderRoot.querySelector("#new-name").value;
+  async onNewColl(event) {
+    this.showNew = "loading";
+    event.preventDefault();
+    const title = this.renderRoot.querySelector("#new-title").value;
 
     const method = "POST";
     const body = JSON.stringify({"metadata": {title}});
     const resp = await fetch(`${apiPrefix}/c/create`, {method, body});
-    const data = await resp.json();
-    console.log(data);
+    await resp.json();
+    
+    const index = this.renderRoot.querySelector("wr-rec-coll-index");
+    if (index) {
+      index.loadColls();
+    }
+    this.showNew = null;
   }
 
   onSelectColl(event) {
@@ -339,19 +404,16 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = event.detail.coll;
     //this.selCollTitle = event.detail.title;
     this.recordUrl = event.detail.url || "https://example.com/";
-    this.recordShown = true;
-
-    const resp = await fetch(`${apiPrefix}/coll-index`);
-    const data = await resp.json();
-
-    this.colls = data.colls;
+    if (this.colls) {
+      this.showStartRecord = true;
+    }
   }
 
   onStartRecord(event) {
     event.preventDefault();
     const url = this.renderRoot.querySelector("#url").value;
     
-    this.recordShown = false;
+    this.showStartRecord = false;
     const autorun = this.autorun;
 
     const collId = this.selCollId;

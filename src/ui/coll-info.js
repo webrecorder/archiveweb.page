@@ -5,6 +5,9 @@ import { html, css, wrapCss, clickOnSpacebarPress, apiPrefix } from "replaywebpa
 import prettyBytes from "pretty-bytes";
 
 import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
+//import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
+//import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync.svg";
+import fasCopy from "@fortawesome/fontawesome-free/svgs/regular/copy.svg";
 import fasCaretUp from "@fortawesome/fontawesome-free/svgs/solid/caret-up.svg";
 import fasShare from "@fortawesome/fontawesome-free/svgs/solid/share.svg";
 import fasReshare from "@fortawesome/fontawesome-free/svgs/solid/retweet.svg";
@@ -77,7 +80,11 @@ class WrRecCollInfo extends CollInfo
   }
 
   static get styles() {
-    return wrapCss(css`
+    return wrapCss(WrRecCollInfo.compStyles);
+  }
+
+  static get compStyles() {
+    return css`
     :host {
       overflow: visible;
     }
@@ -124,8 +131,9 @@ class WrRecCollInfo extends CollInfo
       margin-top: 2px;
       width: calc(100% - 0.5em);
     }
-    
-    `);
+
+    ${CollInfo.compStyles}
+    `;
   }
 
   firstUpdated() {
@@ -134,7 +142,6 @@ class WrRecCollInfo extends CollInfo
 
   updated(changedProps) {
     if (changedProps.has("coll") && this.coll) {
-
       // Fix for loading single collection from previous versions
       if (this.coll.id === "main.archive" && this.coll.sourceUrl !== "local://main.archive") {
         this.coll = {...this.coll, sourceUrl: "local://main.archive"};
@@ -165,7 +172,6 @@ class WrRecCollInfo extends CollInfo
         </div>
 
         <div class="column is-2"><p class="minihead">Date Created</p>${coll.ctime ? new Date(coll.ctime).toLocaleString() : ""}</div>
-        
         <div class="column is-1"><p class="minihead">Total Size</p>
         ${prettyBytes(Number(coll.size || 0))}
         </div>
@@ -186,7 +192,7 @@ class WrRecCollInfo extends CollInfo
           </div>
         </div>
         
-        <div class="column is-size-7">
+        <div class="column">
           <p class="minihead">Sharing (via IPFS)</p>
           <div class="button-row is-flex">
             ${this.ipfsURL ? html`
@@ -253,6 +259,12 @@ class WrRecCollInfo extends CollInfo
             `}
           </div>
         </div>
+        ${coll.loadUrl ? html`
+        <div class="column is-3">
+        <p class="minihead">Imported From</p>
+        ${coll.loadUrl}
+        <a @click="${(e) => this.onCopy(e, coll.loadUrl)}" class="copy"><fa-icon .svg="${fasCopy}"/></a>
+        </div>` : ""}
       </div>
       ${this.shareWarn ? this.renderShareWarn(): ""}
       `;
@@ -410,3 +422,5 @@ class WrRecCollInfo extends CollInfo
 customElements.define("wr-rec-coll", WrRecColl);
 
 customElements.define("wr-rec-coll-info", WrRecCollInfo);
+
+export { WrRecColl, WrRecCollInfo, wrRec };

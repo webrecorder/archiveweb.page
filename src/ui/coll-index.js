@@ -25,6 +25,14 @@ class WrRecCollIndex extends CollIndex
     }, 10000);
   }
 
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    
+    if (changedProperties.has("sortedColls")) {
+      this.dispatchEvent(new CustomEvent("colls-updated", {detail: {colls: this.sortedColls}}));
+    }
+  }
+
   static get properties() {
     return {
       ...CollIndex.properties,

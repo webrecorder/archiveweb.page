@@ -30,7 +30,7 @@ jobs:
             ~/.cache/electron
             ~/.cache/electron-builder
             **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Run Build
         env:

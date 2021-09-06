@@ -376,7 +376,7 @@ const o=new WeakMap,s=Object(n.d)(e=>t=>{if(!(t instanceof n.a)||t instanceof n.
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <wr-anim-logo class="logo" size="48px"></wr-anim-logo>
-                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":""} v${"0.6.14"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":""} v${"0.6.15"}</div>
                     </div>
 
                     ${p?a.c`
@@ -1167,7 +1167,7 @@ const o=new WeakMap,s=Object(n.d)(e=>t=>{if(!(t instanceof n.a)||t instanceof n.
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.6.14"})</span>
+                <span class="menu-version">(${"0.6.15"})</span>
               </a>
             </div>
           </div>
@@ -2528,7 +2528,7 @@ const dt=new WeakMap,ht=Object(n.d)(e=>t=>{const i=dt.get(t);if(void 0===e&&t in
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${Ct.a}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":"Extension"} v${"0.6.14"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":"Extension"} v${"0.6.15"}</div>
                     </div>
 
                     ${p?a.c`

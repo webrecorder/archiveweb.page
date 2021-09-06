@@ -1249,6 +1249,7 @@ class Recorder {
       if (resp.status === 0) {
         console.warn(`async fetch error ${resp.status}, opaque due to redirect, retrying in browser`);
         await this.doAsyncFetchInBrowser(request, request.sessions, true);
+        return;
       } else if (resp.status >= 400) {
         console.warn(`async fetch error ${resp.status}, retrying without headers`);
         resp = await fetch(request.url, this.defaultFetchOpts);

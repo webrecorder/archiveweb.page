@@ -361,6 +361,7 @@ class Downloader
         const m = resource.url.match(SPLIT_REQUEST_Q_RX);
         if (m) {
           data.url = m[1];
+          // resource.requestBody is the raw payload, use the converted one from the url for the cdx
           data.requestBody = m[2];
         }
         data.method = resource.method;
@@ -621,7 +622,8 @@ class Downloader
     // if original request body + original requestURL is preserved, write that with original method
     // otherwise, just serialize the converted-to-GET form
     if (resource.method && resource.method !== "GET" && resource.requestBody && resource.requestUrl) {
-      requestBody = resource.requestBody;
+      // ensure payload is an arraybuffer
+      requestBody = typeof(resource.requestBody) === "string" ? encoder.encode(resource.requestBody) : resource.requestBody;
       method = resource.method;
       url = resource.requestUrl;
     } else {
@@ -631,7 +633,6 @@ class Downloader
     const digestOriginal = this.digestsVisted[resource.digest];
 
     if (resource.digest && digestOriginal) {
-
       // if exact resource in a row, and same page, then just skip instead of writing revisit
       if (url === this.lastUrl && pageId === this.lastPageId && method === "GET") {
         //console.log("Skip Dupe: " + url);
@@ -656,7 +657,7 @@ class Downloader
       payload = EMPTY;
 
       refersToUrl = resource.origURL;
-      refersToDate = resource.origTS;
+      refersToDate = new Date(resource.origTS).toISOString();
 
     } else {
       type = "response";

@@ -166,7 +166,7 @@ class RequestResponseInfo
         postData: this.postData,
       };
       if (postToGetUrl(convData)) {
-        this.requestBody = convData.requestBody;
+        //this.requestBody = convData.requestBody;
         // truncate to avoid extra long URLs
         this.url = convData.url.slice(0, MAX_URL_LENGTH);
       }

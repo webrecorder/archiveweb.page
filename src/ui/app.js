@@ -49,7 +49,8 @@ class ArchiveWebApp extends ReplayWebApp
       autorun: { type: Boolean },
 
       showNew: { type: String },
-      showImport: { type: Boolean }
+      showImport: { type: Boolean },
+      isImportExisting: { type: Boolean }
     };
   }
 
@@ -64,14 +65,17 @@ class ArchiveWebApp extends ReplayWebApp
     this.showImport = false;
     this.sourceUrl = event.detail.sourceUrl;
     this.loadInfo = event.detail;
+
+    if (this.isImportExisting && this.selCollId) {
+      this.loadInfo.importCollId = this.selCollId;
+    }
   }
 
   onCollLoaded(event) {
-    this.loadInfo = null;
-    if (event.detail.sourceUrl && event.detail.sourceUrl !== this.sourceUrl) {
+    super.onCollLoaded(event);
+
+    if (!event.detail.alreadyLoaded && event.detail.sourceUrl && event.detail.sourceUrl !== this.sourceUrl) {
       this.sourceUrl = event.detail.sourceUrl;
-      this.pageParams.set("source", this.sourceUrl);
-      window.location.search = this.pageParams.toString();
     }
   }
 
@@ -210,7 +214,7 @@ class ArchiveWebApp extends ReplayWebApp
        dateName="Date Created"
        headerName="Current Web Archives"
        @show-start=${this.onShowStart}
-       @colls-updated=${(e) => this.colls = e.detail.colls}
+       @colls-updated=${this.onCollsLoaded}
        style="overflow: visible"
        >
       </wr-rec-coll-index>
@@ -240,21 +244,26 @@ class ArchiveWebApp extends ReplayWebApp
     @about-show=${() => this.showAbout = true}></wr-rec-coll>`;
   }
 
+  renderCollList(text = "") {
+    return html`
+    <div class="dropdown-row">
+      <span>${text}&nbsp;</span>
+      <div class="select is-small">
+        <select @change="${this.onSelectColl}">
+        ${this.colls && this.colls.map((coll) => html`
+          <option value="${coll.id}"
+          ?selected="${this.selCollId === coll.id}"
+          >${coll.title || coll.loadUrl}</option>`)}
+        </select>
+      </div>
+    </div>
+    `;
+  }
+
   renderStartModal() {
     return html`
     <wr-modal @modal-closed="${() => this.showStartRecord = false}" title="Start Recording">
-      <div class="dropdown-row">
-        <span>Archive To:&nbsp;</span>
-        <div class="select is-small">
-          <select @change="${this.onSelectColl}">
-          ${this.colls && this.colls.map((coll) => html`
-            <option value="${coll.id}"
-            ?selected="${this.selCollId === coll.id}"
-            >${coll.title || coll.loadUrl}</option>`)}
-          </select>
-        </div>
-      </div>
-
+      ${this.renderCollList("Archive To:")}
       <div class="field">
         <label class="checkbox is-size-7">
         <input type="checkbox" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
@@ -311,6 +320,15 @@ class ArchiveWebApp extends ReplayWebApp
         noHead="${true}"
         @load-start=${this.onStartLoad}>
       </wr-chooser>
+      <div class="is-flex is-flex-wrap-wrap is-align-items-baseline my-2">
+        <div class="control">
+          <label class="checkbox">
+            <input type="checkbox" name="add-existing" .checked="${this.isImportExisting}" @change="${(e) => this.isImportExisting = e.currentTarget.checked}">
+            Import into an existing collection:
+          </label>
+        </div>
+        ${this.isImportExisting ? this.renderCollList() : ""}
+      </div>
     </wr-modal`;
   }
 
@@ -407,6 +425,11 @@ class ArchiveWebApp extends ReplayWebApp
     if (this.colls) {
       this.showStartRecord = true;
     }
+  }
+
+  onCollsLoaded(event) {
+    this.colls = event.detail.colls;
+    this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
   }
 
   onStartRecord(event) {

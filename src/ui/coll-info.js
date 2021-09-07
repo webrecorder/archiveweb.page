@@ -5,6 +5,7 @@ import { html, css, wrapCss, clickOnSpacebarPress, apiPrefix } from "replaywebpa
 import prettyBytes from "pretty-bytes";
 
 import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
+import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
 //import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
 //import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync.svg";
 import fasCopy from "@fortawesome/fontawesome-free/svgs/regular/copy.svg";
@@ -184,6 +185,11 @@ class WrRecCollInfo extends CollInfo
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
             </button>
+            <button @click="${this.onShowImport}" class="button is-small" title="Import Archive...">
+              <span class="icon">
+                <fa-icon aria-hidden="true" .svg="${fasUpload}"></fa-icon>
+              </span>
+            </button>
             <button @click="${this.onShowStart}" class="button is-small" title="Start Recording...">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${wrRec}"></fa-icon>
@@ -303,6 +309,12 @@ class WrRecCollInfo extends CollInfo
     params.set("pages", "all");
 
     window.location.href = `/replay/${apiPrefix}/c/${this.coll.id}/dl?` + params.toString();
+  }
+
+  onShowImport() {
+    const coll = this.coll.id;
+    const title = this.coll.title;
+    this.dispatchEvent(new CustomEvent("show-import", {bubbles: true, composed: true, detail: {coll, title}}));
   }
 
   onShowShareMenu(event) {

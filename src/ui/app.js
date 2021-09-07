@@ -214,6 +214,7 @@ class ArchiveWebApp extends ReplayWebApp
        dateName="Date Created"
        headerName="Current Web Archives"
        @show-start=${this.onShowStart}
+       @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
        style="overflow: visible"
        >
@@ -241,6 +242,7 @@ class ArchiveWebApp extends ReplayWebApp
     @update-title=${this.onTitle}
     @coll-loaded=${this.onCollLoaded}
     @show-start=${this.onShowStart}
+    @show-import=${this.onShowImport}
     @about-show=${() => this.showAbout = true}></wr-rec-coll>`;
   }
 
@@ -418,13 +420,27 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = event.currentTarget.value;
   }
 
+_setCurrColl(detail) {
+  this.selCollId = detail.coll;
+  //this.selCollTitle = event.detail.title;
+  if (!this.colls || !this.colls.length) {
+    this.colls = [{
+      id: detail.coll,
+      title: detail.title
+    }];
+  }
+}
+
   async onShowStart(event) {
-    this.selCollId = event.detail.coll;
-    //this.selCollTitle = event.detail.title;
+    this._setCurrColl(event.detail);
     this.recordUrl = event.detail.url || "https://example.com/";
-    if (this.colls) {
-      this.showStartRecord = true;
-    }
+    this.showStartRecord = true;
+  }
+
+  onShowImport(event) {
+    this._setCurrColl(event.detail);
+    this.showImport = true;
+    this.isImportExisting = true;
   }
 
   onCollsLoaded(event) {

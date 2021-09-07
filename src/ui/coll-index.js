@@ -15,6 +15,25 @@ class WrRecCollIndex extends CollIndex
     this.ipfsSharePending = 0;
   }
 
+  get sortKeys() {
+    return [
+      {key: "title",
+        name: "Title"},
+
+      {key: "ctime",
+        name: this.dateName},
+
+      {key: "mtime",
+        name: "Date Modified"},
+
+      {key: "size",
+        name: "Total Size"},
+
+      {key: "loadUrl",
+        name: "Source"},
+    ];
+  }
+
   firstUpdated() {
     this.loadColls();
 

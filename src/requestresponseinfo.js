@@ -7,6 +7,8 @@ import { postToGetUrl } from "warcio";
 // max URL length for post/put payload-converted URLs
 const MAX_URL_LENGTH = 4096;
 
+const CONTENT_LENGTH = "content-length";
+const CONTENT_TYPE = "content-type";
 const EXCLUDE_HEADERS = ["content-encoding", "transfer-encoding"];
 
 const encoder = new TextEncoder();
@@ -146,10 +148,10 @@ class RequestResponseInfo
 
     this.ts = new Date().getTime();
 
-    const respHeaders = this.getResponseHeadersDict();
+    const respHeaders = this.getResponseHeadersDict(payload.length);
     const reqHeaders = this.getRequestHeadersDict();
 
-    const mime = (respHeaders.headers.get("content-type") || "").split(";")[0];
+    const mime = (respHeaders.headers.get(CONTENT_TYPE) || "").split(";")[0];
     const cookie = reqHeaders.headers.get("cookie");
 
     if (cookie) {
@@ -230,19 +232,24 @@ class RequestResponseInfo
     return this._getHeadersDict(this.requestHeaders, null);
   }
 
-  getResponseHeadersDict() {
-    return this._getHeadersDict(this.responseHeaders, this.responseHeadersList);
+  getResponseHeadersDict(length) {
+    return this._getHeadersDict(this.responseHeaders, this.responseHeadersList, length);
   }
 
-  _getHeadersDict(headersDict, headersList) {
+  _getHeadersDict(headersDict, headersList, actualContentLength) {
     if (!headersDict && headersList) {
       headersDict = {};
 
       for (const header of headersList) {
-        if (EXCLUDE_HEADERS.includes(header.name.toLowerCase())) {
+        const headerName = header.name.toLowerCase();
+        if (EXCLUDE_HEADERS.includes(headerName)) {
           continue;
         }
-        headersDict[header.name] = header.value.replace(/\n/g, ", ");
+        if (actualContentLength && headerName === CONTENT_LENGTH) {
+          headersDict[headerName] = "" + actualContentLength;
+          continue;
+        }
+        headersDict[headerName] = header.value.replace(/\n/g, ", ");
       }
     }
 
@@ -260,7 +267,12 @@ class RequestResponseInfo
           delete headersDict[key];
           continue;
         }
-        if (EXCLUDE_HEADERS.includes(key.toLowerCase())) {
+        const keyLower = key.toLowerCase();
+        if (EXCLUDE_HEADERS.includes(keyLower)) {
+          continue;
+        }
+        if (actualContentLength && keyLower === CONTENT_LENGTH) {
+          headersDict[key] = "" + actualContentLength;
           continue;
         }
         headersDict[key] = headersDict[key].replace(/\n/g, ", ");
@@ -284,8 +296,8 @@ class RequestResponseInfo
     const length = this.payload.length;
 
     const { headers } = this.getResponseHeadersDict();
-    const contentType = headers.get("content-type");
-    const contentLength = headers.get("content-length");
+    const contentType = headers.get(CONTENT_TYPE);
+    const contentLength = headers.get(CONTENT_LENGTH);
 
     if (Number(contentLength) !== length) {
       return false;

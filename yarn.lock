@@ -1997,10 +1997,10 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bulma@^0.9.2:
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.9.2.tgz#340011e119c605f19b8ca886bfea595f1deaf23c"
-  integrity sha512-e14EF+3VSZ488yL/lJH0tR8mFWiEQVCMi/BQUMi2TGMBOk+zrDg4wryuwm/+dRSHJw0gMawp2tsW7X1JYUCE3A==
+bulma@^0.9.3:
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.9.3.tgz#ddccb7436ebe3e21bf47afe01d3c43a296b70243"
+  integrity sha512-0d7GNW1PY4ud8TWxdNcP6Cc8Bu7MxcntD/RRLGWuiw/s0a9P+XlH/6QoOIrmbj6o8WWJzJYhytiu9nFjTszk1g==
 
 bytes@3.0.0:
   version "3.0.0"
@@ -9688,14 +9688,14 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.0.tgz#e2bf21e927a12e0f253073c7da38920ed5c159d5"
-  integrity sha512-vGhsYWfV55M7JobbvG+O+Uf9/VXkE2nkx9lkvgb4ze53Bl2aMV3yzjsHzsCsEQ6fE/XmBlYTEbIaC090W3lv/A==
+replaywebpage@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.1.tgz#0f2cf3f3a9b485eb8b112e486c5f6fd9b9853eca"
+  integrity sha512-etgrBrYH+kXQSEdximKV4/UYQB+23ZXRHi0W1g2d6L/fxHaAqAHSLTzQWpiaAYvyUjGN0H2h+fhQCSOJvQSb9w==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.13.0"
     "@webrecorder/wabac" "^2.9.0-beta.1"
-    bulma "^0.9.2"
+    bulma "^0.9.3"
     electron-log "^4.3.0"
     electron-updater "^4.3.5"
     fetch-ndjson "^1.1.0"

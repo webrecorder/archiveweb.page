@@ -132,6 +132,10 @@ class Recorder {
   }
 
   async detach() {
+    if (!this.running) {
+      return;
+    }
+
     this.stopping = true;
 
     const domNodes = await this.getFullText(true);
@@ -1188,8 +1192,8 @@ class Recorder {
 
     console.log("Start Async Load: " + request.url);
 
-    const result = await this.pageEval("__awp_async_fetch__", expression, sessions);
-    console.log("Async Fetch Result: " + JSON.stringify(result));
+    await this.pageEval("__awp_async_fetch__", expression, sessions);
+    //console.log("Async Fetch Result: " + JSON.stringify(result));
   }
 
   async doAsyncFetch(request, sessions) {

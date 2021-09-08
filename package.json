@@ -1,6 +1,6 @@
 {
   "name": "archiveweb.page",
-  "version": "0.6.15",
+  "version": "0.6.16",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -11,7 +11,7 @@
     "@webrecorder/wabac": "^2.9.0",
     "browsertrix-behaviors": "^0.2.3",
     "btoa": "^1.2.1",
-    "bulma": "^0.9.2",
+    "bulma": "^0.9.3",
     "flexsearch": "^0.6.32",
     "hash-wasm": "^4.4.1",
     "http-status-codes": "^1.4.0",
@@ -22,7 +22,7 @@
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "pretty-bytes": "^5.3.0",
-    "replaywebpage": "^1.5.0",
+    "replaywebpage": "^1.5.1",
     "uuid": "^8.3.2",
     "warcio": "^1.4.7"
   },

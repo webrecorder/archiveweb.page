@@ -87,6 +87,7 @@ class Downloader
     this.modifiedDate = coll.config.metadata.mtime ? new Date(coll.config.metadata.mtime).toISOString() : null;
 
     this.format = format;
+    this.warcVersion = (format === "warc1.0") ? "WARC/1.0" : "WARC/1.1";
 
     this.filename = filename;
 
@@ -122,6 +123,7 @@ class Downloader
       return this.downloadWACZ(this.filename, sizeCallback);
 
     case "warc":
+    case "warc1.0":
       return this.downloadWARC(this.filename, sizeCallback);
 
     default:
@@ -557,7 +559,7 @@ class Downloader
   }
 
   async createWARCInfo(filename) {
-    const warcVersion = "WARC/1.1";
+    const warcVersion = this.warcVersion;
     const type = "warcinfo";
 
     const info = {
@@ -579,21 +581,24 @@ class Downloader
     return buffer;
   }
 
-  removeEncodingHeaders(headersMap) {
+  fixupHttpHeaders(headersMap, length) {
     let count = 0;
     for (const [name] of Object.entries(headersMap)) {
       const lowerName = name.toLowerCase();
-      if (lowerName === "content-encoding") {
+      switch (lowerName) {
+      case "content-encoding":
+      case "transfer-encoding":
         delete headersMap[name];
-        if (++count === 2) {
-          break;
-        }
+        ++count;
+        break;
+
+      case "content-length":
+        headersMap[name] = "" + length;
+        ++count;
+        break;
       }
-      if (lowerName === "transfer-encoding") {
-        delete headersMap[name];
-        if (++count === 2) {
-          break;
-        }
+      if (count === 3) {
+        break;
       }
     }
   }
@@ -603,10 +608,7 @@ class Downloader
     const date = new Date(resource.ts).toISOString();
     resource.timestamp = getTSMillis(date);
     const httpHeaders = resource.respHeaders || {};
-    const warcVersion = "WARC/1.1";
-
-    // remove aas never preserved in browser-based capture
-    this.removeEncodingHeaders(httpHeaders);
+    const warcVersion = this.warcVersion;
 
     const pageId = resource.pageId;
 
@@ -693,6 +695,9 @@ class Downloader
       warcHeaders["WARC-Payload-Digest"] = resource.digest;
     }
 
+    // remove encoding, set content-length as encoding never preserved in browser-based capture
+    this.fixupHttpHeaders(httpHeaders, payload.length);
+
     const record = await WARCRecord.create({
       url, date, type, warcVersion, warcHeaders, statusline, httpHeaders,
       refersToUrl, refersToDate}, getPayload(payload));
@@ -716,7 +721,7 @@ class Downloader
       };
 
       const urlParsed = new URL(url);
-      const statusline = method + " " + url.slice(urlParsed.origin.length);
+      const statusline = `${method} ${url.slice(urlParsed.origin.length)} HTTP/1.1`;
 
       const reqRecord = await WARCRecord.create({
         url, date, warcVersion, type,
@@ -740,7 +745,7 @@ class Downloader
 
     const type = "resource";
     const warcHeaders = {"Content-Type": "text/plain; charset=\"UTF-8\""};
-    const warcVersion = "WARC/1.1";
+    const warcVersion = this.warcVersion;
 
     const payload = getPayload(encoder.encode(resource.text));
 

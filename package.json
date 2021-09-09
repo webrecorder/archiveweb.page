@@ -8,7 +8,7 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.9.0",
+    "@webrecorder/wabac": "^2.9.1",
     "browsertrix-behaviors": "^0.2.3",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",

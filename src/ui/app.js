@@ -192,11 +192,11 @@ class ArchiveWebApp extends ReplayWebApp
                 </span>
                 <span class="is-hidden-mobile">Create New...</span>
               </button>
-              <button class="button is-small no-pad-mobile" title="Import Existing..." @click="${() => this.showImport = true}">
+              <button class="button is-small no-pad-mobile" title="Import Archive..." @click="${() => this.showImport = true}">
                 <span class="icon">
                   <fa-icon .svg=${fasUpload}></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">Import Existing...</span>
+                <span class="is-hidden-mobile">Import Archive...</span>
               </button>
               <button class="button is-small no-pad-mobile" title="Start Recording..." ?disabled="${!this.colls}" @click="${this.onShowStart}">
                 <span class="icon">
@@ -326,7 +326,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="control">
           <label class="checkbox">
             <input type="checkbox" name="add-existing" .checked="${this.isImportExisting}" @change="${(e) => this.isImportExisting = e.currentTarget.checked}">
-            Import into an existing collection:
+            Add to an existing archive collection${this.isImportExisting ? ":" : ""}
           </label>
         </div>
         ${this.isImportExisting ? this.renderCollList() : ""}
@@ -420,16 +420,16 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = event.currentTarget.value;
   }
 
-_setCurrColl(detail) {
-  this.selCollId = detail.coll;
-  //this.selCollTitle = event.detail.title;
-  if (!this.colls || !this.colls.length) {
-    this.colls = [{
-      id: detail.coll,
-      title: detail.title
-    }];
+  _setCurrColl(detail) {
+    this.selCollId = detail.coll;
+    //this.selCollTitle = event.detail.title;
+    if (!this.colls || !this.colls.length) {
+      this.colls = [{
+        id: detail.coll,
+        title: detail.title
+      }];
+    }
   }
-}
 
   async onShowStart(event) {
     this._setCurrColl(event.detail);

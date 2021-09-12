@@ -138,7 +138,7 @@ class Recorder {
 
     this.stopping = true;
 
-    const domNodes = await this.getFullText(true);
+    const domSnapshot = await this.getFullText(true);
 
     if (this.behaviorState === BEHAVIOR_RUNNING) {
       this.toggleBehaviors();
@@ -159,10 +159,10 @@ class Recorder {
       console.log(e);
     }
 
-    await this._stop(domNodes);
+    await this._stop(domSnapshot);
   }
 
-  async _stop(domNodes = null) {
+  async _stop(domSnapshot = null) {
     clearInterval(this._updateStatusId);
     clearInterval(this._loopId);
     clearInterval(this._bgFetchId);
@@ -172,7 +172,7 @@ class Recorder {
     this.pendingRequests = {};
     this.numPending = 0;
 
-    await this.commitPage(this.pageInfo, domNodes, true);
+    await this.commitPage(this.pageInfo, domSnapshot, true);
 
     if (this._cleaningUp) {
       await this._cleanupStaleWait;
@@ -367,6 +367,8 @@ class Recorder {
     await this.send("Page.enable");
 
     await this.send("Runtime.enable");
+
+    await this.send("DOMSnapshot.enable");
 
     await this.initPixRatio();
 
@@ -637,7 +639,8 @@ class Recorder {
     try {
       // wait upto 10s for getDocument, otherwise proceed
       return await Promise.race([
-        this.send("DOM.getDocument", {"depth": -1, "pierce": true}),
+        //this.send("DOM.getDocument", {"depth": -1, "pierce": true}),
+        this.send("DOMSnapshot.captureSnapshot", {computedStyles: []}),
         sleep(10000)
       ]);
     } catch(e) {
@@ -647,14 +650,14 @@ class Recorder {
   }
 
   async unpauseAndFinish(params) {
-    let domNodes = null;
+    let domSnapshot = null;
 
     // determine if this is the unload from the injected content script
     // if not, unpause but don't extract full text
     const ourUnload = (params.callFrames[0].url === MAIN_INJECT_URL);
 
     if (ourUnload && this.behaviorState !== BEHAVIOR_WAIT_LOAD) {
-      domNodes = await this.getFullText(true);
+      domSnapshot = await this.getFullText(true);
     }
 
     const currPage = this.pageInfo;
@@ -672,17 +675,17 @@ class Recorder {
     if (ourUnload && this.behaviorState !== BEHAVIOR_WAIT_LOAD) {
       this.flushPending();
 
-      await this.commitPage(currPage, domNodes, true);
+      await this.commitPage(currPage, domSnapshot, true);
     }
   }
 
-  commitPage(currPage, domNodes, finished) {
+  commitPage(currPage, domSnapshot, finished) {
     if (!currPage || !currPage.url || !currPage.ts || currPage.url === "about:blank") {
       return;
     }
 
-    if (domNodes) {
-      currPage.text = this.parseTextFromDom(domNodes);
+    if (domSnapshot) {
+      currPage.text = this.parseTextFromDOMSnapshot(domSnapshot);
     } else if (!currPage.text) {
       console.warn("No Full Text Update");
     }
@@ -831,16 +834,16 @@ class Recorder {
 
     const pageInfo = this.pageInfo;
 
-    const results = await Promise.all([
+    const [domSnapshot, favIcon] = await Promise.all([
       this.getFullText(),
       this.getFavIcon(),
     ]);
 
-    if (results[1]) {
-      this.loadFavIcon(results[1], sessions);
+    if (favIcon) {
+      this.loadFavIcon(favIcon, sessions);
     }
 
-    await this.commitPage(this.pageInfo, results[0], false);
+    await this.commitPage(this.pageInfo, domSnapshot, false);
 
     this.updateStatus();
 
@@ -1400,56 +1403,96 @@ class Recorder {
     return this._doSendCommand(method, params, promise);
   }
 
-  parseTextFromDom(dom) {
+  parseTextFromDOMSnapshot(result) {
+    const TEXT_NODE = 3;
+    const ELEMENT_NODE = 1;
+
+    const SKIPPED_NODES = ["SCRIPT", "STYLE", "HEADER", "FOOTER", "BANNER-DIV", "NOSCRIPT"];
+
+    const {strings, documents} = result;
+
     const accum = [];
-    const metadata = {};
 
-    this._parseText(dom.root, metadata, accum);
+    for (const doc of documents) {
+      const nodeValues = doc.nodes.nodeValue;
+      const nodeNames = doc.nodes.nodeName;
+      const nodeTypes = doc.nodes.nodeType;
+      const parentIndex = doc.nodes.parentIndex;
 
-    return accum.join("\n");
+      for (let i = 0; i < nodeValues.length; i++) {
+        if (nodeValues[i] === -1) {
+          continue;
+        }
+
+        if (nodeTypes[i] === TEXT_NODE) {
+          const pi = parentIndex[i];
+          if (pi >= 0 && nodeTypes[pi] === ELEMENT_NODE) {
+            const name = strings[nodeNames[pi]];
+
+            if (!SKIPPED_NODES.includes(name)) {
+              const value = strings[nodeValues[i]].trim();
+              if (value) {
+                accum.push(value);
+              }
+            }
+          }
+        }
+      }
+
+      return accum.join("\n");
+    }
   }
 
-  _parseText(node, metadata, accum) {
-    const SKIPPED_NODES = ["script", "style", "header", "footer", "banner-div", "noscript"];
-    const EMPTY_LIST = [];
-    const TEXT = "#text";
-    const TITLE = "title";
+  // parseTextFromDom(dom) {
+  //   const accum = [];
+  //   const metadata = {};
+
+  //   this._parseText(dom.root, metadata, accum);
+
+  //   return accum.join("\n");
+  // }
+
+  // _parseText(node, metadata, accum) {
+  //   const SKIPPED_NODES = ["script", "style", "header", "footer", "banner-div", "noscript"];
+  //   const EMPTY_LIST = [];
+  //   const TEXT = "#text";
+  //   const TITLE = "title";
     
-    const name = node.nodeName.toLowerCase();
+  //   const name = node.nodeName.toLowerCase();
       
-    if (SKIPPED_NODES.includes(name)) {
-      return;
-    }
+  //   if (SKIPPED_NODES.includes(name)) {
+  //     return;
+  //   }
 
-    const children = node.children || EMPTY_LIST;
+  //   const children = node.children || EMPTY_LIST;
 
-    if (name === TEXT) {
-      const value = node.nodeValue ? node.nodeValue.trim() : "";
-      if (value) {
-        accum.push(value);
-      }
-    } else if (name === TITLE) {
-      const title = [];
+  //   if (name === TEXT) {
+  //     const value = node.nodeValue ? node.nodeValue.trim() : "";
+  //     if (value) {
+  //       accum.push(value);
+  //     }
+  //   } else if (name === TITLE) {
+  //     const title = [];
 
-      for (let child of children) {
-        this._parseText(child, null, title);
-      }
+  //     for (let child of children) {
+  //       this._parseText(child, null, title);
+  //     }
     
-      if (metadata) {
-        metadata.title = title.join(" ");
-      } else {
-        accum.push(title.join(" "));
-      }
-    } else {
-      for (let child of children) {
-        this._parseText(child, metadata, accum);
-      }
+  //     if (metadata) {
+  //       metadata.title = title.join(" ");
+  //     } else {
+  //       accum.push(title.join(" "));
+  //     }
+  //   } else {
+  //     for (let child of children) {
+  //       this._parseText(child, metadata, accum);
+  //     }
 
-      if (node.contentDocument) { 
-        this._parseText(node.contentDocument, null, accum);
-      } 
-    }
-  }
+  //     if (node.contentDocument) { 
+  //       this._parseText(node.contentDocument, null, accum);
+  //     } 
+  //   }
+  // }
 }
 
 export { Recorder };

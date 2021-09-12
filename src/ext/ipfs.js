@@ -37,8 +37,10 @@ class ExtIPFSClient extends IPFSClient
   async _initHttpClient() {
     if (!this.localApiUrl) {
       if (navigator.brave && await navigator.brave.isBrave()) {
-        // wait up to 30 seconds for ipfs node to boot
-        this.localApiUrl = await detectLocalIPFS([45001, 45002, 45003, 45004, 45005], 30);
+        if (chrome.ipfs && await new Promise(resolve => chrome.ipfs.getIPFSEnabled(result => resolve(result)))) {
+          // wait up to 30 seconds for ipfs node to boot
+          this.localApiUrl = await detectLocalIPFS([45001, 45002, 45003, 45004, 45005], 30);
+        }
       }
     }
 
@@ -70,7 +72,7 @@ class ExtIPFSClient extends IPFSClient
 
     localStorage.setItem("ipfsLocalURL", this.localApiUrl ? this.localApiUrl : "");
 
-    const ipfs = ipfsHttpClient(this.localApiUrl);
+    const ipfs = ipfsHttpClient.create(this.localApiUrl);
     this.customPreload = false;
     this.sharedNode = true;
     return ipfs;

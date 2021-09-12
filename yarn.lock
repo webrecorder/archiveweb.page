@@ -1017,12 +1017,12 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@^2.9.0":
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.9.0.tgz#36297186e44f110aa9e3a79703ac2985bf9807d1"
-  integrity sha512-0bnwh74Ttw9y8NpaDtUWWVu2LUl+umoyeWLLGlmXBx9Sxj2nAsaID0EWob3kXCSucnkCWh0rR3h8elob3BAY2Q==
+"@webrecorder/wabac@^2.9.0-beta.1":
+  version "2.9.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.9.0-beta.1.tgz#97c3cf7e5be5e429770f3f5ab275bc4dbd3b0b03"
+  integrity sha512-0VogTATYefZK8RiXAsUJdYG4Se8H+uWcdFIpJ+lCD3az0wSUnLQsk4ED7nQsFtvN/fWi3bjWiCFdccW2nMQNDg==
   dependencies:
-    "@webrecorder/wombat" "^3.3.3"
+    "@webrecorder/wombat" "^3.3.2"
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.19.0"
     format-link-header "^3.1.1"
@@ -1038,12 +1038,12 @@
     warcio "^1.4.8"
     wbn "^0.0.3"
 
-"@webrecorder/wabac@^2.9.0-beta.1":
-  version "2.9.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.9.0-beta.1.tgz#97c3cf7e5be5e429770f3f5ab275bc4dbd3b0b03"
-  integrity sha512-0VogTATYefZK8RiXAsUJdYG4Se8H+uWcdFIpJ+lCD3az0wSUnLQsk4ED7nQsFtvN/fWi3bjWiCFdccW2nMQNDg==
+"@webrecorder/wabac@^2.9.1":
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.9.1.tgz#4f9812805af2c4d59f22f5e22c6698f301b4c4bc"
+  integrity sha512-VObHzkhzzuy3Ye2qlTP6zW8UDfwO//JpVYCSXcw3DMGH0UtdINEfVdEZexfZw/Jq+RKqOBr/KOsj+griheyp5w==
   dependencies:
-    "@webrecorder/wombat" "^3.3.2"
+    "@webrecorder/wombat" "^3.3.3"
     brotli "github:foliojs/brotli.js"
     fast-xml-parser "^3.19.0"
     format-link-header "^3.1.1"

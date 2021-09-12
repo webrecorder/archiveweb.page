@@ -7,7 +7,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const GenerateJsonPlugin = require("generate-json-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-//const APP_FILE_SERVE_PREFIX = "http://files.replayweb.page/";
+const APP_FILE_SERVE_PREFIX = "http://files.archiveweb.page/";
+
 const PACKAGE = require("./package.json");
 const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
 
@@ -22,7 +23,8 @@ const defaultDefines = {
   __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
   __SW_NAME__: JSON.stringify("sw.js"),
   __IPFS_CORE_URL__: JSON.stringify(""),
-  __IPFS_HTTP_CLIENT_URL__: JSON.stringify("")
+  __IPFS_HTTP_CLIENT_URL__: JSON.stringify(""),
+  __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
 };
 
 
@@ -155,7 +157,7 @@ const extensionConfig = (env, argv) => {
     target: "web",
     entry: {
       "bg": "./src/ext/bg.js",
-      "ui": "./src/ui.js",
+      "ui": "./src/ui/app.js",
       "popup": "./src/popup.js",
       "sw": "./src/sw/main.js"
     },

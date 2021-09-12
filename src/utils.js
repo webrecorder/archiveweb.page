@@ -1,3 +1,4 @@
+import { getCollData } from "@webrecorder/wabac/src/utils";
 
 // ===========================================================================
 async function ensureDefaultColl(collLoader)
@@ -29,10 +30,29 @@ async function ensureDefaultColl(collLoader)
 
 // ===========================================================================
 async function listAllMsg(collLoader) {
-  const colls = await ensureDefaultColl(collLoader);
+  let colls = await ensureDefaultColl(collLoader);
+
+  colls = colls.map(x => getCollData(x));
+
+  // sort same way as the UI collections index
+  const sortKey = localStorage.getItem("index:sortKey");
+  const sortDesc = localStorage.getItem("index:sortDesc") === "1";
+
+  colls.sort((first, second) => {
+    if (first[sortKey] === second[sortKey]) {
+      return 0;
+    }
+
+    return (sortDesc == (first[sortKey] < second[sortKey])) ? 1 : -1;
+  });
+
   const msg = {type: "collections"};
   msg.collId = localStorage.getItem("defaultCollId");
-  msg.collections = colls.map(coll => ({id: coll.name, title: coll.config.metadata.title}));
+  msg.collections = colls.map(coll => ({
+    id: coll.id,
+    title: coll.title || coll.filename
+  }));
+
   return msg;
 }
 

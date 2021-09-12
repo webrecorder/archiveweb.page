@@ -17,7 +17,7 @@
     "http-status-codes": "^1.4.0",
     "ipfs-core": "^0.10.5",
     "ipfs-http-client": "^49.0.2",
-    "jszip": "^3.5.0",
+    "jszip": "^3.7.0",
     "keyword-mark-element": "^0.1.2",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",

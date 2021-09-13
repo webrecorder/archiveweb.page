@@ -1,6 +1,6 @@
 {
   "name": "archiveweb.page",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -18,9 +18,9 @@
     "ipfs-http-client": "^52.0.3",
     "jszip": "^3.7.0",
     "keyword-mark-element": "^0.1.2",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "2.6.2",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^1.5.1",
+    "replaywebpage": "^1.5.2",
     "uuid": "^8.3.2",
     "warcio": "^1.4.7"
   },

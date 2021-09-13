@@ -17,8 +17,8 @@ contextBridge.exposeInMainWorld("archivewebpage", {
     ipcRenderer.send("start-rec", opts);
   },
 
-  ipfsPin: (collId) => {
-    return handleIpfsPin(collId);
+  ipfsPin: (collId, callback) => {
+    return handleIpfsPin(collId, callback);
   },
 
   ipfsUnpin: (collId) => {
@@ -73,14 +73,23 @@ ipcRenderer.on("inc-sizes", async (event, totalSize, writtenSize, collId) => {
 
 
 // ===========================================================================
-async function handleIpfsPin(collId) {
+async function handleIpfsPin(collId, callback) {
   const reqId = "pin-" + collId + (100 * Math.random());
 
   const coll = await getColl(collId);
 
-  const dl = new Downloader({coll});
+  const filename = "webarchive.wacz";
 
-  const resp = await dl.download();
+  const dl = new Downloader({coll, filename});
+
+  let size = 0;
+
+  const resp = await dl.download((incSize) => {
+    size += incSize;
+    if (callback && size) {
+      callback({size});
+    }
+  });
 
   ipcRenderer.send("ipfs-pin", reqId, resp.filename);
 
@@ -112,7 +121,11 @@ async function handleIpfsPin(collId) {
 
   ipcRenderer.send(reqId, null);
 
-  return await getHash;
+  const result = await getHash;
+  if (callback) {
+    callback({});
+  }
+  return result;
 }
 
 // ===========================================================================

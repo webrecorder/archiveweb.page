@@ -367,7 +367,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <wr-anim-logo class="logo" size="48px"></wr-anim-logo>
-                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":""} v${"0.7.0"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":""} v${"0.7.1"}</div>
                     </div>
 
                     ${p?a.c`
@@ -1158,7 +1158,7 @@ const n=new WeakMap,s=Object(o.d)(e=>t=>{if(!(t instanceof o.a)||t instanceof o.
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.7.0"})</span>
+                <span class="menu-version">(${"0.7.1"})</span>
               </a>
             </div>
           </div>
@@ -2523,7 +2523,7 @@ const dt=new WeakMap,ht=Object(o.d)(e=>t=>{const i=dt.get(t);if(void 0===e&&t in
       </div>
       <button @click="${this.onPin}"class="button is-primary">Share</button>
       <button @click="${()=>this.shareWarn=!1}" class="button">Cancel</button>
-    </wr-modal>`}onDownload(){const e=new URLSearchParams;e.set("format","wacz"),e.set("pages","all"),window.location.href=`/replay/./w/api/c/${this.coll.id}/dl?`+e.toString()}onShowImport(){const e=this.coll.id,t=this.coll.title;this.dispatchEvent(new CustomEvent("show-import",{bubbles:!0,composed:!0,detail:{coll:e,title:t}}))}onShowShareMenu(e){e.preventDefault(),e.stopPropagation(),this.showShareMenu=!this.showShareMenu}onShowStart(){const e=this.coll.id,t=this.coll.title;this.dispatchEvent(new CustomEvent("show-start",{bubbles:!0,composed:!0,detail:{coll:e,title:t}}))}toggleShareWarn(e){localStorage.setItem("nosharewarn",e.currentTarget.checked?"1":"0")}onPinOrWarn(){"1"===localStorage.getItem("nosharewarn")?this.onPin():this.shareWarn=!0}async onPin(){this.shareWarn=!1,this.shareWait=!0;const e=await this.ipfsApi(this.coll.id,!0);e.ipfsURL&&(this.ipfsURL=e.ipfsURL),this.onCopyGatewayLink(),this.shareWait=!1}async onUnpin(){this.shareWait=!0;(await this.ipfsApi(this.coll.id,!1)).removed&&(this.ipfsURL=null),this.shareWait=!1}ipfsApi(e,t){return window.archivewebpage?t?window.archivewebpage.ipfsPin(this.coll.id):window.archivewebpage.ipfsUnpin(this.coll.id):(this.dispatchEvent(new CustomEvent("ipfs-share",{detail:{pending:!0}})),new Promise(i=>{const a=chrome.runtime.connect({name:"share-port"});a.onMessage.addListener(e=>{e.progress?this.shareProgress=e.size:(this.shareProgress=0,this.dispatchEvent(new CustomEvent("ipfs-share",{detail:{pending:!1}})),i(e))}),a.onDisconnect.addListener(()=>{console.log("port disconnected")}),a.postMessage({collId:e,pin:t})}))}onCopyRWPLink(){const e=new URLSearchParams;e.set("source",this.ipfsURL);const t="https://replayweb.page/?"+e.toString();this.showShareMenu=!1,navigator.clipboard.writeText(t)}onCopyGatewayLink(){const e=`https://dweb.link/ipfs/${this.ipfsURL.split("/")[2]}/`;this.showShareMenu=!1,navigator.clipboard.writeText(e)}onCopyIPFSLink(){const e=this.ipfsURL.slice(0,this.ipfsURL.lastIndexOf("/")+1);this.showShareMenu=!1,navigator.clipboard.writeText(e)}async doDelete(){this.coll.ipfsPins&&this.coll.ipfsPins.length&&await this.ipfsApi(this.coll.id,!1);const e=await fetch("./w/api/c/"+this.coll.id,{method:"DELETE"});if(200===e.status){const t=await e.json();this.colls=t.colls}}}customElements.define("wr-rec-coll",class extends Te{renderExtraToolbar(e=!1){return e?"":a.c`
+    </wr-modal>`}onDownload(){const e=new URLSearchParams;e.set("format","wacz"),e.set("pages","all"),window.location.href=`/replay/./w/api/c/${this.coll.id}/dl?`+e.toString()}onShowImport(){const e=this.coll.id,t=this.coll.title;this.dispatchEvent(new CustomEvent("show-import",{bubbles:!0,composed:!0,detail:{coll:e,title:t}}))}onShowShareMenu(e){e.preventDefault(),e.stopPropagation(),this.showShareMenu=!this.showShareMenu}onShowStart(){const e=this.coll.id,t=this.coll.title;this.dispatchEvent(new CustomEvent("show-start",{bubbles:!0,composed:!0,detail:{coll:e,title:t}}))}toggleShareWarn(e){localStorage.setItem("nosharewarn",e.currentTarget.checked?"1":"0")}onPinOrWarn(){"1"===localStorage.getItem("nosharewarn")?this.onPin():this.shareWarn=!0}async onPin(){this.shareWarn=!1,this.shareWait=!0;const e=await this.ipfsApi(this.coll.id,!0);e.ipfsURL&&(this.ipfsURL=e.ipfsURL),this.onCopyGatewayLink(),this.shareWait=!1}async onUnpin(){this.shareWait=!0;(await this.ipfsApi(this.coll.id,!1)).removed&&(this.ipfsURL=null),this.shareWait=!1}ipfsApi(e,t){if(this.dispatchEvent(new CustomEvent("ipfs-share",{detail:{pending:!0}})),window.archivewebpage){const e=e=>{e.size?this.shareProgress=e.size:(this.shareProgress=0,this.dispatchEvent(new CustomEvent("ipfs-share",{detail:{pending:!1}})))};return t?window.archivewebpage.ipfsPin(this.coll.id,e):window.archivewebpage.ipfsUnpin(this.coll.id)}return new Promise(i=>{const a=chrome.runtime.connect({name:"share-port"});a.onMessage.addListener(e=>{e.progress?this.shareProgress=e.size:(this.shareProgress=0,this.dispatchEvent(new CustomEvent("ipfs-share",{detail:{pending:!1}})),i(e))}),a.onDisconnect.addListener(()=>{console.log("port disconnected")}),a.postMessage({collId:e,pin:t})})}onCopyRWPLink(){const e=new URLSearchParams;e.set("source",this.ipfsURL);const t="https://replayweb.page/?"+e.toString();this.showShareMenu=!1,navigator.clipboard.writeText(t)}onCopyGatewayLink(){const e=`https://dweb.link/ipfs/${this.ipfsURL.split("/")[2]}/`;this.showShareMenu=!1,navigator.clipboard.writeText(e)}onCopyIPFSLink(){const e=this.ipfsURL.slice(0,this.ipfsURL.lastIndexOf("/")+1);this.showShareMenu=!1,navigator.clipboard.writeText(e)}async doDelete(){this.coll.ipfsPins&&this.coll.ipfsPins.length&&await this.ipfsApi(this.coll.id,!1);const e=await fetch("./w/api/c/"+this.coll.id,{method:"DELETE"});if(200===e.status){const t=await e.json();this.colls=t.colls}}}customElements.define("wr-rec-coll",class extends Te{renderExtraToolbar(e=!1){return e?"":a.c`
     <a href="#" role="button"
     class="${e?"dropdown-item is-hidden-tablet":"button narrow is-borderless"}"
       title="Start Recording" aria-label="Start Recording" aria-controls="record"
@@ -2761,7 +2761,7 @@ const dt=new WeakMap,ht=Object(o.d)(e=>t=>{const i=dt.get(t);if(void 0===e&&t in
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${Lt.a}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":"Extension"} v${"0.7.0"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${p?"App":"Extension"} v${"0.7.1"}</div>
                     </div>
 
                     ${p?a.c`

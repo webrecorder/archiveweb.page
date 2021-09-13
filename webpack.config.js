@@ -56,7 +56,8 @@ const electronMainConfig = (/*env, argv*/) => {
       alias: {
         "abort-controller": "abort-controller/dist/abort-controller.js",
         "dlv": "dlv/dist/dlv.js",
-        "bignumber.js": "bignumber.js/bignumber.js"
+        "bignumber.js": "bignumber.js/bignumber.js",
+        "multiformats/hashes/sha2": "multiformats/cjs/src/hashes/sha2.js"
       }
     },
     output: {
@@ -75,8 +76,8 @@ const electronMainConfig = (/*env, argv*/) => {
           { from: "wr-ext/replay/", to: "replay/" },
           { from: "wr-ext/ruffle/", to: "ruffle/" },
           { from: "wr-ext/pdf/", to: "pdf/" },
-          { from: "node_modules/bcrypto/build/Release/bcrypto.node", to: "build" },
           { from: "node_modules/leveldown/prebuilds/", to: "prebuilds" },
+          { from: "build/extra_prebuilds/", to: "prebuilds" },
         ],
       }),
     ],

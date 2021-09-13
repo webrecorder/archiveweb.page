@@ -365,13 +365,22 @@ class WrRecCollInfo extends CollInfo
   }
 
   ipfsApi(collId, pin) {
+    this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: true}}));
+
     if (window.archivewebpage) {
+      const progressCallback = (message) => {
+        if (message.size) {
+          this.shareProgress = message.size;
+        } else {
+          this.shareProgress = 0;
+          this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: false}}));
+        }
+      };
+
       return (pin ? 
-        window.archivewebpage.ipfsPin(this.coll.id) : 
+        window.archivewebpage.ipfsPin(this.coll.id, progressCallback) : 
         window.archivewebpage.ipfsUnpin(this.coll.id));
     }
-
-    this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: true}}));
 
     return new Promise((resolve) => {
       const port = chrome.runtime.connect({name: "share-port"});

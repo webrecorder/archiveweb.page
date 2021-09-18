@@ -32,15 +32,15 @@ const moduleSettings =  {
   rules: [
     {
       test:  /\.svg$/,
-      loader: "svg-inline-loader"
+      use: "svg-inline-loader"
     },
     {
       test: /\.s(a|c)ss$/,
-      loaders: ["to-string-loader", "css-loader", "sass-loader"]
+      use: ["to-string-loader", "css-loader", "sass-loader"]
     },
     {
       test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js)$/i,
-      loaders: "raw-loader",
+      use: "raw-loader",
     }
   ]};
 

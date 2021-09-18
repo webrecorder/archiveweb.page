@@ -1,5 +1,5 @@
-import { LitElement, html, css, unsafeCSS } from "lit-element";
-import { unsafeSVG } from "lit-html/directives/unsafe-svg";
+import { LitElement, html, css, unsafeCSS } from "lit";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import bulma from "bulma/bulma.sass";
 
 import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";

@@ -1,6 +1,6 @@
 /*eslint-env node */
 
-import {app, session, BrowserWindow, ipcMain, dialog, autoUpdater} from "electron";
+import {app, session, BrowserWindow, ipcMain, dialog } from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
 import { ElectronReplayApp, STATIC_PREFIX } from "replaywebpage/src/electron-replay-app";
@@ -138,11 +138,6 @@ class ElectronRecorderApp extends ElectronReplayApp
     recWindow.loadURL(STATIC_PREFIX + "rec-window.html");
 
     return recWindow;
-  }
-
-  checkUpdates() {
-    autoUpdater.allowPrerelease = true;
-    super.checkUpdates();
   }
 
   async initRecorder(recWindow, recWebContents, url, collId, startRec, autorun, popupView = null) {

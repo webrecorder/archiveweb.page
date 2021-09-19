@@ -80,6 +80,8 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   getLoadInfo(sourceUrl) {
+    this.disableCSP();
+
     if (this.loadInfo) {
       return this.loadInfo;
     }
@@ -87,6 +89,29 @@ class ArchiveWebApp extends ReplayWebApp
     const customColl = sourceUrl.startsWith("local://") ? sourceUrl.slice("local://".length) : sourceUrl;
 
     return {customColl};
+  }
+
+  async disableCSP() {
+    // necessary for chrome 94> up due to new bug introduced
+    // 
+    if (!self.chrome || !self.chrome.runtime) {
+      return;
+    }
+
+    const m = navigator.userAgent.match(/Chrome\/([\d]+)/);
+    if (!m || Number(m[1]) < 94) {
+      return;
+    }
+
+    console.log("attempt to disable CSP to ensure replay works");
+    let tabId = await new Promise((resolve) => {
+      chrome.tabs.getCurrent((msg) => resolve(msg.id));
+    });
+
+    chrome.runtime.sendMessage({
+      msg: "disableCSP",
+      tabId
+    });
   }
 
   static get styles() {

@@ -18,6 +18,8 @@ const openWinMap = new Map();
 
 const collLoader = new CollectionLoader();
 
+const disabledCSPTabs = new Set();
+
 let ipfsClient = null;
 
 
@@ -312,6 +314,10 @@ chrome.runtime.onMessage.addListener(async (message, /*sender, sendResponse*/) =
     newRecCollId = message.collId;
     chrome.tabs.create({url: "about:blank"});
     break;
+
+  case "disableCSP":
+    disableCSPForTab(message.tabId);
+    break;
   }
 });
 
@@ -327,3 +333,31 @@ async function initIpfs() {
 }
 
 initIpfs();
+
+// ===========================================================================
+async function disableCSPForTab(tabId) {
+  if (disabledCSPTabs.has(tabId)) {
+    return;
+  }
+
+  await new Promise((resolve) => {
+    chrome.debugger.attach({tabId}, "1.3", () => { resolve(); });
+  });
+
+  await new Promise((resolve) => {
+    chrome.debugger.sendCommand({tabId}, "Page.setBypassCSP", {enabled: true}, (resp) => resolve(resp));
+  });
+
+  disabledCSPTabs.add(tabId);
+
+  // hacky: don't detach if any recorders are running, otherwise will disconnect
+  for (const rec of Object.values(self.recorders)) {
+    if (rec.running) {
+      return;
+    }
+  }
+
+  await new Promise((resolve) => {
+    chrome.debugger.detach({tabId}, () => { resolve();});
+  });
+}

@@ -267,7 +267,7 @@ const s=Object(n.c)(class extends n.a{constructor(e){var t;if(super(e),e.type!==
                   <div style="display: flex">
                     <div class="has-text-centered" style="width: 220px">
                       <wr-anim-logo class="logo" size="48px"></wr-anim-logo>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.7.2"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":""} v${"0.7.3"}</div>
                     </div>
 
                     ${b?a.c`
@@ -1058,7 +1058,7 @@ const s=Object(n.c)(class extends n.a{constructor(e){var t;if(super(e),e.type!==
               <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
                 <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
                 <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${"0.7.2"})</span>
+                <span class="menu-version">(${"0.7.3"})</span>
               </a>
             </div>
           </div>
@@ -2423,7 +2423,7 @@ const s=Object(n.c)(class extends n.a{constructor(e){var t;if(super(e),e.type!==
       (Size: <b>${M()(this.deleteConfirm.size)}</b>)</p>
       <button @click="${this.doDelete}"class="button is-danger">Delete</button>
       <button @click="${()=>this.deleteConfirm=null}" class="button">Cancel</button>
-    </wr-modal>`:null}onIpfsShare(e){e.detail.pending?this.ipfsSharePending++:this.ipfsSharePending--}onDeleteColl(e){if(e.preventDefault(),e.stopPropagation(),!this.sortedColls)return;const t=Number(e.currentTarget.getAttribute("data-coll-index"));this.deleteConfirm=this.sortedColls[t]}async doDelete(){if(!this.deleteConfirm)return;this._deleting[this.deleteConfirm.sourceUrl]=!0,this.requestUpdate();const e=this.renderRoot.querySelector(`wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`);e&&await e.doDelete(),this.deleteConfirm=null}renderEmpty(){return a.c`No Archives. Click "Create New" above to create a new archive and start recording!`}});var $t=i(189),St=i.n($t);class Ct extends L{constructor(){super(),this.navMenuShown=!1,this.showCollDrop=!1,this.colls=[],this.autorun="1"===localStorage.getItem("autorunBehaviors")}get appName(){return"ArchiveWeb.page"}static get properties(){return{...L.properties,showStartRecord:{type:Boolean},showCollDrop:{type:Boolean},colls:{type:Array},selCollId:{type:String},selCollTitle:{type:String},recordUrl:{type:String},autorun:{type:Boolean},showNew:{type:String},showImport:{type:Boolean},isImportExisting:{type:Boolean}}}initRoute(){this.inited=!0;const e=new URLSearchParams(window.location.search);this.sourceUrl=e.get("source")||""}onStartLoad(e){this.showImport=!1,this.sourceUrl=e.detail.sourceUrl,this.loadInfo=e.detail,this.isImportExisting&&this.selCollId&&(this.loadInfo.importCollId=this.selCollId)}onCollLoaded(e){super.onCollLoaded(e),!e.detail.alreadyLoaded&&e.detail.sourceUrl&&e.detail.sourceUrl!==this.sourceUrl&&(this.sourceUrl=e.detail.sourceUrl)}getLoadInfo(e){if(this.loadInfo)return this.loadInfo;return{customColl:e.startsWith("local://")?e.slice("local://".length):e}}static get styles(){return f(Ct.appStyles)}static get appStyles(){return f(a.b`
+    </wr-modal>`:null}onIpfsShare(e){e.detail.pending?this.ipfsSharePending++:this.ipfsSharePending--}onDeleteColl(e){if(e.preventDefault(),e.stopPropagation(),!this.sortedColls)return;const t=Number(e.currentTarget.getAttribute("data-coll-index"));this.deleteConfirm=this.sortedColls[t]}async doDelete(){if(!this.deleteConfirm)return;this._deleting[this.deleteConfirm.sourceUrl]=!0,this.requestUpdate();const e=this.renderRoot.querySelector(`wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`);e&&await e.doDelete(),this.deleteConfirm=null}renderEmpty(){return a.c`No Archives. Click "Create New" above to create a new archive and start recording!`}});var $t=i(189),St=i.n($t);class Ct extends L{constructor(){super(),this.navMenuShown=!1,this.showCollDrop=!1,this.colls=[],this.autorun="1"===localStorage.getItem("autorunBehaviors")}get appName(){return"ArchiveWeb.page"}static get properties(){return{...L.properties,showStartRecord:{type:Boolean},showCollDrop:{type:Boolean},colls:{type:Array},selCollId:{type:String},selCollTitle:{type:String},recordUrl:{type:String},autorun:{type:Boolean},showNew:{type:String},showImport:{type:Boolean},isImportExisting:{type:Boolean}}}initRoute(){this.inited=!0;const e=new URLSearchParams(window.location.search);this.sourceUrl=e.get("source")||""}onStartLoad(e){this.showImport=!1,this.sourceUrl=e.detail.sourceUrl,this.loadInfo=e.detail,this.isImportExisting&&this.selCollId&&(this.loadInfo.importCollId=this.selCollId)}onCollLoaded(e){super.onCollLoaded(e),!e.detail.alreadyLoaded&&e.detail.sourceUrl&&e.detail.sourceUrl!==this.sourceUrl&&(this.sourceUrl=e.detail.sourceUrl)}getLoadInfo(e){if(this.disableCSP(),this.loadInfo)return this.loadInfo;return{customColl:e.startsWith("local://")?e.slice("local://".length):e}}async disableCSP(){if(!self.chrome||!self.chrome.runtime)return;const e=navigator.userAgent.match(/Chrome\/([\d]+)/);if(!e||Number(e[1])<94)return;console.log("attempt to disable CSP to ensure replay works");let t=await new Promise(e=>{chrome.tabs.getCurrent(t=>e(t.id))});chrome.runtime.sendMessage({msg:"disableCSP",tabId:t})}static get styles(){return f(Ct.appStyles)}static get appStyles(){return f(a.b`
       :host {
         font-size: initial;
         overflow: auto;
@@ -2634,7 +2634,7 @@ const s=Object(n.c)(class extends n.a{constructor(e){var t;if(super(e),e.type!==
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${St.a}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.7.2"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${b?"App":"Extension"} v${"0.7.3"}</div>
                     </div>
 
                     ${b?a.c`

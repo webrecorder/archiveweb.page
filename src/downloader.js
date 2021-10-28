@@ -89,6 +89,12 @@ class Downloader
     this.format = format;
     this.warcVersion = (format === "warc1.0") ? "WARC/1.0" : "WARC/1.1";
 
+    if (format === "warc1.0") {
+      this.digestOpts = {algo: "sha-1", prefix: "sha1:", base32: true};
+    } else {
+      this.digestOpts = {algo: "sha-256", prefix: "sha256:"};
+    }
+
     this.filename = filename;
 
     // determine filename from title, if it exists
@@ -577,7 +583,7 @@ class Downloader
     const date = this.createdDate;
 
     const record = await WARCRecord.createWARCInfo({filename, type, date, warcHeaders, warcVersion}, info);
-    const buffer = await WARCSerializer.serialize(record, {gzip: true});
+    const buffer = await WARCSerializer.serialize(record, {gzip: true, digest: this.digestOpts});
     return buffer;
   }
 
@@ -616,6 +622,8 @@ class Downloader
     let type = null;
 
     let refersToUrl, refersToDate;
+    let refersToDigest;
+    let storeDigest = null;
 
     let method = "GET";
     let requestBody;
@@ -647,6 +655,7 @@ class Downloader
 
       refersToUrl = digestOriginal.url;
       refersToDate = digestOriginal.date;
+      refersToDigest = digestOriginal.payloadDigest || resource.digest;
 
     } else if (resource.origURL && resource.origTS) {
       if (!resource.digest) {
@@ -660,6 +669,7 @@ class Downloader
 
       refersToUrl = resource.origURL;
       refersToDate = new Date(resource.origTS).toISOString();
+      refersToDigest = digestOriginal.payloadDigest || resource.digest;
 
     } else {
       type = "response";
@@ -673,7 +683,8 @@ class Downloader
       }
 
       if (method === "GET") {
-        this.digestsVisted[resource.digest] = {url, date};
+        storeDigest = {url, date};
+        this.digestsVisted[resource.digest] = storeDigest;
       }
     }
 
@@ -691,8 +702,8 @@ class Downloader
       warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(resource.extraOpts);
     }
 
-    if (resource.digest) {
-      warcHeaders["WARC-Payload-Digest"] = resource.digest;
+    if (refersToDigest) {
+      warcHeaders["WARC-Payload-Digest"] = refersToDigest;
     }
 
     // remove encoding, set content-length as encoding never preserved in browser-based capture
@@ -702,9 +713,12 @@ class Downloader
       url, date, type, warcVersion, warcHeaders, statusline, httpHeaders,
       refersToUrl, refersToDate}, getPayload(payload));
 
-    const buffer = await WARCSerializer.serialize(record, {gzip: true});
+    const buffer = await WARCSerializer.serialize(record, {gzip: true, digest: this.digestOpts});
     if (!resource.digest) {
       resource.digest = record.warcPayloadDigest;
+    }
+    if (storeDigest) {
+      storeDigest.payloadDigest = record.warcPayloadDigest;
     }
 
     this.lastPageId = pageId;
@@ -730,7 +744,7 @@ class Downloader
         statusline,
       }, getPayload(requestBody));
 
-      records.push(await WARCSerializer.serialize(reqRecord, {gzip: true}));
+      records.push(await WARCSerializer.serialize(reqRecord, {gzip: true, digest: this.digestOpts}));
     }
 
     return records;
@@ -751,7 +765,7 @@ class Downloader
 
     const record = await WARCRecord.create({url, date, warcHeaders, warcVersion, type}, payload);
 
-    const buffer = await WARCSerializer.serialize(record, {gzip: true});
+    const buffer = await WARCSerializer.serialize(record, {gzip: true, digest: this.digestOpts});
     if (!resource.digest) {
       resource.digest = record.warcPayloadDigest;
     }

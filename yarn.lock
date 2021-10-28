@@ -40,7 +40,7 @@
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
-"@electron/get@^1.0.1":
+"@electron/get@^1.13.0":
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.13.0.tgz#95c6bcaff4f9a505ea46792424f451efea89228c"
   integrity sha512-+SjZhRuRo+STTO1Fdhzqnv9D2ZhjxXP6egsJ9kiO8dtP68cDx7dFCwWi64dlMQV7sWcfW1OYCW4wviEBzmRsfQ==
@@ -973,10 +973,10 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@webrecorder/wabac@^2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.9.2.tgz#1744e3c1696467a5887159c7c1bd24d926ad037d"
-  integrity sha512-iWMvDkskEBno/VIG9bsUyKKdkOsco4HKX9ifDiiPFTVXhNsRkXAtdy3Qh6BerayZ2q5QlyWQJqMECph9jnz/RA==
+"@webrecorder/wabac@^2.9.5":
+  version "2.9.5"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.9.5.tgz#a69b9033ebb322f95fc6441a0b45ce70556c042c"
+  integrity sha512-E6B9s+l+6a3wZt4sK6uU1j4X8Mm4nAJLKVr5U2GpqC9fwOiSllIYTKJ9eSvy6auettIvGlB9BNfYNiw9T5Xnsg==
   dependencies:
     "@webrecorder/wombat" "^3.3.4"
     brotli "github:foliojs/brotli.js"
@@ -2988,12 +2988,12 @@ electron-updater@^4.3.9:
     lodash.isequal "^4.5.0"
     semver "^7.3.5"
 
-electron@^14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-14.0.0.tgz#a096484bfbf71d87fc0fa85a943a7869d6b9bf94"
-  integrity sha512-O6EI7L1BPIrTpEIFefjjmdbmSn9LtE4mmrv4dfpV4Mqaa8uKuNYQogwZPEvSwaBexb69eb1LQ25n+f+kBcjiRQ==
+electron@^15.3.0:
+  version "15.3.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-15.3.0.tgz#f9803c5a05b2dac12efc6d4203492c7e204b4819"
+  integrity sha512-YLzaKCFmSniNlz9+NUTNs7ssPyDc+bYOCYZ0b/D6DjVkOeIFz4SR8EYKqlOc8TcqlDNu18BbWqz6zbJPyAAURg==
   dependencies:
-    "@electron/get" "^1.0.1"
+    "@electron/get" "^1.13.0"
     "@types/node" "^14.6.2"
     extract-zip "^1.0.3"
 
@@ -7838,13 +7838,13 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-replaywebpage@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.3.tgz#0c012707099e0ee25858d9db33838a83d9d7e6dc"
-  integrity sha512-KhkxS3SDBFO3Ud0HYJp4YA6vAsOpTbrg382dIwYQ9zVC8HtliPe0+32rz/fJb2TZX0Q3Xm5E0Cm9tI6GkP5H0Q==
+replaywebpage@^1.5.5:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.5.tgz#b8904f1bdee8c4371907d142497ffd03aee51777"
+  integrity sha512-9PxcFJ4sfGElDqYUFvlRTtm6E2H180HUSj6bDCmaXVhcnYcdGGttZPuvPyB8nYKmj13+o+1p149l8+VpAbF44g==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
-    "@webrecorder/wabac" "^2.9.2"
+    "@webrecorder/wabac" "^2.9.5"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^4.3.9"

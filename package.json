@@ -20,7 +20,7 @@
     "keyword-mark-element": "^0.1.2",
     "node-fetch": "2.6.2",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "github:webrecorder/replayweb.page",
+    "replaywebpage": "^1.5.6",
     "uuid": "^8.3.2",
     "warcio": "^1.5.0"
   },

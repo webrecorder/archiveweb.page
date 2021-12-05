@@ -172,6 +172,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
       recorder.failureMsg = null;
     }
 
+    if (changeInfo.url && openWinMap.has(changeInfo.url)) {
+      openWinMap.delete(changeInfo.url);
+    }
+
     if (recorder.waitForTabUpdate) {
       if (isValidUrl(changeInfo.url)) {
         recorder.attach();
@@ -182,9 +186,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
       }
     }
 
-    // if (recorder.running && changeInfo.favIconUrl) {
-    //   recorder.loadFavIcon(changeInfo.favIconUrl);
-    // }
   } else if (changeInfo.url && openWinMap.has(changeInfo.url)) {
     const collId = openWinMap.get(changeInfo.url);
     openWinMap.delete(changeInfo.url);

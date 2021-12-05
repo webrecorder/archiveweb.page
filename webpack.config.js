@@ -3,9 +3,9 @@
 const path = require("path");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-//const ExtensionReloader  = require("webpack-extension-reloader");
 const GenerateJsonPlugin = require("generate-json-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 const APP_FILE_SERVE_PREFIX = "http://files.archiveweb.page/";
 
@@ -20,6 +20,7 @@ const manifest = require("./src/ext/manifest.json");
 
 const defaultDefines = {
   __AWP_VERSION__: JSON.stringify(PACKAGE.version),
+  __VERSION__: JSON.stringify(PACKAGE.version),
   __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
   __SW_NAME__: JSON.stringify("sw.js"),
   __IPFS_CORE_URL__: JSON.stringify(""),
@@ -36,14 +37,30 @@ const moduleSettings =  {
     },
     {
       test: /\.s(a|c)ss$/,
-      use: ["to-string-loader", "css-loader", "sass-loader"]
+      use: ["css-loader", "sass-loader"]
     },
     {
       test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js)$/i,
       use: "raw-loader",
     }
-  ]};
+  ]
+};
 
+
+const fallback = {
+  "stream": require.resolve("stream-browserify"),
+  "querystring": require.resolve("querystring-es3"),
+  "url": require.resolve("url/")
+};
+
+const optimization = {
+  minimize: true,
+  minimizer: [
+    new TerserPlugin({
+      extractComments: false,
+    }),
+  ],
+};
 
 const electronMainConfig = (/*env, argv*/) => {
   return {
@@ -52,12 +69,13 @@ const electronMainConfig = (/*env, argv*/) => {
     entry: {
       "electron": "./src/electron/electron-rec-main.js",
     },
+    optimization,
     resolve: {
       alias: {
         "abort-controller": "abort-controller/dist/abort-controller.js",
         "dlv": "dlv/dist/dlv.js",
         "bignumber.js": "bignumber.js/bignumber.js",
-        "multiformats/hashes/sha2": "multiformats/cjs/src/hashes/sha2.js"
+        //"multiformats/hashes/sha2": "multiformats/cjs/src/hashes/sha2.js"
       }
     },
     output: {
@@ -97,6 +115,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
     entry: {
       "preload": "./src/electron/electron-rec-preload.js",
     },
+    optimization,
     output: {
       path: path.join(__dirname, "dist"),
       filename: "[name].js"
@@ -114,7 +133,8 @@ const electronRendererConfig = (/*env, argv*/) => {
     entry: {
       "rec-window": "./src/electron/rec-window.js",
     },
-
+    optimization,
+    resolve: {fallback},
     output: {
       path: path.join(__dirname, "dist"),
       filename: "[name].js",
@@ -123,6 +143,10 @@ const electronRendererConfig = (/*env, argv*/) => {
     },
 
     plugins: [
+      new webpack.ProvidePlugin({
+        process: "process/browser.js",
+        Buffer: ["buffer", "Buffer"],
+      }),
       new MiniCssExtractPlugin(),
       new CopyPlugin({
         patterns: [
@@ -162,6 +186,8 @@ const extensionConfig = (env, argv) => {
       "popup": "./src/popup.js",
       "sw": "./src/sw/main.js"
     },
+    optimization,
+    resolve: {fallback},
     output: {
       path: path.join(__dirname, "wr-ext"),
       filename: (chunkData) => {
@@ -170,8 +196,11 @@ const extensionConfig = (env, argv) => {
       libraryTarget: "global",
       globalObject: "self"
     },
-
     plugins: [
+      new webpack.ProvidePlugin({
+        process: "process/browser.js",
+        Buffer: ["buffer", "Buffer"],
+      }),
       new MiniCssExtractPlugin(),
       new webpack.BannerPlugin(BANNER),
       new GenerateJsonPlugin("manifest.json", manifest, generateManifest, 2),

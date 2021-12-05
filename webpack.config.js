@@ -19,7 +19,7 @@ const BANNER = "[name].js is part of the Webrecorder Extension (https://replaywe
 const manifest = require("./src/ext/manifest.json");
 
 const defaultDefines = {
-  __VERSION__: JSON.stringify(PACKAGE.version),
+  __AWP_VERSION__: JSON.stringify(PACKAGE.version),
   __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
   __SW_NAME__: JSON.stringify("sw.js"),
   __IPFS_CORE_URL__: JSON.stringify(""),

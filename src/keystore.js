@@ -63,8 +63,9 @@ export class KeyStore
 // ====================================================================
 export class Signer
 {
-  constructor() {
+  constructor(softwareString) {
     this._store = new KeyStore();
+    this.softwareString = softwareString || "ArchiveWeb.page";
   }
 
   close() {
@@ -124,8 +125,7 @@ export class Signer
       signature,
       publicKey: keys.public,
       created,
-      // eslint-disable-next-line no-undef
-      software: `ArchiveWeb.page ${__VERSION__}`
+      software: this.softwareString
     };
   }
 

@@ -16,18 +16,18 @@ import { getTSMillis, getStatusText } from "@webrecorder/wabac/src/utils";
 // ===========================================================================
 const WACZ_VERSION = "1.1.1";
 
-const encoder = new TextEncoder();
-
-const EMPTY = new Uint8Array([]);
-
 const SPLIT_REQUEST_Q_RX = /(.*?)[?&](?:__wb_method=|__wb_post=)[^&]+&(.*)/;
 
 const LINES_PER_BLOCK = 1024;
 
-const UUID_NAMESPACE = "f9ec3936-7f66-4461-bec4-34f4495ea242";
+const DEFAULT_UUID_NAMESPACE = "f9ec3936-7f66-4461-bec4-34f4495ea242";
 
 const DATAPACKAGE_FILENAME = "datapackage.json";
 const DIGEST_FILENAME = "datapackage-digest.json";
+
+const encoder = new TextEncoder();
+
+const EMPTY = new Uint8Array([]);
 
 async function* getPayload(payload) {
   yield payload;
@@ -77,11 +77,17 @@ class ResumePassThrough extends PassThrough
 // ===========================================================================
 class Downloader
 {
-  constructor({coll, format = "wacz", filename = null, pageList = null, signer = null}) {
+  constructor({coll, format = "wacz", filename = null, pageList = null, signer = null,
+    softwareString = null, uuidNamespace}) {
+
     this.db = coll.store;
     this.pageList = pageList;
     this.collId = coll.name;
     this.metadata = coll.config.metadata;
+
+    this.softwareString = softwareString || "ArchiveWeb.page";
+
+    this.uuidNamespace = uuidNamespace || DEFAULT_UUID_NAMESPACE;
 
     this.createdDate = new Date(coll.config.ctime).toISOString();
     this.modifiedDate = coll.config.metadata.mtime ? new Date(coll.config.metadata.mtime).toISOString() : null;
@@ -226,7 +232,7 @@ class Downloader
   }
 
   getWARCRecordUUID(name) {
-    return `<urn:uuid:${uuidv5(name, UUID_NAMESPACE)}>`;
+    return `<urn:uuid:${uuidv5(name, this.uuidNamespace)}>`;
   }
 
   async downloadWACZ(filename, sizeCallback) {
@@ -557,11 +563,6 @@ class Downloader
 */
   async* generateIDX() {
     yield this.indexLines.join("\n");
-  }
-
-  get softwareString() {
-    // eslint-disable-next-line no-undef
-    return `Webrecorder ArchiveWeb.page ${__VERSION__} (via warcio.js ${__WARCIO_VERSION__})`;
   }
 
   async createWARCInfo(filename) {

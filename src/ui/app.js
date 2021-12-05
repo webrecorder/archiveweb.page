@@ -17,7 +17,7 @@ import wrLogo from "../../assets/awp-logo.svg";
 
 
 // eslint-disable-next-line no-undef
-const VERSION = __VERSION__;
+const VERSION = __AWP_VERSION__;
 
 
 //============================================================================

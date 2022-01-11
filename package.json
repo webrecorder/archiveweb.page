@@ -1,6 +1,6 @@
 {
   "name": "@webrecorder/archivewebpage",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -8,7 +8,7 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.10.0-beta.0",
+    "@webrecorder/wabac": "^2.10.0",
     "browsertrix-behaviors": "^0.2.4",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
@@ -21,7 +21,7 @@
     "node-fetch": "2.6.2",
     "pretty-bytes": "^5.6.0",
     "querystring-es3": "^0.2.1",
-    "replaywebpage": "^1.5.5",
+    "replaywebpage": "^1.5.7",
     "stream-browserify": "^3.0.0",
     "url": "^0.11.0",
     "uuid": "^8.3.2",
@@ -35,7 +35,7 @@
     "electron-notarize": "^1.0.0",
     "generate-json-webpack-plugin": "^2.0.0",
     "mini-css-extract-plugin": "^2.3.0",
-    "node-sass": "^6.0.1",
+    "node-sass": "^7.0.1",
     "raw-loader": "^4.0.2",
     "sass-loader": "^12.1.0",
     "svg-inline-loader": "^0.8.2",
@@ -45,6 +45,10 @@
     "webpack-cli": "^4.8.0",
     "webpack-extension-reloader": "^1.1.4"
   },
+  "files": [
+    "src/",
+    "wr-ext/"
+  ],
   "scripts": {
     "build": "webpack --mode production",
     "build-dev": "webpack --mode development",

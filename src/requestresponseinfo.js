@@ -87,14 +87,16 @@ class RequestResponseInfo
   }
 
   fillResponseReceived(params) {
+    const response = params.response;
+
     // if initial fetch was a 200, but now replacing with 304, don't!
-    if (params.response.status == 304 && this.status && this.status != 304 && this.url) {
+    if (response.status == 304 && this.status && this.status != 304 && this.url) {
       return;
     }
 
-    this.url = params.response.url.split("#")[0];
+    this.url = response.url.split("#")[0];
 
-    this._fillResponse(params.response);
+    this._fillResponse(response);
   }
 
   _fillResponse(response) {
@@ -117,6 +119,12 @@ class RequestResponseInfo
     }
 
     this.fromServiceWorker = !!response.fromServiceWorker;
+
+    if (response.securityDetails) {
+      const issuer = response.securityDetails.issuer || "";
+      const ctc = response.securityDetails.certificateTransparencyCompliance === "compliant" ? "1" : "0";
+      this.extraOpts.cert = {issuer, ctc};
+    }
   }
 
   fillResponseReceivedExtraInfo(params) {

@@ -220,6 +220,10 @@ class Recorder {
       for (const key of Object.keys(this.pendingRequests)) {
         const reqresp = this.pendingRequests[key];
 
+        if (!reqresp) {
+          continue;
+        }
+
         if ((new Date() - reqresp._created) > 20000) {
           if (this.noResponseForStatus(reqresp.status)) {
             console.log("Dropping stale: " + key);
@@ -990,7 +994,7 @@ class Recorder {
     }
 
     if (newString !== string) {
-      reqresp.extraOpts = {"rewritten": "1"};
+      reqresp.extraOpts.rewritten = 1;
       reqresp.payload = encoder.encode(newString);
 
       console.log("Rewritten Response for: " + params.request.url);

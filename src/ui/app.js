@@ -72,6 +72,13 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   onCollLoaded(event) {
+    if (this.loadInfo && this.loadInfo.importCollId) {
+      if (navigator.serviceWorker.controller) {
+        const msg = {"msg_type": "reload", "full": true, "name": this.loadInfo.importCollId};
+        navigator.serviceWorker.controller.postMessage(msg);
+      }
+    }
+
     super.onCollLoaded(event);
 
     if (!event.detail.alreadyLoaded && event.detail.sourceUrl && event.detail.sourceUrl !== this.sourceUrl) {

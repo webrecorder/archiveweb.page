@@ -1028,10 +1028,10 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.6.0.tgz#2c275aa05c895eccebbfc34cfb223c6e8bd591a2"
   integrity sha512-ZkVeqEmRpBV2GHvjjUZqEai2PpUbuq8Bqd//vEYsp63J8WyexI8ppCqVS3Zs0QADf6aWuPdU+0XsPI647PVlQA==
 
-"@webrecorder/wabac@^2.10.0":
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.10.0.tgz#8f1107167f4dccc29df9911201e0d398b42d5a1f"
-  integrity sha512-DFJjW0X/k3vHbs/s6ganXSV+VRbi8N6EYjR6ptzP+m8ZX33aWW8fIo6LnF4zsqLSo8zwzthfrL5dg7rbNQiX9g==
+"@webrecorder/wabac@^2.10.2":
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.10.2.tgz#2d82a53465de0af4c8af0646b95e83efb0a5a9bb"
+  integrity sha512-etDN/vluaZMWqUGL3gU/QQrm1c3JwtV9U/esbBb274RqbmJk5+Dh/e8vqhVWHNM0y6YkelP5fznzs1vvG0MX4Q==
   dependencies:
     "@webrecorder/wombat" "^3.3.6"
     brotli "github:foliojs/brotli.js"
@@ -6116,13 +6116,13 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.5.7:
-  version "1.5.7"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.7.tgz#92b3fe5a8090756ccf21ad91d5aadb877f745072"
-  integrity sha512-k+6kLJ4sLYe90tG9P8jOrfXi6scQcwrL4szc+Z3aqly+GGLLqe/sj2n+9F8fo3dwvPA/yE15UliRsQAr6YssgQ==
+replaywebpage@^1.5.9:
+  version "1.5.9"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.9.tgz#d67c5d5a2fdb67b888d2fd9cac7fdc763d1e3b0b"
+  integrity sha512-zGpH35sgCqk24/bBk7P6h5htBibleTXkIHeNIbAEkTXWSVwS/17dBJW9Nd20oMAL6bXOzYvU1u9mbzMlv9i0Bw==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
-    "@webrecorder/wabac" "^2.10.0"
+    "@webrecorder/wabac" "^2.10.2"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^4.3.9"

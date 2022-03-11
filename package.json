@@ -1,6 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
-  "version": "0.7.7",
+  "productName": "ArchiveWeb.page",
+  "version": "0.7.8",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -8,8 +9,8 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.10.2",
-    "browsertrix-behaviors": "^0.2.4",
+    "@webrecorder/wabac": "^2.10.3",
+    "browsertrix-behaviors": "^0.2.6",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
     "hash-wasm": "^4.9.0",
@@ -21,7 +22,7 @@
     "node-fetch": "2.6.2",
     "pretty-bytes": "^5.6.0",
     "querystring-es3": "^0.2.1",
-    "replaywebpage": "^1.5.9",
+    "replaywebpage": "^1.5.10",
     "stream-browserify": "^3.0.0",
     "url": "^0.11.0",
     "uuid": "^8.3.2",
@@ -30,7 +31,7 @@
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
-    "electron": "^16.0.7",
+    "electron": "^17.1.2",
     "electron-builder": "^22.11.11",
     "electron-notarize": "^1.0.0",
     "generate-json-webpack-plugin": "^2.0.0",

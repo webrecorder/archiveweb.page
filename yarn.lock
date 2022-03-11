@@ -1028,10 +1028,10 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.6.0.tgz#2c275aa05c895eccebbfc34cfb223c6e8bd591a2"
   integrity sha512-ZkVeqEmRpBV2GHvjjUZqEai2PpUbuq8Bqd//vEYsp63J8WyexI8ppCqVS3Zs0QADf6aWuPdU+0XsPI647PVlQA==
 
-"@webrecorder/wabac@^2.10.2":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.10.2.tgz#2d82a53465de0af4c8af0646b95e83efb0a5a9bb"
-  integrity sha512-etDN/vluaZMWqUGL3gU/QQrm1c3JwtV9U/esbBb274RqbmJk5+Dh/e8vqhVWHNM0y6YkelP5fznzs1vvG0MX4Q==
+"@webrecorder/wabac@^2.10.3":
+  version "2.10.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.10.3.tgz#246cee14ede757648c5c559105f805daabf8a56f"
+  integrity sha512-Awf73AA3KtYkg0wiKRdTQZVwrx9LLF1oCPTxOJ4H2JdUvyKS1XB/Lr2b/0wxGQoeW7CJ7QiVr5HW2drjUbmkNA==
   dependencies:
     "@webrecorder/wombat" "^3.3.6"
     brotli "github:foliojs/brotli.js"
@@ -1569,10 +1569,10 @@ browserslist@^4.14.5:
     node-releases "^2.0.1"
     picocolors "^1.0.0"
 
-browsertrix-behaviors@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.4.tgz#171705e264c094927026cc7d47bc2a4ba817ebcc"
-  integrity sha512-jOtI1mJ/57PXk+JaHvvxbR8D+20lsVWkemkFlb5hpqJve22UuUYyJcS7aopoyCIYFsNnavdx41nM+aAe6pZWZg==
+browsertrix-behaviors@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.2.6.tgz#3d7b4a0444c028495a4443424fa86b32012ba482"
+  integrity sha512-SAT9vbHWzza4SYzutDZl1/zKhWmVLGFjCuBZrw0+f24MMeiZkzeu3urOqOTz60TtMpUZsYVAJmKPnG06FaRtLQ==
 
 btoa@^1.2.1:
   version "1.2.1"
@@ -2415,10 +2415,10 @@ electron-updater@^4.3.9:
     lodash.isequal "^4.5.0"
     semver "^7.3.5"
 
-electron@^16.0.7:
-  version "16.0.7"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-16.0.7.tgz#87eaccd05ab61563d3c17dfbad2949bba7ead162"
-  integrity sha512-/IMwpBf2svhA1X/7Q58RV+Nn0fvUJsHniG4TizaO7q4iKFYSQ6hBvsLz+cylcZ8hRMKmVy5G1XaMNJID2ah23w==
+electron@^17.1.2:
+  version "17.1.2"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-17.1.2.tgz#b4e4a0df883d9a9854cf865efa2bb00b12d55b1d"
+  integrity sha512-hqKQaUIRWX5Y2eAD8FZINWD/e5TKdpkbBYbkcZmJS4Bd1PKQsaDVc9h5xoA8zZQkPymE9rss+swjRpAFurOPGQ==
   dependencies:
     "@electron/get" "^1.13.0"
     "@types/node" "^14.6.2"
@@ -6116,13 +6116,13 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.5.9:
-  version "1.5.9"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.9.tgz#d67c5d5a2fdb67b888d2fd9cac7fdc763d1e3b0b"
-  integrity sha512-zGpH35sgCqk24/bBk7P6h5htBibleTXkIHeNIbAEkTXWSVwS/17dBJW9Nd20oMAL6bXOzYvU1u9mbzMlv9i0Bw==
+replaywebpage@^1.5.10:
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.5.10.tgz#8b32b7b7ce1e8480d2885483b4c3c650f3b3bc47"
+  integrity sha512-HmdMToSu6kFegZDpoiel8d8FRVtcAemB9II/9w8D2zrTbdZaImEbtP4iiLRWxuferZPyK7EXLDuaIZltfwaP3w==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
-    "@webrecorder/wabac" "^2.10.2"
+    "@webrecorder/wabac" "^2.10.3"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^4.3.9"

@@ -48,7 +48,7 @@ class oe extends re{constructor(e){if(super(e),this.it=U,e.type!==ie)throw Error
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-class se extends oe{}se.directiveName="unsafeSVG",se.resultType=2;const le=ae(se),ce=ae(class extends re{constructor(e){var t;if(super(e),e.type!==te||"style"!==e.name||(null===(t=e.strings)||void 0===t?void 0:t.length)>2)throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.")}render(e){return Object.keys(e).reduce(((t,i)=>{const a=e[i];return null==a?t:t+`${i=i.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${a};`}),"")}update(e,[t]){const{style:i}=e.element;if(void 0===this.ct){this.ct=new Set;for(const e in t)this.ct.add(e);return this.render(t)}this.ct.forEach((e=>{null==t[e]&&(this.ct.delete(e),e.includes("-")?i.removeProperty(e):i[e]="")}));for(const e in t){const a=t[e];null!=a&&(this.ct.add(e),e.includes("-")?i.setProperty(e,a):i[e]=a)}return P}});var de=__webpack_require__(4915),ue=__webpack_require__(4841),he=__webpack_require__.n(ue);const fe=r(de.Z);function pe(e){return[fe,e]}const be=window.IS_APP||window.electron&&window.electron.IS_APP||window.matchMedia("(display-mode: standalone)").matches,me="0.7.7";function ge(e){" "==e.key&&(e.preventDefault(),e.target.click())}class ve extends X{constructor(){super(),this.size="1.1em",this.width=null,this.height=null}static get properties(){return{svg:{type:String},size:{type:String},width:{type:String},height:{type:String}}}static get styles(){return o`
+class se extends oe{}se.directiveName="unsafeSVG",se.resultType=2;const le=ae(se),ce=ae(class extends re{constructor(e){var t;if(super(e),e.type!==te||"style"!==e.name||(null===(t=e.strings)||void 0===t?void 0:t.length)>2)throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.")}render(e){return Object.keys(e).reduce(((t,i)=>{const a=e[i];return null==a?t:t+`${i=i.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${a};`}),"")}update(e,[t]){const{style:i}=e.element;if(void 0===this.ct){this.ct=new Set;for(const e in t)this.ct.add(e);return this.render(t)}this.ct.forEach((e=>{null==t[e]&&(this.ct.delete(e),e.includes("-")?i.removeProperty(e):i[e]="")}));for(const e in t){const a=t[e];null!=a&&(this.ct.add(e),e.includes("-")?i.setProperty(e,a):i[e]=a)}return P}});var de=__webpack_require__(4915),ue=__webpack_require__(4841),he=__webpack_require__.n(ue);const fe=r(de.Z);function pe(e){return[fe,e]}const be=window.IS_APP||window.electron&&window.electron.IS_APP||window.matchMedia("(display-mode: standalone)").matches,me="0.7.8";function ge(e){" "==e.key&&(e.preventDefault(),e.target.click())}class ve extends X{constructor(){super(),this.size="1.1em",this.width=null,this.height=null}static get properties(){return{svg:{type:String},size:{type:String},width:{type:String},height:{type:String}}}static get styles(){return o`
     :host {
       display: inline-block;
       padding: 0;
@@ -2668,7 +2668,7 @@ class se extends oe{}se.directiveName="unsafeSVG",se.resultType=2;const le=ae(se
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${Di()}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${be?"App":"Extension"} v${"0.7.7"}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${be?"App":"Extension"} v${"0.7.8"}</div>
                     </div>
 
                     ${be?L`
@@ -2688,12 +2688,12 @@ class se extends oe{}se.directiveName="unsafeSVG",se.resultType=2;const le=ae(se
 
                   <h3>Privacy Policy</h3>
                   <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, this archive data is stored directly in the browser.
-                  Users can downloaded this data as files to their hardrive. Users can also delete any and all archived data at any time.
+                  Users can downloaded this data as files to their harddrive. Users can also delete any and all archived data at any time.
                   ArchiveWeb.page does not collect any usage or tracking data.</p>
 
-                  <p class="is-size-7">ArchiveWeb.page includes an experimental sharing option for each. Users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
-                  Once shared, data may be accessible to others. (A seperate warning is displayed when sharing)
-                  All Archives are private and not shared by default.</p>
+                  <p class="is-size-7">ArchiveWeb.page includes an experimental sharing option for each archive collection. Users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
+                  Once shared on this network, the data may become accessible to others.
+                  All archives are private and not shared by default, unless explicitly opted-in by the user. (A warning is displayed when sharing via IPFS.)</p>
 
                   <h4>Disclaimer of Warranties</h4>
                   <p class="is-size-7">The application is provided "as is" without any guarantees.</p>

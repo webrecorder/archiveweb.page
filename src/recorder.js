@@ -227,9 +227,12 @@ class Recorder {
         if ((new Date() - reqresp._created) > 20000) {
           if (this.noResponseForStatus(reqresp.status)) {
             console.log("Dropping stale: " + key);
-          } else {
+          } else if (!reqresp.awaitingPayload) {
             console.log(`Committing stale ${reqresp.status} ${reqresp.url}`);
             await this.fullCommit(reqresp, []);
+          } else {
+            console.log(`Waiting for payload for ${reqresp.url}`);
+            continue;
           }
           delete this.pendingRequests[key];
         }
@@ -1316,6 +1319,7 @@ class Recorder {
 
     if (!this.noResponseForStatus(reqresp.status)) {
       try {
+        reqresp.awaitingPayload = true;
         payload = await this.send(method, {requestId: params.requestId}, sessions);
 
         if (payload.base64Encoded) {
@@ -1328,6 +1332,8 @@ class Recorder {
         console.warn("no buffer for: " + reqresp.url + " " + reqresp.status + " " + reqresp.requestId + " " + method);
         console.warn(e);
         return null;
+      } finally {
+        reqresp.awaitingPayload = false;
       }
     } else {
       payload = Buffer.from([]);

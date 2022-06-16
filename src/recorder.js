@@ -986,7 +986,7 @@ class Recorder {
 
       if (rw !== baseDSRules.defaultRewriter) {
         string = payload.toString("utf-8");
-        newString = rw.rewrite(string, {live: true});
+        newString = rw.rewrite(string, {live: true, save: reqresp.extraOpts});
       }
       break;
     }

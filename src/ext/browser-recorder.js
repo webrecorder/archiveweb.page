@@ -9,6 +9,8 @@ const DEBUG = false;
 
 const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
+const IS_AGREGORE = navigator.userAgent.includes("AgregoreDesktop");
+
 
 // ===========================================================================
 class BrowserRecorder extends Recorder {
@@ -22,6 +24,8 @@ class BrowserRecorder extends Recorder {
     this.tabId = debuggee.tabId;
     this.openWinMap = openWinMap;
     this.autorun = autorun;
+
+    this.flatMode = IS_AGREGORE;
 
     this.collLoader = collLoader;
     this.setCollId(collId);
@@ -86,7 +90,7 @@ class BrowserRecorder extends Recorder {
 
   _doStop() {
     //chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
-    
+
     chrome.debugger.onDetach.removeListener(this._onDetached);
     chrome.debugger.onEvent.removeListener(this._onEvent);
 
@@ -280,6 +284,15 @@ class BrowserRecorder extends Recorder {
     chrome.debugger.sendCommand(this.debuggee, method, params, callback);
     return promise;
   }
+
+  _doSendCommandFlat(method, params, sessionId) {
+    try {
+      return chrome.debugger.sendCommand(this.debugee, method, params, sessionId);
+    } catch(e) {
+      console.warn(e);
+    }
+  }
+
 
   handleWindowOpen(url, sessions) {
     super.handleWindowOpen(url, sessions);

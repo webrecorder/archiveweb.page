@@ -286,6 +286,10 @@ class BrowserRecorder extends Recorder {
   }
 
   _doSendCommandFlat(method, params, sessionId) {
+    if (DEBUG) {
+      console.log("SEND " + JSON.stringify({command: method, params}));
+    }
+
     try {
       return chrome.debugger.sendCommand(this.debugee, method, params, sessionId);
     } catch(e) {

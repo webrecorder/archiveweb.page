@@ -292,7 +292,7 @@ class BrowserRecorder extends Recorder {
     }
 
     try {
-      return chrome.debugger.sendCommand(this.debugee, method, params, sessionId);
+      return chrome.debugger.sendCommand(this.debuggee, method, params, sessionId);
     } catch(e) {
       console.warn(e);
     }

@@ -9,7 +9,7 @@ const DEBUG = false;
 
 const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
 
-const IS_AGREGORE = navigator.userAgent.includes("AgregoreDesktop");
+const IS_AGREGORE = navigator.userAgent.includes("agregore-browser");
 
 
 // ===========================================================================

@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.7.11",
+  "version": "0.8.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -32,7 +32,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
     "electron": "^18.3.5",
-    "electron-builder": "^23.1.0",
+    "electron-builder": "^23.0.3",
     "electron-notarize": "^1.0.0",
     "generate-json-webpack-plugin": "^2.0.0",
     "mini-css-extract-plugin": "^2.3.0",

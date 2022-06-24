@@ -11,6 +11,7 @@ import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
 
 import "./coll-info";
 import "./coll-index";
+import "./recordembed";
 
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
@@ -55,13 +56,41 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   initRoute() {
-    this.inited = true;
     const pageParams = new URLSearchParams(window.location.search);
 
-    this.sourceUrl = pageParams.get("source") || "";
+    if (pageParams.has("config")) {
+      super.initRoute();
+
+      // support upload
+      window.addEventListener("message", (event) => {
+        if (this.embed && typeof(event.data) === "object" && event.data.msg_type === "upload") {
+          this.doUpload(event.data);
+        }
+      });
+
+    } else {
+      this.inited = true;
+      this.sourceUrl = pageParams.get("source") || "";
+    }
+  }
+
+  async doUpload({destUrl} = {}) {
+    const collId = this.pageParams.get("customColl");
+
+    const download = await fetch(`${apiPrefix}/c/${collId}/dl?format=wacz&pages=all`);
+    const blob = await download.blob();
+
+    const form = new FormData();
+    form.append("wacz_file", blob, "wacz_file");
+
+    await fetch(destUrl, {method: "POST", body: form});
   }
 
   onStartLoad(event) {
+    if (this.embed) {
+      return;
+    }
+    
     this.showImport = false;
     this.sourceUrl = event.detail.sourceUrl;
     this.loadInfo = event.detail;
@@ -101,7 +130,7 @@ class ArchiveWebApp extends ReplayWebApp
   async disableCSP() {
     // necessary for chrome 94> up due to new bug introduced
     // 
-    if (!self.chrome || !self.chrome.runtime) {
+    if (this.embed || (!self.chrome || !self.chrome.runtime)) {
       return;
     }
 
@@ -265,9 +294,10 @@ class ArchiveWebApp extends ReplayWebApp
   renderColl() {
     return html`
     <wr-rec-coll 
-    .editable="${true}"
+    .editable="${!this.embed}"
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
+    embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
     @replay-favicons=${this.onFavIcons}
@@ -366,13 +396,25 @@ class ArchiveWebApp extends ReplayWebApp
     </wr-modal`;
   }
 
+  getDeployType() {
+    if (IS_APP) {
+      return "App";
+    }
+
+    if (this.embed) {
+      return "Embedded";
+    }
+
+    return "Extension";
+  }
+
   renderAbout() {
     return html`
       <div class="modal is-active">
         <div class="modal-background" @click="${this.onAboutClose}"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">About ArchiveWeb.page ${IS_APP ? "App" : "Extension"}</p>
+              <p class="modal-card-title">About ArchiveWeb.page ${this.getDeployType()}</p>
               <button class="delete" aria-label="close" @click="${this.onAboutClose}"></button>
             </header>
             <section class="modal-card-body">
@@ -381,7 +423,7 @@ class ArchiveWebApp extends ReplayWebApp
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${wrLogo}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? "App" : "Extension"} v${VERSION}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${this.getDeployType()} v${VERSION}</div>
                     </div>
 
                     ${IS_APP ? html`

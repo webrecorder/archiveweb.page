@@ -10,17 +10,11 @@ class RecordEmbed extends Embed
 
     this.replaybase = "./replay/";
     this.mainElementName = "archive-web-page-app";
-    this.embed = "default";
-    this.noWebWorker = true;
 
     this.proxyPrefix = "https://wabac-cors-proxy.webrecorder.workers.dev/proxy/";
 
     const baseUrl = new URL(window.location);
     baseUrl.hash = "";
-
-    this.deepLink = true;
-
-    this.coll = "test";
 
     this.customConfig = {
       "prefix": this.proxyPrefix, 
@@ -32,7 +26,16 @@ class RecordEmbed extends Embed
       "noPostToGet": true
     };
 
+    this.downloaded = null;
+
     this.source = "proxy://" + this.proxyPrefix;
+  }
+
+  handleMessage(event) {
+    if (this.downloaded && typeof(event.data) === "object" && event.data.msg_type === "downloadedBlob") {
+      this.downloaded(event.data.url);
+      this.downloaded = null;
+    }
   }
 
   doDownload() {
@@ -41,14 +44,7 @@ class RecordEmbed extends Embed
       return;
     }
 
-    let downloaded = null;
-    const p = new Promise((resolve) => { downloaded = resolve; });
-
-    window.addEventListener("message", (event) => {
-      if (typeof(event.data) === "object" && event.data.msg_type === "downloadedBlob") {
-        downloaded(event.data.url);
-      }
-    }, {once: true});
+    const p = new Promise((resolve) => { this.downloaded = resolve; });
 
     iframe.contentWindow.postMessage({msg_type: "downloadToBlob"});
 

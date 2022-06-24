@@ -4,10 +4,22 @@ import { ExtAPI } from "./api";
 
 import { RecordingCollections } from "./recproxy";
 
+import INDEX_HTML from "../../wr-ext/replay/index.html";
+
 const defaultConfig = {
   injectScripts: ["/ruffle/ruffle.js"],
   baseUrlSourcePrefix: "/replay/index.html",
   //convertPostToGet: true
 };
 
-self.sw = new SWReplay({ApiClass: ExtAPI, useIPFS: false, defaultConfig, CollectionsClass: RecordingCollections});
+const staticData = new Map();
+
+const prefix = self.registration.scope;
+
+staticData.set(prefix + "index.html", {type: "text/html", content: INDEX_HTML});
+
+const useIPFS = false;
+const ApiClass = ExtAPI;
+const CollectionsClass = RecordingCollections;
+
+self.sw = new SWReplay({ApiClass, useIPFS, staticData, defaultConfig, CollectionsClass});

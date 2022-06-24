@@ -40,7 +40,7 @@ const moduleSettings =  {
       use: ["css-loader", "sass-loader"]
     },
     {
-      test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js)$/i,
+      test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js|index.html)$/i,
       use: "raw-loader",
     }
   ]

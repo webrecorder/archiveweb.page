@@ -10,6 +10,8 @@ class RecordEmbed extends Embed
 
     this.replaybase = "./replay/";
     this.mainElementName = "archive-web-page-app";
+    this.embed = "default";
+    this.noWebWorker = true;
 
     this.proxyPrefix = "https://wabac-cors-proxy.webrecorder.workers.dev/proxy/";
 

@@ -22,7 +22,7 @@ class RecordEmbed extends Embed
 
     this.coll = "test";
 
-    this.config = JSON.stringify({
+    this.customConfig = {
       "prefix": this.proxyPrefix, 
       "isLive": true,
       //"archivePrefix": this.archivePrefix,
@@ -30,16 +30,29 @@ class RecordEmbed extends Embed
       "baseUrlHashReplay": false,
       "recording": true,
       "noPostToGet": true
-    });
+    };
 
     this.source = "proxy://" + this.proxyPrefix;
   }
 
-  doUpload(destUrl) {
+  doDownload() {
     const iframe = this.renderRoot.querySelector("iframe");
-    if (iframe) {
-      iframe.contentWindow.postMessage({msg_type: "upload", destUrl});
+    if (!iframe) {
+      return;
     }
+
+    let downloaded = null;
+    const p = new Promise((resolve) => { downloaded = resolve; });
+
+    window.addEventListener("message", (event) => {
+      if (typeof(event.data) === "object" && event.data.msg_type === "downloadedBlob") {
+        downloaded(event.data.url);
+      }
+    }, {once: true});
+
+    iframe.contentWindow.postMessage({msg_type: "downloadToBlob"});
+
+    return p;
   }
 }
 

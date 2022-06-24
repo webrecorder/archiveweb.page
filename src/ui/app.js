@@ -61,12 +61,7 @@ class ArchiveWebApp extends ReplayWebApp
     if (pageParams.has("config")) {
       super.initRoute();
 
-      // support upload
-      window.addEventListener("message", (event) => {
-        if (this.embed && typeof(event.data) === "object" && event.data.msg_type === "upload") {
-          this.doUpload(event.data);
-        }
-      });
+      this.handleMessages();
 
     } else {
       this.inited = true;
@@ -74,16 +69,17 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
-  async doUpload({destUrl} = {}) {
-    const collId = this.pageParams.get("customColl");
+  handleMessages() {
+    // support upload
+    window.addEventListener("message", async (event) => {
+      if (this.embed && typeof(event.data) === "object" && event.data.msg_type === "downloadToBlob") {
+        const coll = this.pageParams.get("customColl");
 
-    const download = await fetch(`${apiPrefix}/c/${collId}/dl?format=wacz&pages=all`);
-    const blob = await download.blob();
-
-    const form = new FormData();
-    form.append("wacz_file", blob, "wacz_file");
-
-    await fetch(destUrl, {method: "POST", body: form});
+        const download = await fetch(`${apiPrefix}/c/${coll}/dl?format=wacz&pages=all`);
+        const blob = await download.blob();
+        event.source.postMessage({msg_type: "downloadedBlob", coll, url: URL.createObjectURL(blob)});
+      }
+    });
   }
 
   onStartLoad(event) {

@@ -16,8 +16,7 @@ const staticData = new Map();
 
 const prefix = self.registration.scope;
 
-staticData.set(prefix, {type: "text/html", content: INDEX_HTML});
-staticData.set(prefix + "index.html", {type: "text/html", content: INDEX_HTML});
+staticData.set(prefix + "record.html", {type: "text/html", content: INDEX_HTML});
 
 const useIPFS = false;
 const ApiClass = ExtAPI;

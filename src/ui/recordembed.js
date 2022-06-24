@@ -9,6 +9,7 @@ class RecordEmbed extends Embed
     super();
 
     this.replaybase = "./replay/";
+    this.replayfile = "record.html";
     this.mainElementName = "archive-web-page-app";
     this.embed = "default";
     this.noWebWorker = true;

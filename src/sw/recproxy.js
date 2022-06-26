@@ -15,6 +15,8 @@ class RecProxy extends ArchiveDB
 
     this.collLoader = collLoader;
 
+    this.recordProxied = config.extraConfig.recordProxied || false;
+
     this.liveProxy = new LiveProxy(config.extraConfig, {cloneResponse: true, allowBody: true});
 
     this.pageId = randomId();
@@ -23,7 +25,7 @@ class RecProxy extends ArchiveDB
     //this.cookie = "";
   }
 
-  async getResource(request, prefix, event) {
+  async getResource(request, prefix) {
     let req;
     
     if (request.method === "POST" || request.method === "PUT") {
@@ -36,12 +38,20 @@ class RecProxy extends ArchiveDB
 
     //this.cookie = response.headers.get("x-wabac-preset-cookie");
 
-    this.doRecord(event.clientId || event.resultingClientId, response, req);
+    // don't record content proxied from specified hosts
+    if (!this.recordProxied && this.liveProxy.hostProxy) {
+      const parsedUrl = new URL(request.url);
+      if (this.liveProxy.hostProxy[parsedUrl.host]) {
+        return response;
+      }
+    }
+
+    this.doRecord(response, req);
 
     return response;
   }
 
-  async doRecord(clientId, response, request) {
+  async doRecord(response, request) {
     let url = response.url;
     const ts = response.date.getTime();
 

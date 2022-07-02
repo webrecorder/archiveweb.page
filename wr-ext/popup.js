@@ -241,7 +241,7 @@ class ne extends re{}ne.directiveName="unsafeSVG",ne.resultType=2;const se=ae(ne
           <p class="rec-state">
           ${this.renderStatus()}
           </p>
-          <a target="_blank" href="https://archiveweb.page/guide/usage/during-capture.html" class="smallest button is-small is-inverted">
+          <a target="_blank" href="https://archiveweb.page/guide/usage" class="smallest button is-small is-inverted">
             <span class="icon is-small">
               <wr-icon size="1.0em" title="Guide" .src="${we()}"></wr-icon>
             </span>

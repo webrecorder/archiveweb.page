@@ -1,6 +1,4 @@
-import JSZip from "jszip";
-
-import { PassThrough } from "stream";
+import { downloadZip } from "client-zip";
 
 import { Deflate } from "pako";
 
@@ -33,46 +31,26 @@ async function* getPayload(payload) {
   yield payload;
 }
 
-// ===========================================================================
-class ResumePassThrough extends PassThrough
-{
-  constructor(gen, stats, hasher) {
-    super();
-    this.gen = gen;
-    this.stats = stats;
-    this.hasher = hasher;
-  }
+async function* hashingGen(gen, stats, hasher) {
+  stats.size = 0;
 
-  resume() {
-    super.resume();
+  hasher.init();
 
-    if (!this._started) {
-      this.start();
-      this._started = true;
-    }
-  }
-
-  async start() {
-    this.stats.size = 0;
-
-    this.hasher.init();
-
-    for await (let chunk of this.gen) {
-      if (typeof(chunk) === "string") {
-        chunk = encoder.encode(chunk);
-      }
-
-      this.push(chunk);
-      this.stats.size += chunk.byteLength;
-      this.hasher.update(chunk);
+  for await (let chunk of gen) {
+    if (typeof(chunk) === "string") {
+      chunk = encoder.encode(chunk);
     }
 
-    this.stats.hash = this.hasher.digest("hex");
-
-    this.push(null);
+    yield chunk;
+    stats.size += chunk.byteLength;
+    if (this.sizeCallback) {
+      this.sizeCallback(chunk.byteLength);
+    }
+    hasher.update(chunk);
   }
+
+  stats.hash = hasher.digest("hex");
 }
-
 
 // ===========================================================================
 class Downloader
@@ -125,6 +103,7 @@ class Downloader
 
     this.datapackageDigest = null;
     this.signer = signer;
+    this.sizeCallback = null;
 
     this.fileStats = [];
   }
@@ -210,19 +189,25 @@ class Downloader
     controller.close();
   }
 
-  addFile(zip, filename, generator, compressed = false) {
+  addFile(zip, filename, generator/*, compressed = false*/) {
     const stats = {filename, size: 0};
 
     if (filename !== DATAPACKAGE_FILENAME && filename !== DIGEST_FILENAME) {
       this.fileStats.push(stats);
     }
 
-    const data = new ResumePassThrough(generator, stats, this.fileHasher);
-
-    zip.file(filename, data, {
-      compression: compressed ? "DEFLATE" : "STORE",
-      binary: !compressed
+    zip.push({
+      name: filename,
+      lastModified: new Date(),
+      input: hashingGen(generator, stats, this.fileHasher)
     });
+
+    //const data = new ResumePassThrough(generator, stats, this.fileHasher);
+
+    // zip.file(filename, data, {
+    //   compression: compressed ? "DEFLATE" : "STORE",
+    //   binary: !compressed
+    // });
   }
 
   recordDigest(data) {
@@ -236,8 +221,6 @@ class Downloader
   }
 
   async downloadWACZ(filename, sizeCallback) {
-    const zip = new JSZip();
-
     filename = (filename || "webarchive").split(".")[0] + ".wacz";
 
     await this.loadResources();
@@ -245,6 +228,9 @@ class Downloader
     this.fileHasher = await createSHA256();
     this.recordHasher = await createSHA256();
     this.hashType = "sha256";
+    this.sizeCallback = sizeCallback;
+
+    const zip = [];
 
     this.addFile(zip, "pages/pages.jsonl", this.generatePages(), true);
     this.addFile(zip, "archive/data.warc.gz", this.generateWARC(filename + "#/archive/data.warc.gz", true), false);
@@ -262,33 +248,13 @@ class Downloader
 
     this.addFile(zip, DIGEST_FILENAME, this.generateDataManifest());
 
-    const rs = new ReadableStream({
-      start(controller) {
-        zip.generateInternalStream({type:"uint8array", streamFiles: true})
-          .on("data", (data) => {
-            controller.enqueue(data);
-            if (sizeCallback) {
-              sizeCallback(data.length);
-            }
-          //console.log(metadata);
-          })
-          .on("error", (error) => {
-            console.log(error);
-            controller.close();
-          })
-          .on("end", () => {
-            controller.close();
-          })
-          .resume();
-      }
-    });
-
     const headers = {
       "Content-Disposition": `attachment; filename="${filename}"`,
       "Content-Type": "application/zip"
     };
 
-    const response = new Response(rs, {headers});
+    let response = downloadZip(zip);
+    response = new Response(response.body, {headers});
     response.filename = filename;
     return response;
   }

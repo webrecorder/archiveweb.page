@@ -474,7 +474,7 @@ class RecPopup extends LitElement
           <p class="rec-state">
           ${this.renderStatus()}
           </p>
-          <a target="_blank" href="https://archiveweb.page/guide/usage/during-capture.html" class="smallest button is-small is-inverted">
+          <a target="_blank" href="https://archiveweb.page/guide/usage" class="smallest button is-small is-inverted">
             <span class="icon is-small">
               <wr-icon size="1.0em" title="Guide" .src="${fasQ}"></wr-icon>
             </span>

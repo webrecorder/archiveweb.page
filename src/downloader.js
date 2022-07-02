@@ -31,7 +31,7 @@ async function* getPayload(payload) {
   yield payload;
 }
 
-async function* hashingGen(gen, stats, hasher) {
+async function* hashingGen(gen, stats, hasher, sizeCallback) {
   stats.size = 0;
 
   hasher.init();
@@ -43,8 +43,8 @@ async function* hashingGen(gen, stats, hasher) {
 
     yield chunk;
     stats.size += chunk.byteLength;
-    if (this.sizeCallback) {
-      this.sizeCallback(chunk.byteLength);
+    if (sizeCallback) {
+      sizeCallback(chunk.byteLength);
     }
     hasher.update(chunk);
   }
@@ -103,7 +103,6 @@ class Downloader
 
     this.datapackageDigest = null;
     this.signer = signer;
-    this.sizeCallback = null;
 
     this.fileStats = [];
   }
@@ -189,7 +188,7 @@ class Downloader
     controller.close();
   }
 
-  addFile(zip, filename, generator/*, compressed = false*/) {
+  addFile(zip, filename, generator, sizeCallback/*, compressed = false*/) {
     const stats = {filename, size: 0};
 
     if (filename !== DATAPACKAGE_FILENAME && filename !== DIGEST_FILENAME) {
@@ -199,15 +198,8 @@ class Downloader
     zip.push({
       name: filename,
       lastModified: new Date(),
-      input: hashingGen(generator, stats, this.fileHasher)
+      input: hashingGen(generator, stats, this.fileHasher, sizeCallback)
     });
-
-    //const data = new ResumePassThrough(generator, stats, this.fileHasher);
-
-    // zip.file(filename, data, {
-    //   compression: compressed ? "DEFLATE" : "STORE",
-    //   binary: !compressed
-    // });
   }
 
   recordDigest(data) {
@@ -228,25 +220,24 @@ class Downloader
     this.fileHasher = await createSHA256();
     this.recordHasher = await createSHA256();
     this.hashType = "sha256";
-    this.sizeCallback = sizeCallback;
 
     const zip = [];
 
-    this.addFile(zip, "pages/pages.jsonl", this.generatePages(), true);
-    this.addFile(zip, "archive/data.warc.gz", this.generateWARC(filename + "#/archive/data.warc.gz", true), false);
+    this.addFile(zip, "pages/pages.jsonl", this.generatePages(), sizeCallback, true);
+    this.addFile(zip, "archive/data.warc.gz", this.generateWARC(filename + "#/archive/data.warc.gz", true), sizeCallback, false);
     //this.addFile(zip, "archive/text.warc", this.generateTextWARC(filename + "#/archive/text.warc"), false);
 
     // don't use compressed index if we'll have a single block, need to have at least enough for 2 blocks
     if (this.resources.length < (2 * LINES_PER_BLOCK)) {
-      this.addFile(zip, "indexes/index.cdx", this.generateCDX(), true);
+      this.addFile(zip, "indexes/index.cdx", this.generateCDX(), sizeCallback, true);
     } else {
-      this.addFile(zip, "indexes/index.cdx.gz", this.generateCompressedCDX("index.cdx.gz"), false);
-      this.addFile(zip, "indexes/index.idx", this.generateIDX(), true);
+      this.addFile(zip, "indexes/index.cdx.gz", this.generateCompressedCDX("index.cdx.gz"), sizeCallback, false);
+      this.addFile(zip, "indexes/index.idx", this.generateIDX(), true, sizeCallback);
     }
     
-    this.addFile(zip, DATAPACKAGE_FILENAME, this.generateDataPackage());
+    this.addFile(zip, DATAPACKAGE_FILENAME, this.generateDataPackage(), sizeCallback);
 
-    this.addFile(zip, DIGEST_FILENAME, this.generateDataManifest());
+    this.addFile(zip, DIGEST_FILENAME, this.generateDataManifest(), sizeCallback);
 
     const headers = {
       "Content-Disposition": `attachment; filename="${filename}"`,

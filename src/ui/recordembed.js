@@ -1,7 +1,12 @@
 
 import { Embed } from "replaywebpage";
+import { setAppName } from "replaywebpage/src/pageutils";
 
+import awpLogo from "../../assets/awp-logo.svg";
+
+// ===========================================================================
 Embed.setDefaultReplayFile("replay.html");
+setAppName("Embeddded ArchiveWeb.page");
 
 
 // ===========================================================================
@@ -20,6 +25,8 @@ class RecordEmbed extends Embed
 
     const baseUrl = new URL(window.location);
     baseUrl.hash = "";
+
+    this.logo = awpLogo;
 
     this.customConfig = {
       "prefix": this.proxyPrefix, 

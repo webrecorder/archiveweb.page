@@ -15,6 +15,7 @@ import "./recordembed";
 
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
+import { setAppName } from "replaywebpage/src/pageutils";
 
 
 // eslint-disable-next-line no-undef
@@ -31,6 +32,8 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.autorun = localStorage.getItem("autorunBehaviors") === "1";
+
+    setAppName(this.appName);
   }
 
   get appName() {
@@ -51,7 +54,9 @@ class ArchiveWebApp extends ReplayWebApp
 
       showNew: { type: String },
       showImport: { type: Boolean },
-      isImportExisting: { type: Boolean }
+      isImportExisting: { type: Boolean },
+
+      loadedCollId: { type: String }
     };
   }
 
@@ -72,12 +77,10 @@ class ArchiveWebApp extends ReplayWebApp
   handleMessages() {
     // support upload
     window.addEventListener("message", async (event) => {
-      if (this.embed && typeof(event.data) === "object" && event.data.msg_type === "downloadToBlob") {
-        const coll = this.pageParams.get("customColl");
-
-        const download = await fetch(`${apiPrefix}/c/${coll}/dl?format=wacz&pages=all`);
+      if (this.embed && this.loadedCollId && typeof(event.data) === "object" && event.data.msg_type === "downloadToBlob") {
+        const download = await fetch(`${apiPrefix}/c/${this.loadedCollId}/dl?format=wacz&pages=all`);
         const blob = await download.blob();
-        event.source.postMessage({msg_type: "downloadedBlob", coll, url: URL.createObjectURL(blob)});
+        event.source.postMessage({msg_type: "downloadedBlob", coll: this.loadedCollId, url: URL.createObjectURL(blob)});
       }
     });
   }
@@ -102,6 +105,10 @@ class ArchiveWebApp extends ReplayWebApp
         const msg = {"msg_type": "reload", "full": true, "name": this.loadInfo.importCollId};
         navigator.serviceWorker.controller.postMessage(msg);
       }
+    }
+
+    if (this.embed) {
+      this.loadedCollId = event.detail.collInfo && event.detail.collInfo.coll;
     }
 
     super.onCollLoaded(event);
@@ -543,6 +550,18 @@ class ArchiveWebApp extends ReplayWebApp
       window.archivewebpage.record({url, collId, startRec, autorun});
     }
     return false;
+  }
+
+  async onTitle(event) {
+    super.onTitle(event);
+
+    if (this.embed && this.loadedCollId && event.detail.replayTitle && event.detail.title) {
+      try {
+        await fetch(`${apiPrefix}/c/${this.loadedCollId}/pageTitle`, {method: "POST", body: JSON.stringify(event.detail)});
+      } catch (e) {
+        console.warn(e);
+      }
+    }
   }
 }
 

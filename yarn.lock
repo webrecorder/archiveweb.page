@@ -6788,10 +6788,9 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.6.0.tgz#1539766032948cda498f2256280444694986aeed"
-  integrity sha512-4VhokhhKdFaOAriChJETizgSEV5DX1C2LFRJ9kgMb4VZNaahV3HNdlkfGkxiSvXqxRjLKbtvJrEOhdy+Yy8mUw==
+"replaywebpage@github:webrecorder/replayweb.page#rec-embed-custom":
+  version "1.6.1"
+  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/dec8c4a2d73c73b5325c42145a982bf2489ebd57"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@webrecorder/wabac" "^2.12.0"

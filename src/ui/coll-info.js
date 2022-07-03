@@ -268,11 +268,11 @@ class WrRecCollInfo extends CollInfo
         <div class="column is-2">
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
-            <button @click="${this.onDownload}" class="button is-small" title="Download">
+            <a href="${apiPrefix}/c/${this.coll.id}/dl?format=wacz&pages=all" class="button is-small" title="Download">
               <span class="icon is-small">
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
-            </button>
+            </a>
             <button @click="${this.onShowImport}" class="button is-small" title="Import Archive...">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${fasUpload}"></fa-icon>
@@ -388,15 +388,6 @@ class WrRecCollInfo extends CollInfo
       <button @click="${this.onPin}"class="button is-primary">Share</button>
       <button @click="${() => this.shareWarn = false}" class="button">Cancel</button>
     </wr-modal>`;
-  }
-
-  onDownload() {
-    const params = new URLSearchParams();
-    params.set("format", "wacz");
-    //params.set("filename", this.coll.title);
-    params.set("pages", "all");
-
-    window.location.href = `/replay/${apiPrefix}/c/${this.coll.id}/dl?` + params.toString();
   }
 
   onShowImport() {

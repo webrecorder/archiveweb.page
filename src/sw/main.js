@@ -4,25 +4,32 @@ import { ExtAPI } from "./api";
 
 import { RecordingCollections } from "./recproxy";
 
-import REC_INDEX_HTML from "../../wr-ext/replay/index.html";
+import REC_INDEX_HTML from "../static/replay/index.html";
 import RWP_INDEX_HTML from "replaywebpage/index.html";
+import { WorkerLoader } from "@webrecorder/wabac/src/loaders";
 
-const defaultConfig = {
-  injectScripts: ["/ruffle/ruffle.js"],
-  baseUrlSourcePrefix: "/replay/index.html",
-  //convertPostToGet: true
-};
+if (self.registration) {
+  const defaultConfig = {
+    injectScripts: ["/ruffle/ruffle.js"],
+    baseUrlSourcePrefix: "/replay/index.html",
+    //convertPostToGet: true
+  };
 
-const staticData = new Map();
+  const staticData = new Map();
 
-const prefix = self.registration.scope;
+  const prefix = self.registration.scope;
 
-staticData.set(prefix, {type: "text/html", content: RWP_INDEX_HTML});
-staticData.set(prefix + "index.html", {type: "text/html", content: RWP_INDEX_HTML});
-staticData.set(prefix + "record.html", {type: "text/html", content: REC_INDEX_HTML});
+  // for backwards compatibility to support <replay-web-page> tag
+  staticData.set(prefix + "replay.html", {type: "text/html", content: RWP_INDEX_HTML});
 
-const useIPFS = false;
-const ApiClass = ExtAPI;
-const CollectionsClass = RecordingCollections;
+  // for use with <record-web-page> tag
+  staticData.set(prefix + "record.html", {type: "text/html", content: REC_INDEX_HTML});
 
-self.sw = new SWReplay({ApiClass, useIPFS, staticData, defaultConfig, CollectionsClass});
+  const useIPFS = false;
+  const ApiClass = ExtAPI;
+  const CollectionsClass = RecordingCollections;
+
+  self.sw = new SWReplay({ApiClass, useIPFS, staticData, defaultConfig, CollectionsClass});
+} else {
+  new WorkerLoader(self);
+}

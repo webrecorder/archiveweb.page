@@ -296,6 +296,7 @@ class ArchiveWebApp extends ReplayWebApp
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
+    appVersion=${VERSION}
     @replay-favicons=${this.onFavIcons}
     @update-title=${this.onTitle}
     @coll-loaded=${this.onCollLoaded}

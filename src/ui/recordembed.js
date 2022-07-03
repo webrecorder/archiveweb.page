@@ -1,6 +1,8 @@
 
 import { Embed } from "replaywebpage";
 
+Embed.setDefaultReplayFile("replay.html");
+
 
 // ===========================================================================
 class RecordEmbed extends Embed

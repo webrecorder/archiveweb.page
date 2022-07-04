@@ -232,7 +232,7 @@ class Downloader
       this.addFile(zip, "indexes/index.cdx", this.generateCDX(), sizeCallback, true);
     } else {
       this.addFile(zip, "indexes/index.cdx.gz", this.generateCompressedCDX("index.cdx.gz"), sizeCallback, false);
-      this.addFile(zip, "indexes/index.idx", this.generateIDX(), true, sizeCallback);
+      this.addFile(zip, "indexes/index.idx", this.generateIDX(), sizeCallback, true);
     }
     
     this.addFile(zip, DATAPACKAGE_FILENAME, this.generateDataPackage(), sizeCallback);
@@ -616,7 +616,7 @@ class Downloader
       refersToDigest = digestOriginal.payloadDigest || resource.digest;
 
     } else if (resource.origURL && resource.origTS) {
-      if (!resource.digest) {
+      if (!resource.digest || !digestOriginal) {
         //console.log("Skip fuzzy resource with no digest");
         return null;
       }

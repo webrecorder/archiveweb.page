@@ -9,7 +9,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 const APP_FILE_SERVE_PREFIX = "http://files.archiveweb.page/";
 
-const PACKAGE = require("./package.json");
+const AWP_PACKAGE = require("./package.json");
+const RWP_PACKAGE = require("./node_modules/replaywebpage/package.json");
 const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
 
 const IPFS_CORE_URL = "/ipfs-core.min.js";
@@ -19,14 +20,19 @@ const BANNER = "[name].js is part of the Webrecorder Extension (https://replaywe
 const manifest = require("./src/ext/manifest.json");
 
 const defaultDefines = {
-  __AWP_VERSION__: JSON.stringify(PACKAGE.version),
-  __VERSION__: JSON.stringify(PACKAGE.version),
+  __AWP_VERSION__: JSON.stringify(AWP_PACKAGE.version),
+  __VERSION__: JSON.stringify(RWP_PACKAGE.version),
   __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
   __SW_NAME__: JSON.stringify("sw.js"),
   __IPFS_CORE_URL__: JSON.stringify(""),
   __IPFS_HTTP_CLIENT_URL__: JSON.stringify(""),
   __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
 };
+
+
+const DIST_EXT = path.join(__dirname, "dist", "ext");
+const DIST_ELECTRON = path.join(__dirname, "dist", "electron");
+const DIST_EMBED = path.join(__dirname, "dist", "embed");
 
 
 const moduleSettings =  {
@@ -40,7 +46,7 @@ const moduleSettings =  {
       use: ["css-loader", "sass-loader"]
     },
     {
-      test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js)$/i,
+      test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js|index.html)$/i,
       use: "raw-loader",
     }
   ]
@@ -62,6 +68,8 @@ const optimization = {
   ],
 };
 
+
+// ===========================================================================
 const electronMainConfig = (/*env, argv*/) => {
   return {
     target: "electron-main",
@@ -79,7 +87,7 @@ const electronMainConfig = (/*env, argv*/) => {
       }
     },
     output: {
-      path: path.join(__dirname, "dist"),
+      path: DIST_ELECTRON,
       filename: "[name].js"
     },
     node: {
@@ -91,9 +99,6 @@ const electronMainConfig = (/*env, argv*/) => {
       new webpack.BannerPlugin(BANNER),
       new CopyPlugin({
         patterns: [
-          { from: "wr-ext/replay/", to: "replay/" },
-          { from: "wr-ext/ruffle/", to: "ruffle/" },
-          { from: "wr-ext/pdf/", to: "pdf/" },
           { from: "node_modules/leveldown/prebuilds/", to: "prebuilds" },
           { from: "build/extra_prebuilds/", to: "prebuilds" },
         ],
@@ -108,6 +113,7 @@ const electronMainConfig = (/*env, argv*/) => {
 };
 
 
+// ===========================================================================
 const electronPreloadConfig = (/*env, argv*/) => {
   return {
     target: "electron-preload",
@@ -117,7 +123,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
     },
     optimization,
     output: {
-      path: path.join(__dirname, "dist"),
+      path: DIST_ELECTRON,
       filename: "[name].js"
     },
     plugins: [
@@ -126,72 +132,39 @@ const electronPreloadConfig = (/*env, argv*/) => {
   };
 };
 
-const electronRendererConfig = (/*env, argv*/) => {
-  return {
-    mode: "production",
-    target: "web",
-    entry: {
-      "rec-window": "./src/electron/rec-window.js",
-    },
-    optimization,
-    resolve: {fallback},
-    output: {
-      path: path.join(__dirname, "dist"),
-      filename: "[name].js",
-      libraryTarget: "global",
-      globalObject: "self"
-    },
 
-    plugins: [
-      new webpack.ProvidePlugin({
-        process: "process/browser.js",
-        Buffer: ["buffer", "Buffer"],
-      }),
-      new MiniCssExtractPlugin(),
-      new CopyPlugin({
-        patterns: [
-          { from: "src/electron/rec-preload.js", to: "" },
-          { from: "src/electron/rec-window.html", to: "" },
-        ]
-      }),
-      new webpack.DefinePlugin(defaultDefines),
-    ],
-
-    module: moduleSettings,
-  };
-};
-
-
-const extensionConfig = (env, argv) => {
-  const icon = (argv.mode === "production") ? "icon.png" : "icon-dev.png";
-
-  const generateManifest = (name, value) => {
-    switch (value) {
-    case "$VERSION":
-      return PACKAGE.version;
-
-    case "$ICON":
-      return icon;
-    }
-
-    return value;
-  };
+// ===========================================================================
+function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}, flat = false} = {}) {
+  if (copy.length) {
+    plugins.push(new CopyPlugin({patterns: copy}));
+  }
 
   return {
     mode: "production",
     target: "web",
     entry: {
-      "bg": "./src/ext/bg.js",
       "ui": "./src/ui/app.js",
-      "popup": "./src/popup.js",
-      "sw": "./src/sw/main.js"
+      "sw": "./src/sw/main.js",
+      ...entry
     },
     optimization,
     resolve: {fallback},
     output: {
-      path: path.join(__dirname, "wr-ext"),
+      path: outputPath,
       filename: (chunkData) => {
-        return !["sw", "ui"].includes(chunkData.chunk.name) ? "[name].js": "./replay/[name].js";
+        const name = "[name].js";
+        const replayName = "./replay/" + name;
+
+        switch (chunkData.chunk.name) {
+        case "ui":
+          return flat ? name : replayName;
+
+        case "sw":
+          return replayName;
+
+        default:
+          return name;
+        }
       },
       libraryTarget: "global",
       globalObject: "self"
@@ -203,21 +176,90 @@ const extensionConfig = (env, argv) => {
       }),
       new MiniCssExtractPlugin(),
       new webpack.BannerPlugin(BANNER),
-      new GenerateJsonPlugin("manifest.json", manifest, generateManifest, 2),
       new webpack.DefinePlugin({...defaultDefines,
         __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL),
       }),
-      new CopyPlugin({
-        patterns: [
-          { from: "node_modules/ipfs-core/dist/index.min.js", to: "ipfs-core.min.js" },
-        ]
-      })
+      ...plugins
     ],
 
     module: moduleSettings,
+    ...extra
   };
+}
+
+
+// ===========================================================================
+const extensionWebConfig = (env, argv) => {
+  const icon = (argv.mode === "production") ? "icon.png" : "icon-dev.png";
+
+  const generateManifest = (name, value) => {
+    switch (value) {
+    case "$VERSION":
+      return AWP_PACKAGE.version;
+
+    case "$ICON":
+      return icon;
+    }
+
+    return value;
+  };
+
+  const plugins = [
+    new GenerateJsonPlugin("manifest.json", manifest, generateManifest, 2)
+  ];
+
+  const copy = [
+    { from: "src/static/", to: "./" },
+    { from: "node_modules/ipfs-core/dist/index.min.js", to: "ipfs-core.min.js" }
+  ];
+
+  const entry = {
+    "bg": "./src/ext/bg.js",
+    "popup": "./src/popup.js"
+  };
+
+  return sharedBuild(DIST_EXT, {plugins, copy, entry});
 };
 
 
-module.exports = [ extensionConfig, electronRendererConfig, electronMainConfig, electronPreloadConfig ];
+// ===========================================================================
+const electronWebConfig = (/*env, argv*/) => {
+  const entry = {
+    "rec-window": "./src/electron/rec-window.js"
+  };
+
+  const copy = [
+    { from: "src/static/", to: "./" },
+    { from: "src/electron/rec-preload.js", to: "" },
+    { from: "src/electron/rec-window.html", to: "" },
+  ];
+
+  return sharedBuild(DIST_ELECTRON, {copy, entry});
+};
+
+// ===========================================================================
+const embedWebConfig = (/*env, argv*/) => {
+  const copy = [
+    { from: "src/embed.html", to: "./index.html" },
+  ];
+
+  const extra = {
+    devServer: {
+      compress: true,
+      port: 10001,
+      open: true,
+      static:  path.join(__dirname),
+    }
+  };
+
+  const flat = true;
+
+  return sharedBuild(DIST_EMBED, {copy, extra, flat});
+};
+
+
+
+
+// ===========================================================================
+module.exports = [ extensionWebConfig, electronWebConfig, embedWebConfig, electronMainConfig, electronPreloadConfig ];
 

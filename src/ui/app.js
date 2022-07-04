@@ -11,9 +11,11 @@ import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
 
 import "./coll-info";
 import "./coll-index";
+import "./recordembed";
 
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
+import { setAppName } from "replaywebpage/src/pageutils";
 
 
 // eslint-disable-next-line no-undef
@@ -30,6 +32,8 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.autorun = localStorage.getItem("autorunBehaviors") === "1";
+
+    setAppName(this.appName);
   }
 
   get appName() {
@@ -50,18 +54,42 @@ class ArchiveWebApp extends ReplayWebApp
 
       showNew: { type: String },
       showImport: { type: Boolean },
-      isImportExisting: { type: Boolean }
+      isImportExisting: { type: Boolean },
+
+      loadedCollId: { type: String }
     };
   }
 
   initRoute() {
-    this.inited = true;
     const pageParams = new URLSearchParams(window.location.search);
 
-    this.sourceUrl = pageParams.get("source") || "";
+    if (pageParams.has("config")) {
+      super.initRoute();
+
+      this.handleMessages();
+
+    } else {
+      this.inited = true;
+      this.sourceUrl = pageParams.get("source") || "";
+    }
+  }
+
+  handleMessages() {
+    // support upload
+    window.addEventListener("message", async (event) => {
+      if (this.embed && this.loadedCollId && typeof(event.data) === "object" && event.data.msg_type === "downloadToBlob") {
+        const download = await fetch(`${apiPrefix}/c/${this.loadedCollId}/dl?format=wacz&pages=all`);
+        const blob = await download.blob();
+        event.source.postMessage({msg_type: "downloadedBlob", coll: this.loadedCollId, url: URL.createObjectURL(blob)});
+      }
+    });
   }
 
   onStartLoad(event) {
+    if (this.embed) {
+      return;
+    }
+    
     this.showImport = false;
     this.sourceUrl = event.detail.sourceUrl;
     this.loadInfo = event.detail;
@@ -77,6 +105,10 @@ class ArchiveWebApp extends ReplayWebApp
         const msg = {"msg_type": "reload", "full": true, "name": this.loadInfo.importCollId};
         navigator.serviceWorker.controller.postMessage(msg);
       }
+    }
+
+    if (this.embed) {
+      this.loadedCollId = event.detail.collInfo && event.detail.collInfo.coll;
     }
 
     super.onCollLoaded(event);
@@ -101,7 +133,7 @@ class ArchiveWebApp extends ReplayWebApp
   async disableCSP() {
     // necessary for chrome 94> up due to new bug introduced
     // 
-    if (!self.chrome || !self.chrome.runtime) {
+    if (this.embed || (!self.chrome || !self.chrome.runtime)) {
       return;
     }
 
@@ -265,11 +297,13 @@ class ArchiveWebApp extends ReplayWebApp
   renderColl() {
     return html`
     <wr-rec-coll 
-    .editable="${true}"
+    .editable="${!this.embed}"
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
+    embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
+    appVersion=${VERSION}
     @replay-favicons=${this.onFavIcons}
     @update-title=${this.onTitle}
     @coll-loaded=${this.onCollLoaded}
@@ -366,13 +400,25 @@ class ArchiveWebApp extends ReplayWebApp
     </wr-modal`;
   }
 
+  getDeployType() {
+    if (IS_APP) {
+      return "App";
+    }
+
+    if (this.embed) {
+      return "Embedded";
+    }
+
+    return "Extension";
+  }
+
   renderAbout() {
     return html`
       <div class="modal is-active">
         <div class="modal-background" @click="${this.onAboutClose}"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">About ArchiveWeb.page ${IS_APP ? "App" : "Extension"}</p>
+              <p class="modal-card-title">About ArchiveWeb.page ${this.getDeployType()}</p>
               <button class="delete" aria-label="close" @click="${this.onAboutClose}"></button>
             </header>
             <section class="modal-card-body">
@@ -381,7 +427,7 @@ class ArchiveWebApp extends ReplayWebApp
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
                       <fa-icon class="logo" size="48px" .svg="${wrLogo}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${IS_APP ? "App" : "Extension"} v${VERSION}</div>
+                      <div style="font-size: smaller; margin-bottom: 1em">${this.getDeployType()} v${VERSION}</div>
                     </div>
 
                     ${IS_APP ? html`
@@ -504,6 +550,18 @@ class ArchiveWebApp extends ReplayWebApp
       window.archivewebpage.record({url, collId, startRec, autorun});
     }
     return false;
+  }
+
+  async onTitle(event) {
+    super.onTitle(event);
+
+    if (this.embed && this.loadedCollId && event.detail.replayTitle && event.detail.title) {
+      try {
+        await fetch(`${apiPrefix}/c/${this.loadedCollId}/pageTitle`, {method: "POST", body: JSON.stringify(event.detail)});
+      } catch (e) {
+        console.warn(e);
+      }
+    }
   }
 }
 

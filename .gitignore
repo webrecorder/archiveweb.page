@@ -3,7 +3,6 @@
 *.warc.gz
 !examples/*.warc
 **/node_modules
-#wr-ext/replay/sw.js
-#wr-ext/replay/static/
 .DS_Store
+dist/
 

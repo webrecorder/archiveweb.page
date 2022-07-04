@@ -20,7 +20,91 @@ import wrRec from "../../assets/recLogo.svg";
 //============================================================================
 class WrRecColl extends Coll
 {
+  constructor() {
+    super();
+    this.totalSize = 0;
+    this.browsable = false;
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+
+    setInterval(() => this.updateSize(), 3000);
+  }
+
+  static get properties() {
+    return {
+      ...Coll.properties,
+      totalSize: { type: Number }
+    };
+  }
+
+  static get styles() {
+    return wrapCss(WrRecColl.compStyles);
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has("tabData")) {
+      this.updateSize();
+    }
+    super.updated(changedProperties);
+  }
+
+  static get compStyles() {
+    return css`
+    .rec-button {
+      display: flex;
+      flex-direction: row;
+      margin: 0 1px;
+      align-items: center;
+      border: 1px darkgrey solid;
+      border-radius: 16px;
+      padding: 0 0.5em;
+      min-width: max-content;
+    }
+
+    .size-label {
+      margin-left: 0.5em;
+      font-weight: bold;
+    }
+
+    ${Coll.compStyles}
+    `;
+  }
+
+  async updateSize() {
+    if (!this.coll) {
+      return;
+    }
+    const resp = await fetch(`${apiPrefix}/c/${this.coll}`);
+    const json = await resp.json();
+    this.totalSize = json.size || 0;
+  }
+
   renderExtraToolbar(isDropdown = false) {
+    if (this.embed) {
+      if (!isDropdown) {
+        return html`
+        <span class="rec-button" title="Recording">
+          <span class="icon is-small" title="Recording">
+            <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+          </span>
+          <span class="size-label">${prettyBytes(this.totalSize)}</span>
+        </span>
+        `;
+      } else {
+        return html`
+        <a href="${apiPrefix}/c/${this.coll}/dl?format=wacz&pages=all" role="button" class="dropdown-item" @keyup="${clickOnSpacebarPress}">
+          <span class="icon is-small">
+            <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${fasDownload}"></fa-icon>
+          </span>
+          <span>Download Archive</span>
+        </a>
+        <hr class="dropdown-divider">
+        `;
+      }
+    }
+
     if (isDropdown) {
       return "";
     }
@@ -48,6 +132,10 @@ class WrRecColl extends Coll
   }
 
   onShowStart() {
+    if (this.embed) {
+      return;
+    }
+
     const coll = this.coll;
     const title = this.collInfo.title;
     const url = this.tabData.url;
@@ -180,11 +268,11 @@ class WrRecCollInfo extends CollInfo
         <div class="column is-2">
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
-            <button @click="${this.onDownload}" class="button is-small" title="Download">
+            <a href="${apiPrefix}/c/${this.coll.id}/dl?format=wacz&pages=all" class="button is-small" title="Download">
               <span class="icon is-small">
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
-            </button>
+            </a>
             <button @click="${this.onShowImport}" class="button is-small" title="Import Archive...">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${fasUpload}"></fa-icon>
@@ -300,15 +388,6 @@ class WrRecCollInfo extends CollInfo
       <button @click="${this.onPin}"class="button is-primary">Share</button>
       <button @click="${() => this.shareWarn = false}" class="button">Cancel</button>
     </wr-modal>`;
-  }
-
-  onDownload() {
-    const params = new URLSearchParams();
-    params.set("format", "wacz");
-    //params.set("filename", this.coll.title);
-    params.set("pages", "all");
-
-    window.location.href = `/replay/${apiPrefix}/c/${this.coll.id}/dl?` + params.toString();
   }
 
   onShowImport() {

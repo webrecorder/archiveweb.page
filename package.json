@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.7.12",
+  "version": "0.8.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -22,7 +22,7 @@
     "node-fetch": "2.6.7",
     "pretty-bytes": "^5.6.0",
     "querystring-es3": "^0.2.1",
-    "replaywebpage": "^1.6.0",
+    "replaywebpage": "github:webrecorder/replayweb.page#rec-embed-custom",
     "stream-browserify": "^3.0.0",
     "url": "^0.11.0",
     "uuid": "^8.3.2",
@@ -32,7 +32,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
     "electron": "^18.3.5",
-    "electron-builder": "^23.1.0",
+    "electron-builder": "^23.0.3",
     "electron-notarize": "^1.0.0",
     "generate-json-webpack-plugin": "^2.0.0",
     "mini-css-extract-plugin": "^2.3.0",
@@ -44,17 +44,18 @@
     "to-string-loader": "^1.1.6",
     "webpack": "^5.64.4",
     "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.9.3",
     "webpack-extension-reloader": "^1.1.4"
   },
   "files": [
-    "src/",
-    "wr-ext/"
+    "src/"
   ],
   "scripts": {
     "build": "webpack --mode production",
     "build-dev": "webpack --mode development",
-    "start-electron": "NODE_ENV=development electron ./dist/electron.js",
+    "start-electron": "NODE_ENV=development electron ./dist/electron/electron.js",
     "start-ext": "NODE_ENV=development webpack --mode=development --watch",
+    "start-embed": "webpack serve --mode development",
     "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",
@@ -69,16 +70,13 @@
     "appId": "net.webrecorder.archivewebpage",
     "artifactName": "${productName}-${version}.${ext}",
     "extraMetadata": {
-      "main": "dist/electron.js"
+      "main": "dist/electron/electron.js"
     },
     "files": [
       "!**/node_modules/**/*",
-      "dist/*.js",
-      "dist/*.html",
-      "dist/prebuilds/${platform}-${arch}/*",
-      "dist/build/*",
-      "dist/replay/*",
-      "dist/ruffle/*"
+      "dist/electron/**/*",
+      "!dist/electron/prebuilds/**",
+      "dist/electron/prebuilds/${platform}-${arch}/*"
     ],
     "dmg": {
       "title": "ArchiveWeb.page"
@@ -105,7 +103,7 @@
       "extraResources": [
         "plugins-mac"
       ],
-      "singleArchFiles": "dist/prebuilds/**/*"
+      "singleArchFiles": "dist/electron/prebuilds/**/*"
     },
     "linux": {
       "category": "Archiving;Utility;",
@@ -124,7 +122,7 @@
     },
     "directories": {
       "buildResources": "build",
-      "output": "dist"
+      "output": "dist/bin/"
     }
   }
 }

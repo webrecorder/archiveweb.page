@@ -290,7 +290,6 @@ class ArchiveWebApp extends ReplayWebApp
 
       <wr-rec-coll-index
        dateName="Date Created"
-       .autoupdateInterval=${this.showDownloadProgress ? 0 : 10}
        headerName="Current Web Archives"
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
@@ -316,6 +315,7 @@ class ArchiveWebApp extends ReplayWebApp
     .editable="${!this.embed}"
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
+    .autoUpdateInterval=${this.showDownloadProgress ? 0 : 10}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"

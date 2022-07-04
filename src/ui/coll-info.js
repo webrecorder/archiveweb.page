@@ -22,32 +22,11 @@ class WrRecColl extends Coll
 {
   constructor() {
     super();
-    this.totalSize = 0;
     this.browsable = false;
-  }
-
-  firstUpdated() {
-    super.firstUpdated();
-
-    setInterval(() => this.updateSize(), 3000);
-  }
-
-  static get properties() {
-    return {
-      ...Coll.properties,
-      totalSize: { type: Number }
-    };
   }
 
   static get styles() {
     return wrapCss(WrRecColl.compStyles);
-  }
-
-  updated(changedProperties) {
-    if (changedProperties.has("tabData")) {
-      this.updateSize();
-    }
-    super.updated(changedProperties);
   }
 
   static get compStyles() {
@@ -72,15 +51,6 @@ class WrRecColl extends Coll
     `;
   }
 
-  async updateSize() {
-    if (!this.coll) {
-      return;
-    }
-    const resp = await fetch(`${apiPrefix}/c/${this.coll}`);
-    const json = await resp.json();
-    this.totalSize = json.size || 0;
-  }
-
   renderExtraToolbar(isDropdown = false) {
     if (this.embed) {
       if (!isDropdown) {
@@ -89,7 +59,7 @@ class WrRecColl extends Coll
           <span class="icon is-small" title="Recording">
             <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
           </span>
-          <span class="size-label">${prettyBytes(this.totalSize)}</span>
+          <span class="size-label">${prettyBytes(this.collInfo && this.collInfo.size)}</span>
         </span>
         `;
       } else {

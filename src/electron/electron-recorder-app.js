@@ -64,6 +64,48 @@ class ElectronRecorderApp extends ElectronReplayApp
       this.ipfsUnpin(event, reqId, pinList);
     });
 
+    sesh.on("will-download", (event, item, webContents) => {
+      const origFilename = item.getFilename();
+      console.log(`will-download: ${origFilename}`)
+
+      ipcMain.on("dlcancel:" + origFilename, () => {
+        console.log(`Canceled download for ${origFilename} to ${item.getSavePath()}`);
+        item.cancel();
+      });
+
+      item.on("updated", (_, state) => {
+        const filename = item.getSavePath();
+
+        const dlprogress = {
+          filename,
+          origFilename,
+          currSize: item.getReceivedBytes(),
+          totalSize: item.getTotalBytes(),
+          startTime: item.getStartTime(),
+          state,
+        };
+
+        try {
+          webContents.send("download-progress", dlprogress);
+        } catch (e) {
+          console.log("download update failed", e);
+        }
+      });
+
+      item.once("done", (event, state) => {
+        const dlprogress = {
+          origFilename,
+          state
+        };
+        try {
+          webContents.send("download-progress", dlprogress);
+        } catch (e) {
+          console.log("download update failed", e);
+        }
+      });
+
+    });
+
     //require('@electron/remote/main').initialize();
 
     super.onAppReady();

@@ -16,6 +16,7 @@ import "./recordembed";
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
 import { setAppName } from "replaywebpage/src/pageutils";
+import prettyBytes from "pretty-bytes";
 
 
 // eslint-disable-next-line no-undef
@@ -34,6 +35,10 @@ class ArchiveWebApp extends ReplayWebApp
     this.autorun = localStorage.getItem("autorunBehaviors") === "1";
 
     setAppName(this.appName);
+
+    if (window.archivewebpage) {
+      window.archivewebpage.setDownloadCallback((progress) => this.onDownloadProgress(progress));
+    }
   }
 
   get appName() {
@@ -56,7 +61,11 @@ class ArchiveWebApp extends ReplayWebApp
       showImport: { type: Boolean },
       isImportExisting: { type: Boolean },
 
-      loadedCollId: { type: String }
+      loadedCollId: { type: String },
+
+      showDownloadProgress: { type: Boolean },
+      downloadStatus: { type: String },
+      download: { type: Object }
     };
   }
 
@@ -206,6 +215,11 @@ class ArchiveWebApp extends ReplayWebApp
         margin-left: auto;
         max-width: 300px;
       }
+
+      .dl-progress {
+        display: flex;
+        flex-direction: column;
+      }
   
       @media screen and (max-width: 768px) {
         #url {
@@ -276,6 +290,7 @@ class ArchiveWebApp extends ReplayWebApp
 
       <wr-rec-coll-index
        dateName="Date Created"
+       .autoupdateInterval=${this.showDownloadProgress ? 0 : 10}
        headerName="Current Web Archives"
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
@@ -291,6 +306,7 @@ class ArchiveWebApp extends ReplayWebApp
     ${this.showStartRecord ? this.renderStartModal() : ""}
     ${this.showNew ? this.renderNewCollModal() : ""}
     ${this.showImport ? this.renderImportModal() : ""}
+    ${this.showDownloadProgress && this.download ? this.renderDownloadModal() : ""}
     ${super.render()}`;
   }
 
@@ -398,6 +414,62 @@ class ArchiveWebApp extends ReplayWebApp
         ${this.isImportExisting ? this.renderCollList() : ""}
       </div>
     </wr-modal`;
+  }
+
+  renderDownloadModal() {
+    return html`
+    <wr-modal .noBgClose=${true} style="--modal-width: 740px" @modal-closed="${() => this.showDownloadProgress = false}" title="Download Progress">
+      <div class="dl-progress">
+        <div>Downloading to: <i>${this.download.filename}</i></div>
+        <div>Size Downloaded: <b>${prettyBytes(this.download.currSize)}</b></div>
+        <div>Time Elapsed: ${Math.round((Date.now() / 1000) - this.download.startTime)} seconds</div>
+        <div>Status: ${this.downloadStatus}</div>
+
+        <div style="text-align: center">
+          <button @click="${this.onDownloadCancel}"
+          class="button ${this.download.state === "progressing" ? "is-danger" : ""}">
+          ${this.download.state === "progressing" ? "Cancel Download" : "Close"}
+          </button>
+        </div>
+      </div>
+    </wr-modal>`;
+  }
+
+  onDownloadProgress(progress) {
+    if (progress.filename) {
+      this.showDownloadProgress = true;
+      this.download = progress;
+    } else if (this.download) {
+      this.download = {...this.download, state: progress.state};
+    }
+
+    switch (progress.state) {
+    case "progressing":
+      this.downloadStatus = "Downloading...";
+      break;
+
+    case "interrupted":
+      this.downloadStatus = "Sorry, the download was interrupted";
+      break;
+
+    case "cancelled":
+      this.downloadStatus = "Download Canceled";
+      break;
+
+    case "completed":
+      this.downloadStatus = "Complete!";
+      break;
+    }
+  }
+
+  onDownloadCancel() {
+    if (window.archivewebpage) {
+      if (this.download && this.download.state === "progressing") {
+        window.archivewebpage.downloadCancel(this.download);
+      } else {
+        this.showDownloadProgress = false;
+      }
+    }
   }
 
   getDeployType() {

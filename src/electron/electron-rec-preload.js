@@ -10,6 +10,8 @@ import { Downloader } from "../downloader";
 
 const { ipcRenderer, contextBridge } = require("electron");
 
+let downloadCallback;
+
 
 // ===========================================================================
 contextBridge.exposeInMainWorld("archivewebpage", {
@@ -24,6 +26,15 @@ contextBridge.exposeInMainWorld("archivewebpage", {
   ipfsUnpin: (collId) => {
     return handleIpfsUnpin(collId);
   },
+
+  setDownloadCallback: (callback) => {
+    downloadCallback = callback;
+  },
+
+  downloadCancel: (dlprogress) => {
+    ipcRenderer.send("dlcancel:" + dlprogress.origFilename);
+  }
+
 });
 
 
@@ -68,6 +79,14 @@ ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
 ipcRenderer.on("inc-sizes", async (event, totalSize, writtenSize, collId) => {
   if (totalSize > 0) {
     loader.updateSize(collId, totalSize, writtenSize);
+  }
+});
+
+
+// ===========================================================================
+ipcRenderer.on("download-progress", async (event, progress) => {
+  if (downloadCallback) {
+    downloadCallback(progress);
   }
 });
 

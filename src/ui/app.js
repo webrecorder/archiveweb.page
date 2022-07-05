@@ -16,6 +16,7 @@ import "./recordembed";
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
 import { setAppName } from "replaywebpage/src/pageutils";
+import prettyBytes from "pretty-bytes";
 
 
 // eslint-disable-next-line no-undef
@@ -34,6 +35,10 @@ class ArchiveWebApp extends ReplayWebApp
     this.autorun = localStorage.getItem("autorunBehaviors") === "1";
 
     setAppName(this.appName);
+
+    if (window.archivewebpage) {
+      window.archivewebpage.setDownloadCallback((progress) => this.onDownloadProgress(progress));
+    }
   }
 
   get appName() {
@@ -56,7 +61,10 @@ class ArchiveWebApp extends ReplayWebApp
       showImport: { type: Boolean },
       isImportExisting: { type: Boolean },
 
-      loadedCollId: { type: String }
+      loadedCollId: { type: String },
+
+      showDownloadProgress: { type: Boolean },
+      download: { type: Object }
     };
   }
 
@@ -206,6 +214,11 @@ class ArchiveWebApp extends ReplayWebApp
         margin-left: auto;
         max-width: 300px;
       }
+
+      .dl-progress {
+        display: flex;
+        flex-direction: column;
+      }
   
       @media screen and (max-width: 768px) {
         #url {
@@ -291,6 +304,7 @@ class ArchiveWebApp extends ReplayWebApp
     ${this.showStartRecord ? this.renderStartModal() : ""}
     ${this.showNew ? this.renderNewCollModal() : ""}
     ${this.showImport ? this.renderImportModal() : ""}
+    ${this.showDownloadProgress && this.download ? this.renderDownloadModal() : ""}
     ${super.render()}`;
   }
 
@@ -300,6 +314,7 @@ class ArchiveWebApp extends ReplayWebApp
     .editable="${!this.embed}"
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
+    .autoUpdateInterval=${this.showDownloadProgress ? 0 : 10}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
@@ -398,6 +413,67 @@ class ArchiveWebApp extends ReplayWebApp
         ${this.isImportExisting ? this.renderCollList() : ""}
       </div>
     </wr-modal`;
+  }
+
+  renderDownloadModal() {
+    const renderDLStatus = () => {
+      switch (this.download.state) {
+        case "progressing":
+          return html`
+          <button @click="${this.onDownloadCancel}" class="button is-danger">Cancel Download</button>
+          `;
+
+        case "interrupted":
+          return html`
+          <p class="has-text-weight-bold has-text-danger">The download was interrupted</p>
+          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+          `
+    
+        case "cancelled":
+          return html`
+          <p class="has-text-weight-bold has-text-danger">The download was canceled</p>
+          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+          `;
+
+        case "completed":
+          return html`
+          <p class="has-text-weight-bold has-text-primary">Download Completed!</p>
+          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+          `
+      }
+    };
+
+    return html`
+    <wr-modal .noBgClose=${true} style="--modal-width: 740px" @modal-closed="${() => this.showDownloadProgress = false}" title="Download Progress">
+      <div class="dl-progress">
+        <div>Downloading to: <i>${this.download.filename}</i></div>
+        <div>Size Downloaded: <b>${prettyBytes(this.download.currSize)}</b></div>
+        <div>Time Elapsed: ${Math.round((Date.now() / 1000) - this.download.startTime)} seconds</div>
+
+        <div class="has-text-centered">
+        ${renderDLStatus()}
+        </div>
+      </div>
+    </wr-modal>`;
+  }
+
+  onDownloadProgress(progress) {
+    if (progress.filename) {
+      this.showDownloadProgress = true;
+      this.download = progress;
+    } else if (this.download) {
+      this.download = {...this.download, state: progress.state};
+    }
+  }
+
+  onDownloadCancel() {
+    if (window.archivewebpage) {
+      if (this.download && this.download.state === "progressing") {
+        window.archivewebpage.downloadCancel(this.download);
+      } else {
+        this.showDownloadProgress = false;
+      }
+    }
   }
 
   getDeployType() {

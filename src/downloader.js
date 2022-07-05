@@ -17,6 +17,7 @@ const WACZ_VERSION = "1.1.1";
 const SPLIT_REQUEST_Q_RX = /(.*?)[?&](?:__wb_method=|__wb_post=)[^&]+&(.*)/;
 
 const LINES_PER_BLOCK = 1024;
+const RESOURCE_BATCH_SIZE = LINES_PER_BLOCK * 8;
 
 const DEFAULT_UUID_NAMESPACE = "f9ec3936-7f66-4461-bec4-34f4495ea242";
 
@@ -91,8 +92,9 @@ class Downloader
     }
 
     this.offset = 0;
-    this.resources = [];
+    this.firstResources = [];
     this.textResources = [];
+    this.cdxjLines = [];
 
     // compressed index (idx) entries
     this.indexLines = [];
@@ -142,34 +144,33 @@ class Downloader
     return resp;
   }
 
-  async loadResources() {
-    if (this.pageList) {
-      for await (const resource of this.db.resourcesByPages(this.pageList)) {
-        this.resources.push(resource);
+  async loadResourcesBlock(start = []) {
+    return await this.db.db.getAll("resources", IDBKeyRange.lowerBound(start, true), RESOURCE_BATCH_SIZE);
+  }
+
+  async* iterResources(resources) {
+    let start = [];
+    let count = 0;
+
+    while (resources.length) {
+      const last = resources[resources.length - 1];
+
+      if (this.pageList) {
+        resources = resources.filter((res) => this.pageList.includes(res.pageId));
       }
-    } else {
-      this.resources = await this.db.db.getAll("resources");  
+      count += resources.length;
+      yield* resources;
+
+      start = [last.url, last.ts];
+      resources = await this.loadResourcesBlock(start);
     }
-
-    this.resources.sort((a, b) => {
-      if (!a.surt) {
-        a.surt = getSurt(a.url);
-      }
-
-      if (!b.surt) {
-        b.surt = getSurt(b.url);
-      }
-
-      if (a.surt == b.surt) {
-        return 0;
-      }
-
-      return a.surt < b.surt ? -1 : 1;
-    });
+    if (count !== this.numResources) {
+      console.warn(`Iterated ${count}, but expected ${this.numResources}`);
+    }
   }
 
   async queueWARC(controller, filename, sizeCallback) {
-    await this.loadResources();
+    this.firstResources = await this.loadResourcesBlock();
 
     for await (const chunk of this.generateWARC(filename)) {
       controller.enqueue(chunk);
@@ -215,20 +216,20 @@ class Downloader
   async downloadWACZ(filename, sizeCallback) {
     filename = (filename || "webarchive").split(".")[0] + ".wacz";
 
-    await this.loadResources();
-
     this.fileHasher = await createSHA256();
     this.recordHasher = await createSHA256();
     this.hashType = "sha256";
 
     const zip = [];
 
+    this.firstResources = await this.loadResourcesBlock();
+
     this.addFile(zip, "pages/pages.jsonl", this.generatePages(), sizeCallback, true);
     this.addFile(zip, "archive/data.warc.gz", this.generateWARC(filename + "#/archive/data.warc.gz", true), sizeCallback, false);
     //this.addFile(zip, "archive/text.warc", this.generateTextWARC(filename + "#/archive/text.warc"), false);
 
     // don't use compressed index if we'll have a single block, need to have at least enough for 2 blocks
-    if (this.resources.length < (2 * LINES_PER_BLOCK)) {
+    if (this.firstResources.length < (2 * LINES_PER_BLOCK)) {
       this.addFile(zip, "indexes/index.cdx", this.generateCDX(), sizeCallback, true);
     } else {
       this.addFile(zip, "indexes/index.cdx.gz", this.generateCompressedCDX("index.cdx.gz"), sizeCallback, false);
@@ -250,7 +251,7 @@ class Downloader
     return response;
   }
 
-  async* generateWARC(filename, digestRecord = false)  {
+  async* generateWARC(filename, digestRecordAndCDX = false)  {
     try {
       let offset = 0;
 
@@ -261,7 +262,7 @@ class Downloader
         offset += warcinfo.length;
       }
 
-      for (const resource of this.resources) {
+      for await (const resource of this.iterResources(this.firstResources)) {
         resource.offset = offset;
         const records = await this.createWARCRecord(resource);
         if (!records) {
@@ -273,7 +274,7 @@ class Downloader
         yield records[0];
         offset += records[0].length;
         resource.length = records[0].length;
-        if (digestRecord) {
+        if (digestRecordAndCDX) {
           resource.recordDigest = this.recordDigest(records[0]);
         }
 
@@ -281,6 +282,10 @@ class Downloader
         if (records.length > 1) {
           yield records[1];
           offset += records[1].length;
+        }
+
+        if (digestRecordAndCDX) {
+          this.cdxjLines.push(this.getCDXJ(resource, "data.warc.gz"));
         }
       }
     } catch (e) {
@@ -311,62 +316,41 @@ class Downloader
     }
   }
 
-  async* generateCDX(raw = false) {
-    const getCDX = (resource, filename, raw) => {
-
-      const data = {
-        url: resource.url,
-        digest: resource.digest,
-        mime: resource.mime,
-        offset: resource.offset,
-        length: resource.length,
-        recordDigest: resource.recordDigest,
-        status: resource.status
-      };
-
-      if (filename) {
-        data.filename = filename;
-      }
-
-      if (resource.method && resource.method !== "GET") {
-        const m = resource.url.match(SPLIT_REQUEST_Q_RX);
-        if (m) {
-          data.url = m[1];
-          // resource.requestBody is the raw payload, use the converted one from the url for the cdx
-          data.requestBody = m[2];
-        }
-        data.method = resource.method;
-      }
-
-      const cdx = `${resource.surt} ${resource.timestamp} ${JSON.stringify(data)}\n`;
-
-      if (!raw) {
-        return cdx;
-      } else {
-        return [resource, cdx];
-      }
+  getCDXJ(resource, filename) {
+    const data = {
+      url: resource.url,
+      digest: resource.digest,
+      mime: resource.mime,
+      offset: resource.offset,
+      length: resource.length,
+      recordDigest: resource.recordDigest,
+      status: resource.status
     };
 
-    try {
-      for await (const resource of this.resources) {
-        if (resource.skipped) {
-          continue;
-        }
-        yield getCDX(resource, "data.warc.gz", raw);
-      }
-
-      // for await (const resource of this.textResources) {
-      //   resource.mime = "text/plain";
-      //   resource.status = 200;
-      //   yield getCDX(resource, "text.warc", raw);
-      // }
-
-    } catch (e) {
-      console.warn(e);
+    if (filename) {
+      data.filename = filename;
     }
+
+    if (resource.method && resource.method !== "GET") {
+      const m = resource.url.match(SPLIT_REQUEST_Q_RX);
+      if (m) {
+        data.url = m[1];
+        // resource.requestBody is the raw payload, use the converted one from the url for the cdx
+        data.requestBody = m[2];
+      }
+      data.method = resource.method;
+    }
+
+    return `${getSurt(resource.url)} ${resource.timestamp} ${JSON.stringify(data)}\n`;
   }
 
-  async* generateCompressedCDX(filename) {
+  *generateCDX() {
+    this.cdxjLines.sort();
+
+    yield* this.cdxjLines;
+  }
+
+  *generateCompressedCDX(filename) {
     let offset = 0;
 
     let chunkDeflater = null;
@@ -393,7 +377,7 @@ class Downloader
       return data;
     };
 
-    for await (const [/*resource*/, cdx] of this.generateCDX(true)) {
+    for (const cdx of this.generateCDX()) {
       if (!chunkDeflater) {
         chunkDeflater = new Deflate({gzip: true});
       }

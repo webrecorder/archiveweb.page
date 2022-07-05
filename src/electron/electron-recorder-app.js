@@ -10,7 +10,7 @@ import { PassThrough } from "stream";
 
 import fs from "fs";
 import util from "util";
-
+import { unusedFilenameSync } from 'unused-filename';
 
 import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from "../utils";
 
@@ -62,6 +62,51 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     ipcMain.on("ipfs-unpin", (event, reqId, pinList) => {
       this.ipfsUnpin(event, reqId, pinList);
+    });
+
+    sesh.on("will-download", (event, item, webContents) => {
+      const origFilename = item.getFilename();
+
+      console.log(`will-download: ${origFilename}`);
+
+      item.setSavePath(unusedFilenameSync(path.join(app.getPath("downloads"), origFilename)));
+
+      ipcMain.on("dlcancel:" + origFilename, () => {
+        console.log(`Canceled download for ${origFilename} to ${item.getSavePath()}`);
+        item.cancel();
+      });
+
+      item.on("updated", (_, state) => {
+        const filename = item.getSavePath();
+
+        const dlprogress = {
+          filename,
+          origFilename,
+          currSize: item.getReceivedBytes(),
+          totalSize: item.getTotalBytes(),
+          startTime: item.getStartTime(),
+          state,
+        };
+
+        try {
+          webContents.send("download-progress", dlprogress);
+        } catch (e) {
+          console.log("download update failed", e);
+        }
+      });
+
+      item.once("done", (event, state) => {
+        const dlprogress = {
+          origFilename,
+          state
+        };
+        try {
+          webContents.send("download-progress", dlprogress);
+        } catch (e) {
+          console.log("download update failed", e);
+        }
+      });
+
     });
 
     //require('@electron/remote/main').initialize();

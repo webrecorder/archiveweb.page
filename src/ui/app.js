@@ -9,6 +9,7 @@ import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
 import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
 //import fasCog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg";
 
+import "./coll";
 import "./coll-info";
 import "./coll-index";
 import "./recordembed";

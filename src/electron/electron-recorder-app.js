@@ -10,7 +10,7 @@ import { PassThrough } from "stream";
 
 import fs from "fs";
 import util from "util";
-
+import { unusedFilenameSync } from 'unused-filename';
 
 import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from "../utils";
 
@@ -66,7 +66,10 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     sesh.on("will-download", (event, item, webContents) => {
       const origFilename = item.getFilename();
+
       console.log(`will-download: ${origFilename}`);
+
+      item.setSavePath(unusedFilenameSync(path.join(app.getPath("downloads"), origFilename)));
 
       ipcMain.on("dlcancel:" + origFilename, () => {
         console.log(`Canceled download for ${origFilename} to ${item.getSavePath()}`);

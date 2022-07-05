@@ -66,7 +66,7 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     sesh.on("will-download", (event, item, webContents) => {
       const origFilename = item.getFilename();
-      console.log(`will-download: ${origFilename}`)
+      console.log(`will-download: ${origFilename}`);
 
       ipcMain.on("dlcancel:" + origFilename, () => {
         console.log(`Canceled download for ${origFilename} to ${item.getSavePath()}`);

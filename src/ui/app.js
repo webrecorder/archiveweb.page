@@ -64,7 +64,6 @@ class ArchiveWebApp extends ReplayWebApp
       loadedCollId: { type: String },
 
       showDownloadProgress: { type: Boolean },
-      downloadStatus: { type: String },
       download: { type: Object }
     };
   }
@@ -417,19 +416,42 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   renderDownloadModal() {
+    const renderDLStatus = () => {
+      switch (this.download.state) {
+        case "progressing":
+          return html`
+          <button @click="${this.onDownloadCancel}" class="button is-danger">Cancel Download</button>
+          `;
+
+        case "interrupted":
+          return html`
+          <p class="has-text-weight-bold has-text-danger">The download was interrupted</p>
+          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+          `
+    
+        case "cancelled":
+          return html`
+          <p class="has-text-weight-bold has-text-danger">The download was canceled</p>
+          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+          `;
+
+        case "completed":
+          return html`
+          <p class="has-text-weight-bold has-text-primary">Download Completed!</p>
+          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+          `
+      }
+    };
+
     return html`
     <wr-modal .noBgClose=${true} style="--modal-width: 740px" @modal-closed="${() => this.showDownloadProgress = false}" title="Download Progress">
       <div class="dl-progress">
         <div>Downloading to: <i>${this.download.filename}</i></div>
         <div>Size Downloaded: <b>${prettyBytes(this.download.currSize)}</b></div>
         <div>Time Elapsed: ${Math.round((Date.now() / 1000) - this.download.startTime)} seconds</div>
-        <div>Status: ${this.downloadStatus}</div>
 
-        <div style="text-align: center">
-          <button @click="${this.onDownloadCancel}"
-          class="button ${this.download.state === "progressing" ? "is-danger" : ""}">
-          ${this.download.state === "progressing" ? "Cancel Download" : "Close"}
-          </button>
+        <div class="has-text-centered">
+        ${renderDLStatus()}
         </div>
       </div>
     </wr-modal>`;
@@ -441,24 +463,6 @@ class ArchiveWebApp extends ReplayWebApp
       this.download = progress;
     } else if (this.download) {
       this.download = {...this.download, state: progress.state};
-    }
-
-    switch (progress.state) {
-    case "progressing":
-      this.downloadStatus = "Downloading...";
-      break;
-
-    case "interrupted":
-      this.downloadStatus = "Sorry, the download was interrupted";
-      break;
-
-    case "cancelled":
-      this.downloadStatus = "Download Canceled";
-      break;
-
-    case "completed":
-      this.downloadStatus = "Complete!";
-      break;
     }
   }
 

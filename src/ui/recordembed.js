@@ -22,6 +22,7 @@ class RecordEmbed extends Embed
     this.noWebWorker = true;
 
     this.proxyPrefix = "https://wabac-cors-proxy.webrecorder.workers.dev/proxy/";
+    this.archivePrefix = "";
 
     const baseUrl = new URL(window.location);
     baseUrl.hash = "";
@@ -30,8 +31,8 @@ class RecordEmbed extends Embed
 
     this.customConfig = {
       "prefix": this.proxyPrefix, 
-      "isLive": true,
-      //"archivePrefix": this.archivePrefix,
+      "isLive": false,
+      "archivePrefix": this.archivePrefix,
       "baseUrl": baseUrl.href,
       "baseUrlHashReplay": false,
       "recording": true,
@@ -41,6 +42,26 @@ class RecordEmbed extends Embed
     this.downloaded = null;
 
     this.source = "proxy://" + this.proxyPrefix;
+  }
+
+  static get properties() {
+    return {
+      ...Embed.properties,
+
+      archivePrefix: { type: String },
+      proxyPrefix: { type: String }
+    };
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has("proxyPrefix")) {
+      this.customConfig.proxyPrefix = this.proxyPrefix;
+    }
+    if (changedProperties.has("archivePrefix")) {
+      this.customConfig.archivePrefix = this.archivePrefix;
+      this.customConfig.isLive = !this.archivePrefix;
+    }
+    super.updated(changedProperties);
   }
 
   handleMessage(event) {

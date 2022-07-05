@@ -23,6 +23,16 @@ class WrRecColl extends Coll
   constructor() {
     super();
     this.browsable = false;
+    this._sizeUpdater = null;
+    this.totalSize = 0;
+  }
+
+  static get properties() {
+    return {
+      ...Coll.properties,
+
+      totalSize: { type: Number }
+    };
   }
 
   static get styles() {
@@ -51,6 +61,31 @@ class WrRecColl extends Coll
     `;
   }
 
+  updated(changedProperties) {
+    if (changedProperties.has("embed")) {
+      if (this.embed && !this._sizeUpdater) {
+        this._sizeUpdater = this.runSizeUpdater();
+      }
+    }
+
+    super.updated(changedProperties);
+  }
+
+  async runSizeUpdater() {
+    try {
+      while (this.embed) {
+        if (this.coll) {
+          const resp = await fetch(`${apiPrefix}/c/${this.coll}`);
+          const json = await resp.json();
+          this.totalSize = json.size || 0;
+        }
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    } finally {
+      this._sizeUpdater = null;
+    }
+  }
+
   renderExtraToolbar(isDropdown = false) {
     if (this.embed) {
       if (!isDropdown) {
@@ -59,7 +94,7 @@ class WrRecColl extends Coll
           <span class="icon is-small" title="Recording">
             <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
           </span>
-          <span class="size-label">${prettyBytes(this.collInfo && this.collInfo.size)}</span>
+          <span class="size-label">${prettyBytes(this.totalSize)}</span>
         </span>
         `;
       } else {

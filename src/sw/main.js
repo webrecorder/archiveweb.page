@@ -5,20 +5,9 @@ import { ExtAPI } from "./api";
 import { RecordingCollections } from "./recproxy";
 
 import REC_INDEX_HTML from "../static/replay/index.html";
-import { WorkerLoader } from "@webrecorder/wabac/src/loaders";
+import RWP_INDEX_HTML from "replaywebpage/index.html";
 
-const RWP_INDEX_HTML = `
-<!doctype html>
-<html class="no-overflow">
-<head><title>ReplayWeb.page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="./ui.js"></script>
-</head>
-<body>
-  <replay-app-main></replay-app-main>
-</body>
-</html>
-`;
+import { WorkerLoader } from "@webrecorder/wabac/src/loaders";
 
 if (self.registration) {
   const defaultConfig = {

@@ -311,10 +311,12 @@ class ArchiveWebApp extends ReplayWebApp
   renderColl() {
     return html`
     <wr-rec-coll 
-    .editable="${!this.embed}"
+    .editable="${true}"
+    .clearable="${this.embed}"
+    .nonlocalDate="${this.embed}"
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
-    .autoUpdateInterval=${this.showDownloadProgress ? 0 : 10}
+    .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
@@ -418,28 +420,28 @@ class ArchiveWebApp extends ReplayWebApp
   renderDownloadModal() {
     const renderDLStatus = () => {
       switch (this.download.state) {
-        case "progressing":
-          return html`
+      case "progressing":
+        return html`
           <button @click="${this.onDownloadCancel}" class="button is-danger">Cancel Download</button>
           `;
 
-        case "interrupted":
-          return html`
+      case "interrupted":
+        return html`
           <p class="has-text-weight-bold has-text-danger">The download was interrupted</p>
           <button @click="${this.onDownloadCancel}" class="button">Close</button>
-          `
+          `;
     
-        case "cancelled":
-          return html`
+      case "cancelled":
+        return html`
           <p class="has-text-weight-bold has-text-danger">The download was canceled</p>
           <button @click="${this.onDownloadCancel}" class="button">Close</button>
           `;
 
-        case "completed":
-          return html`
+      case "completed":
+        return html`
           <p class="has-text-weight-bold has-text-primary">Download Completed!</p>
           <button @click="${this.onDownloadCancel}" class="button">Close</button>
-          `
+          `;
       }
     };
 

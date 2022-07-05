@@ -10,7 +10,7 @@ import { PassThrough } from "stream";
 
 import fs from "fs";
 import util from "util";
-import { unusedFilenameSync } from 'unused-filename';
+import { unusedFilenameSync } from "unused-filename";
 
 import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from "../utils";
 

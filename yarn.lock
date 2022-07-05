@@ -6798,10 +6798,10 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.6.1.tgz#7167f8650b717c24948f80ea1c9f1142663b9a49"
-  integrity sha512-iK3yw132w5nt4Y6hiaG7gJ2Sb30HD7Hi0wD3GroBapbfYck51Sdn5d++tsHeMhZN49Dz95YAEwmpDQmfrOWBIw==
+replaywebpage@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.6.2.tgz#1289a2cf788a55299f62e67aa1596768da896578"
+  integrity sha512-ZNIst15zaeej5CdHhQ1/QXLlA0mqALhGw3KJVlGoSZtM8HvX8Gv3YNS9k1w+TQpAecv9VCo6So8BLEE4XLGV7w==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@webrecorder/wabac" "^2.12.0"

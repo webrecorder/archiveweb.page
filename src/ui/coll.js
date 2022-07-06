@@ -13,7 +13,6 @@ class WrRecColl extends Coll
 {
   constructor() {
     super();
-    this.browsable = false;
     this._sizeUpdater = null;
     this.totalSize = 0;
   }

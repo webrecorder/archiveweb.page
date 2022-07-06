@@ -314,7 +314,7 @@ class ArchiveWebApp extends ReplayWebApp
     <wr-rec-coll 
     .editable="${true}"
     .clearable="${this.embed}"
-    .nonlocalDate="${this.embed}"
+    .browsable="${!this.embed}"
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}

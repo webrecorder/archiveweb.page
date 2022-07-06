@@ -1745,10 +1745,10 @@ browserslist@^4.14.5:
     node-releases "^2.0.1"
     picocolors "^1.0.0"
 
-browsertrix-behaviors@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.3.0.tgz#6f424006d9393b760199c144777c529520b24db3"
-  integrity sha512-FI9JuGk15LJ/ofTth3uPWUQHEaeVDCK3l7UfsmGuchH9E1YE8KRocmaCCpMNGgd5ABo3Ymg5BWAFe30eX53u7A==
+browsertrix-behaviors@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.3.2.tgz#730c470916f1d383df7f2455a58f772f66cb31f4"
+  integrity sha512-bWvw8yx+g9PPxvAcHUwXj93AHoKI62qIoLXhj/gjUNBw9a8ueXICG5HRGx0UasRcq9WCDvi094016nLdJiKAbQ==
 
 btoa@^1.2.1:
   version "1.2.1"

@@ -64,6 +64,8 @@ class Downloader
     this.collId = coll.name;
     this.metadata = coll.config.metadata;
 
+    this.alreadyDecoded = !coll.config.decode && !coll.config.loadUrl;
+
     this.softwareString = softwareString || "ArchiveWeb.page";
 
     this.uuidNamespace = uuidNamespace || DEFAULT_UUID_NAMESPACE;
@@ -530,14 +532,20 @@ class Downloader
   }
 
   fixupHttpHeaders(headersMap, length) {
+    // how many headers are we parsing here
+    const numHeaders = this.alreadyDecoded ? 3 : 1;
+
     let count = 0;
     for (const [name] of Object.entries(headersMap)) {
       const lowerName = name.toLowerCase();
       switch (lowerName) {
       case "content-encoding":
       case "transfer-encoding":
-        delete headersMap[name];
-        ++count;
+        if (this.alreadyDecoded) {
+          headersMap["x-orig-" + name] = headersMap[name];
+          delete headersMap[name];
+          ++count;
+        }
         break;
 
       case "content-length":
@@ -545,7 +553,7 @@ class Downloader
         ++count;
         break;
       }
-      if (count === 3) {
+      if (count === numHeaders) {
         break;
       }
     }
@@ -637,8 +645,11 @@ class Downloader
 
     const warcHeaders = {
       "WARC-Record-ID": this.getWARCRecordUUID(type + ":" + resource.timestamp + "/" + resource.url),
-      "WARC-Page-ID": pageId,
     };
+
+    if (pageId) {
+      warcHeaders["WARC-Page-ID"] = pageId;
+    }
 
     if (resource.extraOpts && Object.keys(resource.extraOpts).length) {
       warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(resource.extraOpts);

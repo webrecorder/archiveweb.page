@@ -193,7 +193,13 @@ class WrRecCollInfo extends CollInfo
                         </span>
                         Copy IPFS URL
                       </a>
-                      <a @click="${this.onCopyRWPLink}" class="has-text-weight-bold dropdown-item">
+                      <a @click="${this.onCopyGatewayLink}" class="has-text-weight-bold dropdown-item">
+                        <span class="icon is-small">
+                          <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                        </span>
+                        Copy Gateway Link
+                      </a>
+                      <a @click="${this.onCopyRWPLink}" class="dropdown-item">
                         <span class="icon is-small">
                           <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
                         </span>
@@ -366,7 +372,7 @@ class WrRecCollInfo extends CollInfo
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = `https://dweb.link/ipfs/${hash}/`;
+    const url = `https://nftstorage.link/ipfs/${hash}/`;
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);

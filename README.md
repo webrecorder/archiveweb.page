@@ -7,7 +7,7 @@ The system can be used as a Chrome/Chromium based browser extension and also as 
 
 The system creates, stores and replays high-fidelity web archives stored directly in the browser (via IndexedDB).
 
-For more detailed info on how to use the extension (and the app when it is available), see the: [ArchiveWeb.page User Guide](https://archiveweb.page/guide/)
+For more detailed info on how to use the extension (and the app when it is available), see the: [ArchiveWeb.page User Guide](https://archiveweb.page/)
 
 The initial app release is available on the [Releases page](https://github.com/webrecorder/archiveweb.page/releases)
 

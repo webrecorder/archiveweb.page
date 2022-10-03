@@ -6803,7 +6803,7 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.6.5:
+replaywebpage@1.6.5:
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.6.5.tgz#c7d7e1a92b2588977430d6a8eb8314e4fd60c607"
   integrity sha512-F95KOECamjjnrcQriMeiqHFDKUj7M6ocqIFF/o7MhRe9nOyvXeNWasPwoWAq3xUz0NoiT/HuF8gugia+AvcMmA==

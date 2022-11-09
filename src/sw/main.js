@@ -26,11 +26,12 @@ if (self.registration) {
   // for use with <record-web-page> tag
   staticData.set(prefix + "record.html", {type: "text/html", content: REC_INDEX_HTML});
 
-  const useIPFS = false;
   const ApiClass = ExtAPI;
   const CollectionsClass = RecordingCollections;
 
-  self.sw = new SWReplay({ApiClass, useIPFS, staticData, defaultConfig, CollectionsClass});
+  const autoipfsOpts = {};
+
+  self.sw = new SWReplay({ApiClass, staticData, autoipfsOpts, defaultConfig, CollectionsClass});
 } else {
   new WorkerLoader(self);
 }

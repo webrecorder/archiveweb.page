@@ -16,7 +16,6 @@ import "./recordembed";
 
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
-import { setAppName } from "replaywebpage/src/pageutils";
 import prettyBytes from "pretty-bytes";
 
 
@@ -34,8 +33,6 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.autorun = localStorage.getItem("autorunBehaviors") === "1";
-
-    setAppName(this.appName);
 
     if (window.archivewebpage) {
       window.archivewebpage.setDownloadCallback((progress) => this.onDownloadProgress(progress));

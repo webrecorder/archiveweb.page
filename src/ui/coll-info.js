@@ -372,7 +372,7 @@ class WrRecCollInfo extends CollInfo
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = `https://nftstorage.link/ipfs/${hash}/`;
+    const url = `https://w3s.link/ipfs/${hash}/`;
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);

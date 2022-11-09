@@ -3,8 +3,9 @@ import { BrowserRecorder } from "./browser-recorder";
 import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 
 import { listAllMsg } from "../utils";
+import { ipfsPinUnpin } from "./ipfsutils";
 
-import { ExtIPFSClient } from "./ipfs";
+//import { ExtIPFSClient } from "./ipfs";
 
 
 // ===========================================================================
@@ -20,7 +21,7 @@ const collLoader = new CollectionLoader();
 
 const disabledCSPTabs = new Set();
 
-let ipfsClient = null;
+//let ipfsClient = null;
 
 
 // ===========================================================================
@@ -56,7 +57,9 @@ function shareHandler(port) {
       }
     }
 
-    const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin, progress);
+    //const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin, progress);
+    const resp = await ipfsPinUnpin(collLoader, message.collId, message.pin, progress);
+
     if (!disconnected) {
       port.postMessage(resp);
       port.disconnect();
@@ -327,13 +330,13 @@ chrome.runtime.onInstalled.addListener(main);
 
 
 // ===========================================================================
-async function initIpfs() {
-  ipfsClient = new ExtIPFSClient(collLoader);
+// async function initIpfs() {
+//   ipfsClient = new ExtIPFSClient(collLoader);
 
-  ipfsClient.init();
-}
+//   ipfsClient.init();
+// }
 
-initIpfs();
+// initIpfs();
 
 // ===========================================================================
 async function disableCSPForTab(tabId) {

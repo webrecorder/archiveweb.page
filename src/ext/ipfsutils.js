@@ -5,6 +5,8 @@ import * as UnixFS from "@ipld/unixfs";
 import * as RawLeaf from "multiformats/codecs/raw";
 import { CarWriter } from "@ipld/car";
 
+import Queue from "p-queue";
+
 export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
   const coll = await collLoader.loadColl(collId);
   if (!coll) {
@@ -30,15 +32,32 @@ export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
     const swContent = await fetchBuffer("sw.js");
     const uiContent = await fetchBuffer("ui.js");
 
-    const {car, cid, size} = await ipfsAddWithReplay( 
+    const { readable, writable } = new TransformStream(
+      {},
+      UnixFS.withCapacity(1048576 * 32)
+    );
+
+    ipfsAddWithReplay(writable, 
       dlResponse.filename, dlResponse.body,
       swContent, uiContent, zipSplitMarker, warcSplitMarker
     );
 
-    const resUrls = await autoipfs.uploadCAR(car);
-    const url = resUrls[0];
+    let url, cid;
 
-    coll.config.metadata.ipfsPins.push({cid: cid.toString(), size, url});
+    // add
+    await readable
+    .pipeThrough(new ShardingStream())
+    .pipeThrough(new ShardStoringStream(autoipfs))
+    .pipeTo(
+      new WritableStream({
+        write: (res) => {
+          cid = res.cid;
+          url = res.url;
+        },
+      })
+    );
+
+    coll.config.metadata.ipfsPins.push({cid: cid.toString(), url});
 
     console.log("ipfs cid added " + url);
 
@@ -80,13 +99,8 @@ async function ipfsWriteBuff(writer, name, content, dir) {
 }
 
 // ===========================================================================
-async function ipfsAddWithReplay(waczPath, waczContent, swContent, uiContent, zipSplitMarker, warcSplitMarker) {
+async function ipfsAddWithReplay(writable, waczPath, waczContent, swContent, uiContent, zipSplitMarker, warcSplitMarker) {
   // eslint-disable-next-line no-undef
-  const { readable, writable } = new TransformStream(
-    {},
-    UnixFS.withCapacity(1048576 * 500)
-  );
-
   const settings = {
     smallFileEncoder: RawLeaf,
     fileChunkEncoder: RawLeaf
@@ -225,11 +239,13 @@ async function ipfsAddWithReplay(waczPath, waczContent, swContent, uiContent, zi
 
   writer.close();
 
-  const car = encodeCar(cid, readable);
+  //const car = encodeCar(cid, readable);
 
   console.log("cid", cid.toString());
 
-  return {cid, car, size: contentByteLength};
+  //return {cid, car, size: contentByteLength};
+
+  return cid;
 }
 
 async function concat(writer, links) {
@@ -250,6 +266,8 @@ async function concat(writer, links) {
 
   return link;
 }
+
+// Copied from ipld/js-unixfs test suite
 
 export const encodeCar = (root, blocks) => {
   const { writer, out } = CarWriter.create([root]);
@@ -284,3 +302,130 @@ const pipe = async (source, writer) => {
   }
   return await writer.close();
 };
+
+export async function encodeBlocks(blocks, root) {
+  // @ts-expect-error
+  const { writer, out } = CarWriter.create(root)
+  /** @type {Error?} */
+  let error
+  void (async () => {
+    try {
+      for await (const block of blocks) {
+        // @ts-expect-error
+        await writer.put(block)
+      }
+    } catch (/** @type {any} */ err) {
+      error = err
+    } finally {
+      await writer.close()
+    }
+  })()
+  const chunks = []
+  for await (const chunk of out) chunks.push(chunk)
+  // @ts-expect-error
+  if (error != null) throw error
+  const roots = root != null ? [root] : []
+  console.log("chunks", chunks.length);
+  return Object.assign(new Blob(chunks), { version: 1, roots })
+}
+
+// Copied from https://github.com/web3-storage/w3protocol/blob/main/packages/upload-client/src/sharding.js
+
+const SHARD_SIZE = 1024 * 1024 * 10;
+const CONCURRENT_UPLOADS = 3;
+
+/**
+ * Shard a set of blocks into a set of CAR files. The last block is assumed to
+ * be the DAG root and becomes the CAR root CID for the last CAR output.
+ *
+ * @extends {TransformStream<import('@ipld/unixfs').Block, import('./types').CARFile>}
+ */
+export class ShardingStream extends TransformStream {
+  /**
+   * @param {import('./types').ShardingOptions} [options]
+   */
+  constructor(options = {}) {
+    const shardSize = options.shardSize ?? SHARD_SIZE
+    /** @type {import('@ipld/unixfs').Block[]} */
+    let shard = []
+    /** @type {import('@ipld/unixfs').Block[] | null} */
+    let readyShard = null
+    let size = 0
+
+    super({
+      async transform(block, controller) {
+        if (readyShard != null) {
+          controller.enqueue(await encodeBlocks(readyShard))
+          readyShard = null
+        }
+        if (shard.length && size + block.bytes.length > shardSize) {
+          readyShard = shard
+          shard = []
+          size = 0
+        }
+        shard.push(block)
+        size += block.bytes.length
+      },
+
+      async flush(controller) {
+        if (readyShard != null) {
+          controller.enqueue(await encodeBlocks(readyShard))
+        }
+
+        const rootBlock = shard.at(-1)
+        if (rootBlock != null) {
+          controller.enqueue(await encodeBlocks(shard, rootBlock.cid))
+        }
+      },
+    })
+  }
+}
+
+/**
+ * Upload multiple DAG shards (encoded as CAR files) to the service.
+ *
+ * Note: an "upload" must be registered in order to link multiple shards
+ * together as a complete upload.
+ *
+ * The writeable side of this transform stream accepts CAR files and the
+ * readable side yields `CARMetadata`.
+ *
+ * @extends {TransformStream<import('./types').CARFile, import('./types').CARMetadata>}
+ */
+export class ShardStoringStream extends TransformStream {
+  constructor(autoipfs, options = {}) {
+    const queue = new Queue({ concurrency: CONCURRENT_UPLOADS })
+    const abortController = new AbortController()
+    super({
+      async transform(car, controller) {
+        void queue.add(
+          async () => {
+            try {
+              const opts = { ...options, signal: abortController.signal }
+              //const cid = await add(conf, car, opts)
+              console.log(car);
+              const resUrls = await autoipfs.uploadCAR(car);
+              console.log(resUrls);
+
+              controller.enqueue({cid: car.roots[0], url: resUrls[0]});
+
+              //const { version, roots, size } = car
+              //controller.enqueue({ version, roots, cid, size })
+            } catch (err) {
+              controller.error(err)
+              abortController.abort(err)
+            }
+          },
+          { signal: abortController.signal }
+        )
+
+        // retain backpressure by not returning until no items queued to be run
+        await queue.onSizeLessThan(1)
+      },
+      async flush() {
+        // wait for queue empty AND pending items complete
+        await queue.onIdle()
+      },
+    })
+  }
+}

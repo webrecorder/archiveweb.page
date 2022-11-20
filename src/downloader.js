@@ -8,7 +8,7 @@ import { createSHA256 } from "hash-wasm";
 
 import { getSurt, WARCRecord, WARCSerializer } from "warcio";
 
-import { getTSMillis, getStatusText } from "@webrecorder/wabac/src/utils";
+import { getTSMillis, getStatusText, digestMessage } from "@webrecorder/wabac/src/utils";
 
 
 // ===========================================================================
@@ -57,12 +57,13 @@ async function* hashingGen(gen, stats, hasher, sizeCallback) {
 class Downloader
 {
   constructor({coll, format = "wacz", filename = null, pageList = null, signer = null,
-    softwareString = null, uuidNamespace}) {
+    softwareString = null, gzip = true, uuidNamespace = null}) {
 
     this.db = coll.store;
     this.pageList = pageList;
     this.collId = coll.name;
     this.metadata = coll.config.metadata;
+    this.gzip = gzip;
 
     this.alreadyDecoded = !coll.config.decode && !coll.config.loadUrl;
 
@@ -152,7 +153,7 @@ class Downloader
 
   async* iterResources(resources) {
     let start = [];
-    let count = 0;
+    //let count = 0;
 
     while (resources.length) {
       const last = resources[resources.length - 1];
@@ -160,15 +161,15 @@ class Downloader
       if (this.pageList) {
         resources = resources.filter((res) => this.pageList.includes(res.pageId));
       }
-      count += resources.length;
+      //count += resources.length;
       yield* resources;
 
       start = [last.url, last.ts];
       resources = await this.loadResourcesBlock(start);
     }
-    if (count !== this.numResources) {
-      console.warn(`Iterated ${count}, but expected ${this.numResources}`);
-    }
+    // if (count !== this.numResources) {
+    //   console.warn(`Iterated ${count}, but expected ${this.numResources}`);
+    // }
   }
 
   async queueWARC(controller, filename, sizeCallback) {
@@ -527,7 +528,7 @@ class Downloader
     const date = this.createdDate;
 
     const record = await WARCRecord.createWARCInfo({filename, type, date, warcHeaders, warcVersion}, info);
-    const buffer = await WARCSerializer.serialize(record, {gzip: true, digest: this.digestOpts});
+    const buffer = await WARCSerializer.serialize(record, {gzip: this.gzip, digest: this.digestOpts});
     return buffer;
   }
 
@@ -590,11 +591,15 @@ class Downloader
       requestBody = new Uint8Array([]);
     }
 
+    if (!resource.digest && resource.payload) {
+      resource.digest = await digestMessage(resource.payload, "sha-256");
+    }
+
     const digestOriginal = this.digestsVisted[resource.digest];
 
     if (resource.digest && digestOriginal) {
       // if exact resource in a row, and same page, then just skip instead of writing revisit
-      if (url === this.lastUrl && pageId === this.lastPageId && method === "GET") {
+      if (url === this.lastUrl && method === "GET"/* && pageId === this.lastPageId*/) {
         //console.log("Skip Dupe: " + url);
         return null;
       }
@@ -666,7 +671,7 @@ class Downloader
       url, date, type, warcVersion, warcHeaders, statusline, httpHeaders,
       refersToUrl, refersToDate}, getPayload(payload));
 
-    const buffer = await WARCSerializer.serialize(record, {gzip: true, digest: this.digestOpts});
+    const buffer = await WARCSerializer.serialize(record, {gzip: this.gzip, digest: this.digestOpts});
     if (!resource.digest) {
       resource.digest = record.warcPayloadDigest;
     }
@@ -697,7 +702,7 @@ class Downloader
         statusline,
       }, getPayload(requestBody));
 
-      records.push(await WARCSerializer.serialize(reqRecord, {gzip: true, digest: this.digestOpts}));
+      records.push(await WARCSerializer.serialize(reqRecord, {gzip: this.gzip, digest: this.digestOpts}));
     }
 
     return records;
@@ -718,7 +723,7 @@ class Downloader
 
     const record = await WARCRecord.create({url, date, warcHeaders, warcVersion, type}, payload);
 
-    const buffer = await WARCSerializer.serialize(record, {gzip: true, digest: this.digestOpts});
+    const buffer = await WARCSerializer.serialize(record, {gzip: this.gzip, digest: this.digestOpts});
     if (!resource.digest) {
       resource.digest = record.warcPayloadDigest;
     }

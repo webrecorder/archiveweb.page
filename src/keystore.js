@@ -1,4 +1,4 @@
-import { openDB } from "idb/with-async-ittr.js";
+import { openDB } from "idb/with-async-ittr";
 import { fromByteArray as encodeBase64, toByteArray as decodeBase64 } from "base64-js";
 
 

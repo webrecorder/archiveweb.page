@@ -13,7 +13,7 @@ const AWP_PACKAGE = require("./package.json");
 const RWP_PACKAGE = require("./node_modules/replaywebpage/package.json");
 const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
 
-const IPFS_CORE_URL = "/ipfs-core.min.js";
+const WEB3_STORAGE_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDREMEMxYjlCNzdDOTYxMTA4NkU2NDMzOTI0NDM3Rjc1MGRBNjVlNTciLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NDYyOTExMjU3MzAsIm5hbWUiOiJhd3BleHByZXNzIn0.oxSNKwda3IhOxfyjaq8Jva7RblPilsPMa9vV8bkzWVI";
 
 const BANNER = "[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020-2021, Webrecorder Software. Licensed under the Affero General Public License v3.";
 
@@ -24,9 +24,9 @@ const defaultDefines = {
   __VERSION__: JSON.stringify(RWP_PACKAGE.version),
   __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
   __SW_NAME__: JSON.stringify("sw.js"),
-  __IPFS_CORE_URL__: JSON.stringify(""),
   __IPFS_HTTP_CLIENT_URL__: JSON.stringify(""),
   __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
+  __WEB3_STORAGE_TOKEN__: JSON.stringify(WEB3_STORAGE_TOKEN),
 };
 
 
@@ -99,7 +99,6 @@ const electronMainConfig = (/*env, argv*/) => {
       new webpack.BannerPlugin(BANNER),
       new CopyPlugin({
         patterns: [
-          { from: "node_modules/leveldown/prebuilds/", to: "prebuilds" },
           { from: "build/extra_prebuilds/", to: "prebuilds" },
         ],
       }),
@@ -176,9 +175,7 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
       }),
       new MiniCssExtractPlugin(),
       new webpack.BannerPlugin(BANNER),
-      new webpack.DefinePlugin({...defaultDefines,
-        __IPFS_CORE_URL__: JSON.stringify(IPFS_CORE_URL),
-      }),
+      new webpack.DefinePlugin({...defaultDefines}),
       ...plugins
     ],
 
@@ -210,7 +207,6 @@ const extensionWebConfig = (env, argv) => {
 
   const copy = [
     { from: "src/static/", to: "./" },
-    { from: "node_modules/ipfs-core/dist/index.min.js", to: "ipfs-core.min.js" }
   ];
 
   const entry = {

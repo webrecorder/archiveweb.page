@@ -1,6 +1,8 @@
 import { initAutoIPFS } from "@webrecorder/wabac/src/ipfs";
 import { Downloader } from "../downloader";
-import { createInMemoryRepo } from "./inmemrepo";
+
+import * as UnixFS from "@ipld/unixfs";
+import { CarWriter } from "@ipld/car";
 
 export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
   const coll = await collLoader.loadColl(collId);
@@ -8,12 +10,13 @@ export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
     return {error: "collection_not_found"};
   }
 
-  const autoipfs = await initAutoIPFS();
+  // eslint-disable-next-line no-undef
+  const autoipfs = await initAutoIPFS({web3StorageToken: __WEB3_STORAGE_TOKEN__});
 
   if (isPin) {
     const filename = "webarchive.wacz";
 
-    const dl = new Downloader({coll, filename});
+    const dl = new Downloader({coll, filename, gzip: false});
     const dlResponse = await dl.download(progress);
 
     if (!coll.config.metadata.ipfsPins) {
@@ -23,12 +26,12 @@ export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
     const swContent = await fetchBuffer("sw.js");
     const uiContent = await fetchBuffer("ui.js");
 
-    const {ipfs, cid, size} = await ipfsAddWithReplay( 
+    const {car, cid, size} = await ipfsAddWithReplay( 
       dlResponse.filename, dlResponse.body,
       swContent, uiContent
     );
 
-    const resUrls = await autoipfs.uploadCar(ipfs.dag.export(cid));
+    const resUrls = await autoipfs.uploadCAR(car);
     const url = resUrls[0];
 
     coll.config.metadata.ipfsPins.push({cid: cid.toString(), size, url});
@@ -59,57 +62,91 @@ async function fetchBuffer(filename) {
   return new Uint8Array(await resp.arrayBuffer());
 }
 
+async function ipfsWriteBuff(writer, name, content, dir) {
+  const file = UnixFS.createFileWriter(writer);
+  if (content instanceof Uint8Array) {
+    file.write(content); 
+  } else if (content[Symbol.asyncIterator]) {
+    for await (const chunk of content) {
+      file.write(chunk);
+    }
+  }
+  const link = await file.close(); 
+  dir.set(name, link);
+}
+
 // ===========================================================================
 async function ipfsAddWithReplay(waczPath, waczContent, swContent, uiContent) {
+  // eslint-disable-next-line no-undef
+  const { readable, writable } = new TransformStream(
+    {},
+    UnixFS.withCapacity(1048576 * 32)
+  );
+
+  const writer = UnixFS.createWriter({ writable });
+
+  const rootDir = UnixFS.createDirectoryWriter(writer);
+
   const encoder = new TextEncoder();
-  
-  const fileDef = [
-    {path: "ui.js", content: uiContent},
-    {path: "sw.js", content: swContent},
-    {path: "index.html",
-      content: encoder.encode(`
-     <!doctype html>
-     <html class="no-overflow">
-     <head>
-       <title>ReplayWeb.page</title>
-       <meta charset="utf-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-       <script src="./ui.js"></script>
-     </head>
-     <body>
-       <replay-app-main source="${waczPath}"></replay-app-main>
-     </body>
-     </html>`)
-    }
-  ];
 
-  const fileData = [];
+  const htmlContent = `
+<!doctype html>
+<html class="no-overflow">
+<head>
+  <title>ReplayWeb.page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="./ui.js"></script>
+</head>
+<body>
+  <replay-app-main source="${waczPath}"></replay-app-main>
+</body>
+</html>`;
 
-  for (const entry of fileDef) {
-    fileData.push({path: entry.path, content: entry.content});
-  }
+  await ipfsWriteBuff(writer, "ui.js", uiContent, rootDir);
+  await ipfsWriteBuff(writer, "sw.js", swContent, rootDir);
+  await ipfsWriteBuff(writer, "index.html", encoder.encode(htmlContent), rootDir);
+  await ipfsWriteBuff(writer, waczPath, iterate(waczContent), rootDir);
 
-  fileData.push({path: waczPath, content: waczContent});
+  const {cid, dagByteLength} = await rootDir.close();
 
-  const ipfs = await createInMemoryRepo();
+  writer.close();
 
-  const resp = await ipfs.addAll(fileData, {
-    wrapWithDirectory: true,
+  const car = encodeCar(cid, readable);
+
+  return {cid, car, size: dagByteLength};
+}
+
+export const encodeCar = (root, blocks) => {
+  const { writer, out } = CarWriter.create([root]);
+  pipe(iterate(blocks), {
+    write: block =>
+      writer.put({
+        // @ts-expect-error - https://github.com/ipld/js-car/pull/97
+        cid: block.cid,
+        bytes: block.bytes,
+      }),
+    close: () => writer.close(),
   });
 
-  let cid;
-  let size = 0;
+  return out;
+};
 
-  for await (const entry of resp) {
-    size += entry.size;
-    if (entry.path === "") {
-      cid = entry.cid;
+export const iterate = async function* (stream) {
+  const reader = stream.getReader();
+  while (true) {
+    const next = await reader.read();
+    if (next.done) {
+      return;
+    } else {
+      yield next.value;
     }
   }
+};
 
-  //const url = `ipfs://${hash}/${waczPath}`;
-
-  //const ctime = new Date().getTime();
-
-  return {cid, size};
-}
+const pipe = async (source, writer) => {
+  for await (const item of source) {
+    writer.write(item);
+  }
+  return await writer.close();
+};

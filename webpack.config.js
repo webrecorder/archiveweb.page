@@ -24,7 +24,6 @@ const defaultDefines = {
   __VERSION__: JSON.stringify(RWP_PACKAGE.version),
   __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
   __SW_NAME__: JSON.stringify("sw.js"),
-  __IPFS_HTTP_CLIENT_URL__: JSON.stringify(""),
   __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
   __WEB3_STORAGE_TOKEN__: JSON.stringify(WEB3_STORAGE_TOKEN),
 };

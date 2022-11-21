@@ -16,7 +16,7 @@
     "browsertrix-behaviors": "^0.3.4",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
-    "client-zip": "github:ikreymer/client-zip",
+    "client-zip": "^2.3.0",
     "hash-wasm": "^4.9.0",
     "http-status-codes": "^2.1.4",
     "keyword-mark-element": "^0.1.2",

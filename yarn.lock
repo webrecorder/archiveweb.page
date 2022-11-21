@@ -1681,9 +1681,10 @@ cli-truncate@^2.1.0:
     slice-ansi "^3.0.0"
     string-width "^4.2.0"
 
-"client-zip@github:ikreymer/client-zip":
+client-zip@^2.3.0:
   version "2.3.0"
-  resolved "https://codeload.github.com/ikreymer/client-zip/tar.gz/6908eeef3cf3c5ece2d6cd0b3c3713b3cd772b35"
+  resolved "https://registry.yarnpkg.com/client-zip/-/client-zip-2.3.0.tgz#c7ae74bc277e466e27134ebcdce4aaade4c3ecd5"
+  integrity sha512-5hJpXzaNx7SEy35QqtdgNh9T3/w2Rjup7n31If5DO+kSgXsTPANmdwO5gRBgAbBn16GVDaGRc7vS2kUMazyXOw==
 
 cliui@^6.0.0:
   version "6.0.0"

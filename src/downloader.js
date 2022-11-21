@@ -32,10 +32,14 @@ async function* getPayload(payload) {
   yield payload;
 }
 
-async function* hashingGen(gen, stats, hasher, sizeCallback) {
+async function* hashingGen(gen, stats, hasher, sizeCallback, marker) {
   stats.size = 0;
 
   hasher.init();
+
+  if (marker) {
+    yield marker;
+  }
 
   for await (let chunk of gen) {
     if (typeof(chunk) === "string") {
@@ -48,6 +52,10 @@ async function* hashingGen(gen, stats, hasher, sizeCallback) {
       sizeCallback(chunk.byteLength);
     }
     hasher.update(chunk);
+  }
+
+  if (marker) {
+    yield marker;
   }
 
   stats.hash = hasher.digest("hex");
@@ -210,7 +218,7 @@ class Downloader
     zip.push({
       name: filename,
       lastModified: this.createdDateDt,
-      input: hashingGen(generator, stats, this.fileHasher, sizeCallback)
+      input: hashingGen(generator, stats, this.fileHasher, sizeCallback, this.zipSplitMarker)
     });
   }
 
@@ -256,7 +264,7 @@ class Downloader
       "Content-Type": "application/zip"
     };
 
-    let rs = makeZip(zip, {markerBeforeFileStart: this.zipSplitMarker, markerAfterFileEnd: this.zipSplitMarker});
+    let rs = makeZip(zip);
     const response = new Response(rs, {headers});
     response.filename = filename;
     return response;

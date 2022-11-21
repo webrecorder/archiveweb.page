@@ -1,5 +1,9 @@
 import { getCollData } from "@webrecorder/wabac/src/utils";
 
+// eslint-disable-next-line no-undef
+export const DEFAULT_SOFTWARE_STRING = `Webrecorder ArchiveWeb.page ${__AWP_VERSION__}, using warcio.js ${__WARCIO_VERSION__}`;
+
+
 // ===========================================================================
 async function ensureDefaultColl(collLoader)
 {

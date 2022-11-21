@@ -57,15 +57,18 @@ async function* hashingGen(gen, stats, hasher, sizeCallback) {
 class Downloader
 {
   constructor({coll, format = "wacz", filename = null, pageList = null, signer = null,
-    softwareString = null, gzip = true, uuidNamespace = null, zipSplitMarker = null, warcSplitMarker = null}) {
+    softwareString = null, gzip = true, uuidNamespace = null, 
+    zipSplitMarker = null, warcSplitMarker = null, warcGroupMarker = null}) {
 
     this.db = coll.store;
     this.pageList = pageList;
     this.collId = coll.name;
     this.metadata = coll.config.metadata;
     this.gzip = gzip;
+
     this.zipSplitMarker = zipSplitMarker;
     this.warcSplitMarker = warcSplitMarker;
+    this.warcGroupMarker = warcGroupMarker;
 
     this.warcName = this.gzip ? "data.warc.gz" : "data.warc";
 
@@ -270,8 +273,8 @@ class Downloader
         offset += warcinfo.length;
       }
 
-      if (this.warcSplitMarker) {
-        yield this.warcSplitMarker;
+      if (this.warcGroupMarker) {
+        yield this.warcGroupMarker;
       }
 
       for await (const resource of this.iterResources(this.firstResources)) {
@@ -287,7 +290,7 @@ class Downloader
         yield* this.emitRecord(records[0], digestRecordAndCDX, responseData);
         offset += responseData.length;
         resource.length = responseData.length;
-        if (digestRecordAndCDX && resource.recordDigest) {
+        if (digestRecordAndCDX && !resource.recordDigest) {
           //resource.recordDigest = this.recordDigest(records[0]);
           resource.recordDigest = responseData.digest;
         }
@@ -301,6 +304,10 @@ class Downloader
 
         if (digestRecordAndCDX) {
           this.cdxjLines.push(this.getCDXJ(resource, this.warcName));
+        }
+
+        if (this.warcGroupMarker) {
+          yield this.warcGroupMarker;
         }
       }
     } catch (e) {
@@ -329,21 +336,25 @@ class Downloader
       output.digest = this.hashType + ":" + this.recordHasher.digest("hex");
     }
 
-    if (!this.gzip && this.warcSplitMarker && chunks.length === 5 || chunks.length === 4) {
+    if (!this.gzip && this.warcSplitMarker && record.warcType !== "request" && (chunks.length === 5 || chunks.length === 4)) {
       if (chunks.length === 5) {
         yield chunks[0];
         yield chunks[1];
         yield chunks[2];
         yield this.warcSplitMarker;
-        yield chunks[3];
-        yield this.warcSplitMarker;
+        if (chunks[3].length) {
+          yield chunks[3];
+          yield this.warcSplitMarker;
+        }
         yield chunks[4];
       } else {
         yield chunks[0];
         yield chunks[1];
         yield this.warcSplitMarker;
-        yield chunks[2];
-        yield this.warcSplitMarker;
+        if (chunks[2].length) {
+          yield chunks[2];
+          yield this.warcSplitMarker;
+        }
         yield chunks[3];
       }
     } else {

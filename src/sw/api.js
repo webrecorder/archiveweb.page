@@ -3,10 +3,7 @@ import { tsToDate } from "@webrecorder/wabac/src/utils";
 
 import { Downloader } from "../downloader";
 import { Signer } from "../keystore";
-
-// eslint-disable-next-line no-undef
-const DEFAULT_SOFTWARE_STRING = `Webrecorder ArchiveWeb.page ${__AWP_VERSION__}, using warcio.js ${__WARCIO_VERSION__}`;
-
+import { DEFAULT_SOFTWARE_STRING } from "../utils";
 
 // ===========================================================================
 class ExtAPI extends API

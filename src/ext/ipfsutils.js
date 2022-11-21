@@ -6,6 +6,8 @@ import * as RawLeaf from "multiformats/codecs/raw";
 import { CarWriter } from "@ipld/car";
 
 import Queue from "p-queue";
+import { Signer } from "../keystore";
+import { DEFAULT_SOFTWARE_STRING } from "../utils";
 
 export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
   const coll = await collLoader.loadColl(collId);
@@ -21,8 +23,20 @@ export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
 
     const zipSplitMarker = new Uint8Array([]);
     const warcSplitMarker = new Uint8Array([]);
+    const warcGroupMarker = new Uint8Array([]);
 
-    const dl = new Downloader({coll, filename, gzip: false, zipSplitMarker, warcSplitMarker});
+    const softwareString = DEFAULT_SOFTWARE_STRING
+
+    const signer = new Signer(softwareString);
+
+    const gzip = false;
+
+    const dl = new Downloader({
+      coll, filename, gzip,
+      softwareString, signer,
+      zipSplitMarker, warcSplitMarker, warcGroupMarker, 
+    });
+
     const dlResponse = await dl.download(progress);
 
     if (!coll.config.metadata.ipfsPins) {
@@ -39,7 +53,8 @@ export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
 
     ipfsAddWithReplay(writable, 
       dlResponse.filename, dlResponse.body,
-      swContent, uiContent, zipSplitMarker, warcSplitMarker
+      swContent, uiContent,
+      zipSplitMarker, warcSplitMarker, warcGroupMarker
     );
 
     let url, cid;
@@ -99,7 +114,8 @@ async function ipfsWriteBuff(writer, name, content, dir) {
 }
 
 // ===========================================================================
-async function ipfsAddWithReplay(writable, waczPath, waczContent, swContent, uiContent, zipSplitMarker, warcSplitMarker) {
+async function ipfsAddWithReplay(writable, waczPath, waczContent, swContent, uiContent, 
+  zipSplitMarker, warcSplitMarker, warcGroupMarker) {
   // eslint-disable-next-line no-undef
   const settings = {
     smallFileEncoder: RawLeaf,
@@ -128,6 +144,7 @@ async function ipfsAddWithReplay(writable, waczPath, waczContent, swContent, uiC
 
   let links = [];
   const fileLinks = [];
+  let secondaryLinks = [];
 
   let inZipFile = false;
   let lastChunk = null;
@@ -169,8 +186,18 @@ async function ipfsAddWithReplay(writable, waczPath, waczContent, swContent, uiC
         file = UnixFS.createFileWriter(writer);
       }
 
-      let link = await concat(writer, links);
-      links = [];
+      let link;
+
+      if (secondaryLinks.length) {
+        if (links.length) {
+          throw new Error("invalid state, secondaryLinks + links?");
+        }
+        link = await concat(writer, secondaryLinks);
+        secondaryLinks = [];
+      } else {
+        link = await concat(writer, links);
+        links = [];
+      }
 
       fileLinks.push(link);
 
@@ -191,16 +218,22 @@ async function ipfsAddWithReplay(writable, waczPath, waczContent, swContent, uiC
       dir.set(filename, link);
 
       inZipFile = false;
-    } else if (chunk === warcSplitMarker && inZipFile) {
+    } else if (chunk === warcSplitMarker || chunk === warcGroupMarker) {
+
+      if (!inZipFile) {
+        throw new Error("invalid state");
+      }
 
       if (count) {
         links.push(await file.close());
         count = 0;
         file = UnixFS.createFileWriter(writer);
-      }
 
-    } else if (chunk === warcSplitMarker && !inZipFile) {
-      throw new Error("Invalid!")
+        if (chunk === warcGroupMarker) {
+          secondaryLinks.push(await concat(writer, links));
+          links = [];
+        }
+      }
     } else if (chunk.length > 0) {
       if (!inZipFile) {
         lastChunk = chunk;
@@ -235,15 +268,9 @@ async function ipfsAddWithReplay(writable, waczPath, waczContent, swContent, uiC
 
   rootDir.set(waczPath, await concat(writer, fileLinks));
 
-  const {cid, contentByteLength} = await rootDir.close();
+  const {cid} = await rootDir.close();
 
   writer.close();
-
-  //const car = encodeCar(cid, readable);
-
-  console.log("cid", cid.toString());
-
-  //return {cid, car, size: contentByteLength};
 
   return cid;
 }

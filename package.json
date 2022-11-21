@@ -38,6 +38,7 @@
     "electron": "^18.3.15",
     "electron-builder": "^23.0.3",
     "electron-notarize": "^1.0.0",
+    "eslint": "^8.28.0",
     "generate-json-webpack-plugin": "^2.0.0",
     "mini-css-extract-plugin": "^2.3.0",
     "node-sass": "^8.0.0",

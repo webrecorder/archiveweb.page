@@ -1,4 +1,4 @@
-import { downloadZip, makeZip } from "client-zip";
+import { makeZip } from "client-zip";
 
 import { Deflate } from "pako";
 

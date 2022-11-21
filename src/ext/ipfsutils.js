@@ -25,7 +25,7 @@ export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
     const warcSplitMarker = new Uint8Array([]);
     const warcGroupMarker = new Uint8Array([]);
 
-    const softwareString = DEFAULT_SOFTWARE_STRING
+    const softwareString = DEFAULT_SOFTWARE_STRING;
 
     const signer = new Signer(softwareString);
 
@@ -61,16 +61,16 @@ export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
 
     // add
     await readable
-    .pipeThrough(new ShardingStream())
-    .pipeThrough(new ShardStoringStream(autoipfs))
-    .pipeTo(
-      new WritableStream({
-        write: (res) => {
-          cid = res.cid;
-          url = res.url;
-        },
-      })
-    );
+      .pipeThrough(new ShardingStream())
+      .pipeThrough(new ShardStoringStream(autoipfs))
+      .pipeTo(
+        new WritableStream({
+          write: (res) => {
+            cid = res.cid;
+            url = res.url;
+          },
+        })
+      );
 
     coll.config.metadata.ipfsPins.push({cid: cid.toString(), url});
 
@@ -332,28 +332,28 @@ const pipe = async (source, writer) => {
 
 export async function encodeBlocks(blocks, root) {
   // @ts-expect-error
-  const { writer, out } = CarWriter.create(root)
+  const { writer, out } = CarWriter.create(root);
   /** @type {Error?} */
-  let error
+  let error;
   void (async () => {
     try {
       for await (const block of blocks) {
         // @ts-expect-error
-        await writer.put(block)
+        await writer.put(block);
       }
     } catch (/** @type {any} */ err) {
-      error = err
+      error = err;
     } finally {
-      await writer.close()
+      await writer.close();
     }
-  })()
-  const chunks = []
-  for await (const chunk of out) chunks.push(chunk)
+  })();
+  const chunks = [];
+  for await (const chunk of out) chunks.push(chunk);
   // @ts-expect-error
-  if (error != null) throw error
-  const roots = root != null ? [root] : []
+  if (error != null) throw error;
+  const roots = root != null ? [root] : [];
   console.log("chunks", chunks.length);
-  return Object.assign(new Blob(chunks), { version: 1, roots })
+  return Object.assign(new Blob(chunks), { version: 1, roots });
 }
 
 // Copied from https://github.com/web3-storage/w3protocol/blob/main/packages/upload-client/src/sharding.js
@@ -372,39 +372,39 @@ export class ShardingStream extends TransformStream {
    * @param {import('./types').ShardingOptions} [options]
    */
   constructor(options = {}) {
-    const shardSize = options.shardSize ?? SHARD_SIZE
+    const shardSize = options.shardSize ?? SHARD_SIZE;
     /** @type {import('@ipld/unixfs').Block[]} */
-    let shard = []
+    let shard = [];
     /** @type {import('@ipld/unixfs').Block[] | null} */
-    let readyShard = null
-    let size = 0
+    let readyShard = null;
+    let size = 0;
 
     super({
       async transform(block, controller) {
         if (readyShard != null) {
-          controller.enqueue(await encodeBlocks(readyShard))
-          readyShard = null
+          controller.enqueue(await encodeBlocks(readyShard));
+          readyShard = null;
         }
         if (shard.length && size + block.bytes.length > shardSize) {
-          readyShard = shard
-          shard = []
-          size = 0
+          readyShard = shard;
+          shard = [];
+          size = 0;
         }
-        shard.push(block)
-        size += block.bytes.length
+        shard.push(block);
+        size += block.bytes.length;
       },
 
       async flush(controller) {
         if (readyShard != null) {
-          controller.enqueue(await encodeBlocks(readyShard))
+          controller.enqueue(await encodeBlocks(readyShard));
         }
 
-        const rootBlock = shard.at(-1)
+        const rootBlock = shard.at(-1);
         if (rootBlock != null) {
-          controller.enqueue(await encodeBlocks(shard, rootBlock.cid))
+          controller.enqueue(await encodeBlocks(shard, rootBlock.cid));
         }
       },
-    })
+    });
   }
 }
 
@@ -420,15 +420,15 @@ export class ShardingStream extends TransformStream {
  * @extends {TransformStream<import('./types').CARFile, import('./types').CARMetadata>}
  */
 export class ShardStoringStream extends TransformStream {
-  constructor(autoipfs, options = {}) {
-    const queue = new Queue({ concurrency: CONCURRENT_UPLOADS })
-    const abortController = new AbortController()
+  constructor(autoipfs) {
+    const queue = new Queue({ concurrency: CONCURRENT_UPLOADS });
+    const abortController = new AbortController();
     super({
       async transform(car, controller) {
         void queue.add(
           async () => {
             try {
-              const opts = { ...options, signal: abortController.signal }
+              //const opts = { ...options, signal: abortController.signal };
               //const cid = await add(conf, car, opts)
               console.log(car);
               const resUrls = await autoipfs.uploadCAR(car);
@@ -439,20 +439,20 @@ export class ShardStoringStream extends TransformStream {
               //const { version, roots, size } = car
               //controller.enqueue({ version, roots, cid, size })
             } catch (err) {
-              controller.error(err)
-              abortController.abort(err)
+              controller.error(err);
+              abortController.abort(err);
             }
           },
           { signal: abortController.signal }
-        )
+        );
 
         // retain backpressure by not returning until no items queued to be run
-        await queue.onSizeLessThan(1)
+        await queue.onSizeLessThan(1);
       },
       async flush() {
         // wait for queue empty AND pending items complete
-        await queue.onIdle()
+        await queue.onIdle();
       },
-    })
+    });
   }
 }

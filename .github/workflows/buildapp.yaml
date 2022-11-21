@@ -21,7 +21,7 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 16
 
       - name: Cache Dirs
         uses: actions/cache@v2
@@ -63,7 +63,7 @@ jobs:
                     -v ${PWD}:/project \
                     -v ~/.cache/electron:/root/.cache/electron \
                     -v ~/.cache/electron-builder:/root/.cache/electron-builder \
-                    electronuserland/builder:wine \
+                    electronuserland/builder:16-wine \
                     /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn install && yarn run $YARN_BUILD_CMD --linux --x64"
                 else
                   #mkdir -p plugins-win;
@@ -80,7 +80,7 @@ jobs:
                     -v ${PWD}:/project \
                     -v ~/.cache/electron:/root/.cache/electron \
                     -v ~/.cache/electron-builder:/root/.cache/electron-builder \
-                    electronuserland/builder:wine \
+                    electronuserland/builder:16-wine \
                     /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn install && yarn run $YARN_BUILD_CMD --win --x64 --ia32"
                 fi
               else

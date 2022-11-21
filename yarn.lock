@@ -1262,10 +1262,9 @@ auto-js-ipfs@^1.3.10, auto-js-ipfs@^1.3.9:
   resolved "https://registry.yarnpkg.com/auto-js-ipfs/-/auto-js-ipfs-1.5.0.tgz#280004c846bf20c1dd7f47d45c203a38819154fc"
   integrity sha512-k7/Dpivx9KtNLnpIE8q9Q7tmm8rFA3d8jFlahZJoiN6n96WHfEVgn+cAVNGeWBLozSHV24FKJWEgjuo/FfAr1A==
 
-auto-js-ipfs@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/auto-js-ipfs/-/auto-js-ipfs-1.4.0.tgz#9c1f3651790cbbdfe374b09a81f17d6799a34d91"
-  integrity sha512-A1pmiCYsvyUeZ6/DNsVfvYiLvDgwi47ZG200Ou7iGBmT0k6skQ+z0AGMtPINyLVygA/LDIE4BSMdulbOhb9pFQ==
+"auto-js-ipfs@github:ikreymer/auto-js-ipfs#misc-fixes":
+  version "1.5.0"
+  resolved "https://codeload.github.com/ikreymer/auto-js-ipfs/tar.gz/8eba4997194210f641bc5fe0eed84820fab3dd5d"
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -1682,10 +1681,9 @@ cli-truncate@^2.1.0:
     slice-ansi "^3.0.0"
     string-width "^4.2.0"
 
-client-zip@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/client-zip/-/client-zip-2.2.2.tgz#58dcc66f2534954a50b506d2bd864b51ba98370d"
-  integrity sha512-Jh1Sz/iBTfYuLQv6yKzrrXofJy17Q7YRhBfh5HH/6i4Z+ACjTfmRJllWQKoe4eFWwXeUoOjEathqXfuGGX4jhg==
+"client-zip@github:ikreymer/client-zip":
+  version "2.3.0"
+  resolved "https://codeload.github.com/ikreymer/client-zip/tar.gz/6908eeef3cf3c5ece2d6cd0b3c3713b3cd772b35"
 
 cliui@^6.0.0:
   version "6.0.0"

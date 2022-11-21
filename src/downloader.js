@@ -256,7 +256,7 @@ class Downloader
       "Content-Type": "application/zip"
     };
 
-    let rs = makeZip(zip, {utcDates: true, boundaryMarker: this.zipSplitMarker});
+    let rs = makeZip(zip, {markerBeforeFileStart: this.zipSplitMarker, markerAfterFileEnd: this.zipSplitMarker});
     const response = new Response(rs, {headers});
     response.filename = filename;
     return response;

@@ -4,60 +4,57 @@ import { Downloader } from "../downloader";
 import * as UnixFS from "@ipld/unixfs";
 import { CarWriter } from "@ipld/car";
 
-export async function ipfsPinUnpin(collLoader, collId, isPin, progress = null) {
-  const coll = await collLoader.loadColl(collId);
-  if (!coll) {
-    return {error: "collection_not_found"};
+// eslint-disable-next-line no-undef
+const autoipfsOpts = {web3StorageToken: __WEB3_STORAGE_TOKEN__};
+
+export async function setAutoIPFSUrl(url) {
+  autoipfsOpts.daemonURL = url;
+}
+
+export async function ipfsAdd(coll, downloaderOpts = {}, progress = null) {
+  const autoipfs = await initAutoIPFS(autoipfsOpts);
+
+  const filename = "webarchive.wacz";
+
+  const dl = new Downloader({...downloaderOpts, coll, filename, gzip: false});
+  const dlResponse = await dl.download(progress);
+
+  if (!coll.config.metadata.ipfsPins) {
+    coll.config.metadata.ipfsPins = [];
   }
 
-  // eslint-disable-next-line no-undef
-  const autoipfs = await initAutoIPFS({web3StorageToken: __WEB3_STORAGE_TOKEN__});
+  const swContent = await fetchBuffer("sw.js");
+  const uiContent = await fetchBuffer("ui.js");
 
-  if (isPin) {
-    const filename = "webarchive.wacz";
+  const {car, cid, size} = await ipfsAddWithReplay( 
+    dlResponse.filename, dlResponse.body,
+    swContent, uiContent
+  );
 
-    const dl = new Downloader({coll, filename, gzip: false});
-    const dlResponse = await dl.download(progress);
+  const resUrls = await autoipfs.uploadCAR(car);
+  const url = resUrls[0];
 
-    if (!coll.config.metadata.ipfsPins) {
-      coll.config.metadata.ipfsPins = [];
-    }
+  coll.config.metadata.ipfsPins.push({cid: cid.toString(), size, url});
 
-    const swContent = await fetchBuffer("sw.js");
-    const uiContent = await fetchBuffer("ui.js");
+  console.log("ipfs cid added " + url);
 
-    const {car, cid, size} = await ipfsAddWithReplay( 
-      dlResponse.filename, dlResponse.body,
-      swContent, uiContent
-    );
+  return url;
+}
 
-    const resUrls = await autoipfs.uploadCAR(car);
-    const url = resUrls[0];
+export async function ipfsRemove(coll) {
+  if (coll.config.metadata.ipfsPins) {
+    //TODO: need remove support in auto-js-ipfs
+    //await ipfsUnpinAll(this, coll.config.metadata.ipfsPins);
 
-    coll.config.metadata.ipfsPins.push({cid: cid.toString(), size, url});
-
-    console.log("ipfs cid added " + url);
-
-    await collLoader.updateMetadata(coll.name, coll.config.metadata);
-
-    return {"ipfsURL": url};
-
-  } else {
-    if (coll.config.metadata.ipfsPins) {
-      //TODO: need remove support in auto-js-ipfs
-      //await ipfsUnpinAll(this, coll.config.metadata.ipfsPins);
-
-      coll.config.metadata.ipfsPins = null;
-
-      await collLoader.updateMetadata(coll.name, coll.config.metadata);
-    }
-
-    return {"removed": true};
+    coll.config.metadata.ipfsPins = null;
+    return true;
   }
+
+  return false;
 }
 
 async function fetchBuffer(filename) {
-  const resp = await fetch(chrome.runtime.getURL("/replay/" + filename));
+  const resp = await fetch(new URL(filename, self.location.href).href);
 
   return new Uint8Array(await resp.arrayBuffer());
 }

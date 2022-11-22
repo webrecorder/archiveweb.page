@@ -15,6 +15,23 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 import { CollInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
+import { create as createAutoIpfs, DaemonAPI } from "auto-js-ipfs";
+
+
+let ipfsChecked = false;
+
+async function checkIPFS() {
+  // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
+  // if so, send it to the service worker
+  if (!ipfsChecked) {
+    const autoipfs = await createAutoIpfs();
+    if (autoipfs.api instanceof DaemonAPI) {
+      await fetch(`${apiPrefix}/ipfsDaemonUrl`, {body: JSON.stringify({url: autoipfs.api.url}), method: "POST"});
+    }
+  }
+  ipfsChecked = true;
+}
+
 
 //============================================================================
 class WrRecCollInfo extends CollInfo
@@ -302,63 +319,76 @@ class WrRecCollInfo extends CollInfo
   async onPin() {
     this.shareWarn = false;
 
+    await checkIPFS();
     this.shareWait = true;
-    const json = await this.ipfsApi(this.coll.id, true);
+    const { ipfsURL } = await this.ipfsAdd();
 
-    if (json.ipfsURL) {
-      this.ipfsURL = json.ipfsURL;
-    }
+    this.ipfsURL = ipfsURL;
+
     this.onCopyGatewayLink();
     this.shareWait = false;
   }
 
   async onUnpin() {
+    await checkIPFS();
     this.shareWait = true;
-    const json = await this.ipfsApi(this.coll.id, false);
+    const { removed } = await this.ipfsRemove();
 
-    if (json.removed) {
+    if (removed) {
       this.ipfsURL = null;
     }
     this.shareWait = false;
   }
 
-  ipfsApi(collId, pin) {
+  ipfsAdd() {
     this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: true}}));
 
-    if (window.archivewebpage) {
-      const progressCallback = (message) => {
-        if (message.size) {
-          this.shareProgress = message.size;
-        } else {
-          this.shareProgress = 0;
-          this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: false}}));
-        }
-      };
+    //let id = 0;
+    let pc;
 
-      return (pin ? 
-        window.archivewebpage.ipfsPin(this.coll.id, progressCallback) : 
-        window.archivewebpage.ipfsUnpin(this.coll.id));
-    }
+    const p = new Promise((resolve, reject) => pc = {resolve, reject});
 
-    return new Promise((resolve) => {
-      const port = chrome.runtime.connect({name: "share-port"});
-      port.onMessage.addListener((message) => {
-        if (message.progress) {
-          this.shareProgress = message.size;
-          return;
-        }
+    const listener = (event) => {
+      const { data } = event;
 
+      if (!data || data.collId !== this.coll.id) {
+        return;
+      }
+
+      switch (data.type) {
+      case "ipfsProgress":
+        this.shareProgress = data.size;
+        break;
+
+      case "ipfsAdd":
         this.shareProgress = 0;
+        if (data.result) {
+          pc.resolve(data.result);
+        } else {
+          pc.reject();
+        }
         this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: false}}));
-        resolve(message);
-      });
 
-      port.onDisconnect.addListener(() => {
-        console.log("port disconnected");
-      });
+        navigator.serviceWorker.removeEventListener("message", listener);
+        break;
+      }
+    };
 
-      port.postMessage({collId, pin});
-    });
+    navigator.serviceWorker.addEventListener("message", listener);
+
+    fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {method: "POST"});
+
+    return p;
+
+    // return fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {method: "POST"})
+    // .then((resp) => resp.json())
+    // .then((json) => id = json.id)
+    // .then(p);
+  }
+
+  async ipfsRemove() {
+    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {method: "DELETE"});
+    return await resp.json();
   }
 
   onCopyRWPLink() {
@@ -387,7 +417,7 @@ class WrRecCollInfo extends CollInfo
 
   async doDelete() {
     if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
-      await this.ipfsApi(this.coll.id, false);
+      await this.ipfsRemove();
     }
 
     const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: "DELETE"});

@@ -3,9 +3,7 @@ import { BrowserRecorder } from "./browser-recorder";
 import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 
 import { listAllMsg } from "../utils";
-import { ipfsPinUnpin } from "./ipfsutils";
-
-//import { ExtIPFSClient } from "./ipfs";
+//import { ipfsAdd, ipfsRemove } from "../sw/ipfsutils";
 
 
 // ===========================================================================
@@ -39,12 +37,13 @@ chrome.runtime.onConnect.addListener((port) => {
     popupHandler(port);
     break;
 
-  case "share-port":
-    shareHandler(port);
-    break;
+  //case "share-port":
+  //  shareHandler(port);
+  //  break;
   }
 });
 
+/*
 function shareHandler(port) {
   let size = 0;
   let disconnected = false;
@@ -57,8 +56,11 @@ function shareHandler(port) {
       }
     }
 
-    //const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin, progress);
-    const resp = await ipfsPinUnpin(collLoader, message.collId, message.pin, progress);
+    let resp;
+
+    if (message.pin) {
+      resp = await ipfsAdd(collLoader, message.collId, progress);
+    }
 
     if (!disconnected) {
       port.postMessage(resp);
@@ -70,7 +72,7 @@ function shareHandler(port) {
     disconnected = true;
   });
 }
-
+*/
 
 function popupHandler(port) {
   if (!port.sender || port.sender.url !== chrome.runtime.getURL("popup.html")) {

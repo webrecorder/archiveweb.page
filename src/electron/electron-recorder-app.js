@@ -6,16 +6,16 @@ import { ElectronRecorder } from "./electron-recorder";
 import { ElectronReplayApp, STATIC_PREFIX } from "replaywebpage/src/electron-replay-app";
 
 import path from "path";
-import { PassThrough } from "stream";
+//import { PassThrough } from "stream";
 
-import fs from "fs";
-import util from "util";
+//import fs from "fs";
+//import util from "util";
 import { unusedFilenameSync } from "unused-filename";
 
-import { checkPins, ipfsUnpinAll } from "../utils";
+//import { checkPins, ipfsUnpinAll } from "../utils";
 
-import { ipfsAddWithReplay } from "../ext/ipfsutils.js";
-import { initAutoIPFS } from "@webrecorder/wabac/src/ipfs";
+//import { ipfsAddWithReplay } from "../ext/ipfsutils.js";
+//import { initAutoIPFS } from "@webrecorder/wabac/src/ipfs";
 
 app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
 
@@ -59,13 +59,13 @@ class ElectronRecorderApp extends ElectronReplayApp
       this.ipfsStart(validPins);
     });
 
-    ipcMain.on("ipfs-pin", (event, reqId, filename) => {
-      this.ipfsPin(event, reqId, filename);
-    });
+    // ipcMain.on("ipfs-pin", (event, reqId, filename) => {
+    //   this.ipfsPin(event, reqId, filename);
+    // });
 
-    ipcMain.on("ipfs-unpin", (event, reqId, pinList) => {
-      this.ipfsUnpin(event, reqId, pinList);
-    });
+    // ipcMain.on("ipfs-unpin", (event, reqId, pinList) => {
+    //   this.ipfsUnpin(event, reqId, pinList);
+    // });
 
     sesh.on("will-download", (event, item, webContents) => {
       const origFilename = item.getFilename();
@@ -274,58 +274,58 @@ class ElectronRecorderApp extends ElectronReplayApp
     }
   }
 
-  async ipfsStart(validPins) {
-    const autoipfs = await initAutoIPFS({web3StorageToken: __WEB3_STORAGE_TOKEN__});
-    this.autoipfs = autoipfs;
+  async ipfsStart(/*validPins*/) {
+    // const autoipfs = await initAutoIPFS({web3StorageToken: __WEB3_STORAGE_TOKEN__});
+    // this.autoipfs = autoipfs;
 
-    checkPins(this.ipfsClient, validPins);
+    // checkPins(this.ipfsClient, validPins);
   }
 
-  async ipfsPin(event, reqId, filename) {
-    let downloadStream = new PassThrough();
+  // async ipfsPin(event, reqId, filename) {
+  //   let downloadStream = new PassThrough();
 
-    ipcMain.on(reqId, (event, data) => {
-      downloadStream.push(data);
-      if (!data) {
-        ipcMain.removeAllListeners(reqId);
-      }
-    });
+  //   ipcMain.on(reqId, (event, data) => {
+  //     downloadStream.push(data);
+  //     if (!data) {
+  //       ipcMain.removeAllListeners(reqId);
+  //     }
+  //   });
 
-    await this.ipfsClient.initIPFS();
+  //   await this.ipfsClient.initIPFS();
 
-    const readFile = (fileName) => util.promisify(fs.readFile)(fileName);
+  //   const readFile = (fileName) => util.promisify(fs.readFile)(fileName);
 
-    const swContent = await readFile(path.join(this.staticContentPath, "replay", "sw.js"));
-    const uiContent = await readFile(path.join(this.staticContentPath, "replay", "ui.js"));
+  //   const swContent = await readFile(path.join(this.staticContentPath, "replay", "sw.js"));
+  //   const uiContent = await readFile(path.join(this.staticContentPath, "replay", "ui.js"));
 
-    const {car, cid, size} = await ipfsAddWithReplay( 
-      filename, downloadStream,
-      swContent, uiContent
-    );
+  //   const {car, cid, size} = await ipfsAddWithReplay( 
+  //     filename, downloadStream,
+  //     swContent, uiContent
+  //   );
 
-    const resUrls = await this.autoipfs.uploadCAR(car);
-    const url = resUrls[0];
+  //   const resUrls = await this.autoipfs.uploadCAR(car);
+  //   const url = resUrls[0];
 
-    const data = {
-      hash: cid,
-      url,
-      size,
-      ctime: new Date().getTime()
-    };
+  //   const data = {
+  //     hash: cid,
+  //     url,
+  //     size,
+  //     ctime: new Date().getTime()
+  //   };
 
-    console.log("ipfs added: " + url);
+  //   console.log("ipfs added: " + url);
 
-    event.reply(reqId, data);
-  }
+  //   event.reply(reqId, data);
+  // }
 
-  async ipfsUnpin(event, reqId, pinList) {
-    if (pinList && pinList.length) {
-      await this.ipfsClient.initIPFS();
-      await ipfsUnpinAll(this.ipfsClient, pinList);
-    }
+  // async ipfsUnpin(event, reqId, pinList) {
+  //   if (pinList && pinList.length) {
+  //     await this.ipfsClient.initIPFS();
+  //     await ipfsUnpinAll(this.ipfsClient, pinList);
+  //   }
 
-    event.reply(reqId);
-  }
+  //   event.reply(reqId);
+  // }
 }
 
 export { ElectronRecorderApp };

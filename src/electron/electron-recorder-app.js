@@ -1,5 +1,7 @@
 /*eslint-env node */
 
+import fs from "fs";
+import {Readable} from "stream";
 import {app, session, BrowserWindow, ipcMain, dialog } from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
@@ -274,6 +276,30 @@ class ElectronRecorderApp extends ElectronReplayApp
     }
   }
 
+  async doIntercept(request, callback) {
+    const {url, headers} = request;
+    if(url.startsWith("http://localhost:5001") || url.startsWith("http://127.0.0.1:5001")) {
+      delete headers.Referrer;
+      headers.Origin = new URL(url).origin;
+    }
+
+    return super.doIntercept(request, callback);
+  }
+
+  async proxyLive(request, callback) {
+    let headers = request.headers;
+    const {method, url, uploadData} = request;
+
+    const body = uploadData ? Readable.from(readBody(uploadData, session.defaultSession)) : null;
+
+    const response = await fetch(url, {method, headers, body});
+    const data = method === "HEAD" ? null : response.body;
+    const statusCode = response.status;
+
+    headers = Object.fromEntries(response.headers.entries());
+    callback({statusCode, headers, data});
+  }
+
   async ipfsStart(/*validPins*/) {
     // const autoipfs = await initAutoIPFS({web3StorageToken: __WEB3_STORAGE_TOKEN__});
     // this.autoipfs = autoipfs;
@@ -327,5 +353,18 @@ class ElectronRecorderApp extends ElectronReplayApp
   //   event.reply(reqId);
   // }
 }
+
+async function * readBody (body, session) {
+  for (const chunk of body) {
+    if (chunk.bytes) {
+      yield await Promise.resolve(chunk.bytes);
+    } else if (chunk.blobUUID) {
+      yield await session.getBlobData(chunk.blobUUID);
+    } else if (chunk.file) {
+      yield * Readable.from(fs.createReadStream(chunk.file));
+    }
+  }
+}
+
 
 export { ElectronRecorderApp };

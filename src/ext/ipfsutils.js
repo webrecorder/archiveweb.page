@@ -76,7 +76,7 @@ async function ipfsWriteBuff(writer, name, content, dir) {
 }
 
 // ===========================================================================
-async function ipfsAddWithReplay(waczPath, waczContent, swContent, uiContent) {
+export async function ipfsAddWithReplay(waczPath, waczContent, swContent, uiContent) {
   // eslint-disable-next-line no-undef
   const { readable, writable } = new TransformStream(
     {},

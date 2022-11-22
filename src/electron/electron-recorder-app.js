@@ -12,8 +12,10 @@ import fs from "fs";
 import util from "util";
 import { unusedFilenameSync } from "unused-filename";
 
-import { checkPins, ipfsAddWithReplay, ipfsUnpinAll } from "../utils";
+import { checkPins, ipfsUnpinAll } from "../utils";
 
+import { ipfsAddWithReplay } from "../ext/ipfsutils.js";
+import { initAutoIPFS } from "@webrecorder/wabac/src/ipfs";
 
 app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
 
@@ -34,6 +36,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       plugins: true,
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
+      webSecurity: false,
     };
   }
 
@@ -272,7 +275,8 @@ class ElectronRecorderApp extends ElectronReplayApp
   }
 
   async ipfsStart(validPins) {
-    await this.ipfsClient.initIPFS();
+    const autoipfs = await initAutoIPFS({web3StorageToken: __WEB3_STORAGE_TOKEN__});
+    this.autoipfs = autoipfs;
 
     checkPins(this.ipfsClient, validPins);
   }
@@ -294,11 +298,22 @@ class ElectronRecorderApp extends ElectronReplayApp
     const swContent = await readFile(path.join(this.staticContentPath, "replay", "sw.js"));
     const uiContent = await readFile(path.join(this.staticContentPath, "replay", "ui.js"));
 
-    //const data = await ipfsAddPin(this.ipfsClient, filename, downloadStream);
-    const data = await ipfsAddWithReplay(this.ipfsClient, filename, downloadStream,
-      swContent, uiContent);
+    const {car, cid, size} = await ipfsAddWithReplay( 
+      filename, downloadStream,
+      swContent, uiContent
+    );
 
-    console.log("ipfs added: " + data.url);
+    const resUrls = await this.autoipfs.uploadCAR(car);
+    const url = resUrls[0];
+
+    const data = {
+      hash: cid,
+      url,
+      size,
+      ctime: new Date().getTime()
+    };
+
+    console.log("ipfs added: " + url);
 
     event.reply(reqId, data);
   }

@@ -43,7 +43,7 @@ export async function ipfsAdd(coll, downloaderOpts = {}, progress = null) {
 
   const { readable, writable } = new TransformStream(
     {},
-    UnixFS.withCapacity()
+    UnixFS.withCapacity(capacity)
   );
 
   const swContent = await fetchBuffer("sw.js");
@@ -203,7 +203,6 @@ export async function encodeBlocks(blocks, root) {
   // @ts-expect-error
   if (error != null) throw error;
   const roots = root != null ? [root] : [];
-  console.log("chunks", chunks.length);
   return Object.assign(new Blob(chunks), { version: 1, roots });
 }
 

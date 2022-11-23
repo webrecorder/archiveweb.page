@@ -15,7 +15,7 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 import { CollInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
-import { create as createAutoIpfs, DaemonAPI } from "auto-js-ipfs";
+import { create as createAutoIpfs, DaemonAPI, Web3StorageAPI } from "auto-js-ipfs";
 
 
 const GATEWAY_URL = "https://w3s.link/ipfs/";
@@ -23,19 +23,29 @@ const REPLAY_URL = "https://replayweb.page/";
 
 let ipfsChecked = false;
 let ipfsDaemonUrl = null;
+let ipfsMessage = "";
 
 async function checkIPFS() {
   // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
   // if so, send it to the service worker
   if (!ipfsChecked) {
-    const autoipfs = await createAutoIpfs();
+    // eslint-disable-next-line no-undef
+    const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
     if (autoipfs.api instanceof DaemonAPI) {
       ipfsDaemonUrl = autoipfs.api.url;
+    }
+    if (autoipfs.api instanceof Web3StorageAPI) {
+      ipfsMessage = "Sharing via remote web3.storage";
+    } else if (!ipfsDaemonUrl) {
+      ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
+    } else if (ipfsDaemonUrl.startsWith("http://localhost:45")) {
+      ipfsMessage = "Sharing via Brave IPFS node";
+    } else if (ipfsDaemonUrl.startsWith("http://localhost")) {
+      ipfsMessage = "Sharing via local IPFS node";
     }
   }
   ipfsChecked = true;
 }
-
 
 //============================================================================
 class WrRecCollInfo extends CollInfo
@@ -140,8 +150,6 @@ class WrRecCollInfo extends CollInfo
     const coll = this.coll;
     const detailed = this.detailed;
 
-    const ipfsAPI = localStorage.getItem("ipfsLocalURL");
-
     return html`
       <div class="columns">
         <div class="column is-2">
@@ -198,7 +206,7 @@ class WrRecCollInfo extends CollInfo
                   <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
                     <div class="dropdown-content">
                       <div class="dropdown-item">
-                        <i class="is-size-7">${ipfsAPI ? `Sharing via local IPFS on ${ipfsAPI}` : "Sharing via in-browser IPFS"}</i>
+                        <i class="is-size-7">${ipfsMessage}</i>
                       </div>
                       <hr class="dropdown-divider"/>
                       <a @click="${this.onPin}" class="dropdown-item">
@@ -296,9 +304,12 @@ class WrRecCollInfo extends CollInfo
     this.dispatchEvent(new CustomEvent("show-import", {bubbles: true, composed: true, detail: {coll, title}}));
   }
 
-  onShowShareMenu(event) {
+  async onShowShareMenu(event) {
     event.preventDefault();
     event.stopPropagation();
+    if (!ipfsChecked) {
+      await checkIPFS();
+    }
     this.showShareMenu = !this.showShareMenu;
   }
 

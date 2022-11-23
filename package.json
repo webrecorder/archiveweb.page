@@ -109,7 +109,7 @@
       "extraResources": [
         "plugins-mac"
       ],
-      "singleArchFiles": "dist/electron/prebuilds/**/*"
+      "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
     },
     "linux": {
       "category": "Archiving;Utility;",

@@ -271,7 +271,7 @@ class RecWindowUI extends LitElement
 
   onDidNavigateInPage(event) {
     this.url = event.url;
-    
+
     this.canGoBack = event.currentTarget.canGoBack();
     this.canGoForward = event.currentTarget.canGoForward();
   }

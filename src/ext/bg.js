@@ -3,7 +3,6 @@ import { BrowserRecorder } from "./browser-recorder";
 import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 
 import { listAllMsg } from "../utils";
-//import { ipfsAdd, ipfsRemove } from "../sw/ipfsutils";
 
 
 // ===========================================================================
@@ -18,8 +17,6 @@ const openWinMap = new Map();
 const collLoader = new CollectionLoader();
 
 const disabledCSPTabs = new Set();
-
-//let ipfsClient = null;
 
 
 // ===========================================================================
@@ -36,43 +33,8 @@ chrome.runtime.onConnect.addListener((port) => {
   case "popup-port":
     popupHandler(port);
     break;
-
-  //case "share-port":
-  //  shareHandler(port);
-  //  break;
   }
 });
-
-/*
-function shareHandler(port) {
-  let size = 0;
-  let disconnected = false;
-
-  port.onMessage.addListener(async (message) => {
-    function progress(incSize) {
-      size += incSize;
-      if (!disconnected) {
-        port.postMessage({size, progress: true});
-      }
-    }
-
-    let resp;
-
-    if (message.pin) {
-      resp = await ipfsAdd(collLoader, message.collId, progress);
-    }
-
-    if (!disconnected) {
-      port.postMessage(resp);
-      port.disconnect();
-    }
-  });
-
-  port.onDisconnect.addListener(() => {
-    disconnected = true;
-  });
-}
-*/
 
 function popupHandler(port) {
   if (!port.sender || port.sender.url !== chrome.runtime.getURL("popup.html")) {

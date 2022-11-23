@@ -18,7 +18,11 @@ import wrRec from "../../assets/recLogo.svg";
 import { create as createAutoIpfs, DaemonAPI } from "auto-js-ipfs";
 
 
+const GATEWAY_URL = "https://w3s.link/ipfs/";
+const REPLAY_URL = "https://replayweb.page/";
+
 let ipfsChecked = false;
+let ipfsDaemonUrl = null;
 
 async function checkIPFS() {
   // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
@@ -26,7 +30,7 @@ async function checkIPFS() {
   if (!ipfsChecked) {
     const autoipfs = await createAutoIpfs();
     if (autoipfs.api instanceof DaemonAPI) {
-      await fetch(`${apiPrefix}/ipfsDaemonUrl`, {body: JSON.stringify({url: autoipfs.api.url}), method: "POST"});
+      ipfsDaemonUrl = autoipfs.api.url;
     }
   }
   ipfsChecked = true;
@@ -376,25 +380,27 @@ class WrRecCollInfo extends CollInfo
 
     navigator.serviceWorker.addEventListener("message", listener);
 
-    fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {method: "POST"});
+    fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
+      method: "POST",
+      body: JSON.stringify({ipfsDaemonUrl})
+    });
 
     return p;
-
-    // return fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {method: "POST"})
-    // .then((resp) => resp.json())
-    // .then((json) => id = json.id)
-    // .then(p);
   }
 
   async ipfsRemove() {
-    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {method: "DELETE"});
+    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
+      method: "DELETE",
+      body: JSON.stringify({ipfsDaemonUrl})
+    });
+
     return await resp.json();
   }
 
   onCopyRWPLink() {
     const params = new URLSearchParams();
     params.set("source", this.ipfsURL);
-    const url = "https://replayweb.page/?" + params.toString();
+    const url = REPLAY_URL + params.toString();
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);
@@ -402,7 +408,7 @@ class WrRecCollInfo extends CollInfo
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = `https://w3s.link/ipfs/${hash}/`;
+    const url = GATEWAY_URL + hash + "/";
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);

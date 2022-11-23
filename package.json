@@ -11,7 +11,7 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.0.1",
     "@ipld/unixfs": "^2.0.0",
-    "@webrecorder/wabac": "^2.13.8",
+    "@webrecorder/wabac": "github:webrecorder/wabac.js",
     "auto-js-ipfs": "^1.5.1",
     "browsertrix-behaviors": "^0.3.4",
     "btoa": "^1.2.1",

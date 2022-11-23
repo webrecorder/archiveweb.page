@@ -61,32 +61,36 @@ class ExtAPI extends API
       return await this.getPublicKey();
 
     case "ipfsAdd":
-      return await this.startIpfsAdd(event, params.coll);
+      return await this.startIpfsAdd(event, request, params.coll);
 
     case "ipfsRemove":
-      return await this.ipfsRemove(event, params.coll);
+      return await this.ipfsRemove(request, params.coll);
 
-    case "ipfsDaemonUrl":
-      return await this.setAutoIPFSUrl(request);
 
     default:
       return await super.handleApi(request, params);
     }
   }
-
-  async setAutoIPFSUrl(request) {
-    const { url } = await request.json();
-    if (url) {
-      setAutoIPFSUrl(url);
-    }
-    return {};
-  }
-
-  async startIpfsAdd(event, collId) {
+  async prepareColl(collId, request) {
     const coll = await this.collections.loadColl(collId);
     if (!coll) {
       return {error: "collection_not_found"};
     }
+
+    try {
+      const { ipfsDaemonUrl } = await request.json();
+      if (ipfsDaemonUrl) {
+        setAutoIPFSUrl(ipfsDaemonUrl);
+      }
+    } catch (e) {
+      
+    }
+
+    return coll;
+  }
+
+  async startIpfsAdd(event, request, collId) {
+    const coll = await this.prepareColl(collId, request);
 
     //const id = randomId();
     const client = await self.clients.get(event.clientId);
@@ -96,11 +100,8 @@ class ExtAPI extends API
     return {collId};
   }
 
-  async ipfsRemove(event, collId) {
-    const coll = await this.collections.loadColl(collId);
-    if (!coll) {
-      return {error: "collection_not_found"};
-    }
+  async ipfsRemove(request, collId) {
+    const coll = await this.prepareColl(collId, request);
 
     if (await ipfsRemove(coll)) {
       await this.collections.updateMetadata(coll.name, coll.config.metadata);

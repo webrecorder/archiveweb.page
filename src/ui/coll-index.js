@@ -47,7 +47,7 @@ class WrRecCollIndex extends CollIndex
   updated(changedProperties) {
     super.updated(changedProperties);
     
-    if (changedProperties.has("sortedColls")) {
+    if (changedProperties.has("sortedColls") && this.sortedColls && this.sortedColls.length) {
       this.dispatchEvent(new CustomEvent("colls-updated", {detail: {colls: this.sortedColls}}));
     }
   }

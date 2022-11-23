@@ -574,9 +574,18 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = event.currentTarget.value;
   }
 
+  setDefaultColl() {
+    if (!this.selCollId) {
+      this.selCollId = localStorage.getItem("defaultCollId");
+    }
+    if (!this.selCollId && this.colls && this.colls.length) {
+      this.selCollId = this.colls[0].id;
+    }
+  }
+
   _setCurrColl(event) {
     if (!(event instanceof CustomEvent)) {
-      this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
+      this.setDefaultColl();
       return;
     }
     const { detail } = event;
@@ -604,7 +613,8 @@ class ArchiveWebApp extends ReplayWebApp
 
   onCollsLoaded(event) {
     this.colls = event.detail.colls;
-    this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
+    //this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
+    this.setDefaultColl();
   }
 
   onStartRecord(event) {

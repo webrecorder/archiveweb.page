@@ -574,7 +574,12 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = event.currentTarget.value;
   }
 
-  _setCurrColl(detail) {
+  _setCurrColl(event) {
+    if (!(event instanceof CustomEvent)) {
+      this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
+      return;
+    }
+    const { detail } = event;
     this.selCollId = detail.coll;
     //this.selCollTitle = event.detail.title;
     if (!this.colls || !this.colls.length) {
@@ -586,13 +591,13 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   async onShowStart(event) {
-    this._setCurrColl(event.detail);
+    this._setCurrColl(event);
     this.recordUrl = event.detail.url || "https://example.com/";
     this.showStartRecord = true;
   }
 
   onShowImport(event) {
-    this._setCurrColl(event.detail);
+    this._setCurrColl(event);
     this.showImport = true;
     this.isImportExisting = true;
   }

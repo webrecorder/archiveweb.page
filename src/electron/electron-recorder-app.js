@@ -1,6 +1,5 @@
 /*eslint-env node */
 
-import fs from "fs";
 import {Readable} from "stream";
 import {app, session, BrowserWindow, ipcMain, dialog } from "electron";
 import { ElectronRecorder } from "./electron-recorder";
@@ -21,6 +20,8 @@ import { unusedFilenameSync } from "unused-filename";
 
 app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
 
+const IPFS_API_ORIGINS = ["http://localhost:5001", "http://127.0.0.1"];
+
 
 // ===========================================================================
 class ElectronRecorderApp extends ElectronReplayApp
@@ -39,6 +40,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       webSecurity: false,
+      sandbox: false
     };
   }
 
@@ -172,7 +174,7 @@ class ElectronRecorderApp extends ElectronReplayApp
     const recWindow = new BrowserWindow({
       width: this.screenSize.width,
       height: this.screenSize.height,
-      isMaximized: true,
+      //isMaximized: true,
       show: true,
       webPreferences: {
         contextIsolation: true,
@@ -278,7 +280,9 @@ class ElectronRecorderApp extends ElectronReplayApp
 
   async doIntercept(request, callback) {
     const {url, headers} = request;
-    if(url.startsWith("http://localhost:5001") || url.startsWith("http://127.0.0.1:5001")) {
+    const origin = new URL(url).origin;
+
+    if (IPFS_API_ORIGINS.includes(origin)) {
       delete headers.Referrer;
       headers.Origin = new URL(url).origin;
     }
@@ -360,9 +364,10 @@ async function * readBody (body, session) {
       yield await Promise.resolve(chunk.bytes);
     } else if (chunk.blobUUID) {
       yield await session.getBlobData(chunk.blobUUID);
-    } else if (chunk.file) {
-      yield * Readable.from(fs.createReadStream(chunk.file));
     }
+    // } else if (chunk.file) {
+    //   yield * Readable.from(fs.createReadStream(chunk.file));
+    // }
   }
 }
 

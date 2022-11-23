@@ -1,9 +1,9 @@
 import { API } from "@webrecorder/wabac/src/api";
 import { tsToDate } from "@webrecorder/wabac/src/utils";
 
-import { Downloader } from "../downloader";
-import { Signer } from "../keystore";
-import { ipfsAdd, ipfsRemove, setAutoIPFSUrl } from "./ipfsutils";
+import { Downloader } from "./downloader.js";
+import { Signer } from "./keystore.js";
+import { ipfsAdd, ipfsRemove, setAutoIPFSUrl } from "./ipfsutils.js";
 
 // eslint-disable-next-line no-undef
 const DEFAULT_SOFTWARE_STRING = `Webrecorder ArchiveWeb.page ${__AWP_VERSION__}, using warcio.js ${__WARCIO_VERSION__}`;

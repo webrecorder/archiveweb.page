@@ -2,7 +2,7 @@
 
 "use strict";
 
-import { ensureDefaultCollAndIPFS } from "../utils";
+import { ensureDefaultColl, ensureDefaultCollAndIPFS } from "../utils";
 
 import { loader, getDB } from "replaywebpage/src/electron-preload";
 
@@ -173,12 +173,13 @@ ipcRenderer.on("download-progress", async (event, progress) => {
 // ===========================================================================
 async function main()
 {
-  const validPins = await ensureDefaultCollAndIPFS(loader);
+  await ensureDefaultColl(loader);
+//   const validPins = await ensureDefaultCollAndIPFS(loader);
 
-  if (validPins.size) {
-    ipcRenderer.send("start-ipfs", validPins);
-  }
+//   if (validPins.size) {
+//     ipcRenderer.send("start-ipfs", validPins);
+//   }
 }
 
-// ===========================================================================
+// // ===========================================================================
 main();

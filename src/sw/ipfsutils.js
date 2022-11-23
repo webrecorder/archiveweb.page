@@ -1,5 +1,5 @@
 import { initAutoIPFS } from "@webrecorder/wabac/src/ipfs";
-import { Downloader } from "../downloader";
+import { Downloader } from "./downloader.js";
 
 import * as UnixFS from "@ipld/unixfs";
 import { CarWriter } from "@ipld/car";

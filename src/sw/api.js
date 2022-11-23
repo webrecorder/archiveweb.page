@@ -83,7 +83,7 @@ class ExtAPI extends API
         setAutoIPFSUrl(ipfsDaemonUrl);
       }
     } catch (e) {
-      
+      // ignore
     }
 
     return coll;

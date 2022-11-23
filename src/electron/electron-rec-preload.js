@@ -2,7 +2,7 @@
 
 "use strict";
 
-import { ensureDefaultColl, ensureDefaultCollAndIPFS } from "../utils";
+import { ensureDefaultColl } from "../utils";
 
 import { loader, getDB } from "replaywebpage/src/electron-preload";
 

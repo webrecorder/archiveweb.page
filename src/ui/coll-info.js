@@ -31,10 +31,10 @@ async function checkIPFS() {
   if (!ipfsChecked) {
     // eslint-disable-next-line no-undef
     const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
-    if (autoipfs.api instanceof DaemonAPI) {
-      ipfsDaemonUrl = autoipfs.api.url;
+    if (autoipfs instanceof DaemonAPI) {
+      ipfsDaemonUrl = autoipfs.url;
     }
-    if (autoipfs.api instanceof Web3StorageAPI) {
+    if (autoipfs instanceof Web3StorageAPI) {
       ipfsMessage = "Sharing via remote web3.storage";
     } else if (!ipfsDaemonUrl) {
       ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 

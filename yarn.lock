@@ -936,15 +936,16 @@
     stream-browserify "^3.0.0"
     warcio "^1.6.1"
 
-"@webrecorder/wabac@^2.13.9", "@webrecorder/wabac@github:webrecorder/wabac.js":
+"@webrecorder/wabac@^2.13.9":
   version "2.13.9"
-  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/e85b54dd12d502e6bc5f4ad4c062a733f9ae6ac5"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.13.9.tgz#7c01777231386c714a984fadfd55340848bfbfca"
+  integrity sha512-ozaO4fs4XwgbueQkwS+8ghHjhpp/iP3R7dCZJ09BWgowI5hMwjJY0KAKjWbFVDH1RQ4cPkh8KPQWAdI+x2wR2g==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.0"
     "@peculiar/asn1-schema" "^2.3.0"
     "@peculiar/x509" "^1.8.3"
     "@webrecorder/wombat" "^3.3.11"
-    auto-js-ipfs "^1.5.1"
+    auto-js-ipfs "^2.0.0"
     base64-js "^1.5.1"
     brotli "^1.3.3"
     buffer "^6.0.3"

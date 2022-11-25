@@ -18,6 +18,8 @@ import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
 import prettyBytes from "pretty-bytes";
 
+import { create as createAutoIpfs, DaemonAPI, Web3StorageAPI } from "auto-js-ipfs";
+
 
 // eslint-disable-next-line no-undef
 const VERSION = __AWP_VERSION__;
@@ -62,7 +64,9 @@ class ArchiveWebApp extends ReplayWebApp
       loadedCollId: { type: String },
 
       showDownloadProgress: { type: Boolean },
-      download: { type: Object }
+      download: { type: Object },
+
+      ipfsDaemonUrl: { type: String }
     };
   }
 
@@ -78,6 +82,8 @@ class ArchiveWebApp extends ReplayWebApp
       this.inited = true;
       this.sourceUrl = pageParams.get("source") || "";
     }
+
+    this.checkIPFS();
   }
 
   handleMessages() {
@@ -288,6 +294,8 @@ class ArchiveWebApp extends ReplayWebApp
       <wr-rec-coll-index
        dateName="Date Created"
        headerName="Current Web Archives"
+       .ipfsDaemonUrl=${this.ipfsDaemonUrl}
+       .ipfsMessage=${this.ipfsMessage}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
@@ -315,6 +323,8 @@ class ArchiveWebApp extends ReplayWebApp
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
+    .ipfsDaemonUrl=${this.ipfsDaemonUrl}
+    .ipfsMessage=${this.ipfsMessage}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
@@ -653,6 +663,33 @@ class ArchiveWebApp extends ReplayWebApp
         console.warn(e);
       }
     }
+  }
+
+  async checkIPFS() {
+    // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
+    // if so, send it to the service worker
+
+    let ipfsDaemonUrl;
+    let ipfsMessage;
+
+    // eslint-disable-next-line no-undef
+    const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
+    if (autoipfs instanceof DaemonAPI) {
+      ipfsDaemonUrl = autoipfs.url;
+    }
+    if (autoipfs instanceof Web3StorageAPI) {
+      ipfsMessage = "Sharing via remote web3.storage";
+    } else if (!ipfsDaemonUrl) {
+      ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
+    } else if (ipfsDaemonUrl.startsWith("http://localhost:45")) {
+      ipfsMessage = "Sharing via Brave IPFS node";
+    } else if (ipfsDaemonUrl.startsWith("http://localhost")) {
+      ipfsMessage = "Sharing via local IPFS node";
+    } else {
+      ipfsMessage = "";
+    }
+    this.ipfsDaemonUrl = ipfsDaemonUrl;
+    this.ipfsMessage = ipfsMessage;
   }
 }
 

@@ -273,7 +273,14 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     const body = uploadData ? Readable.from(readBody(uploadData, session.defaultSession)) : null;
 
-    const response = await fetch(url, {method, headers, body});
+    let response;
+    try {
+      respose = await fetch(url, {method, headers, body});
+    } catch (e) {
+      console.warn("fetch failed for: " + url);
+      callback({statusCode: 502, headers: {}, data: null});
+      return;
+    }
     const data = method === "HEAD" ? null : response.body;
     const statusCode = response.status;
 

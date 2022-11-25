@@ -669,25 +669,33 @@ class ArchiveWebApp extends ReplayWebApp
     // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
     // if so, send it to the service worker
 
-    let ipfsDaemonUrl;
-    let ipfsMessage;
+    let ipfsDaemonUrl = sessionStorage.getItem("ipfsDaemonUrl");
+    let ipfsMessage = sessionStorage.getItem("ipfsMessage");
 
-    // eslint-disable-next-line no-undef
-    const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
-    if (autoipfs instanceof DaemonAPI) {
-      ipfsDaemonUrl = autoipfs.url;
+    if (ipfsDaemonUrl === null) {
+      // eslint-disable-next-line no-undef
+      const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
+
+      if (autoipfs instanceof DaemonAPI) {
+        ipfsDaemonUrl = autoipfs.url;
+      }
+
+      if (autoipfs instanceof Web3StorageAPI) {
+        ipfsMessage = "Sharing via remote web3.storage";
+      } else if (!ipfsDaemonUrl) {
+        ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
+      } else if (ipfsDaemonUrl.startsWith("http://localhost:45")) {
+        ipfsMessage = "Sharing via Brave IPFS node";
+      } else if (ipfsDaemonUrl.startsWith("http://localhost")) {
+        ipfsMessage = "Sharing via local IPFS node";
+      } else {
+        ipfsMessage = "";
+      }
+
+      sessionStorage.setItem("ipfsDaemonUrl", ipfsDaemonUrl);
+      sessionStorage.setItem("ipfsMessage", ipfsMessage);
     }
-    if (autoipfs instanceof Web3StorageAPI) {
-      ipfsMessage = "Sharing via remote web3.storage";
-    } else if (!ipfsDaemonUrl) {
-      ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
-    } else if (ipfsDaemonUrl.startsWith("http://localhost:45")) {
-      ipfsMessage = "Sharing via Brave IPFS node";
-    } else if (ipfsDaemonUrl.startsWith("http://localhost")) {
-      ipfsMessage = "Sharing via local IPFS node";
-    } else {
-      ipfsMessage = "";
-    }
+
     this.ipfsDaemonUrl = ipfsDaemonUrl;
     this.ipfsMessage = ipfsMessage;
   }

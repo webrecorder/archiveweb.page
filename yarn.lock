@@ -930,14 +930,14 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.6.0.tgz#2c275aa05c895eccebbfc34cfb223c6e8bd591a2"
   integrity sha512-ZkVeqEmRpBV2GHvjjUZqEai2PpUbuq8Bqd//vEYsp63J8WyexI8ppCqVS3Zs0QADf6aWuPdU+0XsPI647PVlQA==
 
-"@webrecorder/awp-sw@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.1.5.tgz#3a2ad1cc1f1ddea5b71826de08e34be1a1c0d5b2"
-  integrity sha512-lqtppThKWETwZVQvLl5Gg/t7fTswYAOjCwpdSnnHK8FCW840m0D8iKMlhf+J/4fmgISaunBWb9fbZuRE9N/R5A==
+"@webrecorder/awp-sw@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.1.7.tgz#a6b7fd065082757d7ca3fa30195c2e80da6f3959"
+  integrity sha512-LnvjYm/kW7TKzt1yK/RDVPNFf5S8qEpFy1l2/SuT5BBGkgdaGcCEUjDZ1C+YUM3ZkaI0dscGOOTjNul6N4K5JQ==
   dependencies:
     "@ipld/car" "^5.0.1"
     "@ipld/unixfs" "^2.0.0"
-    "@webrecorder/wabac" "^2.13.10"
+    "@webrecorder/wabac" "^2.13.14"
     client-zip "^2.3.0"
     hash-wasm "^4.9.0"
     idb "^7.1.1"
@@ -947,39 +947,10 @@
     uuid "^9.0.0"
     warcio "^1.6.1"
 
-"@webrecorder/wabac@^2.13.10":
-  version "2.13.10"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.13.10.tgz#7319cf18ff9198d6d4760aed6d2ad271e2472bfc"
-  integrity sha512-tce4CmMZqPqZH1ZqLbKGb6+2QcdzwZbdMr94PtLcMvkCarXLs7oE2jnHQ3kDDXByDqp4JCS554WviwToACNOaQ==
-  dependencies:
-    "@peculiar/asn1-ecc" "^2.3.0"
-    "@peculiar/asn1-schema" "^2.3.0"
-    "@peculiar/x509" "^1.8.3"
-    "@webrecorder/wombat" "^3.3.11"
-    auto-js-ipfs "^2.0.0"
-    base64-js "^1.5.1"
-    brotli "^1.3.3"
-    buffer "^6.0.3"
-    fast-xml-parser "^3.19.0"
-    format-link-header "^3.1.1"
-    hash-wasm "^4.9.0"
-    http-status-codes "^2.1.4"
-    idb "^7.1.1"
-    js-levenshtein "^1.1.6"
-    js-yaml "^4.1.0"
-    pako "^2.0.4"
-    parse-link-header "^2.0.0"
-    parse5-html-rewriting-stream "^6.0.1"
-    parse5-sax-parser "^6.0.1"
-    path-parser "^6.1.0"
-    process "^0.11.10"
-    stream-browserify "^3.0.0"
-    warcio "^1.6.1"
-
-"@webrecorder/wabac@^2.13.12":
-  version "2.13.12"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.13.12.tgz#54932e0b71df434db3b643e0a502de5ba2af7648"
-  integrity sha512-dQxestvABL/yeJH/HTWlORYxBy2JPBn/XB5Gbb1EeI6SzXz9nLtJ4LasGR/qQojOXLzYwubGkzMX9eKEfDJlAg==
+"@webrecorder/wabac@^2.13.14":
+  version "2.13.14"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.13.14.tgz#b70eabc21d4398587894d6612765ac68e7974feb"
+  integrity sha512-GWsLKGzdi3XeFG/1nQGC25xvYNh8IrJVYmJ3Tn8/QoxivVjr12riBT1D2bVDmtelH4BempIQ9A8vy5Bge5Bxvw==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.0"
     "@peculiar/asn1-schema" "^2.3.0"
@@ -1004,13 +975,6 @@
     process "^0.11.10"
     stream-browserify "^3.0.0"
     warcio "^1.6.1"
-
-"@webrecorder/wombat@^3.3.11":
-  version "3.3.11"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.3.11.tgz#15ec8ac3de8fb2b4c34396d6cc440b3263b560b6"
-  integrity sha512-Vc/EdEwBFNK7Y8CVZyKOP2YGM4zLD9chOJZFgFQsU0LI46tgnsn1I5GCn8iyH5QWTcU8xrDtN93PZDnvRVOgOw==
-  dependencies:
-    warcio "^1.5.1"
 
 "@webrecorder/wombat@^3.3.12":
   version "3.3.12"
@@ -4980,13 +4944,13 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.7.6:
-  version "1.7.6"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.7.6.tgz#7ff2c956e2c1d58fabe52f62100b4197f13681b3"
-  integrity sha512-98a6xCB7JTwKWZuDDZL4UUYEfZQGATq9BM2IjXVeewbew2VSeL28WaL3AkQh559+31OcoE52kWyEEHoOu1wnLA==
+replaywebpage@^1.7.7:
+  version "1.7.7"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.7.7.tgz#be72584948ac31eff047621b5a4836feef5bdb4e"
+  integrity sha512-CeFBzFW0+fhHxWxUVcjavPvhG2YWQYoBP/d9T/U3kY4yG+puFDXydAYOfFRa1XzQX5Ds8OMWN4ISBhJxta/9kw==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
-    "@webrecorder/wabac" "^2.13.12"
+    "@webrecorder/wabac" "^2.13.14"
     auto-js-ipfs "^1.5.1"
     bulma "^0.9.3"
     electron-log "^4.4.1"

@@ -31,7 +31,6 @@ class ElectronRecorderApp extends ElectronReplayApp
       plugins: true,
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-      webSecurity: false,
       sandbox: false
     };
   }

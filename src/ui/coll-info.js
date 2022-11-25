@@ -370,7 +370,11 @@ class WrRecCollInfo extends CollInfo
 
     fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
       method: "POST",
-      body: JSON.stringify({ipfsDaemonUrl: this.ipfsDaemonUrl})
+      body: JSON.stringify({
+        ipfsDaemonUrl: this.ipfsDaemonUrl,
+        gzip: false,
+        customSplits: true
+      })
     });
 
     return p;

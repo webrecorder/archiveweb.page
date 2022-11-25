@@ -1,8 +1,6 @@
 import { SWReplay } from "@webrecorder/wabac/src/swmain";
 
-import { ExtAPI } from "./api";
-
-import { RecordingCollections } from "./recproxy";
+import { ExtAPI, RecordingCollections } from "@webrecorder/awp-sw";
 
 import REC_INDEX_HTML from "../static/replay/index.html";
 import RWP_INDEX_HTML from "replaywebpage/index.html";
@@ -26,11 +24,12 @@ if (self.registration) {
   // for use with <record-web-page> tag
   staticData.set(prefix + "record.html", {type: "text/html", content: REC_INDEX_HTML});
 
-  const useIPFS = false;
   const ApiClass = ExtAPI;
   const CollectionsClass = RecordingCollections;
 
-  self.sw = new SWReplay({ApiClass, useIPFS, staticData, defaultConfig, CollectionsClass});
+  const autoipfsOpts = {};
+
+  self.sw = new SWReplay({ApiClass, staticData, autoipfsOpts, defaultConfig, CollectionsClass});
 } else {
   new WorkerLoader(self);
 }

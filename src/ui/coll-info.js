@@ -15,6 +15,9 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 import { CollInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
+const GATEWAY_URL = "https://w3s.link/ipfs/";
+const REPLAY_URL = "https://replayweb.page/";
+
 
 //============================================================================
 class WrRecCollInfo extends CollInfo
@@ -37,7 +40,9 @@ class WrRecCollInfo extends CollInfo
       shareWait: { type: Boolean },
       showShareMenu: { type: Boolean },
       shareWarn: { type: Boolean },
-      shareProgress: { type: Number }
+      shareProgress: { type: Number },
+      ipfsDaemonUrl: { type: String },
+      ipfsMessage: { type: String }
     };
   }
 
@@ -119,8 +124,6 @@ class WrRecCollInfo extends CollInfo
     const coll = this.coll;
     const detailed = this.detailed;
 
-    const ipfsAPI = localStorage.getItem("ipfsLocalURL");
-
     return html`
       <div class="columns">
         <div class="column is-2">
@@ -159,79 +162,8 @@ class WrRecCollInfo extends CollInfo
           </div>
         </div>
         
-        <div class="column">
-          <p class="minihead">Sharing (via IPFS)</p>
-          <div class="button-row is-flex">
-            ${this.ipfsURL ? html`
+        ${this.ipfsDaemonUrl ? this.renderIPFSSharing() : ""}
 
-              <div class="is-flex is-flex-direction-column">
-                <div class="dropdown is-up ${this.showShareMenu ? "is-active" : ""}">
-                  <div class="dropdown-trigger">
-                    <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? "is-loading" : ""}"" aria-haspopup="true" aria-controls="dropdown-menu">
-                      <span>Sharing!</span>
-                      <span class="icon">
-                        <fa-icon .svg=${fasCaretUp}></fa-icon>
-                      </span>
-                    </button>
-                  </div>
-                  <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
-                    <div class="dropdown-content">
-                      <div class="dropdown-item">
-                        <i class="is-size-7">${ipfsAPI ? `Sharing via local IPFS on ${ipfsAPI}` : "Sharing via in-browser IPFS"}</i>
-                      </div>
-                      <hr class="dropdown-divider"/>
-                      <a @click="${this.onPin}" class="dropdown-item">
-                        <span class="icon is-small">
-                          <fa-icon .svg="${fasReshare}"></fa-icon>
-                        </span>
-                        Reshare Latest
-                      </a>
-                      <hr class="dropdown-divider"/>
-                      <a @click="${this.onCopyIPFSLink}" class="dropdown-item">
-                        <span class="icon is-small">
-                          <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                        </span>
-                        Copy IPFS URL
-                      </a>
-                      <a @click="${this.onCopyGatewayLink}" class="has-text-weight-bold dropdown-item">
-                        <span class="icon is-small">
-                          <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                        </span>
-                        Copy Gateway Link
-                      </a>
-                      <a @click="${this.onCopyRWPLink}" class="dropdown-item">
-                        <span class="icon is-small">
-                          <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                        </span>
-                        Copy Shareable ReplayWeb.page Link
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
-              </div>
-
-              <button class="button is-small" @click="${this.onUnpin}">
-                <span class="icon is-small">
-                  <fa-icon .svg="${fasX}"></fa-icon>
-                </span>
-                <span>Stop Sharing</span>
-              </button>
-
-              `: html`
-            
-              <div class="is-flex is-flex-direction-column">
-                <button class="button is-small ${this.shareWait ? "is-loading" : ""}" @click="${this.onPinOrWarn}">
-                  <span class="icon is-small">
-                    <fa-icon .svg="${fasShare}"></fa-icon>
-                  </span>
-                  <span>Start Sharing</span>
-                </button>
-                <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
-              </div>
-            `}
-          </div>
-        </div>
         ${coll.loadUrl ? html`
         <div class="column is-3">
         <p class="minihead">Imported From</p>
@@ -241,6 +173,85 @@ class WrRecCollInfo extends CollInfo
       </div>
       ${this.shareWarn ? this.renderShareWarn(): ""}
       `;
+  }
+
+  renderIPFSSharing() {
+    const coll = this.coll;
+
+    return html`
+    <div class="column">
+      <p class="minihead">Sharing (via IPFS)</p>
+      <div class="button-row is-flex">
+        ${this.ipfsURL ? html`
+
+          <div class="is-flex is-flex-direction-column">
+            <div class="dropdown is-up ${this.showShareMenu ? "is-active" : ""}">
+              <div class="dropdown-trigger">
+                <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? "is-loading" : ""}"" aria-haspopup="true" aria-controls="dropdown-menu">
+                  <span>Sharing!</span>
+                  <span class="icon">
+                    <fa-icon .svg=${fasCaretUp}></fa-icon>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
+                <div class="dropdown-content">
+                  <div class="dropdown-item">
+                    <i class="is-size-7">${this.ipfsMessage}</i>
+                  </div>
+                  <hr class="dropdown-divider"/>
+                  <a @click="${this.onPin}" class="dropdown-item">
+                    <span class="icon is-small">
+                      <fa-icon .svg="${fasReshare}"></fa-icon>
+                    </span>
+                    Reshare Latest
+                  </a>
+                  <hr class="dropdown-divider"/>
+                  <a @click="${this.onCopyIPFSLink}" class="dropdown-item">
+                    <span class="icon is-small">
+                      <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                    </span>
+                    Copy IPFS URL
+                  </a>
+                  <a @click="${this.onCopyGatewayLink}" class="has-text-weight-bold dropdown-item">
+                    <span class="icon is-small">
+                      <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                    </span>
+                    Copy Gateway Link
+                  </a>
+                  <a @click="${this.onCopyRWPLink}" class="dropdown-item">
+                    <span class="icon is-small">
+                      <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                    </span>
+                    Copy Shareable ReplayWeb.page Link
+                  </a>
+                </div>
+              </div>
+            </div>
+            <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
+          </div>
+
+          <button class="button is-small" @click="${this.onUnpin}">
+            <span class="icon is-small">
+              <fa-icon .svg="${fasX}"></fa-icon>
+            </span>
+            <span>Stop Sharing</span>
+          </button>
+
+          `: html`
+        
+          <div class="is-flex is-flex-direction-column">
+            <button class="button is-small ${this.shareWait ? "is-loading" : ""}" @click="${this.onPinOrWarn}">
+              <span class="icon is-small">
+                <fa-icon .svg="${fasShare}"></fa-icon>
+              </span>
+              <span>Start Sharing</span>
+            </button>
+            <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
+          </div>
+        `}
+      </div>
+    </div>`;
   }
 
   renderShareWarn() {
@@ -275,7 +286,7 @@ class WrRecCollInfo extends CollInfo
     this.dispatchEvent(new CustomEvent("show-import", {bubbles: true, composed: true, detail: {coll, title}}));
   }
 
-  onShowShareMenu(event) {
+  async onShowShareMenu(event) {
     event.preventDefault();
     event.stopPropagation();
     this.showShareMenu = !this.showShareMenu;
@@ -303,68 +314,85 @@ class WrRecCollInfo extends CollInfo
     this.shareWarn = false;
 
     this.shareWait = true;
-    const json = await this.ipfsApi(this.coll.id, true);
+    const { ipfsURL } = await this.ipfsAdd();
 
-    if (json.ipfsURL) {
-      this.ipfsURL = json.ipfsURL;
-    }
+    this.ipfsURL = ipfsURL;
+
     this.onCopyGatewayLink();
     this.shareWait = false;
   }
 
   async onUnpin() {
     this.shareWait = true;
-    const json = await this.ipfsApi(this.coll.id, false);
+    const { removed } = await this.ipfsRemove();
 
-    if (json.removed) {
+    if (removed) {
       this.ipfsURL = null;
     }
     this.shareWait = false;
   }
 
-  ipfsApi(collId, pin) {
+  ipfsAdd() {
     this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: true}}));
 
-    if (window.archivewebpage) {
-      const progressCallback = (message) => {
-        if (message.size) {
-          this.shareProgress = message.size;
-        } else {
-          this.shareProgress = 0;
-          this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: false}}));
-        }
-      };
+    //let id = 0;
+    let pc;
 
-      return (pin ? 
-        window.archivewebpage.ipfsPin(this.coll.id, progressCallback) : 
-        window.archivewebpage.ipfsUnpin(this.coll.id));
-    }
+    const p = new Promise((resolve, reject) => pc = {resolve, reject});
 
-    return new Promise((resolve) => {
-      const port = chrome.runtime.connect({name: "share-port"});
-      port.onMessage.addListener((message) => {
-        if (message.progress) {
-          this.shareProgress = message.size;
-          return;
-        }
+    const listener = (event) => {
+      const { data } = event;
 
+      if (!data || data.collId !== this.coll.id) {
+        return;
+      }
+
+      switch (data.type) {
+      case "ipfsProgress":
+        this.shareProgress = data.size;
+        break;
+
+      case "ipfsAdd":
         this.shareProgress = 0;
+        if (data.result) {
+          pc.resolve(data.result);
+        } else {
+          pc.reject();
+        }
         this.dispatchEvent(new CustomEvent("ipfs-share", {detail: {pending: false}}));
-        resolve(message);
-      });
 
-      port.onDisconnect.addListener(() => {
-        console.log("port disconnected");
-      });
+        navigator.serviceWorker.removeEventListener("message", listener);
+        break;
+      }
+    };
 
-      port.postMessage({collId, pin});
+    navigator.serviceWorker.addEventListener("message", listener);
+
+    fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
+      method: "POST",
+      body: JSON.stringify({
+        ipfsDaemonUrl: this.ipfsDaemonUrl,
+        gzip: false,
+        customSplits: true
+      })
     });
+
+    return p;
+  }
+
+  async ipfsRemove() {
+    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
+      method: "DELETE",
+      body: JSON.stringify({ipfsDaemonUrl: this.ipfsDaemonUrl})
+    });
+
+    return await resp.json();
   }
 
   onCopyRWPLink() {
     const params = new URLSearchParams();
     params.set("source", this.ipfsURL);
-    const url = "https://replayweb.page/?" + params.toString();
+    const url = REPLAY_URL + params.toString();
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);
@@ -372,7 +400,7 @@ class WrRecCollInfo extends CollInfo
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = `https://nftstorage.link/ipfs/${hash}/`;
+    const url = GATEWAY_URL + hash + "/";
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);
@@ -387,7 +415,7 @@ class WrRecCollInfo extends CollInfo
 
   async doDelete() {
     if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
-      await this.ipfsApi(this.coll.id, false);
+      await this.ipfsRemove();
     }
 
     const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {method: "DELETE"});

@@ -4,8 +4,6 @@ import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 
 import { listAllMsg } from "../utils";
 
-import { ExtIPFSClient } from "./ipfs";
-
 
 // ===========================================================================
 self.recorders = {};
@@ -19,8 +17,6 @@ const openWinMap = new Map();
 const collLoader = new CollectionLoader();
 
 const disabledCSPTabs = new Set();
-
-let ipfsClient = null;
 
 
 // ===========================================================================
@@ -37,37 +33,8 @@ chrome.runtime.onConnect.addListener((port) => {
   case "popup-port":
     popupHandler(port);
     break;
-
-  case "share-port":
-    shareHandler(port);
-    break;
   }
 });
-
-function shareHandler(port) {
-  let size = 0;
-  let disconnected = false;
-
-  port.onMessage.addListener(async (message) => {
-    function progress(incSize) {
-      size += incSize;
-      if (!disconnected) {
-        port.postMessage({size, progress: true});
-      }
-    }
-
-    const resp = await ipfsClient.ipfsPinUnpin(message.collId, message.pin, progress);
-    if (!disconnected) {
-      port.postMessage(resp);
-      port.disconnect();
-    }
-  });
-
-  port.onDisconnect.addListener(() => {
-    disconnected = true;
-  });
-}
-
 
 function popupHandler(port) {
   if (!port.sender || port.sender.url !== chrome.runtime.getURL("popup.html")) {
@@ -327,13 +294,13 @@ chrome.runtime.onInstalled.addListener(main);
 
 
 // ===========================================================================
-async function initIpfs() {
-  ipfsClient = new ExtIPFSClient(collLoader);
+// async function initIpfs() {
+//   ipfsClient = new ExtIPFSClient(collLoader);
 
-  ipfsClient.init();
-}
+//   ipfsClient.init();
+// }
 
-initIpfs();
+// initIpfs();
 
 // ===========================================================================
 async function disableCSPForTab(tabId) {

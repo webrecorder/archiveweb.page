@@ -47,7 +47,7 @@ class WrRecCollIndex extends CollIndex
   updated(changedProperties) {
     super.updated(changedProperties);
     
-    if (changedProperties.has("sortedColls")) {
+    if (changedProperties.has("sortedColls") && this.sortedColls && this.sortedColls.length) {
       this.dispatchEvent(new CustomEvent("colls-updated", {detail: {colls: this.sortedColls}}));
     }
   }
@@ -56,14 +56,20 @@ class WrRecCollIndex extends CollIndex
     return {
       ...CollIndex.properties,
 
-      deleteConfirm: { type: Object }
+      deleteConfirm: { type: Object },
+      ipfsDaemonUrl: { type: String },
+      ipfsMessage: { type: String }
     };
   }
 
   renderCollInfo(coll) {
     return html`
     <wr-rec-coll-info
-      style="overflow: visible" data-coll="${coll.id}" .coll=${coll} @ipfs-share="${this.onIpfsShare}">
+      style="overflow: visible" data-coll="${coll.id}"
+      .coll=${coll}
+      .ipfsDaemonUrl=${this.ipfsDaemonUrl}
+      .ipfsMessage=${this.ipfsMessage}
+      @ipfs-share="${this.onIpfsShare}">
     </wr-rec-coll-info>`;
   }
 

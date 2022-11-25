@@ -1,12 +1,10 @@
 
 import { Embed } from "replaywebpage";
-import { setAppName } from "replaywebpage/src/pageutils";
 
 import awpLogo from "../../assets/awp-logo.svg";
 
 // ===========================================================================
 Embed.setDefaultReplayFile("replay.html");
-setAppName("Embeddded ArchiveWeb.page");
 
 
 // ===========================================================================
@@ -18,6 +16,7 @@ class RecordEmbed extends Embed
     this.replaybase = "./replay/";
     this.replayfile = "record.html";
     this.mainElementName = "archive-web-page-app";
+    this.appName = "Embedded ArchiveWeb.page";
     this.embed = "default";
     this.noWebWorker = true;
 

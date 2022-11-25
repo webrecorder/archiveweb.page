@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -9,35 +9,40 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/wabac": "^2.12.5",
+    "@ipld/car": "^5.0.1",
+    "@ipld/unixfs": "^2.0.0",
+    "@webrecorder/awp-sw": "^0.1.5",
+    "@webrecorder/wabac": "^2.13.10",
+    "auto-js-ipfs": "^2.0.0",
     "browsertrix-behaviors": "^0.3.4",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
     "client-zip": "^2.2.2",
     "hash-wasm": "^4.9.0",
     "http-status-codes": "^2.1.4",
-    "ipfs-core": "^0.10.8",
-    "ipfs-http-client": "^52.0.5",
     "keyword-mark-element": "^0.1.2",
+    "multiformats": "^10.0.2",
     "node-fetch": "2.6.7",
+    "p-queue": "^7.3.0",
     "pretty-bytes": "^5.6.0",
     "querystring-es3": "^0.2.1",
-    "replaywebpage": "1.6.5",
+    "replaywebpage": "^1.7.5",
     "stream-browserify": "^3.0.0",
     "unused-filename": "^4.0.1",
     "url": "^0.11.0",
     "uuid": "^8.3.2",
-    "warcio": "^1.5.1"
+    "warcio": "^1.6.1"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
-    "electron": "^18.3.15",
+    "electron": "^21.3.1",
     "electron-builder": "^23.0.3",
     "electron-notarize": "^1.0.0",
+    "eslint": "^8.28.0",
     "generate-json-webpack-plugin": "^2.0.0",
     "mini-css-extract-plugin": "^2.3.0",
-    "node-sass": "^7.0.1",
+    "node-sass": "^8.0.0",
     "raw-loader": "^4.0.2",
     "sass-loader": "^12.1.0",
     "svg-inline-loader": "^0.8.2",
@@ -105,7 +110,7 @@
       "extraResources": [
         "plugins-mac"
       ],
-      "singleArchFiles": "dist/electron/prebuilds/**/*"
+      "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
     },
     "linux": {
       "category": "Archiving;Utility;",

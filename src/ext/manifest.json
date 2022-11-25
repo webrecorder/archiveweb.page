@@ -20,7 +20,6 @@
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-    "ipfs-core.min.js",
     "pdf/*",
     "replay/*",
     "ruffle/*"

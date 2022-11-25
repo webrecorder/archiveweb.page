@@ -16,8 +16,9 @@ import "./recordembed";
 
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
-import { setAppName } from "replaywebpage/src/pageutils";
 import prettyBytes from "pretty-bytes";
+
+import { create as createAutoIpfs, DaemonAPI, Web3StorageAPI } from "auto-js-ipfs";
 
 
 // eslint-disable-next-line no-undef
@@ -34,8 +35,6 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.autorun = localStorage.getItem("autorunBehaviors") === "1";
-
-    setAppName(this.appName);
 
     if (window.archivewebpage) {
       window.archivewebpage.setDownloadCallback((progress) => this.onDownloadProgress(progress));
@@ -65,7 +64,9 @@ class ArchiveWebApp extends ReplayWebApp
       loadedCollId: { type: String },
 
       showDownloadProgress: { type: Boolean },
-      download: { type: Object }
+      download: { type: Object },
+
+      ipfsDaemonUrl: { type: String }
     };
   }
 
@@ -81,6 +82,8 @@ class ArchiveWebApp extends ReplayWebApp
       this.inited = true;
       this.sourceUrl = pageParams.get("source") || "";
     }
+
+    this.checkIPFS();
   }
 
   handleMessages() {
@@ -291,6 +294,8 @@ class ArchiveWebApp extends ReplayWebApp
       <wr-rec-coll-index
        dateName="Date Created"
        headerName="Current Web Archives"
+       .ipfsDaemonUrl=${this.ipfsDaemonUrl}
+       .ipfsMessage=${this.ipfsMessage}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
@@ -318,6 +323,8 @@ class ArchiveWebApp extends ReplayWebApp
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
+    .ipfsDaemonUrl=${this.ipfsDaemonUrl}
+    .ipfsMessage=${this.ipfsMessage}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
@@ -577,7 +584,21 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = event.currentTarget.value;
   }
 
-  _setCurrColl(detail) {
+  setDefaultColl() {
+    if (!this.selCollId) {
+      this.selCollId = localStorage.getItem("defaultCollId");
+    }
+    if (!this.selCollId && this.colls && this.colls.length) {
+      this.selCollId = this.colls[0].id;
+    }
+  }
+
+  _setCurrColl(event) {
+    if (!(event instanceof CustomEvent)) {
+      this.setDefaultColl();
+      return;
+    }
+    const { detail } = event;
     this.selCollId = detail.coll;
     //this.selCollTitle = event.detail.title;
     if (!this.colls || !this.colls.length) {
@@ -589,20 +610,21 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   async onShowStart(event) {
-    this._setCurrColl(event.detail);
+    this._setCurrColl(event);
     this.recordUrl = event.detail.url || "https://example.com/";
     this.showStartRecord = true;
   }
 
   onShowImport(event) {
-    this._setCurrColl(event.detail);
+    this._setCurrColl(event);
     this.showImport = true;
     this.isImportExisting = true;
   }
 
   onCollsLoaded(event) {
     this.colls = event.detail.colls;
-    this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
+    //this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
+    this.setDefaultColl();
   }
 
   onStartRecord(event) {
@@ -641,6 +663,33 @@ class ArchiveWebApp extends ReplayWebApp
         console.warn(e);
       }
     }
+  }
+
+  async checkIPFS() {
+    // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
+    // if so, send it to the service worker
+
+    let ipfsDaemonUrl;
+    let ipfsMessage;
+
+    // eslint-disable-next-line no-undef
+    const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
+    if (autoipfs instanceof DaemonAPI) {
+      ipfsDaemonUrl = autoipfs.url;
+    }
+    if (autoipfs instanceof Web3StorageAPI) {
+      ipfsMessage = "Sharing via remote web3.storage";
+    } else if (!ipfsDaemonUrl) {
+      ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
+    } else if (ipfsDaemonUrl.startsWith("http://localhost:45")) {
+      ipfsMessage = "Sharing via Brave IPFS node";
+    } else if (ipfsDaemonUrl.startsWith("http://localhost")) {
+      ipfsMessage = "Sharing via local IPFS node";
+    } else {
+      ipfsMessage = "";
+    }
+    this.ipfsDaemonUrl = ipfsDaemonUrl;
+    this.ipfsMessage = ipfsMessage;
   }
 }
 

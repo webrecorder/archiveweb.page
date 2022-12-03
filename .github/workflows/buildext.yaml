@@ -1,6 +1,9 @@
 name: Build Extension Zip
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   release:
@@ -22,17 +25,19 @@ jobs:
       - name: Yarn Build
         run: yarn run build
 
-      - name: Create ZIP for Extension
-        run: |
-          cd dist/ext
-          zip ../ext.zip -r ./
-
       - name: Get Package Version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main
 
+      - name: Create ZIP for Extension
+        run: |
+          cd dist/ext
+          zip ../../ArchiveWeb.page-${{ steps.package-version.outputs.current-version }}-extension.zip -r ./
+
       - name: Upload Extension ZIP
-        uses: actions/upload-artifact@v3
+        uses: softprops/action-gh-release@v1
         with:
-          name: archivewebpage-ext-${{ steps.package-version.outputs.current-version}}.zip
-          path: dist/ext.zip
+          files: ArchiveWeb.page-${{ steps.package-version.outputs.current-version }}-extension.zip
+          tag_name: v${{ steps.package-version.outputs.current-version }}
+          fail_on_unmatched_files: true
+          draft: true

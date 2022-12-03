@@ -1,0 +1,38 @@
+name: Build Extension Zip
+
+on: push
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
+
+      - name: Yarn Build
+        run: yarn run build
+
+      - name: Create ZIP for Extension
+        run: |
+          cd dist/ext
+          zip ../ext.zip -r ./
+
+      - name: Get Package Version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+
+      - name: Upload Extension ZIP
+        uses: actions/upload-artifact@v3
+        with:
+          name: archivewebpage-ext-${{ steps.package-version.outputs.current-version}}.zip
+          path: dist/ext.zip

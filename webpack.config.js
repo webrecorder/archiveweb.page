@@ -7,8 +7,6 @@ const GenerateJsonPlugin = require("generate-json-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
-const APP_FILE_SERVE_PREFIX = "http://files.archiveweb.page/";
-
 const AWP_PACKAGE = require("./package.json");
 const RWP_PACKAGE = require("./node_modules/replaywebpage/package.json");
 const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
@@ -22,7 +20,6 @@ const defaultDefines = {
   __VERSION__: JSON.stringify(RWP_PACKAGE.version),
   __WARCIO_VERSION__: JSON.stringify(WARCIO_PACKAGE.version),
   __SW_NAME__: JSON.stringify("sw.js"),
-  __APP_FILE_SERVE_PREFIX__ : JSON.stringify(APP_FILE_SERVE_PREFIX),
   __WEB3_STORAGE_TOKEN__: JSON.stringify(""),
 };
 

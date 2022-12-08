@@ -1,6 +1,5 @@
 /*eslint-env node */
 
-import {Readable} from "stream";
 import {app, session, BrowserWindow, ipcMain, dialog } from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
@@ -11,8 +10,6 @@ import path from "path";
 import { unusedFilenameSync } from "unused-filename";
 
 app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
-
-const IPFS_API_ORIGINS = ["http://localhost:5001", "http://127.0.0.1"];
 
 
 // ===========================================================================
@@ -37,14 +34,6 @@ class ElectronRecorderApp extends ElectronReplayApp
 
   onAppReady() {
     const sesh = session.defaultSession;
-
-    const ua = sesh.getUserAgent();
-    const desktopUA = ua.replace(/ Electron[^\s]+/, "");
-
-    sesh.setUserAgent(desktopUA);
-
-    app.userAgentFallback = desktopUA;
-    this.userAgent = desktopUA;
 
     ipcMain.on("start-rec", (event, opts) => {
       this.createRecordWindow(opts);
@@ -96,6 +85,10 @@ class ElectronRecorderApp extends ElectronReplayApp
     });
 
     super.onAppReady();
+
+    this.userAgent = this.origUA.replace(/ Electron[^\s]+/, "");
+
+    app.userAgentFallback = this.userAgent;
   }
 
   get mainWindowUrl() {
@@ -253,52 +246,6 @@ class ElectronRecorderApp extends ElectronReplayApp
     } catch (e) {
       console.warn("Load Failed", e);
     }
-  }
-
-  async doIntercept(request, callback) {
-    const {url, headers} = request;
-    const origin = new URL(url).origin;
-
-    if (IPFS_API_ORIGINS.includes(origin)) {
-      delete headers.Referrer;
-      headers.Origin = new URL(url).origin;
-    }
-
-    return super.doIntercept(request, callback);
-  }
-
-  async proxyLive(request, callback) {
-    let headers = request.headers;
-    const {method, url, uploadData} = request;
-
-    const body = uploadData ? Readable.from(readBody(uploadData, session.defaultSession)) : null;
-
-    let response;
-    try {
-      respose = await fetch(url, {method, headers, body});
-    } catch (e) {
-      console.warn("fetch failed for: " + url);
-      callback({statusCode: 502, headers: {}, data: null});
-      return;
-    }
-    const data = method === "HEAD" ? null : response.body;
-    const statusCode = response.status;
-
-    headers = Object.fromEntries(response.headers.entries());
-    callback({statusCode, headers, data});
-  }
-}
-
-async function * readBody (body, session) {
-  for (const chunk of body) {
-    if (chunk.bytes) {
-      yield await Promise.resolve(chunk.bytes);
-    } else if (chunk.blobUUID) {
-      yield await session.getBlobData(chunk.blobUUID);
-    }
-    // } else if (chunk.file) {
-    //   yield * Readable.from(fs.createReadStream(chunk.file));
-    // }
   }
 }
 

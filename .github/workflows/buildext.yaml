@@ -22,6 +22,9 @@ jobs:
       - name: Yarn Install
         run: yarn install --frozen-lockfile
 
+      - name: Yarn Lint
+        run: yarn run lint
+
       - name: Yarn Build
         run: yarn run build
 
@@ -34,10 +37,21 @@ jobs:
           cd dist/ext
           zip ../../ArchiveWeb.page-${{ steps.package-version.outputs.current-version }}-extension.zip -r ./
 
-      - name: Upload Extension ZIP
+      - name: Upload Extension ZIP to GitHub
         uses: softprops/action-gh-release@v1
         with:
           files: ArchiveWeb.page-${{ steps.package-version.outputs.current-version }}-extension.zip
           tag_name: v${{ steps.package-version.outputs.current-version }}
           fail_on_unmatched_files: true
           draft: true
+
+      - name: Upload Extension ZIP to Chrome Web Store
+        uses: mnao305/chrome-extension-upload@3.0.0
+        with:
+          file-path: ArchiveWeb.page-${{ steps.package-version.outputs.current-version }}-extension.zip
+          extension-id: fpeoodllldobpkbkabpblcfaogecpndd
+          client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
+          publish: false
+          glob: false

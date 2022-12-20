@@ -46,12 +46,13 @@ const moduleSettings =  {
   ]
 };
 
-
+/*
 const fallback = {
   "stream": require.resolve("stream-browserify"),
   "querystring": require.resolve("querystring-es3"),
   "url": require.resolve("url/")
 };
+*/
 
 const optimization = {
   minimize: true,
@@ -72,6 +73,7 @@ const electronMainConfig = (/*env, argv*/) => {
       "electron": "./src/electron/electron-rec-main.js",
     },
     optimization,
+/*
     resolve: {
       alias: {
         "abort-controller": "abort-controller/dist/abort-controller.js",
@@ -80,6 +82,7 @@ const electronMainConfig = (/*env, argv*/) => {
         //"multiformats/hashes/sha2": "multiformats/cjs/src/hashes/sha2.js"
       }
     },
+*/
     output: {
       path: DIST_ELECTRON,
       filename: "[name].js"
@@ -97,10 +100,12 @@ const electronMainConfig = (/*env, argv*/) => {
         ],
       }),
     ],
+/*
     externals: {
       "bufferutil": "bufferutil",
       "utf-8-validate": "utf-8-validate",
     },
+*/
     module: moduleSettings,
   };
 };
@@ -141,7 +146,7 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
       ...entry
     },
     optimization,
-    resolve: {fallback},
+    //resolve: {fallback},
     output: {
       path: outputPath,
       filename: (chunkData) => {
@@ -163,6 +168,18 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
       globalObject: "self"
     },
     plugins: [
+      new webpack.NormalModuleReplacementPlugin(
+          /^node:*/,
+          (resource) => {
+            switch (resource.request) {
+              case "node:stream":
+                resource.request = "stream-browserify";
+                break;
+            }
+          },
+      ),
+
+
       new webpack.ProvidePlugin({
         process: "process/browser.js",
         Buffer: ["buffer", "Buffer"],

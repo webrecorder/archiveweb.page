@@ -11,7 +11,7 @@ if (self.registration) {
   const defaultConfig = {
     injectScripts: ["/ruffle/ruffle.js"],
     baseUrlSourcePrefix: "/replay/index.html",
-    //convertPostToGet: true
+    convertPostToGet: true
   };
 
   const staticData = new Map();

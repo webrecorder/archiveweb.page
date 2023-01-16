@@ -4,6 +4,8 @@ import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 
 import { listAllMsg } from "../utils";
 
+import { getLocalOption, removeLocalOption, setLocalOption } from "../localstorage";
+
 
 // ===========================================================================
 self.recorders = {};
@@ -11,6 +13,9 @@ self.newRecId = null;
 
 let newRecUrl = null;
 let newRecCollId = null;
+
+let defaultCollId = null;
+let autorun = false;
 
 const openWinMap = new Map();
 
@@ -70,7 +75,8 @@ function popupHandler(port) {
 
     case "newColl":
       collLoader.initNewColl({title: message.title}).then(async (newColl) => {
-        localStorage.setItem("defaultCollId", newColl.name);
+        defaultCollId = newColl.name;
+        await setLocalOption("defaultCollId", defaultCollId);
         port.postMessage(await listAllMsg(collLoader));
       });
       break;
@@ -108,7 +114,7 @@ chrome.tabs.onCreated.addListener((tab) => {
   if (newRecUrl && tab.pendingUrl === "about:blank") {
     start = true;
     openUrl = newRecUrl;
-    collId = newRecCollId || localStorage.getItem("defaultCollId");
+    collId = newRecCollId || defaultCollId;
     newRecUrl = null;
     newRecCollId = null;
   } else if (tab.openerTabId && (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
@@ -126,7 +132,6 @@ chrome.tabs.onCreated.addListener((tab) => {
     if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    const autorun = isAutoRunBehaviors();
     startRecorder(tab.id, {waitForTabUpdate, collId, openUrl, autorun}, openUrl);
   }
 });
@@ -159,7 +164,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (!tabId || !isValidUrl(changeInfo.url)) {
       return;
     }
-    const autorun = isAutoRunBehaviors();
     startRecorder(tabId, {collId, autorun}, changeInfo.url);
   }
 });
@@ -167,7 +171,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 // ===========================================================================
 chrome.tabs.onRemoved.addListener((tabId) => {
   delete self.recorders[tabId];
-  localStorage.removeItem(`${tabId}-collId`);
+  removeLocalOption(`${tabId}-collId`);
 });
 
 // ===========================================================================
@@ -246,40 +250,13 @@ function isValidUrl(url) {
 }
 
 // ===========================================================================
-function isAutoRunBehaviors() {
-  return localStorage.getItem("autorunBehaviors") === "1";
-}
-
-// ===========================================================================
-/*
-async function stopAll() {
-  for (const tabId of Object.keys(self.recorders)) {
-    if (self.recorders[tabId].running) {
-      await self.recorders[tabId].detach();
-    }
-  }
-}
-
-
-// ===========================================================================
-async function stopForPage(pageId) {
-  for (const tabId of Object.keys(self.recorders)) {
-    if (self.recorders[tabId].running && self.recorders[tabId].pageInfo.id === pageId) {
-      await self.recorders[tabId].detach();
-      return true;
-    }
-  }
-
-  return false;
-}
-*/
-
-// ===========================================================================
 chrome.runtime.onMessage.addListener(async (message, /*sender, sendResponse*/) => {
   switch (message.msg) {
   case "startNew":
     newRecUrl = message.url;
     newRecCollId = message.collId;
+    autorun = message.autorun;
+    defaultCollId = await getLocalOption("defaultCollId");
     chrome.tabs.create({url: "about:blank"});
     break;
 
@@ -288,19 +265,6 @@ chrome.runtime.onMessage.addListener(async (message, /*sender, sendResponse*/) =
     break;
   }
 });
-
-// ===========================================================================
-chrome.runtime.onInstalled.addListener(main);
-
-
-// ===========================================================================
-// async function initIpfs() {
-//   ipfsClient = new ExtIPFSClient(collLoader);
-
-//   ipfsClient.init();
-// }
-
-// initIpfs();
 
 // ===========================================================================
 async function disableCSPForTab(tabId) {
@@ -329,3 +293,6 @@ async function disableCSPForTab(tabId) {
     chrome.debugger.detach({tabId}, () => { resolve();});
   });
 }
+
+// ===========================================================================
+chrome.runtime.onInstalled.addListener(main);

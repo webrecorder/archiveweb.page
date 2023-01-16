@@ -1,6 +1,7 @@
 "use strict";
 
 import { BEHAVIOR_RUNNING } from "../consts";
+import { getLocalOption } from "../localstorage";
 import { Recorder }  from "../recorder";
 
 
@@ -31,7 +32,8 @@ class BrowserRecorder extends Recorder {
 
     this.port = port;
 
-    this.recordStorage = !!self.localStorage["recordStorage"];
+    this.recordStorage = false;
+    getLocalOption("recordStorage").then((res) => this.recordStorage = !!res);
 
     this._onDetached = (tab, reason) => {
       if (tab && this.tabId !== tab.tabId) {

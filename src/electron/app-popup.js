@@ -3,6 +3,7 @@ import { RecPopup } from "../popup";
 
 import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 import { listAllMsg } from "../utils";
+import { setLocalOption } from "../localstorage";
 
 
 // ===========================================================================
@@ -62,7 +63,7 @@ class AppRecPopup extends RecPopup
   async makeNewColl(message) {
     const newColl = await this.collLoader.initNewColl({title: message.title});
 
-    localStorage.setItem("defaultCollId", newColl.name);
+    await setLocalOption("defaultCollId", newColl.name);
 
     const respMsg = await listAllMsg(this.collLoader);
 

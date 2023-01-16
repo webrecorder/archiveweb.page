@@ -128,6 +128,16 @@
     multiformats "^10.0.2"
     varint "^6.0.0"
 
+"@ipld/car@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@ipld/car/-/car-5.0.3.tgz#9c82961aaa4ffa2d941f79fd243f8bb9e8e9dd13"
+  integrity sha512-omPSY65OSVmlFGJDn2xbd75o71GNHmgP5u2dQ5fITc0X/QqJZVfZi95NCs8oa1wWhjkaK3RTswRSg2iNqFUSAg==
+  dependencies:
+    "@ipld/dag-cbor" "^9.0.0"
+    cborg "^1.9.0"
+    multiformats "^11.0.0"
+    varint "^6.0.0"
+
 "@ipld/dag-cbor@^8.0.0":
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/@ipld/dag-cbor/-/dag-cbor-8.0.0.tgz#92ab1deac7cee9c9277a42a1a362a6447b3d3280"
@@ -135,6 +145,14 @@
   dependencies:
     cborg "^1.6.0"
     multiformats "^10.0.2"
+
+"@ipld/dag-cbor@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@ipld/dag-cbor/-/dag-cbor-9.0.0.tgz#51902f7d19ce2203b04e4cfe0514936b82d09d91"
+  integrity sha512-zdsiSiYDEOIDW7mmWOYWC9gukjXO+F8wqxz/LfN7iSwTfIyipC8+UQrCbPupFMRb/33XQTZk8yl3My8vUQBRoA==
+  dependencies:
+    cborg "^1.10.0"
+    multiformats "^11.0.0"
 
 "@ipld/dag-pb@^2.1.18":
   version "2.1.18"
@@ -937,14 +955,14 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.6.0.tgz#2c275aa05c895eccebbfc34cfb223c6e8bd591a2"
   integrity sha512-ZkVeqEmRpBV2GHvjjUZqEai2PpUbuq8Bqd//vEYsp63J8WyexI8ppCqVS3Zs0QADf6aWuPdU+0XsPI647PVlQA==
 
-"@webrecorder/awp-sw@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.2.0.tgz#8040ddc7277d50c76f11d64e15708d31a1588a31"
-  integrity sha512-sPaxKhcRI+ZToRVe/5jRAMoLLU6EjhdE6oEylHrqqpNJ6DLXv64YfLUxmnQCX7wo7BqFPmNvPhzEKSWrqcOIjQ==
+"@webrecorder/awp-sw@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.2.1.tgz#edd73c76251f9b7b62e95a46c33a2dd2e0d78e42"
+  integrity sha512-xqVDUNsSH4dvYHDEvL3ZA+b1CMzZWbahzS1XOrPDyRaetpSa2qs9ETiit9Il9p+t6t3HzI8mU3EPEdUBpxR+TA==
   dependencies:
-    "@ipld/car" "^5.0.1"
+    "@ipld/car" "^5.0.3"
     "@ipld/unixfs" "^2.0.0"
-    "@webrecorder/wabac" "^2.14.1"
+    "@webrecorder/wabac" "^2.15.0"
     client-zip "^2.3.0"
     hash-wasm "^4.9.0"
     idb "^7.1.1"
@@ -952,15 +970,15 @@
     uuid "^9.0.0"
     warcio "^2.0.1"
 
-"@webrecorder/wabac@^2.14.0":
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.14.0.tgz#b2fe5adcaefcdf3731a9e05cc11bbb2c63ae59c0"
-  integrity sha512-KAO4n4sY1HtKeW98Gy88UlHlpy86x2D6b+KdKvhnHkwkwN/0IKOBUipYN7/45u7v5QRZyJf5CYI9mXZhrvUaUw==
+"@webrecorder/wabac@^2.15.0":
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.15.0.tgz#fcbf2dbe3783a790d2c2e2cf40508650880385aa"
+  integrity sha512-4l88C76/UyvgiNtoV2lYoo4WuB2jtTDd7wyl7NcNHXpqA9XRc7h6p0fEurDTyMMX5JK8viRQ4ebuIC+SFQMoRQ==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.4.2"
+    "@webrecorder/wombat" "^3.4.3"
     auto-js-ipfs "^2.1.0"
     base64-js "^1.5.1"
     brotli "^1.3.3"
@@ -980,38 +998,10 @@
     stream-browserify "^3.0.0"
     warcio "^2.0.1"
 
-"@webrecorder/wabac@^2.14.1":
-  version "2.14.1"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.14.1.tgz#dd7c92e4c5892cc6d865a3cb568b8f16eb6d9761"
-  integrity sha512-fADNPmUlqtwQA7jsomKjyTwMqjx6Le5YYLsyxHPVU1HzEIxzEh+7v0dazz3LYSjnPzlbjsG4jbB/jMlJtXncwg==
-  dependencies:
-    "@peculiar/asn1-ecc" "^2.3.4"
-    "@peculiar/asn1-schema" "^2.3.3"
-    "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.4.2"
-    auto-js-ipfs "^2.1.0"
-    base64-js "^1.5.1"
-    brotli "^1.3.3"
-    buffer "^6.0.3"
-    fast-xml-parser "^3.19.0"
-    hash-wasm "^4.9.0"
-    http-link-header "^1.1.0"
-    http-status-codes "^2.1.4"
-    idb "^7.1.1"
-    js-levenshtein "^1.1.6"
-    js-yaml "^4.1.0"
-    pako "^1.0.11"
-    parse5-html-rewriting-stream "^7.0.0"
-    parse5-sax-parser "^7.0.0"
-    path-parser "^6.1.0"
-    process "^0.11.10"
-    stream-browserify "^3.0.0"
-    warcio "^2.0.1"
-
-"@webrecorder/wombat@^3.4.2":
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.4.2.tgz#fc7e6562af9c75e3a8c7b6c25bd8b36b4aef2f68"
-  integrity sha512-VAUavWeWC/KrU2DAy0CSxPm+eAzn5o9tTD04CadobqXExl0Wipbko3TWmLLXp5YdW7skPDu3b7U5MygB93C61g==
+"@webrecorder/wombat@^3.4.3":
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.4.3.tgz#d32c4a848d6fa3dc886ad9d9e7ee39f3909d3fb7"
+  integrity sha512-3cKSqyui1AK2PnKqNjPt+eJTBl3GWRsfTIzwaettUwr631nzJBvWv/gGnu0gP6rgvIe6YcqmEfWE/dUVhji9Mg==
   dependencies:
     warcio "^2.0.1"
 
@@ -1449,10 +1439,10 @@ browserslist@^4.14.5:
     node-releases "^2.0.1"
     picocolors "^1.0.0"
 
-browsertrix-behaviors@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.3.4.tgz#00415730beb07f647378029c99cbc408439dffe9"
-  integrity sha512-R+7bHi9pmxB/Jy1E8yw4sq7/QUHK+J9Q7BdkueVI+aKs87YGI1qZ4+oOzjyhJiODa+yQXlZV99p18KNXjr4VLQ==
+browsertrix-behaviors@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.4.0.tgz#99dac331f7318d134ba7e05b9feaa8e9d13e1ff4"
+  integrity sha512-dTdWIuE7WiHKJMLcK7UP9HJck2ZXdhnkCs5QKSioTLr+OqfhnfLz7K5ARteVQXvSvPkNUeOBNiKdesp0TRtQog==
 
 btoa@^1.2.1:
   version "1.2.1"
@@ -1677,6 +1667,11 @@ caniuse-lite@^1.0.30001280:
   version "1.0.30001284"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001284.tgz#d3653929ded898cd0c1f09a56fd8ca6952df4fca"
   integrity sha512-t28SKa7g6kiIQi6NHeOcKrOrGMzCRrXvlasPwWC26TH2QNdglgzQIRUuJ0cR3NeQPH+5jpuveeeSFDLm2zbkEw==
+
+cborg@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/cborg/-/cborg-1.10.0.tgz#0fe157961dd47b537ccb84dc9ba681de8b699013"
+  integrity sha512-/eM0JCaL99HDHxjySNQJLaolZFVdl6VA0/hEKIoiQPcQzE5LrG5QHdml0HaBt31brgB9dNe1zMr3f8IVrpotRQ==
 
 cborg@^1.6.0, cborg@^1.9.0:
   version "1.9.6"
@@ -4246,6 +4241,11 @@ multiformats@^10.0.0, multiformats@^10.0.2:
   resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-10.0.2.tgz#e549ae833dac77edb534bece4adf1d1a214879f0"
   integrity sha512-nJEHLFOYhO4L+aNApHhCnWqa31FyqAHv9Q77AhmwU3KsM2f1j7tuJpCk5ByZ33smzycNCpSG5klNIejIyfFx2A==
 
+multiformats@^11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-11.0.0.tgz#728dd8adfe4b169cd5b4b22d9dc1054d48bbe2d0"
+  integrity sha512-vqF8bmMtbxw9Zn3eTpk0OZQdBVmAT/+bTGwXb3C2qCNkp45aJMmkCDds3lrtObECWPf+KFjFtTOHkvCaT/c/xQ==
+
 multiformats@^9.5.4:
   version "9.9.0"
   resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-9.9.0.tgz#c68354e7d21037a8f1f8833c8ccd68618e8f1d37"
@@ -5016,13 +5016,13 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.7.9:
-  version "1.7.9"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.7.9.tgz#b5623ab29249058e3907fd450ecfebf906cca279"
-  integrity sha512-ubwiU9Yyf7mIUdKIY8K/ARVaEgq5EjI1tN8jIqN+Nd1sNqVvmt1fslyQYzU7h3xMDWnEIgf/bxbyLeww4sN95Q==
+replaywebpage@^1.7.11:
+  version "1.7.11"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.7.11.tgz#d7efaea1a4c9aa5c23fdfa9b903a337da19b2457"
+  integrity sha512-I0xxlWXCS5astZJk2I5JMmj6y3xnpsQjr3QPhfaTvDjLrVeZvYFQnmIHzLVoVJP7J15OMUPx8bVjqKf9HI8UGQ==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
-    "@webrecorder/wabac" "^2.14.0"
+    "@webrecorder/wabac" "^2.15.0"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^5.3.0"

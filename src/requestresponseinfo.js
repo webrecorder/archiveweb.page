@@ -137,7 +137,7 @@ class RequestResponseInfo
   toDBRecord(payload, pageInfo) {
     // don't save 304 (todo: turn into 'revisit' style entry?)
     // extra check for 206, should already be skipped
-    if (this.method === "OPTIONS" || this.status == 304 || this.status === 206) {
+    if (this.method === "OPTIONS" || this.method === "HEAD" || this.status == 304 || this.status === 206) {
       return null;
     }
 

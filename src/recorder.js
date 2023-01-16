@@ -884,7 +884,7 @@ class Recorder {
       method = headers[":method"];
     }
 
-    if (method === "OPTIONS") {
+    if (method === "OPTIONS" || method === "HEAD") {
       return true;
     }
 

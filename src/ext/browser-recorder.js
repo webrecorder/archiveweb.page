@@ -7,8 +7,6 @@ import { Recorder }  from "../recorder";
 // ===========================================================================
 const DEBUG = false;
 
-const hasInfoBar = (self.chrome && self.chrome.braveWebrecorder != undefined);
-
 const IS_AGREGORE = navigator.userAgent.includes("agregore-browser");
 
 
@@ -24,6 +22,7 @@ class BrowserRecorder extends Recorder {
     this.tabId = debuggee.tabId;
     this.openWinMap = openWinMap;
     this.autorun = autorun;
+    this.isAttached = false;
 
     this.flatMode = IS_AGREGORE;
 
@@ -38,6 +37,8 @@ class BrowserRecorder extends Recorder {
       if (tab && this.tabId !== tab.tabId) {
         return;
       }
+
+      this.isAttached = false;
 
       if (reason === "target_closed") {
         this.tabId = 0;
@@ -79,11 +80,26 @@ class BrowserRecorder extends Recorder {
   }
 
   _doDetach() {
+    let numOtherRecorders = 0;
+    for (const rec of Object.values(self.recorders)) {
+      if (rec.tabId !== this.tabId && rec.running) {
+        numOtherRecorders++;
+      }
+    }
+
+    if (numOtherRecorders > 0) {
+      console.log(`closing session, not detaching, ${numOtherRecorders} other recording tab(s) left`);
+      return this.sessionClose([]);
+    } else {
+      console.log("detaching debugger, already tabs stopped");
+    }
+
     return new Promise((resolve) => {
       chrome.debugger.detach(this.debuggee, () => {
         if (chrome.runtime.lastError) {
           console.warn(chrome.runtime.lastError.message);
         }
+        this.isAttached = false;
         resolve();
       });
     });
@@ -92,7 +108,9 @@ class BrowserRecorder extends Recorder {
   _doStop() {
     //chrome.tabs.sendMessage(this.tabId, {"msg": "stopRecord"});
 
-    chrome.debugger.onDetach.removeListener(this._onDetached);
+    if (!this.isAttached) {
+      chrome.debugger.onDetach.removeListener(this._onDetached);
+    }
     chrome.debugger.onEvent.removeListener(this._onEvent);
 
     if (this.db) {
@@ -105,27 +123,16 @@ class BrowserRecorder extends Recorder {
       return;
     }
 
-    if (hasInfoBar) {
-      chrome.braveWebrecorder.onCanceled.removeListener(this._onCanceled);
-
-      chrome.braveWebrecorder.hideInfoBar(this.tabId);
-    }
-
     this.doUpdateStatus();
   }
 
   async _doAttach() {
     this.waitForTabUpdate = false;
 
-    chrome.debugger.onDetach.addListener(this._onDetached);
-
-    chrome.debugger.onEvent.addListener(this._onEvent);
-
-    if (hasInfoBar) {
-      chrome.braveWebrecorder.onCanceled.addListener(this._onCanceled);
-
-      chrome.braveWebrecorder.showInfoBar(this.tabId);
+    if (!this.isAttached) {
+      chrome.debugger.onDetach.addListener(this._onDetached);
     }
+    chrome.debugger.onEvent.addListener(this._onEvent);
 
     const coll = await this._initDB;
     if (!coll) {
@@ -135,14 +142,17 @@ class BrowserRecorder extends Recorder {
     this.db = coll.store;
 
     try {
-      await new Promise((resolve, reject) => {
-        chrome.debugger.attach(this.debuggee, "1.3", async () => {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError.message);
-          }
-          resolve();
+      if (!this.isAttached) {
+        await new Promise((resolve, reject) => {
+          chrome.debugger.attach(this.debuggee, "1.3", async () => {
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError.message);
+            }
+            this.isAttached = true;
+            resolve();
+          });
         });
-      });
+      }
 
       await this.start();
       this.failureMsg = null;

@@ -422,6 +422,28 @@ class Recorder {
     }
   }
 
+  async sessionClose(sessions = []) {
+    await this.send("Page.disable");
+    await this.send("Runtime.disable");
+    await this.send("DOMSnapshot.disable");
+
+    await this.send("Debugger.disable");
+
+    await this.send("Network.disable", null, sessions);
+
+    await this.send("Fetch.disable", null, sessions);
+
+    try {
+      await this.send("Media.disable", null, sessions);
+    } catch(e) {
+      // ignore
+    }
+
+    await this.send("Target.setAutoAttach", {autoAttach: false, waitForDebuggerOnStart: false});
+
+    await this.send("Network.setBypassServiceWorker", {bypass: false}, sessions);
+  }
+
   pendingReqResp(requestId, reuseOnly = false) {
     if (!this.pendingRequests[requestId]) {
       if (reuseOnly || !requestId) {

@@ -16,6 +16,8 @@ import wrRec from "../assets/recLogo.svg";
 
 import prettyBytes from "pretty-bytes";
 
+import { getLocalOption, removeLocalOption, setLocalOption } from "./localstorage";
+
 import {
   BEHAVIOR_WAIT_LOAD,
   BEHAVIOR_READY_START,
@@ -59,7 +61,7 @@ class RecPopup extends LitElement
     this.waitingForStop = false;
     this.behaviorState = BEHAVIOR_WAIT_LOAD;
     this.behaviorMsg = "";
-    this.autorun = localStorage.getItem("autorunBehaviors") === "1";
+    this.autorun = false;
   }
 
   static get properties() {
@@ -87,12 +89,14 @@ class RecPopup extends LitElement
     };
   }
 
-  firstUpdated() {
+  async firstUpdated() {
     document.addEventListener("click", () => {
       if (this.collDrop === "show") {
         this.collDrop = "";
       }
     });
+
+    this.autorun = await getLocalOption("autorunBehaviors") === "1";
 
     this.registerMessages();
   }
@@ -121,7 +125,7 @@ class RecPopup extends LitElement
     this.port.postMessage(message);
   }
 
-  onMessage(message) {
+  async onMessage(message) {
     switch (message.type) {
     case "status":
       this.recording = message.recording;
@@ -146,13 +150,13 @@ class RecPopup extends LitElement
       if (this.collId !== message.collId) {
         this.collId = message.collId;
         this.collTitle = this.findTitleFor(this.collId);
-        localStorage.setItem(`${this.tabId}-collId`, this.collId);
+        await setLocalOption(`${this.tabId}-collId`, this.collId);
       }
       break;
 
     case "collections":
       this.collections = message.collections;
-      this.collId = localStorage.getItem(`${this.tabId}-collId`);
+      this.collId = await getLocalOption(`${this.tabId}-collId`);
       this.collTitle = "";
       if (this.collId) {
         this.collTitle = this.findTitleFor(this.collId);
@@ -435,7 +439,7 @@ class RecPopup extends LitElement
     return html`
       <div class="field">
         <label class="checkbox is-size-7">
-          <input type="checkbox" ?disabled="${this.recording}" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
+          <input type="checkbox" ?disabled="${this.recording}" ?checked="${this.autorun}" @change="${this.onToggleAutoRun}">
         Start With Autopilot
         </label>
       </div>
@@ -585,7 +589,6 @@ class RecPopup extends LitElement
 
   onStart() {
     this.sendMessage({type: "startRecording", collId: this.collId, url: this.pageUrl, autorun: this.autorun});
-    localStorage.setItem("autorunBehaviors", this.autorun ? "1" : "0");
     this.waitingForStart = true;
     this.waitingForStop = false;
   }
@@ -596,12 +599,18 @@ class RecPopup extends LitElement
     this.waitingForStop = true;
   }
 
-  onSelectColl(event) {
+  async onToggleAutoRun(event) {
+    this.autorun = event.currentTarget.checked;
+    await setLocalOption("autorunBehaviors", this.autorun ? "1" : "0");
+  }
+
+  async onSelectColl(event) {
     this.collId = event.currentTarget.getAttribute("data-id");
     this.collTitle = event.currentTarget.getAttribute("data-title");
     this.collDrop = "";
 
-    localStorage.setItem(`${this.tabId}-collId`, this.collId);
+    await setLocalOption(`${this.tabId}-collId`, this.collId);
+    await setLocalOption("defaultCollId", this.collId);
   }
 
   onBehaviorToggle() {
@@ -614,8 +623,8 @@ class RecPopup extends LitElement
     event.preventDefault();
   }
 
-  onNewColl() {
-    localStorage.removeItem(`${this.tabId}-collId`);
+  async onNewColl() {
+    await removeLocalOption(`${this.tabId}-collId`);
 
     this.sendMessage({
       tabId: this.tabId,

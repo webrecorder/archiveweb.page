@@ -19,6 +19,7 @@ import wrLogo from "../../assets/awp-logo.svg";
 import prettyBytes from "pretty-bytes";
 
 import { create as createAutoIpfs, DaemonAPI, Web3StorageAPI } from "auto-js-ipfs";
+import { getLocalOption, setLocalOption } from "../localstorage";
 
 
 // eslint-disable-next-line no-undef
@@ -34,7 +35,8 @@ class ArchiveWebApp extends ReplayWebApp
     this.navMenuShown = false;
     this.showCollDrop = false;
     this.colls = [];
-    this.autorun = localStorage.getItem("autorunBehaviors") === "1";
+    this.autorun = false;
+    getLocalOption("autorunBehaviors").then((res) => this.autorun = res === "1");
 
     if (window.archivewebpage) {
       window.archivewebpage.setDownloadCallback((progress) => this.onDownloadProgress(progress));
@@ -584,12 +586,17 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = event.currentTarget.value;
   }
 
-  setDefaultColl() {
+  async setDefaultColl() {
     if (!this.selCollId) {
-      this.selCollId = localStorage.getItem("defaultCollId");
+      this.selCollId = await getLocalOption("defaultCollId");
     }
     if (!this.selCollId && this.colls && this.colls.length) {
       this.selCollId = this.colls[0].id;
+    }
+    // copy from localStorage to chrome.storage
+    if (self.chrome && self.chrome.storage && self.chrome.storage.local && self.localStorage) {
+      await setLocalOption("index:sortKey", localStorage.getItem("index:sortKey"));
+      await setLocalOption("index:sortDesc", localStorage.getItem("index:sortDesc"));
     }
   }
 
@@ -627,16 +634,20 @@ class ArchiveWebApp extends ReplayWebApp
     this.setDefaultColl();
   }
 
-  onStartRecord(event) {
+  async onStartRecord(event) {
     event.preventDefault();
     const url = this.renderRoot.querySelector("#url").value;
+
+    const previewCheckbox = this.renderRoot.querySelector("#preview");
+    const isPreview = previewCheckbox && previewCheckbox.checked;
     
     this.showStartRecord = false;
     const autorun = this.autorun;
 
     const collId = this.selCollId;
 
-    localStorage.setItem("autorunBehaviors", autorun ? "1" : "0");
+    await setLocalOption("defaultCollId", collId);
+    await setLocalOption("autorunBehaviors", autorun ? "1" : "0");
 
     if (self.chrome && self.chrome.runtime) {
       chrome.runtime.sendMessage({
@@ -646,8 +657,7 @@ class ArchiveWebApp extends ReplayWebApp
         autorun,
       });
     } else if (window.archivewebpage && window.archivewebpage.record) {
-      const previewCheckbox = this.renderRoot.querySelector("#preview");
-      const startRec = !(previewCheckbox && previewCheckbox.checked);
+      const startRec = !isPreview;
       window.archivewebpage.record({url, collId, startRec, autorun});
     }
     return false;

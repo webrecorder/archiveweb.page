@@ -73,13 +73,13 @@ function popupHandler(port) {
       toggleBehaviors(tabId);
       break;
 
-    case "newColl":
-      collLoader.initNewColl({title: message.title}).then(async (newColl) => {
-        defaultCollId = newColl.name;
-        await setLocalOption("defaultCollId", defaultCollId);
-        port.postMessage(await listAllMsg(collLoader));
-      });
+    case "newColl": {
+      const { name } = await collLoader.initNewColl({title: message.title});
+      defaultCollId = name;
+      port.postMessage(await listAllMsg(collLoader, {defaultCollId}));
+      await setLocalOption("defaultCollId", defaultCollId);
       break;
+    }
     }
   });
 

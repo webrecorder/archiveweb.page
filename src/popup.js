@@ -623,15 +623,15 @@ class RecPopup extends LitElement
     event.preventDefault();
   }
 
-  async onNewColl() {
-    await removeLocalOption(`${this.tabId}-collId`);
+  onNewColl() {
+    const title = this.renderRoot.querySelector("#new-name").value;
 
     this.sendMessage({
       tabId: this.tabId,
       type: "newColl",
-      title: this.renderRoot.querySelector("#new-name").value
+      title
     });
-
+    removeLocalOption(`${this.tabId}-collId`);
     this.collDrop = "";
   }
 }

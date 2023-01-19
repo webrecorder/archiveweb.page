@@ -31,7 +31,7 @@ export async function ensureDefaultColl(collLoader)
 }
 
 // ===========================================================================
-export async function listAllMsg(collLoader) {
+export async function listAllMsg(collLoader, {defaultCollId = null} = {}) {
   let colls = await ensureDefaultColl(collLoader);
 
   colls = colls.map(x => getCollData(x));
@@ -49,7 +49,7 @@ export async function listAllMsg(collLoader) {
   });
 
   const msg = {type: "collections"};
-  msg.collId = await getLocalOption("defaultCollId");
+  msg.collId = defaultCollId || await getLocalOption("defaultCollId");
   msg.collections = colls.map(coll => ({
     id: coll.id,
     title: coll.title || coll.filename

@@ -108,7 +108,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
 
 
 // ===========================================================================
-function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}, flat = false} = {}) {
+function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}} = {}) {
   if (copy.length) {
     plugins.push(new CopyPlugin({patterns: copy}));
   }
@@ -125,21 +125,7 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
     //resolve: {fallback},
     output: {
       path: outputPath,
-      filename: (chunkData) => {
-        const name = "[name].js";
-        const replayName = "./replay/" + name;
-
-        switch (chunkData.chunk.name) {
-        case "ui":
-          return flat ? name : replayName;
-
-        case "sw":
-          return replayName;
-
-        default:
-          return name;
-        }
-      },
+      filename: "[name].js",
       libraryTarget: "global",
       globalObject: "self"
     },

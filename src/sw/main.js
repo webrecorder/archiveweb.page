@@ -2,7 +2,7 @@ import { SWReplay } from "@webrecorder/wabac/src/swmain";
 
 import { ExtAPI, RecordingCollections } from "@webrecorder/awp-sw";
 
-import REC_INDEX_HTML from "../static/replay/index.html";
+import REC_INDEX_HTML from "../static/index.html";
 import RWP_INDEX_HTML from "replaywebpage/index.html";
 
 import { WorkerLoader } from "@webrecorder/wabac/src/loaders";
@@ -10,7 +10,7 @@ import { WorkerLoader } from "@webrecorder/wabac/src/loaders";
 if (self.registration) {
   const defaultConfig = {
     injectScripts: ["/ruffle/ruffle.js"],
-    baseUrlSourcePrefix: "/replay/index.html",
+    baseUrlSourcePrefix: "/index.html",
     convertPostToGet: true
   };
 

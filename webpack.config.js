@@ -11,7 +11,7 @@ const AWP_PACKAGE = require("./package.json");
 const RWP_PACKAGE = require("./node_modules/replaywebpage/package.json");
 const WARCIO_PACKAGE = require("./node_modules/warcio/package.json");
 
-const BANNER = "[name].js is part of the Webrecorder Extension (https://replayweb.page) Copyright (C) 2020-2021, Webrecorder Software. Licensed under the Affero General Public License v3.";
+const BANNER = `[name].js is part of the Webrecorder ArchiveWeb.page (https://archiveweb.page) Copyright (C) 2020-${new Date().getFullYear()}, Webrecorder Software. Licensed under the Affero General Public License v3.`;
 
 const manifest = require("./src/ext/manifest.json");
 

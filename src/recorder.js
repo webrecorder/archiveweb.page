@@ -626,7 +626,7 @@ class Recorder {
 
   handleWindowOpen(url, sessions) {
     const headers = {"Referer": this.pageInfo.url};
-    this.doAsyncFetch({url, headers}, sessions);
+    this.doAsyncFetch({url, headers, redirectOnly: true}, sessions);
   }
 
   isPagePDF() {
@@ -1217,6 +1217,23 @@ class Recorder {
     }
   }
 
+  async attemptFetchRedirect(request, resp) {
+    if (request.redirectOnly && resp.type === "opaqueredirect") {
+      const abort = new AbortController();
+      resp = await fetch(request.url, {abort});
+      abort.abort();
+
+      if (resp.redirected) {
+        console.warn(`Adding synthetic redirect ${request.url} -> ${resp.url}`);
+        return Response.redirect(resp.url, 302);
+      }
+    }
+
+    console.warn(`async fetch error ${resp.status}, opaque due to redirect, retrying in browser`);
+    await this.doAsyncFetchInBrowser(request, request.sessions, true);
+    return null;
+  }
+
   async doAsyncFetchInBrowser(request, sessions) {
     this._fetchUrls.add(request.url);
 
@@ -1283,9 +1300,10 @@ class Recorder {
 
       let resp = await fetch(request.url, opts);
       if (resp.status === 0) {
-        console.warn(`async fetch error ${resp.status}, opaque due to redirect, retrying in browser`);
-        await this.doAsyncFetchInBrowser(request, request.sessions, true);
-        return;
+        resp = await this.attemptFetchRedirect(request, resp);
+        if (!resp) {
+          return;
+        }
       } else if (resp.status >= 400) {
         console.warn(`async fetch error ${resp.status}, retrying without headers`);
         resp = await fetch(request.url, this.defaultFetchOpts);

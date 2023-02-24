@@ -970,6 +970,20 @@
     uuid "^9.0.0"
     warcio "^2.0.1"
 
+"@webrecorder/awp-sw@github:webrecorder/awp-sw#add-x-proxy-host":
+  version "0.2.1"
+  resolved "https://codeload.github.com/webrecorder/awp-sw/tar.gz/9f83a0c170de5e26733b10843985fbb63c322392"
+  dependencies:
+    "@ipld/car" "^5.0.3"
+    "@ipld/unixfs" "^2.0.0"
+    "@webrecorder/wabac" "github:webrecorder/wabac.js#add-x-proxy-host"
+    client-zip "^2.3.0"
+    hash-wasm "^4.9.0"
+    idb "^7.1.1"
+    p-queue "^7.3.0"
+    uuid "^9.0.0"
+    warcio "^2.0.1"
+
 "@webrecorder/wabac@^2.15.0":
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.15.0.tgz#fcbf2dbe3783a790d2c2e2cf40508650880385aa"

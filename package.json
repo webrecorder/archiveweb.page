@@ -11,7 +11,7 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.0.1",
     "@ipld/unixfs": "^2.0.0",
-    "@webrecorder/awp-sw": "^0.2.1",
+    "@webrecorder/awp-sw": "github:webrecorder/awp-sw#add-x-proxy-host",
     "@webrecorder/wabac": "github:webrecorder/wabac.js#add-x-proxy-host",
     "auto-js-ipfs": "^2.1.0",
     "browsertrix-behaviors": "^0.4.1",

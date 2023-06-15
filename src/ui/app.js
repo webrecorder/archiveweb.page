@@ -7,7 +7,7 @@ import fasHelp from "@fortawesome/fontawesome-free/svgs/solid/question-circle.sv
 import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
 
 import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
-//import fasCog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg";
+import fasCog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg";
 
 import "./coll";
 import "./coll-info";
@@ -25,6 +25,8 @@ import { getLocalOption, setLocalOption } from "../localstorage";
 // eslint-disable-next-line no-undef
 const VERSION = __AWP_VERSION__;
 
+const DEFAULT_GATEWAY_URL = "https://w3s.link/ipfs/";
+
 
 //============================================================================
 class ArchiveWebApp extends ReplayWebApp
@@ -36,6 +38,12 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.autorun = false;
+
+    this.ipfsDaemonUrl = localStorage.getItem("ipfsDaemonUrl") || "";
+    this.ipfsUseCustom = localStorage.getItem("ipfsUseCustom") === "1";
+    this.ipfsMessage = localStorage.getItem("ipfsMessage") || "";
+    this.ipfsGatewayUrl = localStorage.getItem("ipfsGatewayUrl") || DEFAULT_GATEWAY_URL;
+
     getLocalOption("autorunBehaviors").then((res) => this.autorun = res === "1");
 
     if (window.archivewebpage) {
@@ -68,7 +76,11 @@ class ArchiveWebApp extends ReplayWebApp
       showDownloadProgress: { type: Boolean },
       download: { type: Object },
 
-      ipfsDaemonUrl: { type: String }
+      ipfsDaemonUrl: { type: String },
+      ipfsGatewayUrl: { type: String },
+      ipfsMessage: { type: String },
+
+      showSettings: {type: Boolean }
     };
   }
 
@@ -85,7 +97,9 @@ class ArchiveWebApp extends ReplayWebApp
       this.sourceUrl = pageParams.get("source") || "";
     }
 
-    this.checkIPFS();
+    if (!this.embed) {
+      this.checkIPFS();
+    }
   }
 
   handleMessages() {
@@ -217,8 +231,13 @@ class ArchiveWebApp extends ReplayWebApp
       }
 
       .infomsg {
-        margin-left: auto;
         max-width: 300px;
+        padding-right: 8px;
+      }
+
+      .rightbar {
+        margin-left: auto;
+        display: flex;
       }
 
       .dl-progress {
@@ -287,7 +306,12 @@ class ArchiveWebApp extends ReplayWebApp
                 </span>
                 <span class="is-hidden-mobile">Start Recording...</span>
               </button>
-              <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to create web archives directly in your browser!</div>
+              <div class="rightbar">
+                <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to create web archives directly in your browser!</div>
+                <button class="button is-small" @click="${() => this.showSettings = true}">
+                  <fa-icon .svg=${fasCog}></fa-icon>
+                </button>
+              </div>
             </div>
           </div>
         </div> 
@@ -298,6 +322,7 @@ class ArchiveWebApp extends ReplayWebApp
        headerName="Current Web Archives"
        .ipfsDaemonUrl=${this.ipfsDaemonUrl}
        .ipfsMessage=${this.ipfsMessage}
+       .ipfsGatewayUrl=${this.ipfsGatewayUrl}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
@@ -313,6 +338,7 @@ class ArchiveWebApp extends ReplayWebApp
     ${this.showNew ? this.renderNewCollModal() : ""}
     ${this.showImport ? this.renderImportModal() : ""}
     ${this.showDownloadProgress && this.download ? this.renderDownloadModal() : ""}
+    ${this.showSettings ? this.renderSettingsModal() : ""}
     ${super.render()}`;
   }
 
@@ -327,6 +353,7 @@ class ArchiveWebApp extends ReplayWebApp
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
     .ipfsDaemonUrl=${this.ipfsDaemonUrl}
     .ipfsMessage=${this.ipfsMessage}
+    .ipfsGatewayUrl=${this.ipfsGatewayUrl}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
@@ -562,6 +589,36 @@ class ArchiveWebApp extends ReplayWebApp
       </div>`;
   }
 
+  renderSettingsModal() {
+    return html`
+    <wr-modal @modal-closed="${() => this.showSettings = false}" title="Settings">
+      <form class="is-flex is-flex-direction-column" @submit="${this.onStartRecord}">
+        <div class="field has-addons">
+          <p class="control is-expanded">
+            IPFS Daemon URL (leave blank to auto-detect IPFS):
+            <input class="input" type="url"
+            name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsDaemonUrl}"
+            placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS"
+            @change=${this.onSetIPFSDaemonUrl}>
+          </p>
+        </div>
+        <div class="field has-addons">
+          <p class="control is-expanded">
+            IPFS Gateway URL:
+            <input class="input" type="url"
+            name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsGatewayUrl}"
+            placeholder="${DEFAULT_GATEWAY_URL}"
+            @change=${this.onSetIPFSGatewayUrl}>
+          </p>
+        </div>
+        <div class="has-text-centered">
+          <a class="button is-warning" href="#" @click="${() => this.showSettings = false}">Close</a>
+        </div>
+      </form>
+    </wr-modal>
+    `;
+  }
+
   async onNewColl(event) {
     this.showNew = "loading";
     event.preventDefault();
@@ -675,39 +732,64 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
+  async onSetIPFSDaemonUrl(event) {
+    const ipfsDaemonUrl = event.currentTarget.value;
+
+    //const method = "POST";
+
+    //const body = JSON.stringify({ipfsDaemonUrl});
+
+    //const resp = await fetch(`${apiPrefix}/ipfs/daemonUrl`, {method, body});
+
+    this.ipfsDaemonUrl = ipfsDaemonUrl;
+    this.ipfsUseCustom = !!ipfsDaemonUrl;
+
+    localStorage.setItem("ipfsDaemonUrl", ipfsDaemonUrl);
+    localStorage.setItem("ipfsUseCustom", this.ipfsUseCustom ? "1" : "0");
+
+    await this.checkIPFS();
+  }
+
+  async onSetIPFSGatewayUrl(event) {
+    const ipfsGatewayUrl = event.currentTarget.value;
+    this.ipfsGatewayUrl = ipfsGatewayUrl;
+    localStorage.setItem("ipfsGatewayUrl", ipfsGatewayUrl);
+  }
+
   async checkIPFS() {
     // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
     // if so, send it to the service worker
+    if (this.ipfsUseCustom && this.ipfsDaemonUrl) {
+      this.ipfsMessage = "IPFS Access -- Custom IPFS Daemon";
+      return;
+    }
 
-    let ipfsDaemonUrl = sessionStorage.getItem("ipfsDaemonUrl");
-    let ipfsMessage = sessionStorage.getItem("ipfsMessage");
-
-    if (ipfsDaemonUrl === null) {
+    if (!this.ipfsDaemonUrl || this.ipfsDaemonUrl === "null") {
       // eslint-disable-next-line no-undef
       const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
 
       if (autoipfs instanceof DaemonAPI) {
-        ipfsDaemonUrl = autoipfs.url;
+        this.ipfsDaemonUrl = autoipfs.url;
+        localStorage.setItem("ipfsDaemonUrl", this.ipfsDaemonUrl);
       }
+
+      this.ipfsUseCustom = false;
+      localStorage.setItem("ipfsUseCustom", "0");
 
       if (autoipfs instanceof Web3StorageAPI) {
-        ipfsMessage = "Sharing via remote web3.storage";
-      } else if (!ipfsDaemonUrl) {
-        ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
-      } else if (ipfsDaemonUrl.startsWith("http://localhost:45")) {
-        ipfsMessage = "Sharing via Brave IPFS node";
-      } else if (ipfsDaemonUrl.startsWith("http://localhost")) {
-        ipfsMessage = "Sharing via local IPFS node";
+        this.ipfsMessage = "Sharing via remote web3.storage";
+      } else if (!this.ipfsDaemonUrl) {
+        this. ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
+      } else if (this.ipfsDaemonUrl.startsWith("http://localhost:45")) {
+        this.ipfsMessage = "Sharing via Brave IPFS node";
+      } else if (this.ipfsDaemonUrl.startsWith("http://localhost")) {
+        this.ipfsMessage = "Sharing via local IPFS node";
       } else {
-        ipfsMessage = "";
+        this.ipfsMessage = "";
       }
 
-      sessionStorage.setItem("ipfsDaemonUrl", ipfsDaemonUrl);
-      sessionStorage.setItem("ipfsMessage", ipfsMessage);
+      localStorage.setItem("ipfsMessage", this.ipfsMessage);
     }
-
-    this.ipfsDaemonUrl = ipfsDaemonUrl;
-    this.ipfsMessage = ipfsMessage;
   }
 }
 

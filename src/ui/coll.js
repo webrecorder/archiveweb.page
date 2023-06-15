@@ -23,7 +23,8 @@ class WrRecColl extends Coll
 
       totalSize: { type: Number },
       ipfsDaemonUrl: { type: String },
-      ipfsMessage: { type: String }
+      ipfsMessage: { type: String },
+      ipfsGatewayUrl: { type: String }
     };
   }
 
@@ -125,6 +126,7 @@ class WrRecColl extends Coll
       .coll="${this.collInfo}"
       .ipfsDaemonUrl=${this.ipfsDaemonUrl}
       .ipfsMessage=${this.ipfsMessage}
+      .ipfsGateway=${this.ipfsGatewayUrl}
       ?detailed="${true}"
       ></wr-rec-coll-info>
     </div>`;

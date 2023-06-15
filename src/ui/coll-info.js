@@ -15,7 +15,6 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 import { CollInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
-const GATEWAY_URL = "https://w3s.link/ipfs/";
 const REPLAY_URL = "https://replayweb.page/";
 
 
@@ -42,7 +41,8 @@ class WrRecCollInfo extends CollInfo
       shareWarn: { type: Boolean },
       shareProgress: { type: Number },
       ipfsDaemonUrl: { type: String },
-      ipfsMessage: { type: String }
+      ipfsMessage: { type: String },
+      ipfsGatewayUrl: { type: String }
     };
   }
 
@@ -373,7 +373,7 @@ class WrRecCollInfo extends CollInfo
       body: JSON.stringify({
         ipfsDaemonUrl: this.ipfsDaemonUrl,
         gzip: false,
-        customSplits: true
+        customSplits: true,
       })
     });
 
@@ -400,7 +400,7 @@ class WrRecCollInfo extends CollInfo
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = GATEWAY_URL + hash + "/";
+    const url = this.ipfsGatewayUrl + hash + "/";
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);

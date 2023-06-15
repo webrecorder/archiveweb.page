@@ -28,7 +28,8 @@ class WrRecCollInfo extends CollInfo
     this.shareWait = false;
     this.showShareMenu = false;
     this.shareWarn = false;
-    this.shareProgress = 0;
+    this.shareProgressSize = 0;
+    this.shareProgressTotalSize = 0;
   }
 
   static get properties() {
@@ -39,7 +40,8 @@ class WrRecCollInfo extends CollInfo
       shareWait: { type: Boolean },
       showShareMenu: { type: Boolean },
       shareWarn: { type: Boolean },
-      shareProgress: { type: Number },
+      shareProgressSize: { type: Number },
+      shareProgressTotalSize: { type: Number },
       ipfsDaemonUrl: { type: String },
       ipfsMessage: { type: String },
       ipfsGatewayUrl: { type: String }
@@ -228,7 +230,7 @@ class WrRecCollInfo extends CollInfo
                 </div>
               </div>
             </div>
-            <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
+            <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
           </div>
 
           <button class="button is-small" @click="${this.onUnpin}">
@@ -247,7 +249,7 @@ class WrRecCollInfo extends CollInfo
               </span>
               <span>Start Sharing</span>
             </button>
-            <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
+            <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
           </div>
         `}
       </div>
@@ -349,11 +351,13 @@ class WrRecCollInfo extends CollInfo
 
       switch (data.type) {
       case "ipfsProgress":
-        this.shareProgress = data.size;
+        this.shareProgressSize = data.size;
+        this.shareProgressTotalSize = data.totalSize || this.coll.size;
         break;
 
       case "ipfsAdd":
-        this.shareProgress = 0;
+        this.shareProgressSize = 0;
+        this.shareProgressTotalSize = 0;
         if (data.result) {
           pc.resolve(data.result);
         } else {

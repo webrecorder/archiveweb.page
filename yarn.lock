@@ -954,14 +954,15 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.6.0.tgz#2c275aa05c895eccebbfc34cfb223c6e8bd591a2"
   integrity sha512-ZkVeqEmRpBV2GHvjjUZqEai2PpUbuq8Bqd//vEYsp63J8WyexI8ppCqVS3Zs0QADf6aWuPdU+0XsPI647PVlQA==
 
-"@webrecorder/awp-sw@github:webrecorder/awp-sw":
+"@webrecorder/awp-sw@^0.3.0":
   version "0.3.0"
-  resolved "https://codeload.github.com/webrecorder/awp-sw/tar.gz/567ea8297ab9dee9460ecec98961c726ae8cb93d"
+  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.3.0.tgz#481a5ef2ca2b1050dd4237fd0c5a89905079e132"
+  integrity sha512-zNyEsYNy9Fy3lHaJd56yeNXVT5W989WofIMymVtJZTQy+IODaHRP/FbtDC4Qql3gdoE6k/wRxQ6xfggn+JotIg==
   dependencies:
     "@ipld/car" "^5.1.1"
     "@ipld/unixfs" "^2.1.1"
     "@webrecorder/wabac" "^2.16.1"
-    auto-js-ipfs "^2.2.0"
+    auto-js-ipfs "^2.3.0"
     client-zip "^2.3.0"
     hash-wasm "^4.9.0"
     idb "^7.1.1"
@@ -1311,6 +1312,11 @@ auto-js-ipfs@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/auto-js-ipfs/-/auto-js-ipfs-2.2.0.tgz#064a833095b43c7b6afad502bbd71b68a1d003fa"
   integrity sha512-Z8k2aAI98FBwvEGMqqODZEprYjkF7B/PKOdPi7yMAM9UZKm1VZQ89+GA0/1paHGJ5XMY64rYvZHLh0FN/cR51w==
+
+auto-js-ipfs@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/auto-js-ipfs/-/auto-js-ipfs-2.3.0.tgz#2c2684074cdaa2eb579345c4f86420d7635956c8"
+  integrity sha512-gUg2+lJqcbBUDgimlOVqWWBVl/8Avs9JMIjEpIk4liho+5hFGrCXvj1ydj5GGxpOXUGkR0H9eVxTXwu+xvQgIg==
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -5020,9 +5026,10 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-"replaywebpage@github:webrecorder/replayweb.page":
+replaywebpage@^1.8.1:
   version "1.8.1"
-  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/b26f4b082d05e536479cfeddad50c4e9d2ea07be"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.8.1.tgz#c40ba673f86512241158c381e4345191c9923f4d"
+  integrity sha512-Lwkjc5PojbwIkLe05Wfaa8zVgFsMDJ1g6zqnQszpxSwwsNy7Q7Q8QupLz0I27wB2RZ4pEaeqcDka/kldpCPbww==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@webrecorder/wabac" "^2.16.1"

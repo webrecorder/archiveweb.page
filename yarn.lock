@@ -1308,11 +1308,6 @@ auto-js-ipfs@^2.1.1:
   resolved "https://registry.yarnpkg.com/auto-js-ipfs/-/auto-js-ipfs-2.1.1.tgz#a4276e4ea1bde9426fc24555ee4523d3feed5c95"
   integrity sha512-apr18WgwDAtxR46PmOGNtkj40IWQOYL3m1c8o0tq2xn0Hulj7B9nDPQQ9yQ+NwJdIUiFJGaCMDlUQd+BOiS/pQ==
 
-auto-js-ipfs@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/auto-js-ipfs/-/auto-js-ipfs-2.2.0.tgz#064a833095b43c7b6afad502bbd71b68a1d003fa"
-  integrity sha512-Z8k2aAI98FBwvEGMqqODZEprYjkF7B/PKOdPi7yMAM9UZKm1VZQ89+GA0/1paHGJ5XMY64rYvZHLh0FN/cR51w==
-
 auto-js-ipfs@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/auto-js-ipfs/-/auto-js-ipfs-2.3.0.tgz#2c2684074cdaa2eb579345c4f86420d7635956c8"

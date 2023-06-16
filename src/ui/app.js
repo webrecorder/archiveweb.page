@@ -592,14 +592,13 @@ class ArchiveWebApp extends ReplayWebApp
   renderSettingsModal() {
     return html`
     <wr-modal @modal-closed="${() => this.showSettings = false}" title="Settings">
-      <form class="is-flex is-flex-direction-column" @submit="${this.onStartRecord}">
+      <form class="is-flex is-flex-direction-column" @submit="${this.onSaveSettings}">
         <div class="field has-addons">
           <p class="control is-expanded">
             IPFS Daemon URL (leave blank to auto-detect IPFS):
             <input class="input" type="url"
             name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsDaemonUrl}"
-            placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS"
-            @change=${this.onSetIPFSDaemonUrl}>
+            placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS">
           </p>
         </div>
         <div class="field has-addons">
@@ -607,12 +606,12 @@ class ArchiveWebApp extends ReplayWebApp
             IPFS Gateway URL:
             <input class="input" type="url"
             name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsGatewayUrl}"
-            placeholder="${DEFAULT_GATEWAY_URL}"
-            @change=${this.onSetIPFSGatewayUrl}>
+            placeholder="${DEFAULT_GATEWAY_URL}">
           </p>
         </div>
         <div class="has-text-centered">
-          <a class="button is-warning" href="#" @click="${() => this.showSettings = false}">Close</a>
+          <button class="button is-primary" type="submit">Save</button>
+          <button class="button" type="button" @click="${() => this.showSettings = false}">Close</button>
         </div>
       </form>
     </wr-modal>
@@ -732,8 +731,17 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
-  async onSetIPFSDaemonUrl(event) {
-    const ipfsDaemonUrl = event.currentTarget.value;
+  async onSaveSettings(event) {
+    event.preventDefault();
+    const ipfsDaemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
+    const ipfsGatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
+
+    if (!ipfsDaemonUrlText || !ipfsGatewayUrlText) {
+      return;
+    }
+
+    const ipfsDaemonUrl = ipfsDaemonUrlText.value;
+    const ipfsGatewayUrl = ipfsGatewayUrlText.value;
 
     //const method = "POST";
 
@@ -743,17 +751,15 @@ class ArchiveWebApp extends ReplayWebApp
 
     this.ipfsDaemonUrl = ipfsDaemonUrl;
     this.ipfsUseCustom = !!ipfsDaemonUrl;
+    this.ipfsGatewayUrl = ipfsGatewayUrl;
 
     localStorage.setItem("ipfsDaemonUrl", ipfsDaemonUrl);
     localStorage.setItem("ipfsUseCustom", this.ipfsUseCustom ? "1" : "0");
+    localStorage.setItem("ipfsGatewayUrl", ipfsGatewayUrl);
 
     await this.checkIPFS();
-  }
 
-  async onSetIPFSGatewayUrl(event) {
-    const ipfsGatewayUrl = event.currentTarget.value;
-    this.ipfsGatewayUrl = ipfsGatewayUrl;
-    localStorage.setItem("ipfsGatewayUrl", ipfsGatewayUrl);
+    return false;
   }
 
   async checkIPFS() {

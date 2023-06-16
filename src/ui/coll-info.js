@@ -42,9 +42,7 @@ class WrRecCollInfo extends CollInfo
       shareWarn: { type: Boolean },
       shareProgressSize: { type: Number },
       shareProgressTotalSize: { type: Number },
-      ipfsDaemonUrl: { type: String },
-      ipfsMessage: { type: String },
-      ipfsGatewayUrl: { type: String }
+      ipfsOpts: { type: Object },
     };
   }
 
@@ -164,7 +162,7 @@ class WrRecCollInfo extends CollInfo
           </div>
         </div>
         
-        ${this.ipfsDaemonUrl ? this.renderIPFSSharing() : ""}
+        ${this.ipfsOpts.daemonUrl ? this.renderIPFSSharing() : ""}
 
         ${coll.loadUrl ? html`
         <div class="column is-3">
@@ -178,8 +176,6 @@ class WrRecCollInfo extends CollInfo
   }
 
   renderIPFSSharing() {
-    const coll = this.coll;
-
     return html`
     <div class="column">
       <p class="minihead">Sharing (via IPFS)</p>
@@ -199,7 +195,7 @@ class WrRecCollInfo extends CollInfo
               <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
                 <div class="dropdown-content">
                   <div class="dropdown-item">
-                    <i class="is-size-7">${this.ipfsMessage}</i>
+                    <i class="is-size-7">${this.ipfsOpts && this.ipfsOpts.message || ""}</i>
                   </div>
                   <hr class="dropdown-divider"/>
                   <a @click="${this.onPin}" class="dropdown-item">
@@ -375,7 +371,7 @@ class WrRecCollInfo extends CollInfo
     fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
       method: "POST",
       body: JSON.stringify({
-        ipfsDaemonUrl: this.ipfsDaemonUrl,
+        ipfsDaemonUrl: this.ipfsOpts.daemonUrl,
         gzip: false,
         customSplits: true,
       })
@@ -387,7 +383,7 @@ class WrRecCollInfo extends CollInfo
   async ipfsRemove() {
     const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
       method: "DELETE",
-      body: JSON.stringify({ipfsDaemonUrl: this.ipfsDaemonUrl})
+      body: JSON.stringify({ipfsDaemonUrl: this.ipfsOpts.daemonUrl})
     });
 
     return await resp.json();
@@ -404,7 +400,7 @@ class WrRecCollInfo extends CollInfo
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = this.ipfsGatewayUrl + hash + "/";
+    const url = this.ipfsOpts.gatewayUrl + hash + "/";
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);

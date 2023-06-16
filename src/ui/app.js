@@ -39,10 +39,13 @@ class ArchiveWebApp extends ReplayWebApp
     this.colls = [];
     this.autorun = false;
 
-    this.ipfsDaemonUrl = localStorage.getItem("ipfsDaemonUrl") || "";
-    this.ipfsUseCustom = localStorage.getItem("ipfsUseCustom") === "1";
-    this.ipfsMessage = localStorage.getItem("ipfsMessage") || "";
-    this.ipfsGatewayUrl = localStorage.getItem("ipfsGatewayUrl") || DEFAULT_GATEWAY_URL;
+    try {
+      const res = localStorage.getItem("ipfsOpts");
+      this.ipfsOpts = JSON.parse(res);      
+    } catch (e) {
+    }
+
+    this.ipfsOpts = this.ipfsOpts || {daemonUrl: "", message: "", useCustom: false, gatewayUrl: DEFAULT_GATEWAY_URL};
 
     getLocalOption("autorunBehaviors").then((res) => this.autorun = res === "1");
 
@@ -76,9 +79,7 @@ class ArchiveWebApp extends ReplayWebApp
       showDownloadProgress: { type: Boolean },
       download: { type: Object },
 
-      ipfsDaemonUrl: { type: String },
-      ipfsGatewayUrl: { type: String },
-      ipfsMessage: { type: String },
+      ipfsOpts: { type: Object },
 
       showSettings: {type: Boolean }
     };
@@ -320,9 +321,7 @@ class ArchiveWebApp extends ReplayWebApp
       <wr-rec-coll-index
        dateName="Date Created"
        headerName="Current Web Archives"
-       .ipfsDaemonUrl=${this.ipfsDaemonUrl}
-       .ipfsMessage=${this.ipfsMessage}
-       .ipfsGatewayUrl=${this.ipfsGatewayUrl}
+       .ipfsOpts=${this.ipfsOpts}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
@@ -351,9 +350,7 @@ class ArchiveWebApp extends ReplayWebApp
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
-    .ipfsDaemonUrl=${this.ipfsDaemonUrl}
-    .ipfsMessage=${this.ipfsMessage}
-    .ipfsGatewayUrl=${this.ipfsGatewayUrl}
+    .ipfsOpts=${this.ipfsOpts}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
@@ -597,7 +594,7 @@ class ArchiveWebApp extends ReplayWebApp
           <p class="control is-expanded">
             IPFS Daemon URL (leave blank to auto-detect IPFS):
             <input class="input" type="url"
-            name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsDaemonUrl}"
+            name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsOpts.daemonUrl}"
             placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS">
           </p>
         </div>
@@ -605,7 +602,7 @@ class ArchiveWebApp extends ReplayWebApp
           <p class="control is-expanded">
             IPFS Gateway URL:
             <input class="input" type="url"
-            name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsGatewayUrl}"
+            name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsOpts.gatewayUrl}"
             placeholder="${DEFAULT_GATEWAY_URL}">
           </p>
         </div>
@@ -733,72 +730,69 @@ class ArchiveWebApp extends ReplayWebApp
 
   async onSaveSettings(event) {
     event.preventDefault();
-    const ipfsDaemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
-    const ipfsGatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
+    this.showSettings = false;
+    
+    const daemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
+    const gatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
 
-    if (!ipfsDaemonUrlText || !ipfsGatewayUrlText) {
+    if (!daemonUrlText || !gatewayUrlText) {
       return;
     }
 
-    const ipfsDaemonUrl = ipfsDaemonUrlText.value;
-    const ipfsGatewayUrl = ipfsGatewayUrlText.value;
+    const daemonUrl = daemonUrlText.value;
+    const gatewayUrl = gatewayUrlText.value;
 
     //const method = "POST";
 
-    //const body = JSON.stringify({ipfsDaemonUrl});
+    //const body = JSON.stringify({daemonUrl});
 
     //const resp = await fetch(`${apiPrefix}/ipfs/daemonUrl`, {method, body});
 
-    this.ipfsDaemonUrl = ipfsDaemonUrl;
-    this.ipfsUseCustom = !!ipfsDaemonUrl;
-    this.ipfsGatewayUrl = ipfsGatewayUrl;
-
-    localStorage.setItem("ipfsDaemonUrl", ipfsDaemonUrl);
-    localStorage.setItem("ipfsUseCustom", this.ipfsUseCustom ? "1" : "0");
-    localStorage.setItem("ipfsGatewayUrl", ipfsGatewayUrl);
+    this.ipfsOpts = {
+      daemonUrl, useCustom: !!daemonUrl, gatewayUrl
+    };
 
     await this.checkIPFS();
+
+    localStorage.setItem("ipfsOpts", JSON.stringify(this.ipfsOpts));
 
     return false;
   }
 
   async checkIPFS() {
+    const ipfsOpts = this.ipfsOpts;
+
     // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
     // if so, send it to the service worker
-    if (this.ipfsUseCustom && this.ipfsDaemonUrl) {
-      this.ipfsMessage = "IPFS Access -- Custom IPFS Daemon";
+    if (ipfsOpts.useCustom && ipfsOpts.daemonUrl) {
+      ipfsOpts.message = "IPFS Access -- Custom IPFS Daemon";
       return;
     }
 
-    if (!this.ipfsDaemonUrl || this.ipfsDaemonUrl === "null") {
+    if (!ipfsOpts.daemonUrl) {
       // eslint-disable-next-line no-undef
       const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
 
       if (autoipfs instanceof DaemonAPI) {
-        this.ipfsDaemonUrl = autoipfs.url;
-        localStorage.setItem("ipfsDaemonUrl", this.ipfsDaemonUrl);
+        ipfsOpts.daemonUrl = autoipfs.url;
       }
 
-      this.ipfsUseCustom = false;
-      localStorage.setItem("ipfsUseCustom", "0");
+      ipfsOpts.useCustom = false;
 
       if (autoipfs instanceof Web3StorageAPI) {
-        this.ipfsMessage = "Sharing via remote web3.storage";
-      } else if (!this.ipfsDaemonUrl) {
-        this. ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
-      } else if (this.ipfsDaemonUrl.startsWith("http://localhost:45")) {
-        this.ipfsMessage = "Sharing via Brave IPFS node";
-      } else if (this.ipfsDaemonUrl.startsWith("http://localhost")) {
-        this.ipfsMessage = "Sharing via local IPFS node";
+        ipfsOpts.message = "Sharing via remote web3.storage";
+      } else if (!ipfsOpts.daemonUrl) {
+        ipfsOpts.message = "IPFS Access Unknown - Sharing Not Available"; 
+      } else if (ipfsOpts.daemonUrl.startsWith("http://localhost:45")) {
+        ipfsOpts.message = "Sharing via Brave IPFS node";
+      } else if (ipfsOpts.daemonUrl.startsWith("http://localhost")) {
+        ipfsOpts.message = "Sharing via local IPFS node";
       } else {
-        this.ipfsMessage = "";
+        ipfsOpts.message = "";
       }
-
-      localStorage.setItem("ipfsMessage", this.ipfsMessage);
     }
   }
 }
-
 
 customElements.define("archive-web-page-app", ArchiveWebApp);
 

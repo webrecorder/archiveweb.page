@@ -57,9 +57,7 @@ class WrRecCollIndex extends CollIndex
       ...CollIndex.properties,
 
       deleteConfirm: { type: Object },
-      ipfsDaemonUrl: { type: String },
-      ipfsMessage: { type: String },
-      ipfsGatewayUrl: { type: String }
+      ipfsOpts: { type: Object },
     };
   }
 
@@ -68,9 +66,7 @@ class WrRecCollIndex extends CollIndex
     <wr-rec-coll-info
       style="overflow: visible" data-coll="${coll.id}"
       .coll=${coll}
-      .ipfsDaemonUrl=${this.ipfsDaemonUrl}
-      .ipfsMessage=${this.ipfsMessage}
-      .ipfsGatewayUrl=${this.ipfsGatewayUrl}
+      .ipfsOpts=${this.ipfsOpts}
       @ipfs-share="${this.onIpfsShare}">
     </wr-rec-coll-info>`;
   }

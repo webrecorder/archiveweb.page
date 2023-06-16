@@ -26,7 +26,7 @@
     "stream-browserify": "^3.0.0",
     "unused-filename": "^4.0.1",
     "uuid": "^8.3.2",
-    "warcio": "^2.0.1"
+    "warcio": "^2.1.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.1",

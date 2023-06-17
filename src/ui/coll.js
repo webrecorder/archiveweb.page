@@ -22,8 +22,7 @@ class WrRecColl extends Coll
       ...Coll.properties,
 
       totalSize: { type: Number },
-      ipfsDaemonUrl: { type: String },
-      ipfsMessage: { type: String }
+      ipfsOpts: { type: Object },
     };
   }
 
@@ -123,8 +122,7 @@ class WrRecColl extends Coll
       <wr-rec-coll-info
       class="is-list"
       .coll="${this.collInfo}"
-      .ipfsDaemonUrl=${this.ipfsDaemonUrl}
-      .ipfsMessage=${this.ipfsMessage}
+      .ipfsOpts=${this.ipfsOpts}
       ?detailed="${true}"
       ></wr-rec-coll-info>
     </div>`;

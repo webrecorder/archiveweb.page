@@ -7,7 +7,7 @@ import fasHelp from "@fortawesome/fontawesome-free/svgs/solid/question-circle.sv
 import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
 
 import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
-//import fasCog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg";
+import fasCog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg";
 
 import "./coll";
 import "./coll-info";
@@ -25,6 +25,8 @@ import { getLocalOption, setLocalOption } from "../localstorage";
 // eslint-disable-next-line no-undef
 const VERSION = __AWP_VERSION__;
 
+const DEFAULT_GATEWAY_URL = "https://w3s.link/ipfs/";
+
 
 //============================================================================
 class ArchiveWebApp extends ReplayWebApp
@@ -36,6 +38,16 @@ class ArchiveWebApp extends ReplayWebApp
     this.showCollDrop = false;
     this.colls = [];
     this.autorun = false;
+
+    try {
+      const res = localStorage.getItem("ipfsOpts");
+      this.ipfsOpts = JSON.parse(res);      
+    } catch (e) {
+      // ignore empty
+    }
+
+    this.ipfsOpts = this.ipfsOpts || {daemonUrl: "", message: "", useCustom: false, gatewayUrl: DEFAULT_GATEWAY_URL};
+
     getLocalOption("autorunBehaviors").then((res) => this.autorun = res === "1");
 
     if (window.archivewebpage) {
@@ -68,7 +80,9 @@ class ArchiveWebApp extends ReplayWebApp
       showDownloadProgress: { type: Boolean },
       download: { type: Object },
 
-      ipfsDaemonUrl: { type: String }
+      ipfsOpts: { type: Object },
+
+      showSettings: {type: Boolean }
     };
   }
 
@@ -85,7 +99,9 @@ class ArchiveWebApp extends ReplayWebApp
       this.sourceUrl = pageParams.get("source") || "";
     }
 
-    this.checkIPFS();
+    if (!this.embed) {
+      this.checkIPFS();
+    }
   }
 
   handleMessages() {
@@ -217,8 +233,13 @@ class ArchiveWebApp extends ReplayWebApp
       }
 
       .infomsg {
-        margin-left: auto;
         max-width: 300px;
+        padding-right: 8px;
+      }
+
+      .rightbar {
+        margin-left: auto;
+        display: flex;
       }
 
       .dl-progress {
@@ -287,7 +308,12 @@ class ArchiveWebApp extends ReplayWebApp
                 </span>
                 <span class="is-hidden-mobile">Start Recording...</span>
               </button>
-              <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to create web archives directly in your browser!</div>
+              <div class="rightbar">
+                <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to create web archives directly in your browser!</div>
+                <button class="button is-small" @click="${() => this.showSettings = true}">
+                  <fa-icon .svg=${fasCog}></fa-icon>
+                </button>
+              </div>
             </div>
           </div>
         </div> 
@@ -296,8 +322,7 @@ class ArchiveWebApp extends ReplayWebApp
       <wr-rec-coll-index
        dateName="Date Created"
        headerName="Current Web Archives"
-       .ipfsDaemonUrl=${this.ipfsDaemonUrl}
-       .ipfsMessage=${this.ipfsMessage}
+       .ipfsOpts=${this.ipfsOpts}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
@@ -313,6 +338,7 @@ class ArchiveWebApp extends ReplayWebApp
     ${this.showNew ? this.renderNewCollModal() : ""}
     ${this.showImport ? this.renderImportModal() : ""}
     ${this.showDownloadProgress && this.download ? this.renderDownloadModal() : ""}
+    ${this.showSettings ? this.renderSettingsModal() : ""}
     ${super.render()}`;
   }
 
@@ -325,8 +351,7 @@ class ArchiveWebApp extends ReplayWebApp
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
-    .ipfsDaemonUrl=${this.ipfsDaemonUrl}
-    .ipfsMessage=${this.ipfsMessage}
+    .ipfsOpts=${this.ipfsOpts}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"
@@ -562,6 +587,35 @@ class ArchiveWebApp extends ReplayWebApp
       </div>`;
   }
 
+  renderSettingsModal() {
+    return html`
+    <wr-modal @modal-closed="${() => this.showSettings = false}" title="Settings">
+      <form class="is-flex is-flex-direction-column" @submit="${this.onSaveSettings}">
+        <div class="field has-addons">
+          <p class="control is-expanded">
+            IPFS Daemon URL (leave blank to auto-detect IPFS):
+            <input class="input" type="url"
+            name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsOpts.daemonUrl}"
+            placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS">
+          </p>
+        </div>
+        <div class="field has-addons">
+          <p class="control is-expanded">
+            IPFS Gateway URL:
+            <input class="input" type="url"
+            name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsOpts.gatewayUrl}"
+            placeholder="${DEFAULT_GATEWAY_URL}">
+          </p>
+        </div>
+        <div class="has-text-centered">
+          <button class="button is-primary" type="submit">Save</button>
+          <button class="button" type="button" @click="${() => this.showSettings = false}">Close</button>
+        </div>
+      </form>
+    </wr-modal>
+    `;
+  }
+
   async onNewColl(event) {
     this.showNew = "loading";
     event.preventDefault();
@@ -675,42 +729,71 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
+  async onSaveSettings(event) {
+    event.preventDefault();
+    this.showSettings = false;
+    
+    const daemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
+    const gatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
+
+    if (!daemonUrlText || !gatewayUrlText) {
+      return;
+    }
+
+    const daemonUrl = daemonUrlText.value;
+    const gatewayUrl = gatewayUrlText.value;
+
+    //const method = "POST";
+
+    //const body = JSON.stringify({daemonUrl});
+
+    //const resp = await fetch(`${apiPrefix}/ipfs/daemonUrl`, {method, body});
+
+    this.ipfsOpts = {
+      daemonUrl, useCustom: !!daemonUrl, gatewayUrl
+    };
+
+    await this.checkIPFS();
+
+    localStorage.setItem("ipfsOpts", JSON.stringify(this.ipfsOpts));
+
+    return false;
+  }
+
   async checkIPFS() {
+    const ipfsOpts = this.ipfsOpts;
+
     // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
     // if so, send it to the service worker
+    if (ipfsOpts.useCustom && ipfsOpts.daemonUrl) {
+      ipfsOpts.message = "IPFS Access -- Custom IPFS Daemon";
+      return;
+    }
 
-    let ipfsDaemonUrl = sessionStorage.getItem("ipfsDaemonUrl");
-    let ipfsMessage = sessionStorage.getItem("ipfsMessage");
-
-    if (ipfsDaemonUrl === null) {
+    if (!ipfsOpts.daemonUrl) {
       // eslint-disable-next-line no-undef
       const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
 
       if (autoipfs instanceof DaemonAPI) {
-        ipfsDaemonUrl = autoipfs.url;
+        ipfsOpts.daemonUrl = autoipfs.url;
       }
+
+      ipfsOpts.useCustom = false;
 
       if (autoipfs instanceof Web3StorageAPI) {
-        ipfsMessage = "Sharing via remote web3.storage";
-      } else if (!ipfsDaemonUrl) {
-        ipfsMessage = "IPFS Access Unknown - Sharing Not Available"; 
-      } else if (ipfsDaemonUrl.startsWith("http://localhost:45")) {
-        ipfsMessage = "Sharing via Brave IPFS node";
-      } else if (ipfsDaemonUrl.startsWith("http://localhost")) {
-        ipfsMessage = "Sharing via local IPFS node";
+        ipfsOpts.message = "Sharing via remote web3.storage";
+      } else if (!ipfsOpts.daemonUrl) {
+        ipfsOpts.message = "IPFS Access Unknown - Sharing Not Available"; 
+      } else if (ipfsOpts.daemonUrl.startsWith("http://localhost:45")) {
+        ipfsOpts.message = "Sharing via Brave IPFS node";
+      } else if (ipfsOpts.daemonUrl.startsWith("http://localhost")) {
+        ipfsOpts.message = "Sharing via local IPFS node";
       } else {
-        ipfsMessage = "";
+        ipfsOpts.message = "";
       }
-
-      sessionStorage.setItem("ipfsDaemonUrl", ipfsDaemonUrl);
-      sessionStorage.setItem("ipfsMessage", ipfsMessage);
     }
-
-    this.ipfsDaemonUrl = ipfsDaemonUrl;
-    this.ipfsMessage = ipfsMessage;
   }
 }
-
 
 customElements.define("archive-web-page-app", ArchiveWebApp);
 

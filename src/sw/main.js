@@ -10,8 +10,8 @@ import { WorkerLoader } from "@webrecorder/wabac/src/loaders";
 if (self.registration) {
   const defaultConfig = {
     injectScripts: ["/ruffle/ruffle.js"],
-    baseUrlSourcePrefix: "/index.html",
-    convertPostToGet: true
+    baseUrlSourcePrefix: "/replay/index.html",
+    convertPostToGet: false
   };
 
   const staticData = new Map();

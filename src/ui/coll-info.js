@@ -15,7 +15,6 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 import { CollInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
-const GATEWAY_URL = "https://w3s.link/ipfs/";
 const REPLAY_URL = "https://replayweb.page/";
 
 
@@ -29,7 +28,8 @@ class WrRecCollInfo extends CollInfo
     this.shareWait = false;
     this.showShareMenu = false;
     this.shareWarn = false;
-    this.shareProgress = 0;
+    this.shareProgressSize = 0;
+    this.shareProgressTotalSize = 0;
   }
 
   static get properties() {
@@ -40,9 +40,9 @@ class WrRecCollInfo extends CollInfo
       shareWait: { type: Boolean },
       showShareMenu: { type: Boolean },
       shareWarn: { type: Boolean },
-      shareProgress: { type: Number },
-      ipfsDaemonUrl: { type: String },
-      ipfsMessage: { type: String }
+      shareProgressSize: { type: Number },
+      shareProgressTotalSize: { type: Number },
+      ipfsOpts: { type: Object },
     };
   }
 
@@ -162,7 +162,7 @@ class WrRecCollInfo extends CollInfo
           </div>
         </div>
         
-        ${this.ipfsDaemonUrl ? this.renderIPFSSharing() : ""}
+        ${this.ipfsOpts.daemonUrl ? this.renderIPFSSharing() : ""}
 
         ${coll.loadUrl ? html`
         <div class="column is-3">
@@ -176,8 +176,6 @@ class WrRecCollInfo extends CollInfo
   }
 
   renderIPFSSharing() {
-    const coll = this.coll;
-
     return html`
     <div class="column">
       <p class="minihead">Sharing (via IPFS)</p>
@@ -197,7 +195,7 @@ class WrRecCollInfo extends CollInfo
               <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
                 <div class="dropdown-content">
                   <div class="dropdown-item">
-                    <i class="is-size-7">${this.ipfsMessage}</i>
+                    <i class="is-size-7">${this.ipfsOpts && this.ipfsOpts.message || ""}</i>
                   </div>
                   <hr class="dropdown-divider"/>
                   <a @click="${this.onPin}" class="dropdown-item">
@@ -228,7 +226,7 @@ class WrRecCollInfo extends CollInfo
                 </div>
               </div>
             </div>
-            <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
+            <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
           </div>
 
           <button class="button is-small" @click="${this.onUnpin}">
@@ -247,7 +245,7 @@ class WrRecCollInfo extends CollInfo
               </span>
               <span>Start Sharing</span>
             </button>
-            <progress value="${this.shareProgress}" max="${coll.size}" class="progress is-small ${this.shareProgress ? "mini" : "is-hidden"}"></progress>
+            <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
           </div>
         `}
       </div>
@@ -349,11 +347,13 @@ class WrRecCollInfo extends CollInfo
 
       switch (data.type) {
       case "ipfsProgress":
-        this.shareProgress = data.size;
+        this.shareProgressSize = data.size;
+        this.shareProgressTotalSize = data.totalSize || this.coll.size;
         break;
 
       case "ipfsAdd":
-        this.shareProgress = 0;
+        this.shareProgressSize = 0;
+        this.shareProgressTotalSize = 0;
         if (data.result) {
           pc.resolve(data.result);
         } else {
@@ -371,9 +371,9 @@ class WrRecCollInfo extends CollInfo
     fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
       method: "POST",
       body: JSON.stringify({
-        ipfsDaemonUrl: this.ipfsDaemonUrl,
+        ipfsDaemonUrl: this.ipfsOpts.daemonUrl,
         gzip: false,
-        customSplits: true
+        customSplits: true,
       })
     });
 
@@ -383,7 +383,7 @@ class WrRecCollInfo extends CollInfo
   async ipfsRemove() {
     const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
       method: "DELETE",
-      body: JSON.stringify({ipfsDaemonUrl: this.ipfsDaemonUrl})
+      body: JSON.stringify({ipfsDaemonUrl: this.ipfsOpts.daemonUrl})
     });
 
     return await resp.json();
@@ -400,7 +400,7 @@ class WrRecCollInfo extends CollInfo
 
   onCopyGatewayLink() {
     const hash = this.ipfsURL.split("/")[2];
-    const url = GATEWAY_URL + hash + "/";
+    const url = this.ipfsOpts.gatewayUrl + hash + "/";
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);

@@ -108,7 +108,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
 
 
 // ===========================================================================
-function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}} = {}) {
+function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}} = {}, argv) {
   if (copy.length) {
     plugins.push(new CopyPlugin({patterns: copy}));
   }
@@ -121,6 +121,7 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
       "sw": "./src/sw/main.js",
       ...entry
     },
+    devtool: argv.mode === "production" ? undefined : "source-map",
     optimization,
     //resolve: {fallback},
     output: {
@@ -185,12 +186,12 @@ const extensionWebConfig = (env, argv) => {
     "popup": "./src/popup.js"
   };
 
-  return sharedBuild(DIST_EXT, {plugins, copy, entry});
+  return sharedBuild(DIST_EXT, {plugins, copy, entry}, argv);
 };
 
 
 // ===========================================================================
-const electronWebConfig = (/*env, argv*/) => {
+const electronWebConfig = (env, argv) => {
   const entry = {
     "rec-window": "./src/electron/rec-window.js"
   };
@@ -201,11 +202,11 @@ const electronWebConfig = (/*env, argv*/) => {
     { from: "src/electron/rec-window.html", to: "" },
   ];
 
-  return sharedBuild(DIST_ELECTRON, {copy, entry});
+  return sharedBuild(DIST_ELECTRON, {copy, entry}, argv);
 };
 
 // ===========================================================================
-const embedWebConfig = (/*env, argv*/) => {
+const embedWebConfig = (env, argv) => {
   const copy = [
     { from: "src/embed.html", to: "./index.html" },
   ];
@@ -221,7 +222,7 @@ const embedWebConfig = (/*env, argv*/) => {
 
   const flat = true;
 
-  return sharedBuild(DIST_EMBED, {copy, extra, flat});
+  return sharedBuild(DIST_EMBED, {copy, extra, flat}, argv);
 };
 
 

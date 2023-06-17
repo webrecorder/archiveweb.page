@@ -43,6 +43,7 @@ class ArchiveWebApp extends ReplayWebApp
       const res = localStorage.getItem("ipfsOpts");
       this.ipfsOpts = JSON.parse(res);      
     } catch (e) {
+      // ignore empty
     }
 
     this.ipfsOpts = this.ipfsOpts || {daemonUrl: "", message: "", useCustom: false, gatewayUrl: DEFAULT_GATEWAY_URL};

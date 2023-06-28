@@ -352,6 +352,7 @@ class ArchiveWebApp extends ReplayWebApp
     .appLogo="${this.mainLogo}"
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
     .ipfsOpts=${this.ipfsOpts}
+    swName=${this.swName}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
     appName="${this.appName}"

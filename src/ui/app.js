@@ -82,7 +82,9 @@ class ArchiveWebApp extends ReplayWebApp
 
       ipfsOpts: { type: Object },
 
-      showSettings: {type: Boolean }
+      showSettings: {type: Boolean },
+
+      showIpfsShareFailed: { type: Boolean }
     };
   }
 
@@ -326,6 +328,7 @@ class ArchiveWebApp extends ReplayWebApp
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
+       @ipfs-share-failed=${(e) => this.showIpfsShareFailed = true}
        style="overflow: visible"
        >
       </wr-rec-coll-index>
@@ -339,6 +342,7 @@ class ArchiveWebApp extends ReplayWebApp
     ${this.showImport ? this.renderImportModal() : ""}
     ${this.showDownloadProgress && this.download ? this.renderDownloadModal() : ""}
     ${this.showSettings ? this.renderSettingsModal() : ""}
+    ${this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""}
     ${super.render()}`;
   }
 
@@ -449,6 +453,16 @@ class ArchiveWebApp extends ReplayWebApp
           </label>
         </div>
         ${this.isImportExisting ? this.renderCollList() : ""}
+      </div>
+    </wr-modal`;
+  }
+
+  renderIPFSShareFailedModal() {
+    return html`
+    <wr-modal @modal-closed="${() => this.showIpfsShareFailed = false}" title="IPFS Connection Failed">
+      <div>
+        <p>Sorry, IPFS sharing / unsharing failed as IPFS could not be reached.</p>
+        <p>(Check the IPFS settings and try again.)</p>
       </div>
     </wr-modal`;
   }

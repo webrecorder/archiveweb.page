@@ -312,11 +312,18 @@ class WrRecCollInfo extends CollInfo
     this.shareWarn = false;
 
     this.shareWait = true;
-    const { ipfsURL } = await this.ipfsAdd();
 
-    this.ipfsURL = ipfsURL;
+    try {
+      const { ipfsURL } = await this.ipfsAdd();
 
-    this.onCopyGatewayLink();
+      this.ipfsURL = ipfsURL;
+
+      this.onCopyGatewayLink();
+    } catch (e) {
+      console.log("ipfs share failed");
+      this.dispatchEvent(new CustomEvent("ipfs-share-failed", {bubbles: true, composed: true}));
+    }
+
     this.shareWait = false;
   }
 
@@ -326,6 +333,8 @@ class WrRecCollInfo extends CollInfo
 
     if (removed) {
       this.ipfsURL = null;
+    } else {
+      this.dispatchEvent(new CustomEvent("ipfs-share-failed", {bubbles: true, composed: true}));
     }
     this.shareWait = false;
   }
@@ -375,6 +384,10 @@ class WrRecCollInfo extends CollInfo
         gzip: false,
         customSplits: true,
       })
+    }).then((res) => {
+      if (!res.ok) {
+        pc.reject();
+      }
     });
 
     return p;
@@ -383,7 +396,9 @@ class WrRecCollInfo extends CollInfo
   async ipfsRemove() {
     const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
       method: "DELETE",
-      body: JSON.stringify({ipfsDaemonUrl: this.ipfsOpts.daemonUrl})
+      body: JSON.stringify({
+        ipfsDaemonUrl: this.ipfsOpts.daemonUrl
+      })
     });
 
     return await resp.json();

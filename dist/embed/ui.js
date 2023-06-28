@@ -2918,7 +2918,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
-       @ipfs-share-failed=${e=>this.showIpfsShareFailed=!0}
+       @ipfs-share-failed=${()=>this.showIpfsShareFailed=!0}
        style="overflow: visible"
        >
       </wr-rec-coll-index>

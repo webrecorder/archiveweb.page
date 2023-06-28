@@ -328,7 +328,7 @@ class ArchiveWebApp extends ReplayWebApp
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
-       @ipfs-share-failed=${(e) => this.showIpfsShareFailed = true}
+       @ipfs-share-failed=${() => this.showIpfsShareFailed = true}
        style="overflow: visible"
        >
       </wr-rec-coll-index>

@@ -131,7 +131,7 @@ class WrRecCollIndex extends CollIndex
   }
 
   renderEmpty() {
-    return html`No Archives. Click "Create New" above to create a new archive and start recording!`;
+    return html`No Archives. Click "Create New" above to create a new archive and being saving pages!`;
   }
 }
 

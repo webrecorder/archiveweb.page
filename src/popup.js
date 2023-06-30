@@ -220,7 +220,7 @@ class RecPopup extends LitElement
   }
 
   get notRecordingMessage() {
-    return "Not Recording this Tab";
+    return "Not Archiving this Tab";
   }
 
   static get styles() {
@@ -359,7 +359,7 @@ class RecPopup extends LitElement
     }
 
     if (this.recording) {
-      return html`<b>${this.waitingForStop ? "Finishing " : ""} Recording:&nbsp;</b>${this.status && this.status.numPending ? html`
+      return html`<b>${this.waitingForStop ? "Finishing " : ""} Archiving:&nbsp;</b>${this.status && this.status.numPending ? html`
       <span class="status-pending">${this.status.numPending} URLs pending${this.waitingForStop ? "." : ", please wait before loading a new page."}</span>
      ` :
         html`
@@ -369,7 +369,7 @@ class RecPopup extends LitElement
     if (this.failureMsg) {
       return html`
       <div class="error">
-        <p>Sorry, there was an error starting recording on this page. Please try again or try a different page.</p>
+        <p>Sorry, there was an error starting archiving on this page. Please try again or try a different page.</p>
         <p class="error-msg">Error Details: <i>${this.failureMsg}</i></p>
         <p>If the error persists, check the <a href="https://archiveweb.page/guide/troubleshooting/errors" target="_blank">Common Errors and Issues</a> page in the guide for
           known issues and possible solutions.
@@ -382,17 +382,17 @@ class RecPopup extends LitElement
       if (this.pageUrl && this.pageUrl.startsWith(this.extRoot)) {
         return html`
           <p class="is-size-7">This page is part of the extension. You can view existing archives from here.
-          To start a new recording, click the
-          <wr-icon .src="${wrRec}"></wr-icon> button and enter a new URL.
+          To start a new archiving session, click the
+          <wr-icon .src="${wrRec}"></wr-icon> Start Archiving button and enter a new URL.
           </p>
         `;
       }
 
-      return html`<i>Can't record this page.</i>`;
+      return html`<i>Can't archive this page.</i>`;
     }
 
     if (this.waitingForStart) {
-      return html`<i>Recording will start after the page reloads...</i>`;
+      return html`<i>Archiving will start after the page reloads...</i>`;
     }
 
     return html`<i>${this.notRecordingMessage}</i>`;
@@ -401,7 +401,7 @@ class RecPopup extends LitElement
   renderCollDropdown() {
     return html`
     <div class="coll-select">
-      <div class="is-size-7">${this.recording ? "Recording" : "Record"} To:&nbsp;</div>
+      <div class="is-size-7">${this.recording ? "Currently archiving" : "Save"} to:&nbsp;</div>
       <div class="dropdown ${this.collDrop === "show" ? "is-active" : ""}">
         <div class="dropdown-trigger">
           <button @click="${this.onShowDrop}" class="coll button is-small" aria-haspopup="true" aria-controls="dropdown-menu" ?disabled="${this.recording}">
@@ -500,7 +500,7 @@ class RecPopup extends LitElement
                 <wr-icon .src=${wrRec}></wr-icon>` : html`
                 <wr-icon .src=${fasBox}></wr-icon>`}
             </span>
-            <span>${!this.recording ? "Start" : "Stop"}</span>
+            <span>${!this.recording ? "Start Session" : "Stop Session"}</span>
           </button>
           ` : ""}
         </div>
@@ -525,9 +525,9 @@ class RecPopup extends LitElement
 
         ${this.status && this.status.sizeTotal ? html`
         <div class="view-row underline">
-          <div class="session-head">Recorded in this tab</div>
+          <div class="session-head">Archived in this tab</div>
           ${this.replayUrl ? 
-    html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Recorded Page</a>` : ""}
+    html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Archived Page</a>` : ""}
         </div>
         <div class="view-row">
           <table class="status">

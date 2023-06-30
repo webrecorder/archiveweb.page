@@ -149,12 +149,12 @@ class WrRecCollInfo extends CollInfo
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
             </a>
-            <button @click="${this.onShowImport}" class="button is-small" title="Import Archive...">
+            <button @click="${this.onShowImport}" class="button is-small" title="Import Archive">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${fasUpload}"></fa-icon>
               </span>
             </button>
-            <button @click="${this.onShowStart}" class="button is-small" title="Start Recording...">
+            <button @click="${this.onShowStart}" class="button is-small" title="Start Archiving">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${wrRec}"></fa-icon>
               </span>

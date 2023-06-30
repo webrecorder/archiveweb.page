@@ -292,23 +292,23 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="message is-small">
           <div class="message-body">
             <div class="buttons">
-              <button class="button is-small no-pad-mobile" title="Create New..." @click="${() => this.showNew = "show"}">
+              <button class="button is-small no-pad-mobile" title="Create New" @click="${() => this.showNew = "show"}">
                 <span class="icon">
                   <fa-icon .svg=${fasPlus}></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">Create New...</span>
+                <span class="is-hidden-mobile">Create New</span>
               </button>
-              <button class="button is-small no-pad-mobile" title="Import Archive..." @click="${() => this.showImport = true}">
+              <button class="button is-small no-pad-mobile" title="Import Archive" @click="${() => this.showImport = true}">
                 <span class="icon">
                   <fa-icon .svg=${fasUpload}></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">Import Archive...</span>
+                <span class="is-hidden-mobile">Import Archive</span>
               </button>
-              <button class="button is-small no-pad-mobile" title="Start Recording..." ?disabled="${!this.colls}" @click="${this.onShowStart}">
+              <button class="button is-small no-pad-mobile" title="Start Archiving" ?disabled="${!this.colls}" @click="${this.onShowStart}">
                 <span class="icon">
                   <fa-icon size="1.0em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">Start Recording...</span>
+                <span class="is-hidden-mobile">Start Archiving</span>
               </button>
               <div class="rightbar">
                 <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to create web archives directly in your browser!</div>
@@ -387,8 +387,8 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderStartModal() {
     return html`
-    <wr-modal @modal-closed="${() => this.showStartRecord = false}" title="Start Recording">
-      ${this.renderCollList("Archive To:")}
+    <wr-modal @modal-closed="${() => this.showStartRecord = false}" title="Start Archiving">
+      ${this.renderCollList("Save To:")}
       <div class="field">
         <label class="checkbox is-size-7">
         <input type="checkbox" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
@@ -401,7 +401,7 @@ class ArchiveWebApp extends ReplayWebApp
           <p class="control is-expanded">
             <input class="input" type="url" required
             name="url" id="url" value="${this.recordUrl}"
-            placeholder="Enter a URL to Start Recording">
+            placeholder="Enter a URL to Start Archiving">
           </p>
           <div class="control">
             <button type="submit" class="button is-hidden-mobile is-outlined is-link">
@@ -414,7 +414,7 @@ class ArchiveWebApp extends ReplayWebApp
         </div>
         ${IS_APP ? html`
         <label class="checkbox">
-          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without recording.)</span>
+          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without saving.)</span>
         </label>` : ""}
       </form>
     </wr-modal>`;

@@ -382,6 +382,7 @@ class ArchiveWebApp extends ReplayWebApp
     @coll-loaded=${this.onCollLoaded}
     @show-start=${this.onShowStart}
     @show-import=${this.onShowImport}
+    @do-upload=${(e) => this.uploadCollOpts = e.detail}
     @about-show=${() => this.showAbout = true}></wr-rec-coll>`;
   }
 

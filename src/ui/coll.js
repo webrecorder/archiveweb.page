@@ -22,7 +22,7 @@ class WrRecColl extends Coll
       ...Coll.properties,
 
       totalSize: { type: Number },
-      ipfsOpts: { type: Object },
+      shareOpts: { type: Object },
     };
   }
 
@@ -122,7 +122,7 @@ class WrRecColl extends Coll
       <wr-rec-coll-info
       class="is-list"
       .coll="${this.collInfo}"
-      .ipfsOpts=${this.ipfsOpts}
+      .shareOpts=${this.shareOpts}
       ?detailed="${true}"
       ></wr-rec-coll-info>
     </div>`;

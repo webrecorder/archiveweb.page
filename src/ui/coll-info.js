@@ -12,6 +12,8 @@ import fasShare from "@fortawesome/fontawesome-free/svgs/solid/share.svg";
 import fasReshare from "@fortawesome/fontawesome-free/svgs/solid/retweet.svg";
 import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 
+import btrixCloud from "../../assets/btrix-cloud.svg";
+
 import { CollInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
@@ -42,6 +44,9 @@ class WrRecCollInfo extends CollInfo
       shareWarn: { type: Boolean },
       shareProgressSize: { type: Number },
       shareProgressTotalSize: { type: Number },
+
+      shareOpts: { type: Object },
+      btrixOpts: { type: Object },
       ipfsOpts: { type: Object },
     };
   }
@@ -118,6 +123,12 @@ class WrRecCollInfo extends CollInfo
         this.ipfsURL = this.coll.ipfsPins[this.coll.ipfsPins.length - 1].url;
       }
     }
+
+    if (changedProps.has("shareOpts") && this.shareOpts) {
+      const { ipfsOpts, btrixOpts } = this.shareOpts;
+      this.ipfsOpts = ipfsOpts;
+      this.btrixOpts = btrixOpts;
+    }
   }
 
   render() {
@@ -159,10 +170,16 @@ class WrRecCollInfo extends CollInfo
                 <fa-icon aria-hidden="true" .svg="${wrRec}"></fa-icon>
               </span>
             </button>
+            ${this.btrixOpts ?  html`
+            <button @click="${this.onUpload}" class="button is-small" title="Upload to Cloud">
+              <span class="icon">
+                <fa-icon aria-hidden="true" size="2.2em" .svg="${btrixCloud}"></fa-icon>
+              </span>
+            </button>` : ""}
           </div>
         </div>
         
-        ${this.ipfsOpts.daemonUrl ? this.renderIPFSSharing() : ""}
+        ${this.ipfsOpts && this.ipfsOpts.daemonUrl ? this.renderIPFSSharing() : ""}
 
         ${coll.loadUrl ? html`
         <div class="column is-3">
@@ -296,6 +313,10 @@ class WrRecCollInfo extends CollInfo
     this.dispatchEvent(new CustomEvent("show-start", {bubbles: true, composed: true, detail: {coll, title}}));
   }
 
+  onShowUpload() {
+    
+  }
+
   toggleShareWarn(event) {
     localStorage.setItem("nosharewarn", event.currentTarget.checked ? "1" : "0");
   }
@@ -426,6 +447,13 @@ class WrRecCollInfo extends CollInfo
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(ipfsPath);
+  }
+
+  onUpload() {
+    const id = this.coll.id;
+    const title = this.coll.title;
+    const size = this.coll.size || 0;
+    this.dispatchEvent(new CustomEvent("do-upload", {bubbles: true, composed: true, detail: {id, title, size}}));
   }
 
   async doDelete() {

@@ -117,6 +117,7 @@ class WrRecColl extends Coll
   }
 
   renderCollInfo() {
+    console.log(this.collInfo);
     return html`
     <div class="info-bg">
       <wr-rec-coll-info

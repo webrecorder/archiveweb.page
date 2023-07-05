@@ -13,7 +13,8 @@ import "./coll";
 import "./coll-info";
 import "./coll-index";
 import "./recordembed";
-import "./upload";
+
+import { BtrixClient } from "./upload";
 
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
@@ -40,6 +41,8 @@ class ArchiveWebApp extends ReplayWebApp
     this.colls = [];
     this.autorun = false;
 
+    this.settingsError = "";
+
     this.settingsTab = localStorage.getItem("settingsTab") || "ipfs";
 
     try {
@@ -49,11 +52,18 @@ class ArchiveWebApp extends ReplayWebApp
       // ignore empty
     }
 
-    this.ipfsOpts = this.ipfsOpts || {daemonUrl: "", message: "", useCustom: false, gatewayUrl: DEFAULT_GATEWAY_URL};
+    this.ipfsOpts = this.ipfsOpts || {
+      daemonUrl: "",
+      message: "",
+      useCustom: false,
+      autoDetect: false,
+      gatewayUrl: DEFAULT_GATEWAY_URL
+    };
 
     try {
       const res = localStorage.getItem("btrixOpts");
       this.btrixOpts = JSON.parse(res);
+      BtrixClient.login(this.btrixOpts).then(client => this.btrixOpts.client = client);
     } catch (e) {
       this.btrixOpts = null;
     }
@@ -97,6 +107,7 @@ class ArchiveWebApp extends ReplayWebApp
 
       showSettings: {type: Boolean },
       settingsTab: { type: String },
+      settingsError: { type: String },
 
       showIpfsShareFailed: { type: Boolean },
     };
@@ -647,6 +658,9 @@ class ArchiveWebApp extends ReplayWebApp
         ${this.settingsTab === "ipfs" ? html`
         <p class="is-size-6 mb-3">Configure IPFS settings for sharing archives to IPFS.</p>
         <fieldset>
+          <div class="field">
+            <input name="ipfsAutoDetect" id="ipfsAutoDetect" class="checkbox is-small" type="checkbox" ?checked="${this.ipfsOpts.autoDetect}"><span class="ml-1">Auto-Detect IPFS</span>
+          </div>
           <div class="field has-addons">
             <p class="is-expanded">
               IPFS Daemon URL (leave blank to auto-detect IPFS):
@@ -666,7 +680,7 @@ class ArchiveWebApp extends ReplayWebApp
         </fieldset>` : ""}
 
         ${this.settingsTab === "browsertrix" ? html`
-        <p class="is-size-6 mb-3">Configure your credentials to upload archives to Browsertrix Cloud automatically.</p>
+        <p class="is-size-6 mb-3">Configure your credentials to upload archives to Browsertrix Cloud.</p>
         <fieldset>
           <div class="field has-addons">
             <p class="is-expanded">
@@ -702,7 +716,7 @@ class ArchiveWebApp extends ReplayWebApp
           </div>
         </fieldset>
         ` : ""}
-
+        <div class="has-text-centered has-text-danger">${this.settingsError}</div>
         <div class="has-text-centered mt-4">
           <button class="button is-primary" type="submit">Save</button>
           <button class="button" type="button" @click="${() => this.showSettings = false}">Close</button>
@@ -827,19 +841,20 @@ class ArchiveWebApp extends ReplayWebApp
 
   async onSaveSettings(event) {
     event.preventDefault();
-    this.showSettings = false;
-
 
     // IPFS settings
     const daemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
     const gatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
+    const autodetectCheck = this.renderRoot.querySelector("#ipfsAutoDetect");
 
     if (daemonUrlText && gatewayUrlText) {
       const daemonUrl = daemonUrlText.value;
       const gatewayUrl = gatewayUrlText.value;
+      const autoDetect = autodetectCheck && autodetectCheck.checked;
 
       this.ipfsOpts = {
-        daemonUrl, useCustom: !!daemonUrl, gatewayUrl
+        daemonUrl, useCustom: !!daemonUrl, gatewayUrl,
+        autoDetect
       };
 
       await this.checkIPFS();
@@ -862,7 +877,18 @@ class ArchiveWebApp extends ReplayWebApp
       if (url && username && password) {
         this.btrixOpts = { url, username, password, orgName };
 
+        let client;
+
+        try {
+          client = await BtrixClient.login(this.btrixOpts);
+          this.settingsError = "";
+        } catch (e) {
+          this.settingsError = "Unable to log in to Browsertrix Cloud. Check your credentials.";
+          return false;
+        }
+
         localStorage.setItem("btrixOpts", JSON.stringify(this.btrixOpts));
+        this.btrixOpts.client = client;
       } else {
         this.btrixOpts = null;
         localStorage.removeItem("btrixOpts");
@@ -870,6 +896,8 @@ class ArchiveWebApp extends ReplayWebApp
     }
 
     localStorage.setItem("settingsTab", this.settingsTab);
+
+    this.showSettings = false;
 
     return false;
   }
@@ -884,7 +912,7 @@ class ArchiveWebApp extends ReplayWebApp
       return;
     }
 
-    if (!ipfsOpts.daemonUrl) {
+    if (!ipfsOpts.daemonUrl && ipfsOpts.autoDetect) {
       // eslint-disable-next-line no-undef
       const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
 

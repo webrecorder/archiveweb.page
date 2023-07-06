@@ -57,7 +57,7 @@ class WrRecCollIndex extends CollIndex
       ...CollIndex.properties,
 
       deleteConfirm: { type: Object },
-      ipfsOpts: { type: Object },
+      shareOpts: { type: Object },
     };
   }
 
@@ -66,7 +66,7 @@ class WrRecCollIndex extends CollIndex
     <wr-rec-coll-info
       style="overflow: visible" data-coll="${coll.id}"
       .coll=${coll}
-      .ipfsOpts=${this.ipfsOpts}
+      .shareOpts=${this.shareOpts}
       @ipfs-share="${this.onIpfsShare}">
     </wr-rec-coll-info>`;
   }

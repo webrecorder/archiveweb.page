@@ -4,13 +4,15 @@ import prettyBytes from "pretty-bytes";
 
 import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
 import fasUpload from "@fortawesome/fontawesome-free/svgs/solid/upload.svg";
-//import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
-//import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync.svg";
+import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync-alt.svg";
+import fasCheck from "@fortawesome/fontawesome-free/svgs/solid/check-circle.svg";
 import fasCopy from "@fortawesome/fontawesome-free/svgs/regular/copy.svg";
 import fasCaretUp from "@fortawesome/fontawesome-free/svgs/solid/caret-up.svg";
 import fasShare from "@fortawesome/fontawesome-free/svgs/solid/share.svg";
 import fasReshare from "@fortawesome/fontawesome-free/svgs/solid/retweet.svg";
 import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
+
+import btrixCloud from "../../assets/btrix-cloud.svg";
 
 import { CollInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
@@ -42,6 +44,11 @@ class WrRecCollInfo extends CollInfo
       shareWarn: { type: Boolean },
       shareProgressSize: { type: Number },
       shareProgressTotalSize: { type: Number },
+
+      isUploadNeeded: { type: Boolean },
+
+      shareOpts: { type: Object },
+      btrixOpts: { type: Object },
       ipfsOpts: { type: Object },
     };
   }
@@ -105,9 +112,17 @@ class WrRecCollInfo extends CollInfo
 
   firstUpdated() {
     this.renderRoot.addEventListener("click", () => this.showShareMenu = false);
+
+    this.isUploadNeeded = (this.coll && this.coll.uploadTime && this.coll.mtime > this.coll.uploadTime);
   }
 
   updated(changedProps) {
+    if (changedProps.has("shareOpts") && this.shareOpts) {
+      const { ipfsOpts, btrixOpts } = this.shareOpts;
+      this.ipfsOpts = ipfsOpts;
+      this.btrixOpts = btrixOpts;
+    }
+
     if (changedProps.has("coll") && this.coll) {
       // Fix for loading single collection from previous versions
       if (this.coll.id === "main.archive" && this.coll.sourceUrl !== "local://main.archive") {
@@ -117,12 +132,17 @@ class WrRecCollInfo extends CollInfo
       if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
         this.ipfsURL = this.coll.ipfsPins[this.coll.ipfsPins.length - 1].url;
       }
+
+      this.isUploadNeeded = (this.coll && this.coll.uploadTime && this.coll.mtime > this.coll.uploadTime);
     }
   }
 
   render() {
     const coll = this.coll;
     const detailed = this.detailed;
+
+    const hasUpload = !!this.btrixOpts;
+    const hasIpfs = !!this.ipfsOpts && this.ipfsOpts.daemonUrl;
 
     return html`
       <div class="columns">
@@ -161,14 +181,33 @@ class WrRecCollInfo extends CollInfo
             </button>
           </div>
         </div>
-        
-        ${this.ipfsOpts.daemonUrl ? this.renderIPFSSharing() : ""}
+
+        ${hasUpload ? html`
+        <div class="column is-1">
+          <p class="minihead">Upload</p>
+          <div class="button-row is-flex">
+          ${hasUpload ? this.renderBtrixUpload() : ""}
+        </div>
+        ` : html`
+        <div class="column">
+        </div>
+        `}
+
+        ${hasIpfs ? html`
+        </div>
+          <div class="column">
+          <p class="minihead">Share (via IPFS)</p>
+          <div class="button-row is-flex">
+          ${hasIpfs ? this.renderIPFSSharing() : ""}
+          </div>
+        </div>
+        ` : ""}
 
         ${coll.loadUrl ? html`
         <div class="column is-3">
-        <p class="minihead">Imported From</p>
-        ${coll.loadUrl}
-        <a @click="${(e) => this.onCopy(e, coll.loadUrl)}" class="copy"><fa-icon .svg="${fasCopy}"/></a>
+          <p class="minihead">Imported From</p>
+          ${coll.loadUrl}
+          <a @click="${(e) => this.onCopy(e, coll.loadUrl)}" class="copy"><fa-icon .svg="${fasCopy}"/></a>
         </div>` : ""}
       </div>
       ${this.shareWarn ? this.renderShareWarn(): ""}
@@ -176,80 +215,95 @@ class WrRecCollInfo extends CollInfo
   }
 
   renderIPFSSharing() {
-    return html`
-    <div class="column">
-      <p class="minihead">Sharing (via IPFS)</p>
-      <div class="button-row is-flex">
-        ${this.ipfsURL ? html`
-
-          <div class="is-flex is-flex-direction-column">
-            <div class="dropdown is-up ${this.showShareMenu ? "is-active" : ""}">
-              <div class="dropdown-trigger">
-                <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? "is-loading" : ""}"" aria-haspopup="true" aria-controls="dropdown-menu">
-                  <span>Sharing!</span>
-                  <span class="icon">
-                    <fa-icon .svg=${fasCaretUp}></fa-icon>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
-                <div class="dropdown-content">
-                  <div class="dropdown-item">
-                    <i class="is-size-7">${this.ipfsOpts && this.ipfsOpts.message || ""}</i>
-                  </div>
-                  <hr class="dropdown-divider"/>
-                  <a @click="${this.onPin}" class="dropdown-item">
-                    <span class="icon is-small">
-                      <fa-icon .svg="${fasReshare}"></fa-icon>
-                    </span>
-                    Reshare Latest
-                  </a>
-                  <hr class="dropdown-divider"/>
-                  <a @click="${this.onCopyIPFSLink}" class="dropdown-item">
-                    <span class="icon is-small">
-                      <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                    </span>
-                    Copy IPFS URL
-                  </a>
-                  <a @click="${this.onCopyGatewayLink}" class="has-text-weight-bold dropdown-item">
-                    <span class="icon is-small">
-                      <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                    </span>
-                    Copy Gateway Link
-                  </a>
-                  <a @click="${this.onCopyRWPLink}" class="dropdown-item">
-                    <span class="icon is-small">
-                      <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
-                    </span>
-                    Copy Shareable ReplayWeb.page Link
-                  </a>
-                </div>
-              </div>
-            </div>
-            <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
-          </div>
-
-          <button class="button is-small" @click="${this.onUnpin}">
-            <span class="icon is-small">
-              <fa-icon .svg="${fasX}"></fa-icon>
-            </span>
-            <span>Stop Sharing</span>
-          </button>
-
-          `: html`
-        
-          <div class="is-flex is-flex-direction-column">
-            <button class="button is-small ${this.shareWait ? "is-loading" : ""}" @click="${this.onPinOrWarn}">
-              <span class="icon is-small">
-                <fa-icon .svg="${fasShare}"></fa-icon>
+    return this.ipfsURL ? html`
+      <div class="is-flex is-flex-direction-column">
+        <div class="dropdown is-up ${this.showShareMenu ? "is-active" : ""}">
+          <div class="dropdown-trigger">
+            <button @click="${this.onShowShareMenu}" class="button is-link is-light is-small ${this.shareWait ? "is-loading" : ""}"" aria-haspopup="true" aria-controls="dropdown-menu">
+              <span>Sharing!</span>
+              <span class="icon">
+                <fa-icon .svg=${fasCaretUp}></fa-icon>
               </span>
-              <span>Start Sharing</span>
             </button>
-            <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
           </div>
-        `}
+          <div class="dropdown-menu" id="dropdown-menu" role="menu" style="z-index: 100">
+            <div class="dropdown-content">
+              <div class="dropdown-item">
+                <i class="is-size-7">${this.ipfsOpts && this.ipfsOpts.message || ""}</i>
+              </div>
+              <hr class="dropdown-divider"/>
+              <a @click="${this.onPin}" class="dropdown-item">
+                <span class="icon is-small">
+                  <fa-icon .svg="${fasReshare}"></fa-icon>
+                </span>
+                Reshare Latest
+              </a>
+              <hr class="dropdown-divider"/>
+              <a @click="${this.onCopyIPFSLink}" class="dropdown-item">
+                <span class="icon is-small">
+                  <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                </span>
+                Copy IPFS URL
+              </a>
+              <a @click="${this.onCopyGatewayLink}" class="has-text-weight-bold dropdown-item">
+                <span class="icon is-small">
+                  <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                </span>
+                Copy Gateway Link
+              </a>
+              <a @click="${this.onCopyRWPLink}" class="dropdown-item">
+                <span class="icon is-small">
+                  <fa-icon size="0.8em" .svg="${fasShare}"></fa-icon>
+                </span>
+                Copy Shareable ReplayWeb.page Link
+              </a>
+            </div>
+          </div>
+        </div>
+        <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
       </div>
-    </div>`;
+
+      <button class="button is-small" @click="${this.onUnpin}">
+        <span class="icon is-small">
+          <fa-icon .svg="${fasX}"></fa-icon>
+        </span>
+        <span>Stop Sharing</span>
+      </button>
+
+      `: html`
+    
+      <div class="is-flex is-flex-direction-column">
+        <button class="button is-small ${this.shareWait ? "is-loading" : ""}" @click="${this.onPinOrWarn}">
+          <span class="icon is-small">
+            <fa-icon .svg="${fasShare}"></fa-icon>
+          </span>
+          <span>Start</span>
+        </button>
+        <progress value="${this.shareProgressSize}" max="${this.shareProgressTotalSize}" class="progress is-small ${this.shareProgressTotalSize ? "mini" : "is-hidden"}"></progress>
+      </div>
+    `;
+  }
+
+  renderBtrixUpload() {
+    const { uploadId, uploadTime } = this.coll;
+
+    return html`
+    <div class="is-flex is-flex-direction-column">
+      <button @click="${this.onUpload}" class="button is-small" title="Upload to Cloud">
+        <span class="icon">
+        ${uploadTime && uploadId ?
+    !this.isUploadNeeded ? html`
+          <fa-icon aria-hidden="true" class="has-text-success" .svg="${fasCheck}"></fa-icon>
+          ` : html `
+          <fa-icon aria-hidden="true" class="has-text-warning-dark" .svg="${fasSync}"></fa-icon>
+          `
+    : html`
+          <fa-icon aria-hidden="true" size="2.2em" .svg="${btrixCloud}"></fa-icon>
+          `}
+        </span>
+      </button>
+    </div>
+    `;
   }
 
   renderShareWarn() {
@@ -426,6 +480,11 @@ class WrRecCollInfo extends CollInfo
 
     this.showShareMenu = false;
     navigator.clipboard.writeText(ipfsPath);
+  }
+
+  onUpload() {
+    const detail = {coll: this.coll, isUploadNeeded: this.isUploadNeeded};
+    this.dispatchEvent(new CustomEvent("do-upload", {bubbles: true, composed: true, detail}));
   }
 
   async doDelete() {

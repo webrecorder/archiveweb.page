@@ -22,7 +22,7 @@
     "multiformats": "^10.0.2",
     "node-fetch": "2.6.7",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^1.8.3",
+    "replaywebpage": "^1.8.4",
     "stream-browserify": "^3.0.0",
     "unused-filename": "^4.0.1",
     "uuid": "^8.3.2",

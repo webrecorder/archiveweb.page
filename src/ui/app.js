@@ -641,7 +641,7 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderSettingsModal() {
     return html`
-    <wr-modal @modal-closed="${() => this.showSettings = false}" title="Settings">
+    <wr-modal @modal-closed="${this.onCancelSettings}" title="Settings">
       <div class="tabs mb-3">
         <ul>
           <li class="${this.settingsTab === "ipfs" ? "is-active" : ""}">
@@ -719,7 +719,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="has-text-centered has-text-danger">${this.settingsError}</div>
         <div class="has-text-centered mt-4">
           <button class="button is-primary" type="submit">Save</button>
-          <button class="button" type="button" @click="${() => this.showSettings = false}">Close</button>
+          <button class="button" type="button" @click="${this.onCancelSettings}">Cancel</button>
         </div>
       </form>
     </wr-modal>
@@ -875,20 +875,20 @@ class ArchiveWebApp extends ReplayWebApp
       const orgName = btrixOrgName && btrixOrgName.value || "";
 
       if (url && username && password) {
-        this.btrixOpts = { url, username, password, orgName };
+        const btrixOpts = { url, username, password, orgName };
 
         let client;
 
         try {
-          client = await BtrixClient.login(this.btrixOpts);
+          client = await BtrixClient.login(btrixOpts);
           this.settingsError = "";
         } catch (e) {
           this.settingsError = "Unable to log in to Browsertrix Cloud. Check your credentials.";
           return false;
         }
 
-        localStorage.setItem("btrixOpts", JSON.stringify(this.btrixOpts));
-        this.btrixOpts.client = client;
+        localStorage.setItem("btrixOpts", JSON.stringify(btrixOpts));
+        this.btrixOpts = {...btrixOpts, client};
       } else {
         this.btrixOpts = null;
         localStorage.removeItem("btrixOpts");
@@ -900,6 +900,11 @@ class ArchiveWebApp extends ReplayWebApp
     this.showSettings = false;
 
     return false;
+  }
+
+  async onCancelSettings() {
+    this.settingsError = null;
+    this.showSettings = false;
   }
 
   async checkIPFS() {

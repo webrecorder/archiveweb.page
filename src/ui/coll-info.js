@@ -113,7 +113,7 @@ class WrRecCollInfo extends CollInfo
   firstUpdated() {
     this.renderRoot.addEventListener("click", () => this.showShareMenu = false);
 
-    this.isUploadNeeded = (this.coll && this.coll.lastUploadTime && this.coll.mtime > this.coll.lastUploadTime);
+    this.isUploadNeeded = (this.coll && this.coll.uploadTime && this.coll.mtime > this.coll.uploadTime);
   }
 
   updated(changedProps) {
@@ -133,7 +133,7 @@ class WrRecCollInfo extends CollInfo
         this.ipfsURL = this.coll.ipfsPins[this.coll.ipfsPins.length - 1].url;
       }
 
-      this.isUploadNeeded = (this.coll && this.coll.lastUploadTime && this.coll.mtime > this.coll.lastUploadTime);
+      this.isUploadNeeded = (this.coll && this.coll.uploadTime && this.coll.mtime > this.coll.uploadTime);
     }
   }
 
@@ -201,7 +201,7 @@ class WrRecCollInfo extends CollInfo
           ${hasIpfs ? this.renderIPFSSharing() : ""}
           </div>
         </div>
-        ` : ``}
+        ` : ""}
 
         ${coll.loadUrl ? html`
         <div class="column is-3">
@@ -285,19 +285,19 @@ class WrRecCollInfo extends CollInfo
   }
 
   renderBtrixUpload() {
-    const { lastUploadId, lastUploadTime } = this.coll;
+    const { uploadId, uploadTime } = this.coll;
 
     return html`
     <div class="is-flex is-flex-direction-column">
       <button @click="${this.onUpload}" class="button is-small" title="Upload to Cloud">
         <span class="icon">
-        ${lastUploadTime && lastUploadId ?
-          !this.isUploadNeeded ? html`
+        ${uploadTime && uploadId ?
+    !this.isUploadNeeded ? html`
           <fa-icon aria-hidden="true" class="has-text-success" .svg="${fasCheck}"></fa-icon>
           ` : html `
           <fa-icon aria-hidden="true" class="has-text-warning-dark" .svg="${fasSync}"></fa-icon>
           `
-          : html`
+    : html`
           <fa-icon aria-hidden="true" size="2.2em" .svg="${btrixCloud}"></fa-icon>
           `}
         </span>
@@ -483,13 +483,6 @@ class WrRecCollInfo extends CollInfo
   }
 
   onUpload() {
-    // const id = this.coll.id;
-    // const title = this.coll.title;
-    // const size = this.coll.size || 0;
-    // const isUploadNeeded = this.isUploadNeeded;
-    // const lastUploadTime = this.coll.lastUploadTime;
-    // const lastUploadId = this.coll.lastUploadId;
-    // const detail = {id, title, size, isUploadNeeded, lastUploadTime, lastUploadId};
     const detail = {coll: this.coll, isUploadNeeded: this.isUploadNeeded};
     this.dispatchEvent(new CustomEvent("do-upload", {bubbles: true, composed: true, detail}));
   }

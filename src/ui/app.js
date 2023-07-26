@@ -14,6 +14,8 @@ import "./coll-info";
 import "./coll-index";
 import "./recordembed";
 
+import { BtrixClient } from "./upload";
+
 import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
 import prettyBytes from "pretty-bytes";
@@ -39,6 +41,10 @@ class ArchiveWebApp extends ReplayWebApp
     this.colls = [];
     this.autorun = false;
 
+    this.settingsError = "";
+
+    this.settingsTab = localStorage.getItem("settingsTab") || "ipfs";
+
     try {
       const res = localStorage.getItem("ipfsOpts");
       this.ipfsOpts = JSON.parse(res);      
@@ -46,7 +52,21 @@ class ArchiveWebApp extends ReplayWebApp
       // ignore empty
     }
 
-    this.ipfsOpts = this.ipfsOpts || {daemonUrl: "", message: "", useCustom: false, gatewayUrl: DEFAULT_GATEWAY_URL};
+    this.ipfsOpts = this.ipfsOpts || {
+      daemonUrl: "",
+      message: "",
+      useCustom: false,
+      autoDetect: false,
+      gatewayUrl: DEFAULT_GATEWAY_URL
+    };
+
+    try {
+      const res = localStorage.getItem("btrixOpts");
+      this.btrixOpts = JSON.parse(res);
+      BtrixClient.login(this.btrixOpts).then(client => this.btrixOpts.client = client);
+    } catch (e) {
+      this.btrixOpts = null;
+    }
 
     getLocalOption("autorunBehaviors").then((res) => this.autorun = res === "1");
 
@@ -81,10 +101,15 @@ class ArchiveWebApp extends ReplayWebApp
       download: { type: Object },
 
       ipfsOpts: { type: Object },
+      btrixOpts: { type: Object },
+
+      uploadCollOpts: { type: Object },
 
       showSettings: {type: Boolean },
+      settingsTab: { type: String },
+      settingsError: { type: String },
 
-      showIpfsShareFailed: { type: Boolean }
+      showIpfsShareFailed: { type: Boolean },
     };
   }
 
@@ -324,11 +349,12 @@ class ArchiveWebApp extends ReplayWebApp
       <wr-rec-coll-index
        dateName="Date Created"
        headerName="Current Web Captures"
-       .ipfsOpts=${this.ipfsOpts}
+       .shareOpts=${{ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts}}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
        @colls-updated=${this.onCollsLoaded}
        @ipfs-share-failed=${() => this.showIpfsShareFailed = true}
+       @do-upload=${(e) => this.uploadCollOpts = e.detail}
        style="overflow: visible"
        >
       </wr-rec-coll-index>
@@ -343,6 +369,7 @@ class ArchiveWebApp extends ReplayWebApp
     ${this.showDownloadProgress && this.download ? this.renderDownloadModal() : ""}
     ${this.showSettings ? this.renderSettingsModal() : ""}
     ${this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""}
+    ${this.uploadCollOpts && this.btrixOpts ? this.renderBtrixUploadModal() : ""}
     ${super.render()}`;
   }
 
@@ -355,7 +382,7 @@ class ArchiveWebApp extends ReplayWebApp
     .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
     .appLogo="${this.mainLogo}"
     .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
-    .ipfsOpts=${this.ipfsOpts}
+    .shareOpts=${{ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts}}
     swName=${this.swName}
     embed="${this.embed}"
     sourceUrl="${this.sourceUrl}"
@@ -366,6 +393,7 @@ class ArchiveWebApp extends ReplayWebApp
     @coll-loaded=${this.onCollLoaded}
     @show-start=${this.onShowStart}
     @show-import=${this.onShowImport}
+    @do-upload=${(e) => this.uploadCollOpts = e.detail}
     @about-show=${() => this.showAbout = true}></wr-rec-coll>`;
   }
 
@@ -465,6 +493,15 @@ class ArchiveWebApp extends ReplayWebApp
         <p>(Check the IPFS settings and try again.)</p>
       </div>
     </wr-modal`;
+  }
+
+  renderBtrixUploadModal() {
+    return html`
+      <wr-btrix-upload
+      .btrixOpts=${this.btrixOpts}
+      .uploadColl=${this.uploadCollOpts}
+      >
+      </wr-btrix-upload>`;
   }
 
   renderDownloadModal() {
@@ -604,27 +641,85 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderSettingsModal() {
     return html`
-    <wr-modal @modal-closed="${() => this.showSettings = false}" title="Settings">
-      <form class="is-flex is-flex-direction-column" @submit="${this.onSaveSettings}">
-        <div class="field has-addons">
-          <p class="control is-expanded">
-            IPFS Daemon URL (leave blank to auto-detect IPFS):
-            <input class="input" type="url"
-            name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsOpts.daemonUrl}"
-            placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS">
-          </p>
-        </div>
-        <div class="field has-addons">
-          <p class="control is-expanded">
-            IPFS Gateway URL:
-            <input class="input" type="url"
-            name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsOpts.gatewayUrl}"
-            placeholder="${DEFAULT_GATEWAY_URL}">
-          </p>
-        </div>
-        <div class="has-text-centered">
+    <wr-modal @modal-closed="${this.onCancelSettings}" title="Settings">
+      <div class="tabs mb-3">
+        <ul>
+          <li class="${this.settingsTab === "ipfs" ? "is-active" : ""}">
+            <a @click=${() => this.settingsTab = "ipfs"}>IPFS</a>
+          </li>
+          <li class="${this.settingsTab === "browsertrix" ? "is-active" : ""}">
+            <a @click=${() => this.settingsTab = "browsertrix"}>Browsertrix Cloud</a>
+          </li>
+        </ul>
+      </div>
+
+      <form class="is-flex is-flex-direction-column is-size-7" @submit="${this.onSaveSettings}">
+
+        ${this.settingsTab === "ipfs" ? html`
+        <p class="is-size-6 mb-3">Configure IPFS settings for sharing archives to IPFS.</p>
+        <fieldset>
+          <div class="field">
+            <input name="ipfsAutoDetect" id="ipfsAutoDetect" class="checkbox is-small" type="checkbox" ?checked="${this.ipfsOpts.autoDetect}"><span class="ml-1">Auto-Detect IPFS</span>
+          </div>
+          <div class="field has-addons">
+            <p class="is-expanded">
+              IPFS Daemon URL (leave blank to auto-detect IPFS):
+              <input class="input is-small" type="url"
+              name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsOpts.daemonUrl}"
+              placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS">
+            </p>
+          </div>
+          <div class="field has-addons">
+            <p class="is-expanded">
+              IPFS Gateway URL:
+              <input class="input is-small" type="url"
+              name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsOpts.gatewayUrl}"
+              placeholder="${DEFAULT_GATEWAY_URL}">
+            </p>
+          </div>
+        </fieldset>` : ""}
+
+        ${this.settingsTab === "browsertrix" ? html`
+        <p class="is-size-6 mb-3">Configure your credentials to upload archives to Browsertrix Cloud.</p>
+        <fieldset>
+          <div class="field has-addons">
+            <p class="is-expanded">
+              Browsertrix Cloud URL:
+              <input class="input is-small" type="url"
+              name="btrixUrl" id="btrixUrl" value="${this.btrixOpts && this.btrixOpts.url}"
+              placeholder="https://...">
+            </p>
+          </div>
+          <div class="field has-addons">
+            <p class="is-expanded">
+              Username
+              <input class="input is-small" type="text"
+              name="btrixUsername" id="btrixUsername" value="${this.btrixOpts && this.btrixOpts.username}"
+              placeholder="Username">
+            </p>
+          </div>
+          <div class="field has-addons">
+            <p class="is-expanded">
+              Password
+              <input class="input is-small" type="password"
+              name="btrixPassword" id="btrixPassword" value="${this.btrixOpts && this.btrixOpts.password}"
+              placeholder="Password">
+            </p>
+          </div>
+          <div class="field has-addons">
+            <p class="is-expanded">
+              Organization Name (Optional)
+              <input class="input is-small" type="text"
+              name="btrixOrgName" id="btrixOrgName" value="${this.btrixOpts && this.btrixOpts.orgName}"
+              placeholder="Organization (optional)">
+            </p>
+          </div>
+        </fieldset>
+        ` : ""}
+        <div class="has-text-centered has-text-danger">${this.settingsError}</div>
+        <div class="has-text-centered mt-4">
           <button class="button is-primary" type="submit">Save</button>
-          <button class="button" type="button" @click="${() => this.showSettings = false}">Close</button>
+          <button class="button" type="button" @click="${this.onCancelSettings}">Cancel</button>
         </div>
       </form>
     </wr-modal>
@@ -746,33 +841,70 @@ class ArchiveWebApp extends ReplayWebApp
 
   async onSaveSettings(event) {
     event.preventDefault();
-    this.showSettings = false;
-    
+
+    // IPFS settings
     const daemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
     const gatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
+    const autodetectCheck = this.renderRoot.querySelector("#ipfsAutoDetect");
 
-    if (!daemonUrlText || !gatewayUrlText) {
-      return;
+    if (daemonUrlText && gatewayUrlText) {
+      const daemonUrl = daemonUrlText.value;
+      const gatewayUrl = gatewayUrlText.value;
+      const autoDetect = autodetectCheck && autodetectCheck.checked;
+
+      this.ipfsOpts = {
+        daemonUrl, useCustom: !!daemonUrl, gatewayUrl,
+        autoDetect
+      };
+
+      await this.checkIPFS();
+
+      localStorage.setItem("ipfsOpts", JSON.stringify(this.ipfsOpts));
     }
 
-    const daemonUrl = daemonUrlText.value;
-    const gatewayUrl = gatewayUrlText.value;
+    // Browsertrix Settings
+    const btrixUrl = this.renderRoot.querySelector("#btrixUrl");
+    const btrixUsername = this.renderRoot.querySelector("#btrixUsername");
+    const btrixPassword = this.renderRoot.querySelector("#btrixPassword");
+    const btrixOrgName = this.renderRoot.querySelector("#btrixOrgName");
 
-    //const method = "POST";
+    if (btrixUrl && btrixUsername && btrixPassword) {
+      const url = btrixUrl.value;
+      const username = btrixUsername.value;
+      const password = btrixPassword.value;
+      const orgName = btrixOrgName && btrixOrgName.value || "";
 
-    //const body = JSON.stringify({daemonUrl});
+      if (url && username && password) {
+        const btrixOpts = { url, username, password, orgName };
 
-    //const resp = await fetch(`${apiPrefix}/ipfs/daemonUrl`, {method, body});
+        let client;
 
-    this.ipfsOpts = {
-      daemonUrl, useCustom: !!daemonUrl, gatewayUrl
-    };
+        try {
+          client = await BtrixClient.login(btrixOpts);
+          this.settingsError = "";
+        } catch (e) {
+          this.settingsError = "Unable to log in to Browsertrix Cloud. Check your credentials.";
+          return false;
+        }
 
-    await this.checkIPFS();
+        localStorage.setItem("btrixOpts", JSON.stringify(btrixOpts));
+        this.btrixOpts = {...btrixOpts, client};
+      } else {
+        this.btrixOpts = null;
+        localStorage.removeItem("btrixOpts");
+      }
+    }
 
-    localStorage.setItem("ipfsOpts", JSON.stringify(this.ipfsOpts));
+    localStorage.setItem("settingsTab", this.settingsTab);
+
+    this.showSettings = false;
 
     return false;
+  }
+
+  async onCancelSettings() {
+    this.settingsError = null;
+    this.showSettings = false;
   }
 
   async checkIPFS() {
@@ -785,7 +917,7 @@ class ArchiveWebApp extends ReplayWebApp
       return;
     }
 
-    if (!ipfsOpts.daemonUrl) {
+    if (!ipfsOpts.daemonUrl && ipfsOpts.autoDetect) {
       // eslint-disable-next-line no-undef
       const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
 

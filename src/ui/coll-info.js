@@ -127,7 +127,7 @@ class WrRecCollInfo extends CollInfo
     return html`
       <div class="columns">
         <div class="column is-2">
-          <p class="minihead">Title</p>
+          <p class="minihead">Name</p>
           <span class="subtitle has-text-weight-bold">
             ${detailed ? html`
             ${coll.title}
@@ -149,7 +149,7 @@ class WrRecCollInfo extends CollInfo
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
             </a>
-            <button @click="${this.onShowImport}" class="button is-small" title="Import Archive">
+            <button @click="${this.onShowImport}" class="button is-small" title="Import File">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${fasUpload}"></fa-icon>
               </span>

@@ -381,7 +381,7 @@ class RecPopup extends LitElement
     if (!this.canRecord) {
       if (this.pageUrl && this.pageUrl.startsWith(this.extRoot)) {
         return html`
-          <p class="is-size-7">This page is part of the extension. You can view existing archives from here.
+          <p class="is-size-7">This page is part of the extension. You can view existing web captures from here.
           To start a new archiving session, click the
           <wr-icon .src="${wrRec}"></wr-icon> Start Archiving button and enter a new URL.
           </p>
@@ -418,7 +418,7 @@ class RecPopup extends LitElement
             <a @click="${() => this.collDrop = "create"}" class="dropdown-item">
               <span class="icon is-small">
                 <wr-icon .src="${fasPlus}"></wr-icon>
-              </span>Create New Archive...
+              </span>New Web Capture
             </a>
             <hr class="dropdown-divider">` : ""}
             ${this.collections.map((coll) => html`
@@ -455,9 +455,9 @@ class RecPopup extends LitElement
     <div class="view-row is-marginless" style="background-color: #ddddff">
       <form @submit="${this.onNewColl}">
         <div class="flex-form">
-          <label for="new-name" class="is-size-7 is-italic">Create New Archive:</label>
+          <label for="new-name" class="is-size-7 is-italic">Create New Web Capture:</label>
           <div class="control">
-            <input class="input is-small" id="new-name" type="text" required placeholder="Enter Archive Name">
+            <input class="input is-small" id="new-name" type="text" required placeholder="Enter Web Capture Name">
           </div>
           <button class="button is-small is-outlined" type="submit">
             <wr-icon .src=${fasCheck}></wr-icon>
@@ -500,7 +500,7 @@ class RecPopup extends LitElement
                 <wr-icon .src=${wrRec}></wr-icon>` : html`
                 <wr-icon .src=${fasBox}></wr-icon>`}
             </span>
-            <span>${!this.recording ? "Start Session" : "Stop Session"}</span>
+            <span>${!this.recording ? "Start Archiving" : "Stop Archiving"}</span>
           </button>
           ` : ""}
         </div>
@@ -508,7 +508,7 @@ class RecPopup extends LitElement
         <div class="view-row is-marginless">
           <div>
             ${this.canRecord ? html`
-            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Archive</a></p>` : ""}
+            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Web Capture</a></p>` : ""}
           </div>
           ${this.renderStartOpt()}
         </div>

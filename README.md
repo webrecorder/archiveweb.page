@@ -20,7 +20,7 @@ The codebase for the extension and Electron app is shared, but they can be deplo
 
 ### Requirements Building
 
-To developer ArchiveWeb.page, Node 12+ and Yarn are needed.
+To develop ArchiveWeb.page, Node 12+ and Yarn are needed.
 
 ## Using the Extension
 

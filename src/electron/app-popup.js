@@ -75,7 +75,7 @@ class AppRecPopup extends RecPopup
   }
 
   getHomePage() {
-    return "replay/index.html";
+    return "index.html";
   }
 
   get extRoot() {

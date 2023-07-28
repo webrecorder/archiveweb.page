@@ -209,9 +209,9 @@ class BrowserRecorder extends Recorder {
       color = "#64e986";
     }
 
-    chrome.browserAction.setTitle({title, tabId});
-    chrome.browserAction.setBadgeBackgroundColor({color, tabId});
-    chrome.browserAction.setBadgeText({text, tabId});
+    chrome.action.setTitle({title, tabId});
+    chrome.action.setBadgeBackgroundColor({color, tabId});
+    chrome.action.setBadgeText({text, tabId});
 
     if (this.port) {
       const status = this.getStatusMsg();

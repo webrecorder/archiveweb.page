@@ -317,11 +317,11 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="message is-small">
           <div class="message-body">
             <div class="buttons">
-              <button class="button is-small no-pad-mobile" title="New Web Capture" @click="${() => this.showNew = "show"}">
+              <button class="button is-small no-pad-mobile" title="New Archiving Session" @click="${() => this.showNew = "show"}">
                 <span class="icon">
                   <fa-icon .svg=${fasPlus}></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">New Web Capture</span>
+                <span class="is-hidden-mobile">New Archiving Session</span>
               </button>
               <button class="button is-small no-pad-mobile" title="Import File" @click="${() => this.showImport = true}">
                 <span class="icon">
@@ -348,7 +348,7 @@ class ArchiveWebApp extends ReplayWebApp
 
       <wr-rec-coll-index
        dateName="Date Created"
-       headerName="Current Web Captures"
+       headerName="Archived Items"
        .shareOpts=${{ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts}}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
@@ -450,11 +450,11 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderNewCollModal() {
     return html`
-    <wr-modal @modal-closed="${() => this.showNew = null}" title="New Web Capture">
+    <wr-modal @modal-closed="${() => this.showNew = null}" title="New Archiving Session">
       <form @submit="${this.onNewColl}" class="create-new">
         <div class="field has-addons">
           <p class="control is-expanded">
-            <input type="text" id="new-title" name="new-title" class="input" required placeholder="Give this web capture a name">
+            <input type="text" id="new-title" name="new-title" class="input" required placeholder="Give this archiving session a name">
           </p>
           <div class="control">
             <button type="submit" class="button is-hidden-mobile is-primary ${this.showNew === "loading" ? "is-loading " : ""}" ?disabled="${this.showNew === "loading"}">Create</button>
@@ -477,7 +477,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="control">
           <label class="checkbox">
             <input type="checkbox" name="add-existing" .checked="${this.isImportExisting}" @change="${(e) => this.isImportExisting = e.currentTarget.checked}">
-            Add to an existing web capture${this.isImportExisting ? ":" : ""}
+            Add to an existing item${this.isImportExisting ? ":" : ""}
           </label>
         </div>
         ${this.isImportExisting ? this.renderCollList() : ""}
@@ -617,7 +617,7 @@ class ArchiveWebApp extends ReplayWebApp
 
                   <p class="is-size-7">ArchiveWeb.page includes an experimental sharing option for each archive collection. Users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
                   Once shared on this network, the data may become accessible to others.
-                  All web captures are private and not shared by default, unless explicitly opted-in by the user. (A warning is displayed when sharing via IPFS.)</p>
+                  All archived items are private and not shared by default, unless explicitly opted-in by the user. (A warning is displayed when sharing via IPFS.)</p>
 
                   <h4>Disclaimer of Warranties</h4>
                   <p class="is-size-7">The application is provided "as is" without any guarantees.</p>
@@ -656,7 +656,7 @@ class ArchiveWebApp extends ReplayWebApp
       <form class="is-flex is-flex-direction-column is-size-7" @submit="${this.onSaveSettings}">
 
         ${this.settingsTab === "ipfs" ? html`
-        <p class="is-size-6 mb-3">Configure IPFS settings for sharing archives to IPFS.</p>
+        <p class="is-size-6 mb-3">Configure settings for sharing archived items to IPFS.</p>
         <fieldset>
           <div class="field">
             <input name="ipfsAutoDetect" id="ipfsAutoDetect" class="checkbox is-small" type="checkbox" ?checked="${this.ipfsOpts.autoDetect}"><span class="ml-1">Auto-Detect IPFS</span>
@@ -680,7 +680,7 @@ class ArchiveWebApp extends ReplayWebApp
         </fieldset>` : ""}
 
         ${this.settingsTab === "browsertrix" ? html`
-        <p class="is-size-6 mb-3">Configure your credentials to upload archives to Browsertrix Cloud.</p>
+        <p class="is-size-6 mb-3">Configure your credentials to upload archived items to Browsertrix Cloud.</p>
         <fieldset>
           <div class="field has-addons">
             <p class="is-expanded">

@@ -131,7 +131,7 @@ class WrRecCollIndex extends CollIndex
   }
 
   renderEmpty() {
-    return html`No web captures. Click "Create Web Capture" above to begin archiving pages!`;
+    return html`No archived items. Click "New Archiving Session" above to begin archiving pages!`;
   }
 }
 

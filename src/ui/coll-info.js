@@ -311,14 +311,14 @@ class WrRecCollInfo extends CollInfo
     <wr-modal bgClass="has-background-warning" @modal-closed="${() => this.shareWarn = false}" title="Start Sharing?">
       <div class="content is-size-7">
         <p>
-          Do you want to share the all the pages in the archive "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
+          Do you want to share the all the content in "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
           distributed storage network?
         </p>
-        <p>Your archive will have a unique link which can be shared with others to load your archive
+        <p>Your archiving session will have a unique link which can be shared with others to load it 
         via ReplayWeb.page. All archived data is loaded on-demand when replayed. This feature is experimental and likely works best with smaller archives.</p>
         <p>You can cancel sharing at anytime. 
         </p>
-        <p><b>Once shared, this data leaves your computer and could be read by others.</b></p>
+        <p><b>Once shared, this data leaves your computer and can be read by others.</b></p>
         <p>If you do not wish to share this data, click Cancel.</p>
       </div>
       <div class="content">

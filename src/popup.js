@@ -381,7 +381,7 @@ class RecPopup extends LitElement
     if (!this.canRecord) {
       if (this.pageUrl && this.pageUrl.startsWith(this.extRoot)) {
         return html`
-          <p class="is-size-7">This page is part of the extension. You can view existing web captures from here.
+          <p class="is-size-7">This page is part of the extension. You can view existing archived items from here.
           To start a new archiving session, click the
           <wr-icon .src="${wrRec}"></wr-icon> Start Archiving button and enter a new URL.
           </p>
@@ -418,7 +418,7 @@ class RecPopup extends LitElement
             <a @click="${() => this.collDrop = "create"}" class="dropdown-item">
               <span class="icon is-small">
                 <wr-icon .src="${fasPlus}"></wr-icon>
-              </span>New Web Capture
+              </span>New Archiving Session
             </a>
             <hr class="dropdown-divider">` : ""}
             ${this.collections.map((coll) => html`
@@ -455,9 +455,9 @@ class RecPopup extends LitElement
     <div class="view-row is-marginless" style="background-color: #ddddff">
       <form @submit="${this.onNewColl}">
         <div class="flex-form">
-          <label for="new-name" class="is-size-7 is-italic">Create New Web Capture:</label>
+          <label for="new-name" class="is-size-7 is-italic">New Archiving Session:</label>
           <div class="control">
-            <input class="input is-small" id="new-name" type="text" required placeholder="Enter Web Capture Name">
+            <input class="input is-small" id="new-name" type="text" required placeholder="Enter Archiving Session Name">
           </div>
           <button class="button is-small is-outlined" type="submit">
             <wr-icon .src=${fasCheck}></wr-icon>
@@ -508,7 +508,7 @@ class RecPopup extends LitElement
         <div class="view-row is-marginless">
           <div>
             ${this.canRecord ? html`
-            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">Browse Web Capture</a></p>` : ""}
+            <p><a target="_blank" href="${this.getCollPage()}" class="is-size-6">View Archived Pages</a></p>` : ""}
           </div>
           ${this.renderStartOpt()}
         </div>
@@ -527,7 +527,7 @@ class RecPopup extends LitElement
         <div class="view-row underline">
           <div class="session-head">Archived in this tab</div>
           ${this.replayUrl ? 
-    html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">View Archived Page</a>` : ""}
+    html`<a target="_blank" class="is-size-6" href="${this.replayUrl}">Replay Current Page</a>` : ""}
         </div>
         <div class="view-row">
           <table class="status">

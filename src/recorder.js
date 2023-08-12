@@ -20,6 +20,8 @@ const MAX_CONCURRENT_FETCH = 6;
 
 const MAIN_INJECT_URL = "__awp_main_inject__";
 
+const IFRAME_INJECT_URL = "__awp_iframe_inject__";
+
 const BEHAVIOR_LOG_FUNC = "__bx_log";
 
 // ===========================================================================
@@ -322,7 +324,7 @@ class Recorder {
   async _doInjectIframe(sessions) {
     try {
       //console.log("inject to: " + sessions[0]);
-      await this.pageEval("__awp_iframe_inject__", this.getInjectScript(), sessions);
+      await this.pageEval(IFRAME_INJECT_URL, this.getInjectScript(), sessions);
 
     } catch (e) {
       console.warn(e);
@@ -796,9 +798,10 @@ class Recorder {
   }
 
   async initFirstPage() {
+    // Disable debugger intercept due to occasional crashes on some pages
     // Enable unload pause only on first full page that is being recorded
-    await this.send("Debugger.enable");
-    await this.send("DOMDebugger.setEventListenerBreakpoint", {"eventName": "beforeunload"});
+    //await this.send("Debugger.enable");
+    //await this.send("DOMDebugger.setEventListenerBreakpoint", {"eventName": "beforeunload"});
     this.updateStatus();
     this.firstPageStarted = true;
   }
@@ -958,7 +961,7 @@ class Recorder {
 
     if (!continued) {
       try {
-        await this.send("Fetch.continueRequest", {requestId: params.requestId }, sessions);
+        await this.send("Fetch.continueResponse", {requestId: params.requestId }, sessions);
       } catch(e) {
         console.warn("Continue failed for: " + params.request.url, e);
       }

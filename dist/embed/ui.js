@@ -24,7 +24,7 @@ var n;const l=window.trustedTypes,c=l?l.emptyScript:"",d=window.reactiveElementP
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-var b;f.finalized=!0,f.elementProperties=new Map,f.elementStyles=[],f.shadowRootOptions={mode:"open"},null==d||d({ReactiveElement:f}),(null!==(n=globalThis.reactiveElementVersions)&&void 0!==n?n:globalThis.reactiveElementVersions=[]).push("1.1.1");const m=globalThis.trustedTypes,g=m?m.createPolicy("lit-html",{createHTML:e=>e}):void 0,v=`lit$${(Math.random()+"").slice(9)}$`,w="?"+v,x=`<${w}>`,k=document,y=(e="")=>k.createComment(e),$=e=>null===e||"object"!=typeof e&&"function"!=typeof e,_=Array.isArray,S=e=>{var t;return _(e)||"function"==typeof(null===(t=e)||void 0===t?void 0:t[Symbol.iterator])},z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,C=/-->/g,I=/>/g,A=/>|[ 	\n\r](?:([^\s"'>=/]+)([ 	\n\r]*=[ 	\n\r]*(?:[^ 	\n\r"'`<>=]|("|')|))|$)/g,U=/'/g,P=/"/g,L=/^(?:script|style|textarea)$/i,D=e=>(t,...i)=>({_$litType$:e,strings:t,values:i}),T=D(1),E=(D(2),Symbol.for("lit-noChange")),R=Symbol.for("lit-nothing"),O=new WeakMap,M=k.createTreeWalker(k,129,null,!1),q=(e,t)=>{const i=e.length-1,a=[];let r,o=2===t?"<svg>":"",s=z;for(let t=0;t<i;t++){const i=e[t];let n,l,c=-1,d=0;for(;d<i.length&&(s.lastIndex=d,l=s.exec(i),null!==l);)d=s.lastIndex,s===z?"!--"===l[1]?s=C:void 0!==l[1]?s=I:void 0!==l[2]?(L.test(l[2])&&(r=RegExp("</"+l[2],"g")),s=A):void 0!==l[3]&&(s=A):s===A?">"===l[0]?(s=null!=r?r:z,c=-1):void 0===l[1]?c=-2:(c=s.lastIndex-l[2].length,n=l[1],s=void 0===l[3]?A:'"'===l[3]?P:U):s===P||s===U?s=A:s===C||s===I?s=z:(s=A,r=void 0);const h=s===A&&e[t+1].startsWith("/>")?" ":"";o+=s===z?i+x:c>=0?(a.push(n),i.slice(0,c)+"$lit$"+i.slice(c)+v+h):i+v+(-2===c?(a.push(void 0),t):h)}const n=o+(e[i]||"<?>")+(2===t?"</svg>":"");if(!Array.isArray(e)||!e.hasOwnProperty("raw"))throw Error("invalid template strings array");return[void 0!==g?g.createHTML(n):n,a]};class N{constructor({strings:e,_$litType$:t},i){let a;this.parts=[];let r=0,o=0;const s=e.length-1,n=this.parts,[l,c]=q(e,t);if(this.el=N.createElement(l,i),M.currentNode=this.el.content,2===t){const e=this.el.content,t=e.firstChild;t.remove(),e.append(...t.childNodes)}for(;null!==(a=M.nextNode())&&n.length<s;){if(1===a.nodeType){if(a.hasAttributes()){const e=[];for(const t of a.getAttributeNames())if(t.endsWith("$lit$")||t.startsWith(v)){const i=c[o++];if(e.push(t),void 0!==i){const e=a.getAttribute(i.toLowerCase()+"$lit$").split(v),t=/([.?@])?(.*)/.exec(i);n.push({type:1,index:r,name:t[2],strings:e,ctor:"."===t[1]?W:"?"===t[1]?V:"@"===t[1]?K:H})}else n.push({type:6,index:r})}for(const t of e)a.removeAttribute(t)}if(L.test(a.tagName)){const e=a.textContent.split(v),t=e.length-1;if(t>0){a.textContent=m?m.emptyScript:"";for(let i=0;i<t;i++)a.append(e[i],y()),M.nextNode(),n.push({type:2,index:++r});a.append(e[t],y())}}}else if(8===a.nodeType)if(a.data===w)n.push({type:2,index:r});else{let e=-1;for(;-1!==(e=a.data.indexOf(v,e+1));)n.push({type:7,index:r}),e+=v.length-1}r++}}static createElement(e,t){const i=k.createElement("template");return i.innerHTML=e,i}}function F(e,t,i=e,a){var r,o,s,n;if(t===E)return t;let l=void 0!==a?null===(r=i._$Cl)||void 0===r?void 0:r[a]:i._$Cu;const c=$(t)?void 0:t._$litDirective$;return(null==l?void 0:l.constructor)!==c&&(null===(o=null==l?void 0:l._$AO)||void 0===o||o.call(l,!1),void 0===c?l=void 0:(l=new c(e),l._$AT(e,i,a)),void 0!==a?(null!==(s=(n=i)._$Cl)&&void 0!==s?s:n._$Cl=[])[a]=l:i._$Cu=l),void 0!==l&&(t=F(e,l._$AS(e,t.values),l,a)),t}class B{constructor(e,t){this.v=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}p(e){var t;const{el:{content:i},parts:a}=this._$AD,r=(null!==(t=null==e?void 0:e.creationScope)&&void 0!==t?t:k).importNode(i,!0);M.currentNode=r;let o=M.nextNode(),s=0,n=0,l=a[0];for(;void 0!==l;){if(s===l.index){let t;2===l.type?t=new j(o,o.nextSibling,this,e):1===l.type?t=new l.ctor(o,l.name,l.strings,this,e):6===l.type&&(t=new Z(o,this,e)),this.v.push(t),l=a[++n]}s!==(null==l?void 0:l.index)&&(o=M.nextNode(),s++)}return r}m(e){let t=0;for(const i of this.v)void 0!==i&&(void 0!==i.strings?(i._$AI(e,i,t),t+=i.strings.length-2):i._$AI(e[t])),t++}}class j{constructor(e,t,i,a){var r;this.type=2,this._$AH=R,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=i,this.options=a,this._$Cg=null===(r=null==a?void 0:a.isConnected)||void 0===r||r}get _$AU(){var e,t;return null!==(t=null===(e=this._$AM)||void 0===e?void 0:e._$AU)&&void 0!==t?t:this._$Cg}get parentNode(){let e=this._$AA.parentNode;const t=this._$AM;return void 0!==t&&11===e.nodeType&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=F(this,e,t),$(e)?e===R||null==e||""===e?(this._$AH!==R&&this._$AR(),this._$AH=R):e!==this._$AH&&e!==E&&this.$(e):void 0!==e._$litType$?this.T(e):void 0!==e.nodeType?this.S(e):S(e)?this.A(e):this.$(e)}M(e,t=this._$AB){return this._$AA.parentNode.insertBefore(e,t)}S(e){this._$AH!==e&&(this._$AR(),this._$AH=this.M(e))}$(e){this._$AH!==R&&$(this._$AH)?this._$AA.nextSibling.data=e:this.S(k.createTextNode(e)),this._$AH=e}T(e){var t;const{values:i,_$litType$:a}=e,r="number"==typeof a?this._$AC(e):(void 0===a.el&&(a.el=N.createElement(a.h,this.options)),a);if((null===(t=this._$AH)||void 0===t?void 0:t._$AD)===r)this._$AH.m(i);else{const e=new B(r,this),t=e.p(this.options);e.m(i),this.S(t),this._$AH=e}}_$AC(e){let t=O.get(e.strings);return void 0===t&&O.set(e.strings,t=new N(e)),t}A(e){_(this._$AH)||(this._$AH=[],this._$AR());const t=this._$AH;let i,a=0;for(const r of e)a===t.length?t.push(i=new j(this.M(y()),this.M(y()),this,this.options)):i=t[a],i._$AI(r),a++;a<t.length&&(this._$AR(i&&i._$AB.nextSibling,a),t.length=a)}_$AR(e=this._$AA.nextSibling,t){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,t);e&&e!==this._$AB;){const t=e.nextSibling;e.remove(),e=t}}setConnected(e){var t;void 0===this._$AM&&(this._$Cg=e,null===(t=this._$AP)||void 0===t||t.call(this,e))}}class H{constructor(e,t,i,a,r){this.type=1,this._$AH=R,this._$AN=void 0,this.element=e,this.name=t,this._$AM=a,this.options=r,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=R}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(e,t=this,i,a){const r=this.strings;let o=!1;if(void 0===r)e=F(this,e,t,0),o=!$(e)||e!==this._$AH&&e!==E,o&&(this._$AH=e);else{const a=e;let s,n;for(e=r[0],s=0;s<r.length-1;s++)n=F(this,a[i+s],t,s),n===E&&(n=this._$AH[s]),o||(o=!$(n)||n!==this._$AH[s]),n===R?e=R:e!==R&&(e+=(null!=n?n:"")+r[s+1]),this._$AH[s]=n}o&&!a&&this.k(e)}k(e){e===R?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=e?e:"")}}class W extends H{constructor(){super(...arguments),this.type=3}k(e){this.element[this.name]=e===R?void 0:e}}const G=m?m.emptyScript:"";class V extends H{constructor(){super(...arguments),this.type=4}k(e){e&&e!==R?this.element.setAttribute(this.name,G):this.element.removeAttribute(this.name)}}class K extends H{constructor(e,t,i,a,r){super(e,t,i,a,r),this.type=5}_$AI(e,t=this){var i;if((e=null!==(i=F(this,e,t,0))&&void 0!==i?i:R)===E)return;const a=this._$AH,r=e===R&&a!==R||e.capture!==a.capture||e.once!==a.once||e.passive!==a.passive,o=e!==R&&(a===R||r);r&&this.element.removeEventListener(this.name,this,a),o&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){var t,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(t=this.options)||void 0===t?void 0:t.host)&&void 0!==i?i:this.element,e):this._$AH.handleEvent(e)}}class Z{constructor(e,t,i){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(e){F(this,e)}}const J=window.litHtmlPolyfillSupport;
+var b;f.finalized=!0,f.elementProperties=new Map,f.elementStyles=[],f.shadowRootOptions={mode:"open"},null==d||d({ReactiveElement:f}),(null!==(n=globalThis.reactiveElementVersions)&&void 0!==n?n:globalThis.reactiveElementVersions=[]).push("1.1.1");const m=globalThis.trustedTypes,g=m?m.createPolicy("lit-html",{createHTML:e=>e}):void 0,v=`lit$${(Math.random()+"").slice(9)}$`,w="?"+v,x=`<${w}>`,k=document,y=(e="")=>k.createComment(e),$=e=>null===e||"object"!=typeof e&&"function"!=typeof e,S=Array.isArray,_=e=>{var t;return S(e)||"function"==typeof(null===(t=e)||void 0===t?void 0:t[Symbol.iterator])},z=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,C=/-->/g,I=/>/g,U=/>|[ 	\n\r](?:([^\s"'>=/]+)([ 	\n\r]*=[ 	\n\r]*(?:[^ 	\n\r"'`<>=]|("|')|))|$)/g,A=/'/g,P=/"/g,L=/^(?:script|style|textarea)$/i,D=e=>(t,...i)=>({_$litType$:e,strings:t,values:i}),T=D(1),E=(D(2),Symbol.for("lit-noChange")),R=Symbol.for("lit-nothing"),O=new WeakMap,M=k.createTreeWalker(k,129,null,!1),q=(e,t)=>{const i=e.length-1,a=[];let r,o=2===t?"<svg>":"",s=z;for(let t=0;t<i;t++){const i=e[t];let n,l,c=-1,d=0;for(;d<i.length&&(s.lastIndex=d,l=s.exec(i),null!==l);)d=s.lastIndex,s===z?"!--"===l[1]?s=C:void 0!==l[1]?s=I:void 0!==l[2]?(L.test(l[2])&&(r=RegExp("</"+l[2],"g")),s=U):void 0!==l[3]&&(s=U):s===U?">"===l[0]?(s=null!=r?r:z,c=-1):void 0===l[1]?c=-2:(c=s.lastIndex-l[2].length,n=l[1],s=void 0===l[3]?U:'"'===l[3]?P:A):s===P||s===A?s=U:s===C||s===I?s=z:(s=U,r=void 0);const h=s===U&&e[t+1].startsWith("/>")?" ":"";o+=s===z?i+x:c>=0?(a.push(n),i.slice(0,c)+"$lit$"+i.slice(c)+v+h):i+v+(-2===c?(a.push(void 0),t):h)}const n=o+(e[i]||"<?>")+(2===t?"</svg>":"");if(!Array.isArray(e)||!e.hasOwnProperty("raw"))throw Error("invalid template strings array");return[void 0!==g?g.createHTML(n):n,a]};class N{constructor({strings:e,_$litType$:t},i){let a;this.parts=[];let r=0,o=0;const s=e.length-1,n=this.parts,[l,c]=q(e,t);if(this.el=N.createElement(l,i),M.currentNode=this.el.content,2===t){const e=this.el.content,t=e.firstChild;t.remove(),e.append(...t.childNodes)}for(;null!==(a=M.nextNode())&&n.length<s;){if(1===a.nodeType){if(a.hasAttributes()){const e=[];for(const t of a.getAttributeNames())if(t.endsWith("$lit$")||t.startsWith(v)){const i=c[o++];if(e.push(t),void 0!==i){const e=a.getAttribute(i.toLowerCase()+"$lit$").split(v),t=/([.?@])?(.*)/.exec(i);n.push({type:1,index:r,name:t[2],strings:e,ctor:"."===t[1]?W:"?"===t[1]?V:"@"===t[1]?K:H})}else n.push({type:6,index:r})}for(const t of e)a.removeAttribute(t)}if(L.test(a.tagName)){const e=a.textContent.split(v),t=e.length-1;if(t>0){a.textContent=m?m.emptyScript:"";for(let i=0;i<t;i++)a.append(e[i],y()),M.nextNode(),n.push({type:2,index:++r});a.append(e[t],y())}}}else if(8===a.nodeType)if(a.data===w)n.push({type:2,index:r});else{let e=-1;for(;-1!==(e=a.data.indexOf(v,e+1));)n.push({type:7,index:r}),e+=v.length-1}r++}}static createElement(e,t){const i=k.createElement("template");return i.innerHTML=e,i}}function F(e,t,i=e,a){var r,o,s,n;if(t===E)return t;let l=void 0!==a?null===(r=i._$Cl)||void 0===r?void 0:r[a]:i._$Cu;const c=$(t)?void 0:t._$litDirective$;return(null==l?void 0:l.constructor)!==c&&(null===(o=null==l?void 0:l._$AO)||void 0===o||o.call(l,!1),void 0===c?l=void 0:(l=new c(e),l._$AT(e,i,a)),void 0!==a?(null!==(s=(n=i)._$Cl)&&void 0!==s?s:n._$Cl=[])[a]=l:i._$Cu=l),void 0!==l&&(t=F(e,l._$AS(e,t.values),l,a)),t}class B{constructor(e,t){this.v=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}p(e){var t;const{el:{content:i},parts:a}=this._$AD,r=(null!==(t=null==e?void 0:e.creationScope)&&void 0!==t?t:k).importNode(i,!0);M.currentNode=r;let o=M.nextNode(),s=0,n=0,l=a[0];for(;void 0!==l;){if(s===l.index){let t;2===l.type?t=new j(o,o.nextSibling,this,e):1===l.type?t=new l.ctor(o,l.name,l.strings,this,e):6===l.type&&(t=new Z(o,this,e)),this.v.push(t),l=a[++n]}s!==(null==l?void 0:l.index)&&(o=M.nextNode(),s++)}return r}m(e){let t=0;for(const i of this.v)void 0!==i&&(void 0!==i.strings?(i._$AI(e,i,t),t+=i.strings.length-2):i._$AI(e[t])),t++}}class j{constructor(e,t,i,a){var r;this.type=2,this._$AH=R,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=i,this.options=a,this._$Cg=null===(r=null==a?void 0:a.isConnected)||void 0===r||r}get _$AU(){var e,t;return null!==(t=null===(e=this._$AM)||void 0===e?void 0:e._$AU)&&void 0!==t?t:this._$Cg}get parentNode(){let e=this._$AA.parentNode;const t=this._$AM;return void 0!==t&&11===e.nodeType&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=F(this,e,t),$(e)?e===R||null==e||""===e?(this._$AH!==R&&this._$AR(),this._$AH=R):e!==this._$AH&&e!==E&&this.$(e):void 0!==e._$litType$?this.T(e):void 0!==e.nodeType?this.S(e):_(e)?this.A(e):this.$(e)}M(e,t=this._$AB){return this._$AA.parentNode.insertBefore(e,t)}S(e){this._$AH!==e&&(this._$AR(),this._$AH=this.M(e))}$(e){this._$AH!==R&&$(this._$AH)?this._$AA.nextSibling.data=e:this.S(k.createTextNode(e)),this._$AH=e}T(e){var t;const{values:i,_$litType$:a}=e,r="number"==typeof a?this._$AC(e):(void 0===a.el&&(a.el=N.createElement(a.h,this.options)),a);if((null===(t=this._$AH)||void 0===t?void 0:t._$AD)===r)this._$AH.m(i);else{const e=new B(r,this),t=e.p(this.options);e.m(i),this.S(t),this._$AH=e}}_$AC(e){let t=O.get(e.strings);return void 0===t&&O.set(e.strings,t=new N(e)),t}A(e){S(this._$AH)||(this._$AH=[],this._$AR());const t=this._$AH;let i,a=0;for(const r of e)a===t.length?t.push(i=new j(this.M(y()),this.M(y()),this,this.options)):i=t[a],i._$AI(r),a++;a<t.length&&(this._$AR(i&&i._$AB.nextSibling,a),t.length=a)}_$AR(e=this._$AA.nextSibling,t){var i;for(null===(i=this._$AP)||void 0===i||i.call(this,!1,!0,t);e&&e!==this._$AB;){const t=e.nextSibling;e.remove(),e=t}}setConnected(e){var t;void 0===this._$AM&&(this._$Cg=e,null===(t=this._$AP)||void 0===t||t.call(this,e))}}class H{constructor(e,t,i,a,r){this.type=1,this._$AH=R,this._$AN=void 0,this.element=e,this.name=t,this._$AM=a,this.options=r,i.length>2||""!==i[0]||""!==i[1]?(this._$AH=Array(i.length-1).fill(new String),this.strings=i):this._$AH=R}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(e,t=this,i,a){const r=this.strings;let o=!1;if(void 0===r)e=F(this,e,t,0),o=!$(e)||e!==this._$AH&&e!==E,o&&(this._$AH=e);else{const a=e;let s,n;for(e=r[0],s=0;s<r.length-1;s++)n=F(this,a[i+s],t,s),n===E&&(n=this._$AH[s]),o||(o=!$(n)||n!==this._$AH[s]),n===R?e=R:e!==R&&(e+=(null!=n?n:"")+r[s+1]),this._$AH[s]=n}o&&!a&&this.k(e)}k(e){e===R?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=e?e:"")}}class W extends H{constructor(){super(...arguments),this.type=3}k(e){this.element[this.name]=e===R?void 0:e}}const G=m?m.emptyScript:"";class V extends H{constructor(){super(...arguments),this.type=4}k(e){e&&e!==R?this.element.setAttribute(this.name,G):this.element.removeAttribute(this.name)}}class K extends H{constructor(e,t,i,a,r){super(e,t,i,a,r),this.type=5}_$AI(e,t=this){var i;if((e=null!==(i=F(this,e,t,0))&&void 0!==i?i:R)===E)return;const a=this._$AH,r=e===R&&a!==R||e.capture!==a.capture||e.once!==a.once||e.passive!==a.passive,o=e!==R&&(a===R||r);r&&this.element.removeEventListener(this.name,this,a),o&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){var t,i;"function"==typeof this._$AH?this._$AH.call(null!==(i=null===(t=this.options)||void 0===t?void 0:t.host)&&void 0!==i?i:this.element,e):this._$AH.handleEvent(e)}}class Z{constructor(e,t,i){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=i}get _$AU(){return this._$AM._$AU}_$AI(e){F(this,e)}}const J=window.litHtmlPolyfillSupport;
 /**
  * @license
  * Copyright 2017 Google LLC
@@ -48,258 +48,361 @@ class oe extends re{constructor(e){if(super(e),this.it=R,e.type!==ie)throw Error
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne),ce=ae(class extends re{constructor(e){var t;if(super(e),e.type!==te||"style"!==e.name||(null===(t=e.strings)||void 0===t?void 0:t.length)>2)throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.")}render(e){return Object.keys(e).reduce(((t,i)=>{const a=e[i];return null==a?t:t+`${i=i.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${a};`}),"")}update(e,[t]){const{style:i}=e.element;if(void 0===this.ct){this.ct=new Set;for(const e in t)this.ct.add(e);return this.render(t)}this.ct.forEach((e=>{null==t[e]&&(this.ct.delete(e),e.includes("-")?i.removeProperty(e):i[e]="")}));for(const e in t){const a=t[e];null!=a&&(this.ct.add(e),e.includes("-")?i.setProperty(e,a):i[e]=a)}return E}});var de=__webpack_require__(9886),he=__webpack_require__(4841),pe=__webpack_require__.n(he);const ue="./w/api",fe=r(de.Z);function be(e){return[fe,e]}const me=window.IS_APP||window.electron&&window.electron.IS_APP||window.matchMedia("(display-mode: standalone)").matches,ge="1.8.7";function ve(e){" "==e.key&&(e.preventDefault(),e.target.click())}class we extends X{constructor(){super(),this.size="1.1em",this.width=null,this.height=null}static get properties(){return{svg:{type:String},size:{type:String},width:{type:String},height:{type:String}}}static get styles(){return o`
-    :host {
-      display: inline-block;
-      padding: 0;
-      margin: 0;
-      line-height: 1.0em;
-    }
-    :host svg {
-      fill: var(--fa-icon-fill-color, currentcolor);
-      width: var(--fa-icon-width, 19px);
-      height: var(--fa-icon-height, 19px);
-    }
-    `}render(){if(!this.svg)return T``;const e={};return this.size?(e.width=this.size,e.height=this.size):(this.width&&(e.width=this.width),this.height&&(e.height=this.height)),T`<svg style="${ce(e)}"><g>${le(this.svg)}</g></svg>`}}customElements.define("fa-icon",we),customElements.define("wr-anim-logo",class extends we{constructor(){super(),this.svg=pe()}static get styles(){return o`
-    #wrlogo #stop5687 {
-      animation: animLeft 7s linear infinite;
-    }
+class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne),ce=ae(class extends re{constructor(e){var t;if(super(e),e.type!==te||"style"!==e.name||(null===(t=e.strings)||void 0===t?void 0:t.length)>2)throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.")}render(e){return Object.keys(e).reduce(((t,i)=>{const a=e[i];return null==a?t:t+`${i=i.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${a};`}),"")}update(e,[t]){const{style:i}=e.element;if(void 0===this.ct){this.ct=new Set;for(const e in t)this.ct.add(e);return this.render(t)}this.ct.forEach((e=>{null==t[e]&&(this.ct.delete(e),e.includes("-")?i.removeProperty(e):i[e]="")}));for(const e in t){const a=t[e];null!=a&&(this.ct.add(e),e.includes("-")?i.setProperty(e,a):i[e]=a)}return E}});var de=__webpack_require__(9886),he=__webpack_require__(4841),pe=__webpack_require__.n(he);const ue="./w/api",fe=r(de.Z);function be(e){return[fe,e]}const me=window.IS_APP||window.electron&&window.electron.IS_APP||window.matchMedia("(display-mode: standalone)").matches,ge="1.8.8";function ve(e){" "==e.key&&(e.preventDefault(),e.target.click())}class we extends X{constructor(){super(),this.size="1.1em",this.width=null,this.height=null}static get properties(){return{svg:{type:String},size:{type:String},width:{type:String},height:{type:String}}}static get styles(){return o`
+      :host {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        line-height: 1em;
+      }
+      :host svg {
+        fill: var(--fa-icon-fill-color, currentcolor);
+        width: var(--fa-icon-width, 19px);
+        height: var(--fa-icon-height, 19px);
+      }
+    `}render(){if(!this.svg)return T``;const e={};return this.size?(e.width=this.size,e.height=this.size):(this.width&&(e.width=this.width),this.height&&(e.height=this.height)),T`<svg style="${ce(e)}">
+      <g>${le(this.svg)}</g>
+    </svg>`}}customElements.define("fa-icon",we),customElements.define("wr-anim-logo",class extends we{constructor(){super(),this.svg=pe()}static get styles(){return o`
+      #wrlogo #stop5687 {
+        animation: animLeft 7s linear infinite;
+      }
 
-    #wrlogo #stop5689 {
-      animation: animRight 7s linear infinite;
-    }
+      #wrlogo #stop5689 {
+        animation: animRight 7s linear infinite;
+      }
 
-    @keyframes animLeft {
-      0% {stop-color: #4876ff}
-      25% {stop-color: #1b0921}
-      50% {stop-color: #4876ff}
-      75% {stop-color: #04cdff}
-      100% {stop-color: #4876ff}
-    }
+      @keyframes animLeft {
+        0% {
+          stop-color: #4876ff;
+        }
+        25% {
+          stop-color: #1b0921;
+        }
+        50% {
+          stop-color: #4876ff;
+        }
+        75% {
+          stop-color: #04cdff;
+        }
+        100% {
+          stop-color: #4876ff;
+        }
+      }
 
-    @keyframes animRight {
-      0% {stop-color: #04cdff}
-      25% {stop-color: #4876ff}
-      50% {stop-color: #1b0921}
-      75% {stop-color: #4876ff}
-      100% {stop-color: #04cdff}
-    }
+      @keyframes animRight {
+        0% {
+          stop-color: #04cdff;
+        }
+        25% {
+          stop-color: #4876ff;
+        }
+        50% {
+          stop-color: #1b0921;
+        }
+        75% {
+          stop-color: #4876ff;
+        }
+        100% {
+          stop-color: #04cdff;
+        }
+      }
     `}}),customElements.define("wr-modal",class extends X{constructor(){super(),this.title="",this.bgClass="",this.noBgClose=!1}static get properties(){return{title:{type:String},bgClass:{type:String},noBgClose:{type:Boolean}}}static get styles(){return be(o`
-    .modal-background {
-      background-color: rgba(10, 10, 10, 0.50);
-    }
+      .modal-background {
+        background-color: rgba(10, 10, 10, 0.5);
+      }
 
-    .modal-card-head {
-      background-color: var(--background, #97a1ff);
-    }
+      .modal-card-head {
+        background-color: var(--background, #97a1ff);
+      }
 
-    .modal-card {
-      width: 100%;
-      max-width: var(--modal-width, 640px)
-    }
-    `)}render(){return T`
-    <div class="modal is-active">
-      <div class="modal-background" @click="${()=>!this.noBgClose&&this.onClose()}"></div>
+      .modal-card {
+        width: 100%;
+        max-width: var(--modal-width, 640px);
+      }
+    `)}render(){return T` <div class="modal is-active">
+      <div
+        class="modal-background"
+        @click="${()=>!this.noBgClose&&this.onClose()}"
+      ></div>
       <div class="modal-card">
         <header class="modal-card-head ${this.bgClass}">
           <p class="modal-card-title is-3">${this.title}</p>
-          <button class="delete" aria-label="close" @click="${this.onClose}"></button>
+          <button
+            class="delete"
+            aria-label="close"
+            @click="${this.onClose}"
+          ></button>
         </header>
         <section class="modal-card-body">
           <slot></slot>
         </section>
       </div>
-    </div>`}onClose(){this.dispatchEvent(new CustomEvent("modal-closed"))}});var xe,ke=__webpack_require__(8200),ye=__webpack_require__.n(ke),$e=__webpack_require__(4878),_e=__webpack_require__.n($e),Se=__webpack_require__(4124),ze=__webpack_require__.n(Se);function Ce(e,t){void 0===t&&(t={});var i=t.registrationOptions;void 0===i&&(i={}),delete t.registrationOptions;var a=function(e){for(var i=[],a=arguments.length-1;a-- >0;)i[a]=arguments[a+1];t&&t[e]&&t[e].apply(t,i)};"serviceWorker"in navigator&&xe.then((function(){Boolean("localhost"===window.location.hostname||"[::1]"===window.location.hostname||window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/))?(!function(e,t,i){fetch(e).then((function(a){404===a.status?(t("error",new Error("Service worker not found at "+e)),Ue()):-1===a.headers.get("content-type").indexOf("javascript")?(t("error",new Error("Expected "+e+" to have javascript content-type, but received "+a.headers.get("content-type"))),Ue()):Ae(e,t,i)})).catch((function(e){return Ie(t,e)}))}(e,a,i),navigator.serviceWorker.ready.then((function(e){a("ready",e)})).catch((function(e){return Ie(a,e)}))):(Ae(e,a,i),navigator.serviceWorker.ready.then((function(e){a("ready",e)})).catch((function(e){return Ie(a,e)})))}))}function Ie(e,t){navigator.onLine||e("offline"),e("error",t)}function Ae(e,t,i){navigator.serviceWorker.register(e,i).then((function(e){t("registered",e),e.waiting?t("updated",e):e.onupdatefound=function(){t("updatefound",e);var i=e.installing;i.onstatechange=function(){"installed"===i.state&&(navigator.serviceWorker.controller?t("updated",e):t("cached",e))}}})).catch((function(e){return Ie(t,e)}))}function Ue(){"serviceWorker"in navigator&&navigator.serviceWorker.ready.then((function(e){e.unregister()})).catch((function(e){return Ie(emit,e)}))}"undefined"!=typeof window&&(xe="undefined"!=typeof Promise?new Promise((function(e){return window.addEventListener("load",e)})):{then:function(e){return window.addEventListener("load",e)}});class Pe{constructor({name:e="sw.js",scope:t="./",appName:i="ReplayWeb.page",requireSubdomainIframe:a=!1}={}){this.name=e,this.scope=t,this.appName=i,this.requireSubdomainIframe=a,this.errorMsg=null}setAppName(e){this.appName=e}register(){let e,t;const i=new Promise(((i,a)=>{e=i,t=a}));this.errorMsg=this.getSWErrorMsg(),this.errorMsg&&(console.error(this.errorMsg),t(this.errorMsg));const a=e=>{console.error("Error during service worker registration:",e),this.errorMsg=this.getCrossOriginIframeMsg(),this.errorMsg||(this.errorMsg=`${this.appName} could not be loaded due to the following error:\n${e.toString()}`),t(this.errorMsg)};return Ce(this.scope+this.name,{registrationOptions:{scope:this.scope},registered(){console.log("Service worker is registered"),e()},error(e){a(e)}}),i}getCrossOriginIframeMsg(){return this.isCrossOriginIframe()?`      Sorry, Service Workers can not be used in cross-origin iframes.\n      This web archive embed is loaded from ${window.location.origin} but the top page is on a different origin.\n      The embed must be loaded from the same origin or a subdomain.`:null}isCrossOriginIframe(){if(window.parent===window)return!1;try{return""===window.top.location.href}catch(e){return!0}}getSWErrorMsg(){if(navigator.serviceWorker)return this.requireSubdomainIframe&&!this.isCrossOriginIframe()?`Sorry, due to security settings, this ${this.appName} embed only be viewed within a subdomain iframe.`:null;const e=this.getCrossOriginIframeMsg();return e||(window.isSecureContext?"MozAppearance"in document.documentElement.style?"Sorry, Service Workers are disabled in Firefox in Private Mode. Please try loading this page in regular mode instead.":`Sorry, ${this.appName} won't work in this browser as Service Workers are not supported in this window.\n  Please try a different browser.`:`\n      Sorry, the ${this.appName} system must be loaded from an HTTPS URL (or localhost), but was loaded from: ${window.location.host}.\n      Please try loading this page from an HTTPS URL`)}renderErrorReport(e,t){const i=this.errorMsg||t;return i?T`
-    <section class="is-fullwidth">
-    <div class="has-text-centered">
-      <fa-icon style="margin: 1em;flex-grow: 1;" id="wrlogo" size="2.5rem" .svg=${e} aria-hidden="true"></fa-icon>
-    </div>
-    <div style="white-space: pre-wrap; text-align: center" >${i}</div>
-  </section>
+    </div>`}onClose(){this.dispatchEvent(new CustomEvent("modal-closed"))}});var xe,ke=__webpack_require__(8200),ye=__webpack_require__.n(ke),$e=__webpack_require__(4878),Se=__webpack_require__.n($e),_e=__webpack_require__(4124),ze=__webpack_require__.n(_e);function Ce(e,t){void 0===t&&(t={});var i=t.registrationOptions;void 0===i&&(i={}),delete t.registrationOptions;var a=function(e){for(var i=[],a=arguments.length-1;a-- >0;)i[a]=arguments[a+1];t&&t[e]&&t[e].apply(t,i)};"serviceWorker"in navigator&&xe.then((function(){Boolean("localhost"===window.location.hostname||"[::1]"===window.location.hostname||window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/))?(!function(e,t,i){fetch(e).then((function(a){404===a.status?(t("error",new Error("Service worker not found at "+e)),Ae()):-1===a.headers.get("content-type").indexOf("javascript")?(t("error",new Error("Expected "+e+" to have javascript content-type, but received "+a.headers.get("content-type"))),Ae()):Ue(e,t,i)})).catch((function(e){return Ie(t,e)}))}(e,a,i),navigator.serviceWorker.ready.then((function(e){a("ready",e)})).catch((function(e){return Ie(a,e)}))):(Ue(e,a,i),navigator.serviceWorker.ready.then((function(e){a("ready",e)})).catch((function(e){return Ie(a,e)})))}))}function Ie(e,t){navigator.onLine||e("offline"),e("error",t)}function Ue(e,t,i){navigator.serviceWorker.register(e,i).then((function(e){t("registered",e),e.waiting?t("updated",e):e.onupdatefound=function(){t("updatefound",e);var i=e.installing;i.onstatechange=function(){"installed"===i.state&&(navigator.serviceWorker.controller?t("updated",e):t("cached",e))}}})).catch((function(e){return Ie(t,e)}))}function Ae(){"serviceWorker"in navigator&&navigator.serviceWorker.ready.then((function(e){e.unregister()})).catch((function(e){return Ie(emit,e)}))}"undefined"!=typeof window&&(xe="undefined"!=typeof Promise?new Promise((function(e){return window.addEventListener("load",e)})):{then:function(e){return window.addEventListener("load",e)}});class Pe{constructor({name:e="sw.js",scope:t="./",appName:i="ReplayWeb.page",requireSubdomainIframe:a=!1}={}){this.name=e,this.scope=t,this.appName=i,this.requireSubdomainIframe=a,this.errorMsg=null}setAppName(e){this.appName=e}register(){let e,t;const i=new Promise(((i,a)=>{e=i,t=a}));this.errorMsg=this.getSWErrorMsg(),this.errorMsg&&(console.error(this.errorMsg),t(this.errorMsg));const a=e=>{console.error("Error during service worker registration:",e),this.errorMsg=this.getCrossOriginIframeMsg(),this.errorMsg||(this.errorMsg=`${this.appName} could not be loaded due to the following error:\n${e.toString()}`),t(this.errorMsg)};return Ce(this.scope+this.name,{registrationOptions:{scope:this.scope},registered(){console.log("Service worker is registered"),e()},error(e){a(e)}}),i}getCrossOriginIframeMsg(){return this.isCrossOriginIframe()?`      Sorry, Service Workers can not be used in cross-origin iframes.\n      This web archive embed is loaded from ${window.location.origin} but the top page is on a different origin.\n      The embed must be loaded from the same origin or a subdomain.`:null}isCrossOriginIframe(){if(window.parent===window)return!1;try{return""===window.top.location.href}catch(e){return!0}}getSWErrorMsg(){if(navigator.serviceWorker)return this.requireSubdomainIframe&&!this.isCrossOriginIframe()?`Sorry, due to security settings, this ${this.appName} embed only be viewed within a subdomain iframe.`:null;const e=this.getCrossOriginIframeMsg();return e||(window.isSecureContext?"MozAppearance"in document.documentElement.style?"Sorry, Service Workers are disabled in Firefox in Private Mode. Please try loading this page in regular mode instead.":`Sorry, ${this.appName} won't work in this browser as Service Workers are not supported in this window.\n  Please try a different browser.`:`\n      Sorry, the ${this.appName} system must be loaded from an HTTPS URL (or localhost), but was loaded from: ${window.location.host}.\n      Please try loading this page from an HTTPS URL`)}renderErrorReport(e,t){const i=this.errorMsg||t;return i?T`
+      <section class="is-fullwidth">
+        <div class="has-text-centered">
+          <fa-icon
+            style="margin: 1em;flex-grow: 1;"
+            id="wrlogo"
+            size="2.5rem"
+            .svg=${e}
+            aria-hidden="true"
+          ></fa-icon>
+        </div>
+        <div style="white-space: pre-wrap; text-align: center">${i}</div>
+      </section>
     `:""}}class Le extends X{constructor(e="sw.js"){super(),this.sourceUrl=null,this.collTitle=null,this.showAbout=!1,this.showFileDropOverlay=!1,this.pageParams=new URLSearchParams,this.inited=!1,this.navMenuShown=!1,this.collPageUrl="",this.pageTitle="",this.pageReplay=!1,this.loadInfo=null,this.swName=e,this.swmanager=null,this.skipRuffle=!1,this.useRuffle=!1,this.safariKeyframes(),this.addEventListener("dragenter",(e=>{this.maybeStartFileDrop(e)})),this.addEventListener("dragover",(e=>{this.maybeStartFileDrop(e)})),this.addEventListener("dragleave",(()=>{this.showFileDropOverlay=!1})),this.addEventListener("dragend",(()=>{this.showFileDropOverlay=!1})),this.addEventListener("drop",(e=>{this.droppedFile=e.dataTransfer.files[0],this.showFileDropOverlay=!1,e.preventDefault()})),this.maybeStartFileDrop=e=>{this.sourceUrl||(this.showFileDropOverlay=!0,e.preventDefault())}}get appName(){return"ReplayWeb.page"}get homeUrl(){return window.location.pathname}static get properties(){return{inited:{type:Boolean},pageParams:{type:Object},sourceUrl:{type:String},navMenuShown:{type:Boolean},showAbout:{type:Boolean},showFileDropOverlay:{type:Boolean},collTitle:{type:String},loadInfo:{type:Object},embed:{type:String},collPageUrl:{type:String},pageTitle:{type:String},pageReplay:{type:Boolean},source:{type:String},skipRuffle:{type:Boolean},swErrorMsg:{type:Object}}}static get styles(){return be(Le.appStyles)}static get appStyles(){return o`
-    #wrlogo {
-      max-height: 1.0rem;
-    }
-    .navbar {
-      height: 1.5rem;
-    }
-    .navbar-brand {
-      height: 1.5rem;
-      display: flex;
-      align-items: center;
-    }
-    .wr-logo-item {
-      padding: 0 8px 0 0;
-    }
-    .no-wrap {
-      white-space: nowrap;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
-    }
-    .has-allcaps {
-      font-variant-caps: small-caps;
-    }
-    :host {
-      position: fixed;
-      left: 0px;
-      top: 0px;
-      bottom: 0px;
-      right: 0px;
-      display: flex;
-      min-width: 0px;
-      flex-direction: column;
-    }
-    wr-coll {
-      height: 100%;
-    }
-    .navbar {
-      padding: 0 0.5em;
-    }
-
-    div.navbar-menu fa-icon {
-      vertical-align: sub;
-    }
-    .tagline {
-      margin-top: 1.0rem;
-    }
-
-    .drop-file-overlay {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      font-weight: bold;
-      font-size: 1.5rem;
-      background: rgba(255,255,255,.5);
-      backdrop-filter: blur(2px);
-    }
-
-    .drop-file-overlay:after {
-      pointer-events: none;
-      content: " ";
-      position: absolute;
-      inset: 0;
-      border: 5px dashed #aaa;
-      margin: 15px;
-    }
-
-    @media screen and (min-width: 840px) {
-      .menu-only {
-        display: none;
+      #wrlogo {
+        max-height: 1rem;
+      }
+      .navbar {
+        height: 1.5rem;
+      }
+      .navbar-brand {
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+      }
+      .wr-logo-item {
+        padding: 0 8px 0 0;
+      }
+      .no-wrap {
+        white-space: nowrap;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+      }
+      .has-allcaps {
+        font-variant-caps: small-caps;
+      }
+      :host {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        display: flex;
+        min-width: 0px;
+        flex-direction: column;
+      }
+      wr-coll {
+        height: 100%;
+      }
+      .navbar {
+        padding: 0 0.5em;
       }
 
-      a.arrow-button {
-        padding-left: 4px;
-        padding-right: 4px;
+      div.navbar-menu fa-icon {
+        vertical-align: sub;
+      }
+      .tagline {
+        margin-top: 1rem;
       }
 
-      .info-menu {
-        padding: 0 1.0em;
+      .drop-file-overlay {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        font-weight: bold;
+        font-size: 1.5rem;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(2px);
       }
 
-      .logo-text {
-        padding-left: 0px;
-        margin-left: 6px;
+      .drop-file-overlay:after {
+        pointer-events: none;
+        content: " ";
+        position: absolute;
+        inset: 0;
+        border: 5px dashed #aaa;
+        margin: 15px;
       }
 
-      a.navbar-item.logo-text:hover {
-        background-color: initial;
-      }
-    }
+      @media screen and (min-width: 840px) {
+        .menu-only {
+          display: none;
+        }
 
-    @media screen and (max-width: 840px) {
-      .wide-only {
-        display: none !important;
-      }
-    }
+        a.arrow-button {
+          padding-left: 4px;
+          padding-right: 4px;
+        }
 
-    `}get mainLogo(){return pe()}renderNavBrand(){return T`
-      <span id="home" class="logo-text has-text-weight-bold is-size-6 has-allcaps wide-only">
+        .info-menu {
+          padding: 0 1em;
+        }
+
+        .logo-text {
+          padding-left: 0px;
+          margin-left: 6px;
+        }
+
+        a.navbar-item.logo-text:hover {
+          background-color: initial;
+        }
+      }
+
+      @media screen and (max-width: 840px) {
+        .wide-only {
+          display: none !important;
+        }
+      }
+    `}get mainLogo(){return pe()}renderNavBrand(){return T` <span
+      id="home"
+      class="logo-text has-text-weight-bold is-size-6 has-allcaps wide-only"
+    >
       <span class="has-text-primary">replay</span>
       <span class="has-text-link">web.page</span>
       <span class="is-sr-only">Home</span>
-    </span>`}renderNavBar(){return T`
-    <a href="#skip-main-target" @click=${this.skipMenu} class="skip-link">Skip main navigation</a>
-    <nav class="navbar has-background-info" aria-label="main">
-      <div class="navbar-brand">
-        ${this.embed?T`
-          <span class="navbar-item wr-logo-item">
-            <fa-icon id="wrlogo" size="1.0rem" .svg=${this.mainLogo} aria-hidden="true"></fa-icon>
-          </span>
-        `:T`
-          <a href="${this.homeUrl}" class="navbar-item wr-logo-item" aria-labelledby="home">
-            <fa-icon id="wrlogo" size="1.0rem" .svg=${this.mainLogo} aria-hidden="true"></fa-icon>
-            ${this.renderNavBrand()}
+    </span>`}renderNavBar(){return T` <a
+        href="#skip-main-target"
+        @click=${this.skipMenu}
+        class="skip-link"
+        >Skip main navigation</a
+      >
+      <nav class="navbar has-background-info" aria-label="main">
+        <div class="navbar-brand">
+          ${this.embed?T`
+                <span class="navbar-item wr-logo-item">
+                  <fa-icon
+                    id="wrlogo"
+                    size="1.0rem"
+                    .svg=${this.mainLogo}
+                    aria-hidden="true"
+                  ></fa-icon>
+                </span>
+              `:T`
+                <a
+                  href="${this.homeUrl}"
+                  class="navbar-item wr-logo-item"
+                  aria-labelledby="home"
+                >
+                  <fa-icon
+                    id="wrlogo"
+                    size="1.0rem"
+                    .svg=${this.mainLogo}
+                    aria-hidden="true"
+                  ></fa-icon>
+                  ${this.renderNavBrand()}
+                </a>
+                ${this.collTitle?T`
+                      <a
+                        href="${this.collPageUrl}"
+                        class="no-wrap is-size-6 has-text-black"
+                        >/&nbsp;&nbsp;<i>${this.collTitle}</i></a
+                      >
+                      <span class="no-wrap is-size-6"
+                        >&nbsp;&nbsp;/&nbsp;
+                        ${this.pageReplay?T`<i>${this.pageTitle}</i>`:this.pageTitle}
+                      </span>
+                    `:""}
+              `}
+          <a
+            href="#"
+            role="button"
+            id="menu-button"
+            @click="${this.onNavMenu}"
+            @keyup="${ve}"
+            class="navbar-burger burger ${this.navMenuShown?"is-active":""}"
+            aria-label="main menu"
+            aria-haspopup="true"
+            aria-expanded="${this.navMenuShown}"
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
           </a>
-          ${this.collTitle?T`
-          <a href="${this.collPageUrl}" class="no-wrap is-size-6 has-text-black">/&nbsp;&nbsp;<i>${this.collTitle}</i></a>
-          <span class="no-wrap is-size-6">&nbsp;&nbsp;/&nbsp;
-          ${this.pageReplay?T`<i>${this.pageTitle}</i>`:this.pageTitle}
-          </span>
-          `:""}
-          `}
-        <a href="#" role="button" id="menu-button" @click="${this.onNavMenu}" @keyup="${ve}"
-          class="navbar-burger burger ${this.navMenuShown?"is-active":""}" aria-label="main menu" aria-haspopup="true" aria-expanded="${this.navMenuShown}">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-      ${this.sourceUrl?T``:T`
-      <div class="navbar-menu ${this.navMenuShown?"is-active":""}">
-        <div class="navbar-start">
-          ${me?T`
-            <a role="button" href="#" class="navbar-item arrow-button" title="Go Back" @click="${()=>window.history.back()}" @keyup="${ve}">
-              <fa-icon size="1.0rem" .svg="${_e()}" aria-hidden="true"></fa-icon><span class="menu-only is-size-7">&nbsp;Go Back</span>
-            </a>
-            <a role="button" href="#" class="navbar-item arrow-button" title="Go Forward" @click="${()=>window.history.forward()}" @keyup="${ve}">
-              <fa-icon size="1.0rem" .svg="${ze()}" aria-hidden="true"></fa-icon><span class="menu-only is-size-7">&nbsp;Go Forward</span>
-            </a>
-          `:""}
         </div>
-        ${this.embed?T``:T`
-        <div class="navbar-end">
-          ${this.renderNavEnd()}
-        </div>`}
-      </div>`}
-    </nav>
-    <p id="skip-main-target" tabindex="-1" class="is-sr-only">Skipped</p>`}renderNavEnd(){return T`
-      <a href="/docs" target="_blank" class="navbar-item is-size-6">
-      <fa-icon .svg="${ye()}" aria-hidden="true"></fa-icon><span>&nbsp;User Docs</span>
-    </a>
-    <!--
+        ${this.sourceUrl?T``:T` <div
+              class="navbar-menu ${this.navMenuShown?"is-active":""}"
+            >
+              <div class="navbar-start">
+                ${me?T`
+                      <a
+                        role="button"
+                        href="#"
+                        class="navbar-item arrow-button"
+                        title="Go Back"
+                        @click="${()=>window.history.back()}"
+                        @keyup="${ve}"
+                      >
+                        <fa-icon
+                          size="1.0rem"
+                          .svg="${Se()}"
+                          aria-hidden="true"
+                        ></fa-icon
+                        ><span class="menu-only is-size-7">&nbsp;Go Back</span>
+                      </a>
+                      <a
+                        role="button"
+                        href="#"
+                        class="navbar-item arrow-button"
+                        title="Go Forward"
+                        @click="${()=>window.history.forward()}"
+                        @keyup="${ve}"
+                      >
+                        <fa-icon
+                          size="1.0rem"
+                          .svg="${ze()}"
+                          aria-hidden="true"
+                        ></fa-icon
+                        ><span class="menu-only is-size-7"
+                          >&nbsp;Go Forward</span
+                        >
+                      </a>
+                    `:""}
+              </div>
+              ${this.embed?T``:T` <div class="navbar-end">${this.renderNavEnd()}</div>`}
+            </div>`}
+      </nav>
+      <p id="skip-main-target" tabindex="-1" class="is-sr-only">Skipped</p>`}renderNavEnd(){return T` <a href="/docs" target="_blank" class="navbar-item is-size-6">
+        <fa-icon .svg="${ye()}" aria-hidden="true"></fa-icon
+        ><span>&nbsp;User Docs</span>
+      </a>
+      <!--
     -- NB: the About modal is currently inaccessible to people using keyboards or screen readers.
     --  Should all the JS and infrastructure for accessible modals be added, or should About be a normal page?
     -->
-    <a href="?terms" @click="${e=>{e.preventDefault(),this.showAbout=!0}}"class="navbar-item is-size-6">About
-    </a>`}renderColl(){return T`
-    <wr-coll .loadInfo="${this.loadInfo}"
-    sourceUrl="${this.sourceUrl}"
-    embed="${this.embed}"
-    appName="${this.appName}"
-    swName="${this.swName}"
-    .appLogo="${this.mainLogo}"
-    @replay-favicons=${this.onFavIcons}
-    @update-title=${this.onTitle}
-    @coll-loaded=${this.onCollLoaded}
-    @about-show=${()=>this.showAbout=!0}></wr-coll>`}renderHomeIndex(){return T`
-      <wr-coll-index>
+      <a
+        href="?terms"
+        @click="${e=>{e.preventDefault(),this.showAbout=!0}}"
+        class="navbar-item is-size-6"
+        >About
+      </a>`}renderColl(){return T` <wr-coll
+      .loadInfo="${this.loadInfo}"
+      sourceUrl="${this.sourceUrl}"
+      embed="${this.embed}"
+      appName="${this.appName}"
+      swName="${this.swName}"
+      .appLogo="${this.mainLogo}"
+      @replay-favicons=${this.onFavIcons}
+      @update-title=${this.onTitle}
+      @coll-loaded=${this.onCollLoaded}
+      @about-show=${()=>this.showAbout=!0}
+    ></wr-coll>`}renderHomeIndex(){return T` <wr-coll-index>
       ${me?"":T`
-      <p slot="header" class="tagline is-size-5 has-text-centered">Explore and Replay Interactive Archived Webpages Directly in your Browser. <i><a target="_blank" href="./docs/examples">(See Examples)</a></i></p>
-      `}
-      <wr-chooser slot="header" .droppedFile=${this.droppedFile} @did-drop-file="${()=>this.droppedFile=null}" @load-start=${this.onStartLoad}></wr-chooser>
+            <p slot="header" class="tagline is-size-5 has-text-centered">
+              Explore and Replay Interactive Archived Webpages Directly in your
+              Browser.
+              <i
+                ><a target="_blank" href="./docs/examples">(See Examples)</a></i
+              >
+            </p>
+          `}
+      <wr-chooser
+        slot="header"
+        .droppedFile=${this.droppedFile}
+        @did-drop-file="${()=>this.droppedFile=null}"
+        @load-start=${this.onStartLoad}
+      ></wr-chooser>
     </wr-coll-index>`}render(){return this.inited?this.embed&&this.swErrorMsg?this.swErrorMsg:T`
       ${this.embed&&"full"!==this.embed?"":this.renderNavBar()}
-
       ${this.sourceUrl?this.renderColl():this.renderHomeIndex()}
-
       ${this.showAbout?this.renderAbout():""}
-
       ${this.showFileDropOverlay?this.renderDropFileOverlay():""}
-    `:T``}firstUpdated(){this.initRoute();const e=this.swName+(this.useRuffle?"?ruffle=1":"");this.swmanager=new Pe({name:e,appName:this.appName}),this.swmanager.register().catch((()=>this.swErrorMsg=this.swmanager.renderErrorReport(this.mainLogo))),window.addEventListener("popstate",(()=>{this.initRoute()}))}updated(e){e.has("sourceUrl")&&(this.collTitle=null)}onFavIcons(e){const t=document.querySelector("head"),i=document.querySelectorAll("link[rel*='icon']");for(const e of i)t.removeChild(e);for(const i of e.detail.icons){const e=document.createElement("link");e.rel=i.rel,e.href=i.href,t.appendChild(e)}}skipMenu(e){e.preventDefault(),this.renderRoot.querySelector("#skip-main-target").focus()}onNavMenu(e){e.preventDefault(),e.stopPropagation(),this.navMenuShown=!this.navMenuShown,this.navMenuShown&&(document.addEventListener("click",(e=>{e.preventDefault(),this.navMenuShown=!1,this.renderRoot.querySelector("#menu-button").focus()}),{once:!0}),document.addEventListener("keypress",(e=>{"Escape"==e.key&&(e.preventDefault(),this.navMenuShown=!1,this.renderRoot.querySelector("#menu-button").focus())}),{once:!0}))}initRoute(){this.inited=!0,this.pageParams=new URLSearchParams(window.location.search);let e=this.pageParams.get("state");if(e)try{if(e=JSON.parse(e),e.ids instanceof Array&&e.userId&&"open"===e.action)return this.pageParams.set("source","googledrive://"+e.ids[0]),this.pageParams.delete("state"),void(window.location.search=this.pageParams.toString())}catch(e){console.log(e)}if(this.source){this.pageParams.set("source",this.source);const e=new URL(window.location.href);e.search=this.pageParams.toString(),window.history.replaceState({},document.title,e.href)}if(this.sourceUrl=this.pageParams.get("source")||"",this.embed=this.pageParams.get("embed")||"",this.embed?this.useRuffle="1"===this.pageParams.get("ruffle"):this.useRuffle=!this.skipRuffle,this.pageParams.has("terms")&&(this.showAbout=!0),this.pageParams.has("embed")&&(this.loadInfo||(this.loadInfo={})),this.pageParams.get("config"))try{this.loadInfo.extraConfig=JSON.parse(this.pageParams.get("config"))}catch(e){console.log("invalid config: "+e)}this.pageParams.get("baseUrlSourcePrefix")&&(this.loadInfo.extraConfig=this.loadInfo.extraConfig||{},this.loadInfo.extraConfig.baseUrlSourcePrefix=this.pageParams.get("baseUrlSourcePrefix")),this.pageParams.get("basePageUrl")&&(this.loadInfo.extraConfig=this.loadInfo.extraConfig||{},this.loadInfo.extraConfig.baseUrl=this.pageParams.get("basePageUrl")),this.pageParams.get("customColl")&&(this.loadInfo.customColl=this.pageParams.get("customColl")),"1"===this.pageParams.get("noWebWorker")&&(this.loadInfo.noWebWorker=!0),"1"===this.pageParams.get("noCache")&&(this.loadInfo.noCache=!0),"1"===this.pageParams.get("hideOffscreen")&&(this.loadInfo.hideOffscreen=!0),"eager"===this.pageParams.get("loading")&&(this.loadInfo.loadEager=!0),this.pageParams.get("swName")&&(this.swName=this.pageParams.get("swName")),me&&this.sourceUrl.startsWith("file://")&&(this.loadInfo={sourceUrl:this.sourceUrl,loadUrl:this.sourceUrl.replace("file://","file2://")})}onStartLoad(e){this.pageParams.set("source",e.detail.sourceUrl);const t=new URL(window.location.href);t.search=this.pageParams.toString(),this.collPageUrl=t.toString(),e.detail.isFile?(window.history.pushState({},"",this.collPageUrl),this.sourceUrl=e.detail.sourceUrl,this.loadInfo=e.detail):window.location.search=this.pageParams.toString()}onCollLoaded(e){this.loadInfo=null,e.detail.collInfo&&(this.collTitle=e.detail.collInfo.title),e.detail.alreadyLoaded||e.detail.sourceUrl!==this.sourceUrl&&(this.pageParams.set("source",e.detail.sourceUrl),window.location.search=this.pageParams.toString())}onTitle(e){e.detail.title&&(this.pageTitle=e.detail.title,this.pageReplay=e.detail.replayTitle,document.title=(e.detail.replayTitle?"Archive of ":"")+this.pageTitle+" | "+this.appName)}safariKeyframes(){const e=document.createElement("style");document.head.appendChild(e),e.appendChild(document.createTextNode("\n    @keyframes spinAround {\n      from {\n        transform: rotate(0deg);\n      }\n      to {\n        transform: rotate(359deg);\n      }\n    }\n    "))}renderAbout(){return T`
+    `:T``}firstUpdated(){this.initRoute();const e=this.swName+(this.useRuffle?"?ruffle=1":"");this.swmanager=new Pe({name:e,appName:this.appName}),this.swmanager.register().catch((()=>this.swErrorMsg=this.swmanager.renderErrorReport(this.mainLogo))),window.addEventListener("popstate",(()=>{this.initRoute()}))}updated(e){e.has("sourceUrl")&&(this.collTitle=null)}onFavIcons(e){const t=document.querySelector("head"),i=document.querySelectorAll("link[rel*='icon']");for(const e of i)t.removeChild(e);for(const i of e.detail.icons){const e=document.createElement("link");e.rel=i.rel,e.href=i.href,t.appendChild(e)}}skipMenu(e){e.preventDefault(),this.renderRoot.querySelector("#skip-main-target").focus()}onNavMenu(e){e.preventDefault(),e.stopPropagation(),this.navMenuShown=!this.navMenuShown,this.navMenuShown&&(document.addEventListener("click",(e=>{e.preventDefault(),this.navMenuShown=!1,this.renderRoot.querySelector("#menu-button").focus()}),{once:!0}),document.addEventListener("keypress",(e=>{"Escape"==e.key&&(e.preventDefault(),this.navMenuShown=!1,this.renderRoot.querySelector("#menu-button").focus())}),{once:!0}))}initRoute(){this.inited=!0,this.pageParams=new URLSearchParams(window.location.search);let e=this.pageParams.get("state");if(e)try{if(e=JSON.parse(e),e.ids instanceof Array&&e.userId&&"open"===e.action)return this.pageParams.set("source","googledrive://"+e.ids[0]),this.pageParams.delete("state"),void(window.location.search=this.pageParams.toString())}catch(e){console.log(e)}if(this.source){this.pageParams.set("source",this.source);const e=new URL(window.location.href);e.search=this.pageParams.toString(),window.history.replaceState({},document.title,e.href)}if(this.sourceUrl=this.pageParams.get("source")||"",this.embed=this.pageParams.get("embed")||"",this.embed?this.useRuffle="1"===this.pageParams.get("ruffle"):this.useRuffle=!this.skipRuffle,this.pageParams.has("terms")&&(this.showAbout=!0),this.pageParams.has("embed")&&(this.loadInfo||(this.loadInfo={})),this.pageParams.get("config"))try{this.loadInfo.extraConfig=JSON.parse(this.pageParams.get("config"))}catch(e){console.log("invalid config: "+e)}this.pageParams.get("baseUrlSourcePrefix")&&(this.loadInfo.extraConfig=this.loadInfo.extraConfig||{},this.loadInfo.extraConfig.baseUrlSourcePrefix=this.pageParams.get("baseUrlSourcePrefix")),this.pageParams.get("basePageUrl")&&(this.loadInfo.extraConfig=this.loadInfo.extraConfig||{},this.loadInfo.extraConfig.baseUrl=this.pageParams.get("basePageUrl")),this.pageParams.get("customColl")&&(this.loadInfo.customColl=this.pageParams.get("customColl")),"1"===this.pageParams.get("noWebWorker")&&(this.loadInfo.noWebWorker=!0),"1"===this.pageParams.get("noCache")&&(this.loadInfo.noCache=!0),"1"===this.pageParams.get("hideOffscreen")&&(this.loadInfo.hideOffscreen=!0),"eager"===this.pageParams.get("loading")&&(this.loadInfo.loadEager=!0),this.pageParams.get("swName")&&(this.swName=this.pageParams.get("swName")),me&&this.sourceUrl.startsWith("file://")&&(this.loadInfo={sourceUrl:this.sourceUrl,loadUrl:this.sourceUrl.replace("file://","file2://")})}onStartLoad(e){this.pageParams.set("source",e.detail.sourceUrl);const t=new URL(window.location.href);t.search=this.pageParams.toString(),this.collPageUrl=t.toString(),e.detail.isFile?(window.history.pushState({},"",this.collPageUrl),this.sourceUrl=e.detail.sourceUrl,this.loadInfo=e.detail):window.location.search=this.pageParams.toString()}onCollLoaded(e){this.loadInfo=null,e.detail.collInfo&&(this.collTitle=e.detail.collInfo.name||e.detail.collInfo.title),e.detail.alreadyLoaded||e.detail.sourceUrl!==this.sourceUrl&&(this.pageParams.set("source",e.detail.sourceUrl),window.location.search=this.pageParams.toString())}onTitle(e){e.detail.title&&(this.pageTitle=e.detail.title,this.pageReplay=e.detail.replayTitle,document.title=(e.detail.replayTitle?"Archive of ":"")+this.pageTitle+" | "+this.appName)}safariKeyframes(){const e=document.createElement("style");document.head.appendChild(e),e.appendChild(document.createTextNode("\n    @keyframes spinAround {\n      from {\n        transform: rotate(0deg);\n      }\n      to {\n        transform: rotate(359deg);\n      }\n    }\n    "))}renderAbout(){return T`
       <div class="modal is-active">
         <div class="modal-background" @click="${this.onAboutClose}"></div>
           <div class="modal-card">
@@ -317,12 +420,19 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
                     </div>
 
                     ${me?T`
-                    <p>ReplayWeb.page App is a standalone app for Mac, Windows and Linux that loads web archive files provided by the user
-                    and renders them for replay.</p>
-
-                    `:T`
-                    <p><a href="https://replayweb.page" target="_blank">ReplayWeb.page</a> is a browser-based viewer that loads web archive files provided by the user
-                    and renders them for replay in the browser.</p>`}
+                            <p>
+                              ReplayWeb.page App is a standalone app for Mac,
+                              Windows and Linux that loads web archive files
+                              provided by the user and renders them for replay.
+                            </p>
+                          `:T` <p>
+                            <a href="https://replayweb.page" target="_blank"
+                              >ReplayWeb.page</a
+                            >
+                            is a browser-based viewer that loads web archive
+                            files provided by the user and renders them for
+                            replay in the browser.
+                          </p>`}
                   </div>
 
                   <p>Full source code is available at:
@@ -357,1260 +467,1682 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       </div>`}onAboutClose(){this.showAbout=!1}renderDropFileOverlay(){return T`
       <div class="drop-file-overlay">Drop to load web archive</div>
     `}}customElements.define("replay-app-main",Le);var De=__webpack_require__(8135),Te=__webpack_require__.n(De);customElements.define("wr-chooser",class extends X{constructor(){super(),this.fileDisplayName="",this.file=null,this.droppedFile=null,this.hasNativeFS=!!window.showOpenFilePicker&&!me,this.newFullImport=!1,this.noHead=!1,this.showOpenFilePickerOptions={types:[{description:"WARC, WACZ, HAR and WBN Files",accept:{"application/warc":[".warc",".gz"],"application/har":[".har"],"application/wacz":[".wacz"],"application/wbn":[".wbn"],"application/json":[".json"]}}]}}static get properties(){return{fileDisplayName:{type:String},droppedFile:{type:File},newFullImport:{type:Boolean},noHead:{type:Boolean}}}updated(e){e.has("droppedFile")&&this.droppedFile&&this.onDropFile()}onDropFile(){this.showOpenFilePickerOptions.types.map((e=>e.accept)).map(Object.values).flat(2).some((e=>this.droppedFile.name.endsWith(e)))&&(this.setFile(this.droppedFile),this.dispatchEvent(new CustomEvent("did-drop-file",{bubbles:!0,composed:!0})),this.onStartLoad())}onChooseFile(e){0!==e.currentTarget.files.length&&this.setFile(e.currentTarget.files[0])}setFile(e){this.file=e,this.fileDisplayName="file://"+(this.file.path||this.file.name)}async onChooseNativeFile(){if(!this.hasNativeFS)return;const[e]=await window.showOpenFilePicker(this.showOpenFilePickerOptions);this.fileHandle=e,this.file=await e.getFile(),this.fileDisplayName="file://"+e.name}randomId(){return Math.random().toString(36).substring(2,15)+Math.random().toString(36).substring(2,15)}onStartLoad(e){e&&e.preventDefault();const t={sourceUrl:this.fileDisplayName};return this.file&&(t.isFile=!0,this.file.path?(t.loadUrl="file2://"+this.file.path,t.noCache=!0):this.fileHandle?(t.loadUrl=this.fileDisplayName,t.extra={fileHandle:this.fileHandle},t.noCache=!1):(t.loadUrl=URL.createObjectURL(this.file),t.blob=this.file,t.noCache=!1),t.size=this.file.size,t.name=this.fileDisplayName),t.newFullImport=this.newFullImport,this.dispatchEvent(new CustomEvent("load-start",{bubbles:!0,composed:!0,detail:t})),!1}onInput(e){this.fileDisplayName=e.currentTarget.value,this.file&&this.fileDisplayName&&this.fileDisplayName.startsWith("file://")&&(this.file=null,this.fileDisplayName="")}static get styles(){return be(o`
-    :host {
-      min-width: 0;
-    }
-    .extra-padding {
-      padding: 1.5em;
-    }
-    .less-padding {
-      padding-top: 1.0em;
-      padding-bottom: 1.0em;
-    }
-    div.field.has-addons {
-      flex: auto;
-    }
-    .panel-heading {
-      background-color: #cff3ff;
-    }
-    .message-header {
-      background-color: #cff3ff;
-      color: black;
-    }
-    .heading-size {
-      font-size: 0.85rem;
-    }
-    form {
-      flex-grow: 1;
-      flex-shrink: 0;
-      margin-bottom: 0;
-    }
-    p.control.is-expanded {
-      width: min-content;
-    }
-    input.input.file-name:invalid {
-      border: 1px dashed red;
-    }
-    input.input.file-name {
-      border-width: 1px;
-      margin-left: -1px;
-      max-width: 100%;
-    }
-    @media screen and (max-width: 1023px) {
-      .file-icon {
-        margin-right: 0px;
+      :host {
+        min-width: 0;
       }
-    }
+      .extra-padding {
+        padding: 1.5em;
+      }
+      .less-padding {
+        padding-top: 1em;
+        padding-bottom: 1em;
+      }
+      div.field.has-addons {
+        flex: auto;
+      }
+      .panel-heading {
+        background-color: #cff3ff;
+      }
+      .message-header {
+        background-color: #cff3ff;
+        color: black;
+      }
+      .heading-size {
+        font-size: 0.85rem;
+      }
+      form {
+        flex-grow: 1;
+        flex-shrink: 0;
+        margin-bottom: 0;
+      }
+      p.control.is-expanded {
+        width: min-content;
+      }
+      input.input.file-name:invalid {
+        border: 1px dashed red;
+      }
+      input.input.file-name {
+        border-width: 1px;
+        margin-left: -1px;
+        max-width: 100%;
+      }
+      @media screen and (max-width: 1023px) {
+        .file-icon {
+          margin-right: 0px;
+        }
+      }
 
-    @media screen and (max-width: 768px) {
-      #filename {
-        border-bottom-right-radius: 4px;
-        border-top-right-radius: 4px;
+      @media screen and (max-width: 768px) {
+        #filename {
+          border-bottom-right-radius: 4px;
+          border-top-right-radius: 4px;
+        }
       }
-    }
-  `)}render(){return T`
-    <section class="section ${this.noHead?"is-paddingless":"less-padding"}">
+    `)}render(){return T` <section
+      class="section ${this.noHead?"is-paddingless":"less-padding"}"
+    >
       <div class="${this.noHead?"":"panel"}">
-        <div class="${this.noHead?"is-hidden":"panel-heading"} heading-size">${this.newFullImport?"Import Existing":"Load"} Web Archive</div>
-        <div class="${this.noHead?"":"panel-body extra-padding"} file has-name">
+        <div
+          class="${this.noHead?"is-hidden":"panel-heading"} heading-size"
+        >
+          ${this.newFullImport?"Import Existing":"Load"} Web Archive
+        </div>
+        <div
+          class="${this.noHead?"":"panel-body extra-padding"} file has-name"
+        >
           <form class="is-flex" @submit="${this.onStartLoad}">
             <label class="file-label">
-              ${this.hasNativeFS?"":T`
-              <input class="file-input"
-                @click="${e=>e.currentTarget.value=null}"
-                @change=${this.onChooseFile} type="file" id="fileupload" name="fileupload">`}
+              ${this.hasNativeFS?"":T` <input
+                    class="file-input"
+                    @click="${e=>e.currentTarget.value=null}"
+                    @change=${this.onChooseFile}
+                    type="file"
+                    id="fileupload"
+                    name="fileupload"
+                  />`}
               <span class="file-cta" @click="${this.onChooseNativeFile}">
                 <span class="file-icon">
-                  <fa-icon size="0.9em" .svg=${Te()} aria-hidden="true"></fa-icon>
+                  <fa-icon
+                    size="0.9em"
+                    .svg=${Te()}
+                    aria-hidden="true"
+                  ></fa-icon>
                 </span>
-                <span class="file-label is-hidden-touch">
-                  Choose File...
-                </span>
+                <span class="file-label is-hidden-touch"> Choose File... </span>
               </span>
             </label>
 
             <div class="field has-addons">
               <p class="control is-expanded">
-                <input class="file-name input" type="text"
-                name="filename" id="filename"
-                pattern="((file|http|https|ipfs|s3):\/\/.*\.(warc|warc.gz|zip|wacz|har|wbn|json)([?#].*)?)|(googledrive:\/\/.+)|(ssb:\/\/.+)"
-                .value="${this.fileDisplayName}"
-                @input="${this.onInput}"
-                autocomplete="off"
-                placeholder="${this.newFullImport?"Click 'Choose File' to select a local archive to import":"Enter a URL or click 'Choose File' to select a WARC, WACZ, HAR or WBN archive source"}">
+                <input
+                  class="file-name input"
+                  type="text"
+                  name="filename"
+                  id="filename"
+                  pattern="((file|http|https|ipfs|s3)://.*.(warc|warc.gz|zip|wacz|har|wbn|json)([?#].*)?)|(googledrive://.+)|(ssb://.+)"
+                  .value="${this.fileDisplayName}"
+                  @input="${this.onInput}"
+                  autocomplete="off"
+                  placeholder="${this.newFullImport?"Click 'Choose File' to select a local archive to import":"Enter a URL or click 'Choose File' to select a WARC, WACZ, HAR or WBN archive source"}"
+                />
               </p>
               <div class="control">
-                <button type="submit" class="button is-hidden-mobile is-primary">${this.newFullImport?"Import":"Load"}</button>
+                <button
+                  type="submit"
+                  class="button is-hidden-mobile is-primary"
+                >
+                  ${this.newFullImport?"Import":"Load"}
+                </button>
               </div>
             </div>
-
           </form>
         </div>
       </div>
     </section>`}});var Ee=__webpack_require__(8600),Re=__webpack_require__.n(Ee),Oe=__webpack_require__(1734),Me=__webpack_require__.n(Oe),qe=__webpack_require__(6921),Ne=__webpack_require__.n(qe),Fe=__webpack_require__(8536),Be=__webpack_require__.n(Fe),je=__webpack_require__(2804),He=__webpack_require__.n(je);class We extends X{constructor(){super(),this.colls=[],this.filteredColls=[],this.sortedColls=null,this.query="",this.hideHeader="1"===localStorage.getItem("index:hideHeader"),this._deleting={},this.dateName="Date Loaded",this.headerName="Loaded Archives",this.typeFilter="",this.indexParams=""}get sortKeys(){return[{key:"title",name:"Title"},{key:"sourceUrl",name:"Source"},{key:"ctime",name:this.dateName},{key:"size",name:"Total Size"}]}static get properties(){return{colls:{type:Array},query:{type:String},filteredColls:{type:Array},sortedColls:{type:Array},hideHeader:{type:Boolean},_deleting:{type:Object},dateName:{type:String},headerName:{type:String}}}firstUpdated(){this.loadColls()}updated(e){e.has("hideHeader")&&localStorage.setItem("index:hideHeader",this.hideHeader?"1":"0"),(e.has("colls")||e.has("query"))&&this.filter()}filter(){if(this.query){this.filteredColls=[];for(const e of this.colls)(e.sourceUrl.indexOf(this.query)>=0||e.filename.indexOf(this.query)>=0||e.loadUrl&&e.loadUrl.indexOf(this.query)>=0||e.title&&e.title.indexOf(this.query)>=0)&&this.filteredColls.push(e)}else this.filteredColls=this.colls}async loadColls(){const e=await fetch(`./w/api/coll-index?${this.indexParams}`);try{if(200!==e.status)throw new Error("Invalid API Response, Retry");const t=await e.json();this.colls=t.colls.map((e=>(e.title=e.title||e.filename,e))),this._deleting={},this.sortedColls=[]}catch(e){setTimeout((()=>this.loadColls()),500)}}async onDeleteColl(e){if(e.preventDefault(),e.stopPropagation(),!this.sortedColls)return;const t=Number(e.currentTarget.getAttribute("data-coll-index")),i=this.sortedColls[t];if(!i||this._deleting[i.sourceUrl])return;this._deleting[i.sourceUrl]=!0,this.requestUpdate();const a=await fetch(`./w/api/c/${i.id}`,{method:"DELETE"});if(200===a.status){const e=await a.json();this.colls=e.colls}return!1}static get styles(){return be(We.compStyles)}static get compStyles(){return o`
-    :host {
-      overflow-y: auto;
-      min-width: 0;
-    }
-    .size {
-      margin-right: 20px;
-    }
-    .extra-padding {
-      padding: 2em;
-    }
-    .no-top-padding {
-      padding-top: 1.0em;
-    }
-    .panel-heading {
-      font-size: 0.85rem;
-    }
-    .is-loading {
-      line-height: 1.5em;
-      height: 1.5em;
-      border: 0px;
-      background-color: transparent !important;
-      width: auto;
-    }
-    div.panel.is-light {
-      margin-bottom: 2em;
-    }
+      :host {
+        overflow-y: auto;
+        min-width: 0;
+      }
+      .size {
+        margin-right: 20px;
+      }
+      .extra-padding {
+        padding: 2em;
+      }
+      .no-top-padding {
+        padding-top: 1em;
+      }
+      .panel-heading {
+        font-size: 0.85rem;
+      }
+      .is-loading {
+        line-height: 1.5em;
+        height: 1.5em;
+        border: 0px;
+        background-color: transparent !important;
+        width: auto;
+      }
+      div.panel.is-light {
+        margin-bottom: 2em;
+      }
 
-    fa-icon {
-      vertical-align: middle;
-    }
+      fa-icon {
+        vertical-align: middle;
+      }
 
-    .panel-color {
-      background-color: rgb(210, 249, 214);
-    }
+      .panel-color {
+        background-color: rgb(210, 249, 214);
+      }
 
-    .copy {
-      color: black;
-      margin: 0px;
-      margin: 0;
-      line-height: 0.4em;
-      padding: 6px;
-      border-radius: 10px;
-      display: none;
-      position: absolute;
-    }
-    .copy:active {
-      background-color: lightgray;
-    }
-    .sort-header {
-      padding: 0.3rem 0.3rem 0.3rem 0;
-      display: flex;
-      flex-direction: row;
-      flex-flow: row wrap;
-    }
-    .sort-header .control {
-      flex: auto;
+      .copy {
+        color: black;
+        margin: 0px;
+        margin: 0;
+        line-height: 0.4em;
+        padding: 6px;
+        border-radius: 10px;
+        display: none;
+        position: absolute;
+      }
+      .copy:active {
+        background-color: lightgray;
+      }
+      .sort-header {
+        padding: 0.3rem 0.3rem 0.3rem 0;
+        display: flex;
+        flex-direction: row;
+        flex-flow: row wrap;
+      }
+      .sort-header .control {
+        flex: auto;
 
-      padding-left: 0.3rem;
-      width: initial;
-    }
-    wr-sorter {
-      padding: 0.3rem;
-    }
-    a.button.is-small.collapse {
-      border-radius: 6px;
-    }
-    .icon.is-left {
-      margin-left: 0.5rem;
-    }
-    .coll-block {
-      position: relative;
-    }
-    .delete-button {
-      width: 32px;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    #sort-select::after {
-      display: none;
-    }
-    header {
-      transform: translate(0px, 0px);
-      transition: all 0.5s ease 0s;
-      visibility: visible;
-      display: flex;
-      flex-direction: column;
-    }
-    header.closed {
-      transform: translate(0, -100%);
-      transition: all 0.5s ease 0s;
-      visibility: visible;
-      height: 269px;
-      margin-top: -269px;
-    }
-    `}renderHeader(){return T`<h2 class="panel-heading panel-color"><span>${this.headerName}</span></h2>`}renderSearchHeader(){return""}render(){const e=this.childElementCount>0;return T`
-    <header class="${this.hideHeader?"closed":""}">
-      <slot name="header"></slot>
-    </header>
-    <section class="section no-top-padding">
-      <div class="sort-header is-small">
-        ${e?T`
+        padding-left: 0.3rem;
+        width: initial;
+      }
+      wr-sorter {
+        padding: 0.3rem;
+      }
+      a.button.is-small.collapse {
+        border-radius: 6px;
+      }
+      .icon.is-left {
+        margin-left: 0.5rem;
+      }
+      .coll-block {
+        position: relative;
+      }
+      .delete-button {
+        width: 32px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
+      #sort-select::after {
+        display: none;
+      }
+      header {
+        transform: translate(0px, 0px);
+        transition: all 0.5s ease 0s;
+        visibility: visible;
+        display: flex;
+        flex-direction: column;
+      }
+      header.closed {
+        transform: translate(0, -100%);
+        transition: all 0.5s ease 0s;
+        visibility: visible;
+        height: 269px;
+        margin-top: -269px;
+      }
+    `}renderHeader(){return T`<h2 class="panel-heading panel-color">
+      <span>${this.headerName}</span>
+    </h2>`}renderSearchHeader(){return""}render(){const e=this.childElementCount>0;return T`
+      <header class="${this.hideHeader?"closed":""}">
+        <slot name="header"></slot>
+      </header>
+      <section class="section no-top-padding">
+        <div class="sort-header is-small">
+          ${e?T`
         <button @click=${()=>this.hideHeader=!this.hideHeader} class="collapse button is-small">
           <span class="icon"><fa-icon .svg=${this.hideHeader?Be():Ne()}></span>
           <span>${this.hideHeader?"Show ":"Hide"} <span class="is-sr-only">Header</span></span>
         </button>`:""}
-      </div>
-      <div class="panel">
-        ${this.renderHeader()}
-        ${this.colls.length?T`
-        <div class="panel-block sort-header is-small">
-        ${this.renderSearchHeader()}
-          <div class="control has-icons-left has-addons">
-            <input type="text" class="input is-small" @input="${e=>this.query=e.currentTarget.value}" .value="${this.query}" type="text"
-            placeholder="Search by Archive Title or Source">
-            <span class="icon is-left is-small"><fa-icon .svg="${He()}"/></span>
-          </div>
-          <wr-sorter id="index"
-          sortKey="ctime"
-          ?sortDesc="${!0}"
-          .sortKeys="${this.sortKeys}"
-          .data="${this.filteredColls}"
-          @sort-changed="${e=>this.sortedColls=e.detail.sortedData}">
-          </wr-sorter>
         </div>
+        <div class="panel">
+          ${this.renderHeader()}
+          ${this.colls.length?T`
+                <div class="panel-block sort-header is-small">
+                  ${this.renderSearchHeader()}
+                  <div class="control has-icons-left has-addons">
+                    <input
+                      type="text"
+                      class="input is-small"
+                      @input="${e=>this.query=e.currentTarget.value}"
+                      .value="${this.query}"
+                      placeholder="Search by Archive Title or Source"
+                    />
+                    <span class="icon is-left is-small">
+                      <fa-icon .svg="${He()}"></fa-icon>
+                    </span>
+                  </div>
+                  <wr-sorter
+                    id="index"
+                    sortKey="ctime"
+                    ?sortDesc="${!0}"
+                    .sortKeys="${this.sortKeys}"
+                    .data="${this.filteredColls}"
+                    @sort-changed="${e=>this.sortedColls=e.detail.sortedData}"
+                  >
+                  </wr-sorter>
+                </div>
 
-        <div class="coll-list">
-          ${this.sortedColls&&this.sortedColls.map(((e,t)=>T`
-            <div class="coll-block panel-block">
-              ${this.renderCollInfo(e)}
-              ${this._deleting[e.sourceUrl]?T`
-              <span class="button delete-button is-loading is-static">Deleting</span`:T`
-              <button class="delete delete-button" aria-label="Unload Collection" title="Unload Collection" data-coll-index="${t}" @click="${this.onDeleteColl}"></button>
+                <div class="coll-list">
+                  ${this.sortedColls&&this.sortedColls.map(((e,t)=>T`
+                      <div class="coll-block panel-block">
+                        ${this.renderCollInfo(e)}
+                        ${this._deleting[e.sourceUrl]?T` <span
+                              class="button delete-button is-loading is-static"
+                            >
+                              Deleting
+                            </span>`:T`
+                              <button
+                                class="delete delete-button"
+                                aria-label="Unload Collection"
+                                title="Unload Collection"
+                                data-coll-index="${t}"
+                                @click="${this.onDeleteColl}"
+                              ></button>
+                            `}
+                      </div>
+                    `))}
+                </div>
+              `:T`
+                <div class="panel-block extra-padding">
+                  ${null===this.sortedColls?T`<i>Loading Archives...</i>`:this.renderEmpty()}
+                </div>
               `}
-            </div>
-          `))}
         </div>
+      </section>
+    `}renderCollInfo(e){return T`<wr-coll-info .coll=${e}></wr-coll-info>`}renderEmpty(){return T`<i
+      >No Archives so far! Archives loaded in the section above will appear
+      here.</i
+    >`}}class Ge extends X{constructor(){super(),this.detailed=!1,this.canDelete=!1}static get properties(){return{coll:{type:Object},detailed:{type:Boolean},canDelete:{type:Boolean}}}static get styles(){return be(Ge.compStyles)}static get compStyles(){return o`
+      .columns {
+        width: 100%;
+      }
+      .column {
+        word-break: break-word;
+        position: relative;
+      }
 
-        `:T`
+      :host {
+        width: 100%;
+        height: 100%;
+        min-width: 0px;
+      }
 
-        <div class="panel-block extra-padding">
-        ${null===this.sortedColls?T`<i>Loading Archives...</i>`:this.renderEmpty()}
-        </div>
-        `}
-      </div>
-    </section>
-    `}renderCollInfo(e){return T`<wr-coll-info .coll=${e}></wr-coll-info>`}renderEmpty(){return T`<i>No Archives so far! Archives loaded in the section above will appear here.</i>`}}class Ge extends X{constructor(){super(),this.detailed=!1,this.canDelete=!1}static get properties(){return{coll:{type:Object},detailed:{type:Boolean},canDelete:{type:Boolean}}}static get styles(){return be(Ge.compStyles)}static get compStyles(){return o`
-    .columns {
-      width: 100%;
-    }
-    .column {
-      word-break: break-word;
-      position: relative;
-    }
+      :host(.is-list) .columns {
+        display: flex !important;
+        flex-direction: column;
+      }
 
-    :host {
-      width: 100%;
-      height: 100%;
-      min-width: 0px;
-    }
+      :host(.is-list) .column {
+        width: 100% !important;
+      }
 
-    :host(.is-list) .columns {
-      display: flex !important;
-      flex-direction: column;
-    }
-
-    :host(.is-list) .column {
-      width: 100% !important;
-    }
-
-    .col-title:hover {
-
-    }
-    .col-title a {
-      display: block;
-      height: 100%;
-    }
-    .column:hover > .copy, .source-text:hover + .copy, .copy:hover {
-      display: inline;
-    }
-    .copy {
-      color: black;
-      margin: 0px;
-      margin: 0;
-      line-height: 0.4em;
-      padding: 6px;
-      border-radius: 10px;
-      display: none;
-      position: absolute;
-    }
-    .copy:active {
-      background-color: lightgray;
-    }
-    .minihead {
-      font-size: 10px;
-      font-weight: bold;
-    }
+      .col-title:hover {
+      }
+      .col-title a {
+        display: block;
+        height: 100%;
+      }
+      .column:hover > .copy,
+      .source-text:hover + .copy,
+      .copy:hover {
+        display: inline;
+      }
+      .copy {
+        color: black;
+        margin: 0px;
+        margin: 0;
+        line-height: 0.4em;
+        padding: 6px;
+        border-radius: 10px;
+        display: none;
+        position: absolute;
+      }
+      .copy:active {
+        background-color: lightgray;
+      }
+      .minihead {
+        font-size: 10px;
+        font-weight: bold;
+      }
     `}renderSource(e){return T`
-  <div class="column is-4">
-    <span class="source-text"><p class="minihead">Source</p>
-    ${e.sourceUrl&&(e.sourceUrl.startsWith("http://")||e.sourceUrl.startsWith("https://"))?T`
-    <a href="${e.sourceUrl}">${e.sourceUrl}&nbsp;</a>`:T`
-    ${e.sourceUrl}&nbsp;`}
-    </span>
+      <div class="column is-4">
+        <span class="source-text"
+          ><p class="minihead">Source</p>
+          ${e.sourceUrl&&(e.sourceUrl.startsWith("http://")||e.sourceUrl.startsWith("https://"))?T` <a href="${e.sourceUrl}">${e.sourceUrl}&nbsp;</a>`:T` ${e.sourceUrl}&nbsp;`}
+        </span>
 
-    <a @click="${t=>this.onCopy(t,e.sourceUrl)}" class="copy"><fa-icon .svg="${Me()}"/></a>
-    ${e.sourceUrl&&e.sourceUrl.startsWith("googledrive://")?T`
-      <p><i>(${e.filename})</i></p>`:""}
-  </div>
-  <div class="column is-2"><p class="minihead">Date Loaded</p>${e.ctime?new Date(e.ctime).toLocaleString():""}</div>
-  <div class="column is-2"><p class="minihead">Total Size</p>${Re()(Number(e.size||0))}</div>
-  `}renderSummaryView(){const e=this.coll;return T`
-    <div class="columns">
+        <a @click="${t=>this.onCopy(t,e.sourceUrl)}" class="copy">
+          <fa-icon .svg="${Me()}"></fa-icon>
+        </a>
+        ${e.sourceUrl&&e.sourceUrl.startsWith("googledrive://")?T` <p><i>(${e.filename})</i></p>`:""}
+      </div>
+      <div class="column is-2">
+        <p class="minihead">Date Loaded</p>
+        ${e.ctime?new Date(e.ctime).toLocaleString():""}
+      </div>
+      <div class="column is-2">
+        <p class="minihead">Total Size</p>
+        ${Re()(Number(e.totalSize||e.size||0))}
+      </div>
+    `}renderSummaryView(){const e=this.coll;return T` <div class="columns">
       <div class="column col-title is-4">
         <span class="subtitle has-text-weight-bold">
-          <a href="?source=${encodeURIComponent(e.sourceUrl)}">${e.title||e.filename}</a>
+          <a href="?source=${encodeURIComponent(e.sourceUrl)}"
+            >${e.name||e.title||e.filename}</a
+          >
         </span>
       </div>
       ${this.renderSource(e)}
-    </div>`}renderDetailed(){const e=this.coll;let{numValid:t,numInvalid:i,domain:a,certFingerprint:r,datapackageHash:o,publicKey:s,software:n}=this.coll.verify||{};t=t||0,i=i||0;const l=r?`https://crt.sh/?q=${r}`:"";return T`
-      <div class="columns">
-        <div class="column col-title is-4">
-          <span class="subtitle has-text-weight-bold">
-            ${e.title||e.filename}
-          </span>
-        </div>
-        ${e.desc?T`
-          <div class="column">
+    </div>`}renderDetailed(){const e=this.coll;let{numValid:t,numInvalid:i,domain:a,certFingerprint:r,datapackageHash:o,publicKey:s,software:n}=this.coll.verify||{};t=t||0,i=i||0;const l=r?`https://crt.sh/?q=${r}`:"";return T` <div class="columns">
+      <div class="column col-title is-4">
+        <span class="subtitle has-text-weight-bold">
+          ${e.name||e.title||e.filename}
+        </span>
+      </div>
+      ${e.desc?T` <div class="column">
             <p class="minihead">Description</p>
             ${e.desc}
-          </div>`:T`
-        `}
-        <div class="column"><p class="minihead">Filename</p>${e.filename}</div>
-        ${this.renderSource(e)}
-
-        ${a?T`
-        <div class="column">
-          <p class="minihead">Observed By</p>
-          <p>${a}</p>
-          ${l?T`<span><a target="_blank" href="${l}">View Certificate</a></span>`:""}
-        </div>
-        `:n?T`
-        <div class="column">
-          <p class="minihead">Created With</p>
-          ${n||"Unknown"}
-        </div>
-        `:""}
-
-        <div class="column">
-          <p class="minihead">Validation</p>
-          ${t>0||i>0?T`
-          <p>${t} hashes verified${i?T`, ${i} invalid`:""}</p>`:T`
-          Not Available`}
-        </div>
-
-        <div class="column">
-          <p class="minihead">Package Hash</p>
-        ${o||"Not Available"}
-        </div>
-
-        <div class="column">
-          <p class="minihead">Observer Public Key</p>
-        ${s||"Not Available"}
-        </div>
-
-        <div class="column">
-          <p class="minihead">Loading Mode</p>
-          ${e.onDemand?"Download On-Demand":"Fully Local"}
-        </div>
-        <div class="column">
-          <p class="minihead">Collection id</p>
-          ${e.coll}
-        </div>
-      </div>`}render(){return this.detailed?this.renderDetailed():this.renderSummaryView()}onCopy(e,t){return e.preventDefault(),e.stopPropagation(),navigator.clipboard.writeText(t),!1}onPurge(e){const t={reload:e};this.dispatchEvent(new CustomEvent("coll-purge",{detail:t}))}}function Ve(e){if(!e)return"";e.length<14&&(e+="00000101000000".substr(e.length));const t=e.substring(0,4)+"-"+e.substring(4,6)+"-"+e.substring(6,8)+"T"+e.substring(8,10)+":"+e.substring(10,12)+":"+e.substring(12,14)+"-00:00";return new Date(t)}function Ke(e){let t=null;try{t=new Date(e.ts||e.date)}catch(e){}const i=t&&!isNaN(t)?Ze(t.toISOString()):"";return{date:t,timestamp:i}}function Ze(e){return e.replace(/[-:T]/g,"").slice(0,14)}function Je(e,t,i){const a=new URLSearchParams;return a.set("view",e),a.set("url",t),a.set("ts",i),"#"+a.toString()}async function Ye(e){try{new URL(e)}catch(t){e=new URL(e,document.baseURI).href}const t=await async function(e,t){const i=(new TextEncoder).encode(e),a=await crypto.subtle.digest(t,i),r=Array.from(new Uint8Array(a)).map((e=>e.toString(16).padStart(2,"0"))).join("");return r}(e,"SHA-256");return{url:e,coll:"id-"+t.slice(0,12)}}customElements.define("wr-coll-info",Ge),customElements.define("wr-coll-index",We);var Qe=__webpack_require__(5056),Xe=__webpack_require__.n(Qe),et=__webpack_require__(5732),tt=__webpack_require__.n(et),it=__webpack_require__(8561),at=__webpack_require__.n(it),rt=__webpack_require__(9885),ot=__webpack_require__.n(rt),st=__webpack_require__(4636),nt=__webpack_require__.n(st),lt=__webpack_require__(1615),ct=__webpack_require__.n(lt),dt=__webpack_require__(2302),ht=__webpack_require__.n(dt),pt=__webpack_require__(6368),ut=__webpack_require__.n(pt),ft=__webpack_require__(9125),bt=__webpack_require__.n(ft),mt=__webpack_require__(9998),gt=__webpack_require__.n(mt),vt=__webpack_require__(2164),wt=__webpack_require__.n(vt),xt=__webpack_require__(426),kt=__webpack_require__.n(xt),yt=__webpack_require__(430),$t=__webpack_require__.n(yt),_t=__webpack_require__(7970),St=__webpack_require__.n(_t),zt=__webpack_require__(6144),Ct=__webpack_require__.n(zt),It=__webpack_require__(4363),At=__webpack_require__.n(It),Ut=__webpack_require__(4575),Pt=__webpack_require__.n(Ut);class Lt extends X{constructor(){super(),this.collInfo=null,this.appLogo=null,this.ts=null,this.url=null,this.active=!1}get renderRoot(){return this}static get properties(){return{collInfo:{type:Object},appLogo:{type:Object},url:{type:String},ts:{type:String},active:{type:Boolean}}}static get embedStyles(){return o`
-    rwp-embed-receipt {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .icon {
-      vertical-align: text-top;
-    }
-
-    #embed-dropdown {
-      max-height: calc(100vh - 50px);
-      padding-top: 0;
-      margin-top: -0.5rem;
-      display: block;
-      z-index: 1;
-      pointer-events: none;
-      transition: all .3s linear;
-      transform-origin: left top;
-      transform: scaleY(0);
-      transition: all 300ms cubic-bezier(0.15, 0, 0.1, 1);
-      filter: drop-shadow(0px 8px 4px rgba(0, 0, 0, 0.15));
-    }
-
-    .dropdown.is-active #embed-dropdown {
-      transform: scaleY(1);
-    }
-
-    .embed-info-container {
-      width: 100%;
-      display: flex !important;
-      justify-content: center;
-    }
-
-    button.embed-info {
-      padding: 0;
-      background-color: white;
-      justify-content: space-between;
-      max-width: 40rem;
-      width: calc(100% - 1rem);
-      height: 42px;
-      border-color: #D1D5DA;
-      border-width: 1px;
-      border-style: solid;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      text-overflow: ellipsis;
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.15));
-      transition-duration: 50ms;
-      transition-timing-function: ease-out;
-      cursor: pointer;
-      z-index: 2
-    }
-
-    button.embed-info:active {
-      color: initial;
-    }
-
-    button.embed-info:hover {
-      filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
-      transform: scale(1.01);
-    }
-
-    button.embed-info:hover:active {
-      transform: translateY(0.25rem);
-    }
-
-    .embed-info-buttontext {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;  
-      flex-grow: 1;
-      text-align: start;
-      font-size: 13px;
-    }
-
-    .embed-info-drop {
-      font-size: 14px;
-      padding: 1rem;
-      padding-top: 2rem;
-      max-width: 38rem;
-      max-height: 42rem;
-      width: calc(100% - 2rem);
-      border-top-right-radius: 0px;
-      border-top-left-radius: 0px;
-      pointer-events: auto;
-      overflow-y: auto;
-    }
-
-    .embed-info-drop > p {
-      font-size: 14px;
-      color: black;
-    }
-
-    .embed-info-drop > h2 {
-      margin-bottom: 0.25rem;
-      font-size: 16px;
-      font-weight: bold;
-      text-transform: none;
-      letter-spacing: 0;
-      color: #24292E;
-    }
-
-    .embed-info-drop-statscontainer > h3 {
-      font-size: 12px;
-      color: #394146;
-    }
-
-    .embed-info-drop-statscontainer > p {
-      font-size: 14px;
-      color: black;
-    }
-
-    .embed-info-drop a {
-      word-break: break-all;
-    }
-
-    .embed-info-drop .show-hash {
-      word-break: break-all;
-      font-family: monospace;
-    }
-
-    .embed-info-drop .show-key {
-      text-overflow: ellipsis;
-      overflow: hidden;
-      whitespace: nowrap;
-      font-family: monospace;
-    }
-
-    .embed-globe {
-      margin: 0.25rem;
-      padding: 7px;
-      background-color: #0366D6;
-      border-radius: 9999px;
-      color: white;
-      border-width: 1px;
-      border-color: #D1D5DA;
-      border-style: solid;
-      line-height: 0.5em;
-    }`}render(){let{numValid:e,numInvalid:t,domain:i,certFingerprint:a,datapackageHash:r,publicKey:o,software:s}=this.collInfo.verify||{};e=e||0,t=t||0;const n=this.collInfo.sourceUrl,l=a?`https://crt.sh/?q=${a}`:"",c=Ve(this.ts).toLocaleString();return T`
-    <div class="dropdown mb-4 ${this.active?"is-active":""}">
-      <div class="dropdown-trigger embed-info-container">
-        <button class="embed-info is-small is-rounded mt-4" aria-haspopup="true" aria-controls="embed-dropdown" @click="${this.onEmbedDrop}">
-          <fa-icon class="menu-logo mr-2 embed-globe" size="1rem" aria-hidden="true" .svg=${St()}></fa-icon>
-          <span class="embed-info-buttontext">
-            This embed is part of a web archive. Click here to learn more.
-          </span>
-          <span class="icon is-small mr-4 ml-2">
-            <fa-icon title="Toggle" .svg="${this.active?At():Ct()}" aria-hidden="true"></fa-icon>
-          </span>
-        </button>
-      </div>
-      <div class="dropdown-menu embed-info-container" id="embed-dropdown" role="menu">
-        <div class="dropdown-content embed-info-drop">
-          <p class="mb-4">
-          Even if the original page goes offline or is changed, the content below will remain unchanged as it is loaded from a web archive.
-          </p>
-          <hr class="dropdown-divider">
-          <h2 mt-4">Get A Copy!</h2>
-          <p class="mt-2">After downloading, this web archive can be loaded and viewed directly in your browser via <a style="white-space: nowrap;" target="_blank" href="https://replayweb.page">replayweb.page</a>.</p>
-          <a href="${n}" class="button is-primary mt-4" @keyup="${ve}">
-            <span class="icon is-small">
-              <fa-icon size="1.0em" aria-hidden="true" .svg="${tt()}"></fa-icon>
-            </span>
-            <span>Download Archive</span>
-          </a>
-          <hr class="dropdown-divider mt-4">
-          <h2 mt-4">Technical Information</h2>
-          <div class="embed-info-drop-statscontainer mb-4">
-            <h3>Original URL:</h3>
-            <p><a target="_blank" href="${this.url}">${this.url}</a></p>
-            <h3 class="mt-2">Archived On:</h3>
-            <p>${c}</p>
-            ${i?T`
-            <h3 class="mt-2">Observed By:</h3>
-            <p>${i}</p>
-            ${l?T`
-            <p><a target="_blank" href="${l}">View Certificate</a></p>`:""}
-            `:s?T`
-            <h3 class="mt-2">Created With:</h3>
-            <p>${s}</p>`:""}
-            ${!i&&o?T`
-            <h3 class="mt-2">Observer Public Key:</h3>
-            <p class="show-key">${o}</p>`:""}
-            <h3 class="mt-2">Validation:</h3>
-            ${e>0||t>0?T`
-            <p>${e} hashes verified${t?T`, ${t} invalid`:""}</p>`:T`
-            <p>Not Available</p>
-            `}
-            <h3 class="mt-2">Package Hash:</h3>
-            <p class="show-hash">${r}</p>
-            <h3 class="mt-2">Size</h3>
-            <p>${Re()(Number(this.collInfo.size||0))}</p>
-          </div>
-          ${n?T`
+          </div>`:T``}
+      ${e.description?T`<div class="column">
+            <p class="minihead">Description</p>
+            ${e.description}
+          </div>`:T``}
+      <!--  Only show filename if coll.resources doesn't exist -->
+      ${e.resources?T`<div class="column">
+            <p class="minihead">Files</p>
+            <ol style="padding: revert">
+              ${
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+function*(e,t){if(void 0!==e){let i=0;for(const a of e)yield t(a,i++)}}(e.resources,(e=>T`<li>
+                    <a href="${e.path}">${e.name+"\n"}</a>
+                  </li>`))}
+            </ol>
+          </div>`:T`<div class="column">
+            <p class="minihead">Filename</p>
+            ${e.filename}
+          </div>`}
+      ${this.renderSource(e)}
+      ${a?T`
+            <div class="column">
+              <p class="minihead">Observed By</p>
+              <p>${a}</p>
+              ${l?T`<span
+                    ><a target="_blank" href="${l}"
+                      >View Certificate</a
+                    ></span
+                  >`:""}
+            </div>
+          `:n?T`
+            <div class="column">
+              <p class="minihead">Created With</p>
+              ${n||"Unknown"}
+            </div>
           `:""}
-          <p class="is-size-7 is-flex is-justify-content-space-between" style="margin-top: 40px">
-            <span>
-              <a class="has-text-black" target="_blank" href="https://github.com/webrecorder/replayweb.page">
-                <fa-icon class="menu-logo mr-1" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
-                Powered by ReplayWeb.page
-              </a>
+
+      <div class="column">
+        <p class="minihead">Validation</p>
+        ${t>0||i>0?T` <p>
+              ${t} hashes
+              verified${i?T`, ${i} invalid`:""}
+            </p>`:T` Not Available`}
+      </div>
+
+      <div class="column">
+        <p class="minihead">Package Hash</p>
+        ${o||"Not Available"}
+      </div>
+
+      <div class="column">
+        <p class="minihead">Observer Public Key</p>
+        ${s||"Not Available"}
+      </div>
+
+      <div class="column">
+        <p class="minihead">Loading Mode</p>
+        ${e.onDemand?"Download On-Demand":"Fully Local"}
+      </div>
+      <div class="column">
+        <p class="minihead">Collection id</p>
+        ${e.coll}
+      </div>
+    </div>`}render(){return this.detailed?this.renderDetailed():this.renderSummaryView()}onCopy(e,t){return e.preventDefault(),e.stopPropagation(),navigator.clipboard.writeText(t),!1}onPurge(e){const t={reload:e};this.dispatchEvent(new CustomEvent("coll-purge",{detail:t}))}}function Ve(e){if(!e)return"";e.length<14&&(e+="00000101000000".substr(e.length));const t=e.substring(0,4)+"-"+e.substring(4,6)+"-"+e.substring(6,8)+"T"+e.substring(8,10)+":"+e.substring(10,12)+":"+e.substring(12,14)+"-00:00";return new Date(t)}function Ke(e){let t=null;try{t=new Date(e.ts||e.date)}catch(e){}const i=t&&!isNaN(t)?Ze(t.toISOString()):"";return{date:t,timestamp:i}}function Ze(e){return e.replace(/[-:T]/g,"").slice(0,14)}function Je(e,t,i){const a=new URLSearchParams;return a.set("view",e),a.set("url",t),a.set("ts",i),"#"+a.toString()}async function Ye(e){try{new URL(e)}catch(t){e=new URL(e,document.baseURI).href}const t=await async function(e,t){const i=(new TextEncoder).encode(e),a=await crypto.subtle.digest(t,i),r=Array.from(new Uint8Array(a)).map((e=>e.toString(16).padStart(2,"0"))).join("");return r}(e,"SHA-256");return{url:e,coll:"id-"+t.slice(0,12)}}customElements.define("wr-coll-info",Ge),customElements.define("wr-coll-index",We);var Qe=__webpack_require__(5056),Xe=__webpack_require__.n(Qe),et=__webpack_require__(5732),tt=__webpack_require__.n(et),it=__webpack_require__(8561),at=__webpack_require__.n(it),rt=__webpack_require__(9885),ot=__webpack_require__.n(rt),st=__webpack_require__(4636),nt=__webpack_require__.n(st),lt=__webpack_require__(1615),ct=__webpack_require__.n(lt),dt=__webpack_require__(2302),ht=__webpack_require__.n(dt),pt=__webpack_require__(6368),ut=__webpack_require__.n(pt),ft=__webpack_require__(9125),bt=__webpack_require__.n(ft),mt=__webpack_require__(9998),gt=__webpack_require__.n(mt),vt=__webpack_require__(2164),wt=__webpack_require__.n(vt),xt=__webpack_require__(426),kt=__webpack_require__.n(xt),yt=__webpack_require__(430),$t=__webpack_require__.n(yt),St=__webpack_require__(7970),_t=__webpack_require__.n(St),zt=__webpack_require__(6144),Ct=__webpack_require__.n(zt),It=__webpack_require__(4363),Ut=__webpack_require__.n(It),At=__webpack_require__(4575),Pt=__webpack_require__.n(At);class Lt extends X{constructor(){super(),this.collInfo=null,this.appLogo=null,this.ts=null,this.url=null,this.active=!1}get renderRoot(){return this}static get properties(){return{collInfo:{type:Object},appLogo:{type:Object},url:{type:String},ts:{type:String},active:{type:Boolean}}}static get embedStyles(){return o`
+      rwp-embed-receipt {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .icon {
+        vertical-align: text-top;
+      }
+
+      #embed-dropdown {
+        max-height: calc(100vh - 50px);
+        padding-top: 0;
+        margin-top: -0.5rem;
+        display: block;
+        z-index: 1;
+        pointer-events: none;
+        transition: all 0.3s linear;
+        transform-origin: left top;
+        transform: scaleY(0);
+        transition: all 300ms cubic-bezier(0.15, 0, 0.1, 1);
+        filter: drop-shadow(0px 8px 4px rgba(0, 0, 0, 0.15));
+      }
+
+      .dropdown.is-active #embed-dropdown {
+        transform: scaleY(1);
+      }
+
+      .embed-info-container {
+        width: 100%;
+        display: flex !important;
+        justify-content: center;
+      }
+
+      button.embed-info {
+        padding: 0;
+        background-color: white;
+        justify-content: space-between;
+        max-width: 40rem;
+        width: calc(100% - 1rem);
+        height: 42px;
+        border-color: #d1d5da;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        text-overflow: ellipsis;
+        filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.15));
+        transition-duration: 50ms;
+        transition-timing-function: ease-out;
+        cursor: pointer;
+        z-index: 2;
+      }
+
+      button.embed-info:active {
+        color: initial;
+      }
+
+      button.embed-info:hover {
+        filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
+        transform: scale(1.01);
+      }
+
+      button.embed-info:hover:active {
+        transform: translateY(0.25rem);
+      }
+
+      .embed-info-buttontext {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-grow: 1;
+        text-align: start;
+        font-size: 13px;
+      }
+
+      .embed-info-drop {
+        font-size: 14px;
+        padding: 1rem;
+        padding-top: 2rem;
+        max-width: 38rem;
+        max-height: 42rem;
+        width: calc(100% - 2rem);
+        border-top-right-radius: 0px;
+        border-top-left-radius: 0px;
+        pointer-events: auto;
+        overflow-y: auto;
+      }
+
+      .embed-info-drop > p {
+        font-size: 14px;
+        color: black;
+      }
+
+      .embed-info-drop > h2 {
+        margin-bottom: 0.25rem;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: none;
+        letter-spacing: 0;
+        color: #24292e;
+      }
+
+      .embed-info-drop-statscontainer > h3 {
+        font-size: 12px;
+        color: #394146;
+      }
+
+      .embed-info-drop-statscontainer > p {
+        font-size: 14px;
+        color: black;
+      }
+
+      .embed-info-drop a {
+        word-break: break-all;
+      }
+
+      .embed-info-drop .show-hash {
+        word-break: break-all;
+        font-family: monospace;
+      }
+
+      .embed-info-drop .show-key {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        whitespace: nowrap;
+        font-family: monospace;
+      }
+
+      .embed-globe {
+        margin: 0.25rem;
+        padding: 7px;
+        background-color: #0366d6;
+        border-radius: 9999px;
+        color: white;
+        border-width: 1px;
+        border-color: #d1d5da;
+        border-style: solid;
+        line-height: 0.5em;
+      }
+    `}render(){let{numValid:e,numInvalid:t,domain:i,certFingerprint:a,datapackageHash:r,publicKey:o,software:s}=this.collInfo.verify||{};e=e||0,t=t||0;const n=this.collInfo.sourceUrl,l=a?`https://crt.sh/?q=${a}`:"",c=Ve(this.ts).toLocaleString();return T`
+      <div class="dropdown mb-4 ${this.active?"is-active":""}">
+        <div class="dropdown-trigger embed-info-container">
+          <button
+            class="embed-info is-small is-rounded mt-4"
+            aria-haspopup="true"
+            aria-controls="embed-dropdown"
+            @click="${this.onEmbedDrop}"
+          >
+            <fa-icon
+              class="menu-logo mr-2 embed-globe"
+              size="1rem"
+              aria-hidden="true"
+              .svg=${_t()}
+            ></fa-icon>
+            <span class="embed-info-buttontext">
+              This embed is part of a web archive. Click here to learn more.
             </span>
-            <span>
-              <a class="has-text-black" target="_blank" href="https://github.com/webrecorder/replayweb.page">Source Code
-                <fa-icon class="menu-logo ml-1" size="1.0rem" aria-hidden="true" .svg=${Pt()}></fa-icon>
-              </a>
+            <span class="icon is-small mr-4 ml-2">
+              <fa-icon
+                title="Toggle"
+                .svg="${this.active?Ut():Ct()}"
+                aria-hidden="true"
+              ></fa-icon>
             </span>
-          </p>
+          </button>
+        </div>
+        <div
+          class="dropdown-menu embed-info-container"
+          id="embed-dropdown"
+          role="menu"
+        >
+          <div class="dropdown-content embed-info-drop">
+            <p class="mb-4">
+              Even if the original page goes offline or is changed, the content
+              below will remain unchanged as it is loaded from a web archive.
+            </p>
+            <hr class="dropdown-divider" />
+            <h2 class="mt-4">Get A Copy!</h2>
+            <p class="mt-2">
+              After downloading, this web archive can be loaded and viewed
+              directly in your browser via
+              <a
+                style="white-space: nowrap;"
+                target="_blank"
+                href="https://replayweb.page"
+                >replayweb.page</a
+              >.
+            </p>
+            <a
+              href="${n}"
+              class="button is-primary mt-4"
+              @keyup="${ve}"
+            >
+              <span class="icon is-small">
+                <fa-icon
+                  size="1.0em"
+                  aria-hidden="true"
+                  .svg="${tt()}"
+                ></fa-icon>
+              </span>
+              <span>Download Archive</span>
+            </a>
+            <hr class="dropdown-divider mt-4" />
+            <h2 class="mt-4">Technical Information</h2>
+            <div class="embed-info-drop-statscontainer mb-4">
+              <h3>Original URL:</h3>
+              <p><a target="_blank" href="${this.url}">${this.url}</a></p>
+              <h3 class="mt-2">Archived On:</h3>
+              <p>${c}</p>
+              ${i?T`
+                    <h3 class="mt-2">Observed By:</h3>
+                    <p>${i}</p>
+                    ${l?T` <p>
+                          <a target="_blank" href="${l}"
+                            >View Certificate</a
+                          >
+                        </p>`:""}
+                  `:s?T` <h3 class="mt-2">Created With:</h3>
+                    <p>${s}</p>`:""}
+              ${!i&&o?T` <h3 class="mt-2">Observer Public Key:</h3>
+                    <p class="show-key">${o}</p>`:""}
+              <h3 class="mt-2">Validation:</h3>
+              ${e>0||t>0?T` <p>
+                    ${e} hashes
+                    verified${t?T`, ${t} invalid`:""}
+                  </p>`:T` <p>Not Available</p> `}
+              <h3 class="mt-2">Package Hash:</h3>
+              <p class="show-hash">${r}</p>
+              <h3 class="mt-2">Size</h3>
+              <p>${Re()(Number(this.collInfo.size||0))}</p>
+            </div>
+            ${n?T``:""}
+            <p
+              class="is-size-7 is-flex is-justify-content-space-between"
+              style="margin-top: 40px"
+            >
+              <span>
+                <a
+                  class="has-text-black"
+                  target="_blank"
+                  href="https://github.com/webrecorder/replayweb.page"
+                >
+                  <fa-icon
+                    class="menu-logo mr-1"
+                    size="1.0rem"
+                    aria-hidden="true"
+                    .svg=${this.appLogo}
+                  ></fa-icon>
+                  Powered by ReplayWeb.page
+                </a>
+              </span>
+              <span>
+                <a
+                  class="has-text-black"
+                  target="_blank"
+                  href="https://github.com/webrecorder/replayweb.page"
+                  >Source Code
+                  <fa-icon
+                    class="menu-logo ml-1"
+                    size="1.0rem"
+                    aria-hidden="true"
+                    .svg=${Pt()}
+                  ></fa-icon>
+                </a>
+              </span>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    `}onEmbedDrop(e){e.stopPropagation(),this.active=!this.active}}customElements.define("rwp-embed-receipt",Lt);var Dt="undefined"!=typeof window?window:null,Tt=null===Dt,Et=Tt?void 0:Dt.document,Rt="horizontal",Ot=function(){return!1},Mt=Tt?"calc":["","-webkit-","-moz-","-o-"].filter((function(e){var t=Et.createElement("div");return t.style.cssText="width:"+e+"calc(9px)",!!t.style.length})).shift()+"calc",qt=function(e){return"string"==typeof e||e instanceof String},Nt=function(e){if(qt(e)){var t=Et.querySelector(e);if(!t)throw new Error("Selector "+e+" did not match a DOM element");return t}return e},Ft=function(e,t,i){var a=e[t];return void 0!==a?a:i},Bt=function(e,t,i,a){if(t){if("end"===a)return 0;if("center"===a)return e/2}else if(i){if("start"===a)return 0;if("center"===a)return e/2}return e},jt=function(e,t){var i=Et.createElement("div");return i.className="gutter gutter-"+t,i},Ht=function(e,t,i){var a={};return qt(t)?a[e]=t:a[e]=Mt+"("+t+"% - "+i+"px)",a},Wt=function(e,t){var i;return(i={})[e]=t+"px",i};const Gt=function(e,t){if(void 0===t&&(t={}),Tt)return{};var i,a,r,o,s,n,l=e;Array.from&&(l=Array.from(l));var c=Nt(l[0]).parentNode,d=getComputedStyle?getComputedStyle(c):null,h=d?d.flexDirection:null,p=Ft(t,"sizes")||l.map((function(){return 100/l.length})),u=Ft(t,"minSize",100),f=Array.isArray(u)?u:l.map((function(){return u})),b=Ft(t,"maxSize",1/0),m=Array.isArray(b)?b:l.map((function(){return b})),g=Ft(t,"expandToMin",!1),v=Ft(t,"gutterSize",10),w=Ft(t,"gutterAlign","center"),x=Ft(t,"snapOffset",30),k=Ft(t,"dragInterval",1),y=Ft(t,"direction",Rt),$=Ft(t,"cursor",y===Rt?"col-resize":"row-resize"),_=Ft(t,"gutter",jt),S=Ft(t,"elementStyle",Ht),z=Ft(t,"gutterStyle",Wt);function C(e,t,a,r){var o=S(i,t,a,r);Object.keys(o).forEach((function(t){e.style[t]=o[t]}))}function I(){return n.map((function(e){return e.size}))}function A(e){return"touches"in e?e.touches[0][a]:e[a]}function U(e){var t=n[this.a],i=n[this.b],a=t.size+i.size;t.size=e/this.size*a,i.size=a-e/this.size*a,C(t.element,t.size,this._b,t.i),C(i.element,i.size,this._c,i.i)}function P(e){var i,a=n[this.a],r=n[this.b];this.dragging&&(i=A(e)-this.start+(this._b-this.dragOffset),k>1&&(i=Math.round(i/k)*k),i<=a.minSize+x+this._b?i=a.minSize+this._b:i>=this.size-(r.minSize+x+this._c)&&(i=this.size-(r.minSize+this._c)),i>=a.maxSize-x+this._b?i=a.maxSize+this._b:i<=this.size-(r.maxSize-x+this._c)&&(i=this.size-(r.maxSize+this._c)),U.call(this,i),Ft(t,"onDrag",Ot)(I()))}function L(){var e=n[this.a].element,t=n[this.b].element,a=e.getBoundingClientRect(),s=t.getBoundingClientRect();this.size=a[i]+s[i]+this._b+this._c,this.start=a[r],this.end=a[o]}function D(e){var t=function(e){if(!getComputedStyle)return null;var t=getComputedStyle(e);if(!t)return null;var i=e[s];return 0===i?null:i-=y===Rt?parseFloat(t.paddingLeft)+parseFloat(t.paddingRight):parseFloat(t.paddingTop)+parseFloat(t.paddingBottom)}(c);if(null===t)return e;if(f.reduce((function(e,t){return e+t}),0)>t)return e;var i=0,a=[],r=e.map((function(r,o){var s=t*r/100,n=Bt(v,0===o,o===e.length-1,w),l=f[o]+n;return s<l?(i+=l-s,a.push(0),l):(a.push(s-l),s)}));return 0===i?e:r.map((function(e,r){var o=e;if(i>0&&a[r]-i>0){var s=Math.min(i,a[r]-i);i-=s,o=e-s}return o/t*100}))}function T(){var e=this,i=n[e.a].element,a=n[e.b].element;e.dragging&&Ft(t,"onDragEnd",Ot)(I()),e.dragging=!1,Dt.removeEventListener("mouseup",e.stop),Dt.removeEventListener("touchend",e.stop),Dt.removeEventListener("touchcancel",e.stop),Dt.removeEventListener("mousemove",e.move),Dt.removeEventListener("touchmove",e.move),e.stop=null,e.move=null,i.removeEventListener("selectstart",Ot),i.removeEventListener("dragstart",Ot),a.removeEventListener("selectstart",Ot),a.removeEventListener("dragstart",Ot),i.style.userSelect="",i.style.webkitUserSelect="",i.style.MozUserSelect="",i.style.pointerEvents="",a.style.userSelect="",a.style.webkitUserSelect="",a.style.MozUserSelect="",a.style.pointerEvents="",e.gutter.style.cursor="",e.parent.style.cursor="",Et.body.style.cursor=""}function E(e){if(!("button"in e)||0===e.button){var i=this,a=n[i.a].element,r=n[i.b].element;i.dragging||Ft(t,"onDragStart",Ot)(I()),e.preventDefault(),i.dragging=!0,i.move=P.bind(i),i.stop=T.bind(i),Dt.addEventListener("mouseup",i.stop),Dt.addEventListener("touchend",i.stop),Dt.addEventListener("touchcancel",i.stop),Dt.addEventListener("mousemove",i.move),Dt.addEventListener("touchmove",i.move),a.addEventListener("selectstart",Ot),a.addEventListener("dragstart",Ot),r.addEventListener("selectstart",Ot),r.addEventListener("dragstart",Ot),a.style.userSelect="none",a.style.webkitUserSelect="none",a.style.MozUserSelect="none",a.style.pointerEvents="none",r.style.userSelect="none",r.style.webkitUserSelect="none",r.style.MozUserSelect="none",r.style.pointerEvents="none",i.gutter.style.cursor=$,i.parent.style.cursor=$,Et.body.style.cursor=$,L.call(i),i.dragOffset=A(e)-i.end}}y===Rt?(i="width",a="clientX",r="left",o="right",s="clientWidth"):"vertical"===y&&(i="height",a="clientY",r="top",o="bottom",s="clientHeight"),p=D(p);var R=[];function O(e){var t=e.i===R.length,i=t?R[e.i-1]:R[e.i];L.call(i);var a=t?i.size-e.minSize-i._c:e.minSize+i._b;U.call(i,a)}return n=l.map((function(e,t){var a,r={element:Nt(e),size:p[t],minSize:f[t],maxSize:m[t],i:t};if(t>0&&((a={a:t-1,b:t,dragging:!1,direction:y,parent:c})._b=Bt(v,t-1==0,!1,w),a._c=Bt(v,!1,t===l.length-1,w),"row-reverse"===h||"column-reverse"===h)){var o=a.a;a.a=a.b,a.b=o}if(t>0){var s=_(t,y,r.element);!function(e,t,a){var r=z(i,t,a);Object.keys(r).forEach((function(t){e.style[t]=r[t]}))}(s,v,t),a._a=E.bind(a),s.addEventListener("mousedown",a._a),s.addEventListener("touchstart",a._a),c.insertBefore(s,r.element),a.gutter=s}return C(r.element,r.size,Bt(v,0===t,t===l.length-1,w),t),t>0&&R.push(a),r})),n.forEach((function(e){var t=e.element.getBoundingClientRect()[i];t<e.minSize&&(g?O(e):e.minSize=t)})),{setSizes:function(e){var t=D(e);t.forEach((function(e,i){if(i>0){var a=R[i-1],r=n[a.a],o=n[a.b];r.size=t[i-1],o.size=e,C(r.element,r.size,a._b,r.i),C(o.element,o.size,a._c,o.i)}}))},getSizes:I,collapse:function(e){O(n[e])},destroy:function(e,t){R.forEach((function(a){if(!0!==t?a.parent.removeChild(a.gutter):(a.gutter.removeEventListener("mousedown",a._a),a.gutter.removeEventListener("touchstart",a._a)),!0!==e){var r=S(i,a.a.size,a._b);Object.keys(r).forEach((function(e){n[a.a].element.style[e]="",n[a.b].element.style[e]=""}))}}))},parent:c,pairs:R}},Vt="search://";class Kt extends X{constructor(){super(),this.sourceUrl=null,this.inited=!1,this.isLoading=!1,this.coll="",this.collInfo=null,this._replaceLoc=!1,this._locUpdateNeeded=!1,this._locationHash="",this.tabData={},this.url="",this.ts="",this.tabNames=["pages","story","resources","info"],this.tabLabels={pages:"Pages",story:"Story",resources:"URLs",info:"Archive Info"},this.menuActive=!1,this.embedDropdownActive=!1,this.hasStory=!1,this.editable=!1,this.browsable=!0,this.clearable=!0,this.showSidebar="1"===localStorage.getItem("pages:showSidebar"),this.splitter=null,this.isVisible=!0,this.favIconUrl="",this.autoUpdateInterval=10,this._autoUpdater=null,this.appName="ReplayWeb.page",this.appVersion=ge,this.appLogo=pe()}static get properties(){return{inited:{type:Boolean},sourceUrl:{type:String},loadInfo:{type:Object,attribute:!1},showSidebar:{type:Boolean},collInfo:{type:Object,attribute:!1},coll:{type:String},hasStory:{type:Boolean},isLoading:{type:Boolean},tabData:{type:Object,attribute:!1},url:{type:String},ts:{type:String},isFullscreen:{type:Boolean},menuActive:{type:Boolean},embed:{type:String},embedDropdownActive:{type:Boolean},editable:{type:Boolean},browsable:{type:Boolean},clearable:{type:Boolean},isVisible:{type:Boolean},favIconUrl:{type:String},appName:{type:String},appVersion:{type:String},appLogo:{type:String},autoUpdateInterval:{type:Number},swName:{type:String}}}firstUpdated(){this.inited=!0,window.addEventListener("hashchange",(e=>this.onHashChange(e))),this.addEventListener("fullscreenchange",(()=>{this.isFullscreen=!!document.fullscreenElement})),this.embed&&this.loadInfo&&this.loadInfo.hideOffscreen&&(this.observer=new IntersectionObserver((e=>{this.isVisible=e[0].isIntersecting})),this.observer.observe(this))}async runUpdateLoop(){try{for(;this.editable&&this.autoUpdateInterval&&(!this.collInfo||!this.collInfo.pages||this.collInfo.pages.length<100);)await new Promise((e=>setTimeout(e,1e3*this.autoUpdateInterval))),await this.doUpdateInfo(!0)}finally{this._autoUpdater=null}}updated(e){if(e.has("sourceUrl")&&this.doUpdateInfo(),e.has("editable")&&this.editable&&this.autoUpdateInterval&&!this._autoUpdater&&(this._autoUpdater=this.runUpdateLoop()),e.has("tabData")){if(!this.collInfo||!this.collInfo.coll)return;Object.keys(this.tabData).forEach((e=>!this.tabData[e]&&delete this.tabData[e]));const t="#"+new URLSearchParams(this.tabData).toString();if(this.tabData.url||(this.url=Vt+decodeURIComponent(this._paramsToString(this.tabData))),t!==this._locationHash){if(this._locationHash=t,this._replaceLoc||0===Object.keys(e.get("tabData")).length){const e=new URL(window.location.href);e.hash=this._locationHash,window.history.replaceState({},"",e.href),this._replaceLoc=!1}else if(window.location.hash=this._locationHash,!this.showSidebar){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.focus()}this.embed&&window.parent!==window&&window.parent.postMessage(this.tabData,"*")}this._locUpdateNeeded=!1}e.has("showSidebar")&&(this.embed||localStorage.setItem("pages:showSidebar",this.showSidebar?"1":"0")),(e.has("tabData")||e.has("showSidebar"))&&this.configureSplitter()}configureSplitter(){if(this.tabData.url&&this.showSidebar){const e=this.renderRoot.querySelector("#contents"),t=this.renderRoot.querySelector("wr-coll-replay");if(e&&t&&!this.splitter){const i={sizes:[30,70],minSize:[300,300],gutterSize:4,onDragStart(){t.setDisablePointer(!0)},onDragEnd(){t.setDisablePointer(!1)}};this.splitter=Gt([e,t],i)}}else if(this.splitter){try{this.splitter.destroy()}catch(e){}this.splitter=null}}async doUpdateInfo(e=!1){if(e&&this.tabData.url&&!this.showSidebar)return;let t=this.loadInfo&&this.loadInfo.customColl;if(!t){t=(await Ye(this.sourceUrl)).coll}this.coll=t;const i="./w/api/c/"+t,a="./w/"+t,r=await fetch(i+"?all=1");if(200!=r.status)return void(this.collInfo={});const o=await r.json();if(this.collInfo={apiPrefix:i,replayPrefix:a,coll:t,...o},this.loadInfo&&this.loadInfo.extraConfig&&this.loadInfo.extraConfig.headers){const e=this.loadInfo.extraConfig.headers;await fetch(`${i}/updateAuth`,{method:"POST",body:JSON.stringify({headers:e})})}this.collInfo.title||(this.collInfo.title=this.collInfo.filename),"replayonly"!==this.embed&&"replay-with-info"!==this.embed||(this.showSidebar=!1),this.hasStory=this.collInfo.desc||this.collInfo.lists.length,this.dispatchEvent(new CustomEvent("coll-loaded",{detail:{collInfo:this.collInfo,alreadyLoaded:!0}})),this.onHashChange()}onCollLoaded(e){this.doUpdateInfo(),this.loadInfo=null,e.detail.sourceUrl&&(this.sourceUrl=e.detail.sourceUrl),this.dispatchEvent(new CustomEvent("coll-loaded",{detail:{sourceUrl:this.sourceUrl,collInfo:this.collInfo}}))}onCollUpdate(e){this.editable&&(this.collInfo={...this.collInfo,...e.detail})}onHashChange(){const e=window.location.hash;if(e&&e!==this._locationHash&&(this.tabData=Object.fromEntries(new URLSearchParams(e.slice(1)).entries()),this._locationHash=e),this.collInfo.coll&&!this.tabNames.includes(this.tabData.view)){const e=this.hasStory?"story":this.editable||this.collInfo.pages.length?"pages":"resources";this.tabData={...this.tabData,view:e}}if(this.tabData.url&&this.tabData.url.startsWith("page:")){const e=Number(this.tabData.url.slice("page:".length));if(!isNaN(e)&&e<this.collInfo.pages.length){const t=this.collInfo.pages[e];this.tabData.url=t.url,this.tabData.ts=Ke(t).timestamp}}this.hasStory||"story"!==this.tabData.view||(this.tabData.view="pages"),this.tabData.url&&this.tabData.query&&(this.showSidebar=!0)}onTabClick(e){e.preventDefault();const t=e.currentTarget.getAttribute("href");return this.tabData={...this.tabData,view:t.slice(1)},!1}onCollTabNav(e){e.detail.reload?this.onRefresh(null,!0):e.target.id===this.tabData.view||"replay"===e.target.id&&this.tabData.url?this.updateTabData(e.detail.data,e.detail.replaceLoc,!1):this.showSidebar&&this.tabData.url&&this.updateTabData(e.detail.data,e.detail.replaceLoc,!0)}updateTabData(e,t=!1){this.tabData={...this.tabData,...e},this.tabData.url&&(this.url=this.tabData.url||""),this.tabData.ts&&(this.ts=this.tabData.ts||""),this._replaceLoc=!this._locUpdateNeeded&&t,this._locUpdateNeeded=!0}static get styles(){return be(Kt.compStyles)}static get compStyles(){return o`
-    :host {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      min-width: 0px;
-    }
+    `}onEmbedDrop(e){e.stopPropagation(),this.active=!this.active}}customElements.define("rwp-embed-receipt",Lt);var Dt="undefined"!=typeof window?window:null,Tt=null===Dt,Et=Tt?void 0:Dt.document,Rt="horizontal",Ot=function(){return!1},Mt=Tt?"calc":["","-webkit-","-moz-","-o-"].filter((function(e){var t=Et.createElement("div");return t.style.cssText="width:"+e+"calc(9px)",!!t.style.length})).shift()+"calc",qt=function(e){return"string"==typeof e||e instanceof String},Nt=function(e){if(qt(e)){var t=Et.querySelector(e);if(!t)throw new Error("Selector "+e+" did not match a DOM element");return t}return e},Ft=function(e,t,i){var a=e[t];return void 0!==a?a:i},Bt=function(e,t,i,a){if(t){if("end"===a)return 0;if("center"===a)return e/2}else if(i){if("start"===a)return 0;if("center"===a)return e/2}return e},jt=function(e,t){var i=Et.createElement("div");return i.className="gutter gutter-"+t,i},Ht=function(e,t,i){var a={};return qt(t)?a[e]=t:a[e]=Mt+"("+t+"% - "+i+"px)",a},Wt=function(e,t){var i;return(i={})[e]=t+"px",i};const Gt=function(e,t){if(void 0===t&&(t={}),Tt)return{};var i,a,r,o,s,n,l=e;Array.from&&(l=Array.from(l));var c=Nt(l[0]).parentNode,d=getComputedStyle?getComputedStyle(c):null,h=d?d.flexDirection:null,p=Ft(t,"sizes")||l.map((function(){return 100/l.length})),u=Ft(t,"minSize",100),f=Array.isArray(u)?u:l.map((function(){return u})),b=Ft(t,"maxSize",1/0),m=Array.isArray(b)?b:l.map((function(){return b})),g=Ft(t,"expandToMin",!1),v=Ft(t,"gutterSize",10),w=Ft(t,"gutterAlign","center"),x=Ft(t,"snapOffset",30),k=Ft(t,"dragInterval",1),y=Ft(t,"direction",Rt),$=Ft(t,"cursor",y===Rt?"col-resize":"row-resize"),S=Ft(t,"gutter",jt),_=Ft(t,"elementStyle",Ht),z=Ft(t,"gutterStyle",Wt);function C(e,t,a,r){var o=_(i,t,a,r);Object.keys(o).forEach((function(t){e.style[t]=o[t]}))}function I(){return n.map((function(e){return e.size}))}function U(e){return"touches"in e?e.touches[0][a]:e[a]}function A(e){var t=n[this.a],i=n[this.b],a=t.size+i.size;t.size=e/this.size*a,i.size=a-e/this.size*a,C(t.element,t.size,this._b,t.i),C(i.element,i.size,this._c,i.i)}function P(e){var i,a=n[this.a],r=n[this.b];this.dragging&&(i=U(e)-this.start+(this._b-this.dragOffset),k>1&&(i=Math.round(i/k)*k),i<=a.minSize+x+this._b?i=a.minSize+this._b:i>=this.size-(r.minSize+x+this._c)&&(i=this.size-(r.minSize+this._c)),i>=a.maxSize-x+this._b?i=a.maxSize+this._b:i<=this.size-(r.maxSize-x+this._c)&&(i=this.size-(r.maxSize+this._c)),A.call(this,i),Ft(t,"onDrag",Ot)(I()))}function L(){var e=n[this.a].element,t=n[this.b].element,a=e.getBoundingClientRect(),s=t.getBoundingClientRect();this.size=a[i]+s[i]+this._b+this._c,this.start=a[r],this.end=a[o]}function D(e){var t=function(e){if(!getComputedStyle)return null;var t=getComputedStyle(e);if(!t)return null;var i=e[s];return 0===i?null:i-=y===Rt?parseFloat(t.paddingLeft)+parseFloat(t.paddingRight):parseFloat(t.paddingTop)+parseFloat(t.paddingBottom)}(c);if(null===t)return e;if(f.reduce((function(e,t){return e+t}),0)>t)return e;var i=0,a=[],r=e.map((function(r,o){var s=t*r/100,n=Bt(v,0===o,o===e.length-1,w),l=f[o]+n;return s<l?(i+=l-s,a.push(0),l):(a.push(s-l),s)}));return 0===i?e:r.map((function(e,r){var o=e;if(i>0&&a[r]-i>0){var s=Math.min(i,a[r]-i);i-=s,o=e-s}return o/t*100}))}function T(){var e=this,i=n[e.a].element,a=n[e.b].element;e.dragging&&Ft(t,"onDragEnd",Ot)(I()),e.dragging=!1,Dt.removeEventListener("mouseup",e.stop),Dt.removeEventListener("touchend",e.stop),Dt.removeEventListener("touchcancel",e.stop),Dt.removeEventListener("mousemove",e.move),Dt.removeEventListener("touchmove",e.move),e.stop=null,e.move=null,i.removeEventListener("selectstart",Ot),i.removeEventListener("dragstart",Ot),a.removeEventListener("selectstart",Ot),a.removeEventListener("dragstart",Ot),i.style.userSelect="",i.style.webkitUserSelect="",i.style.MozUserSelect="",i.style.pointerEvents="",a.style.userSelect="",a.style.webkitUserSelect="",a.style.MozUserSelect="",a.style.pointerEvents="",e.gutter.style.cursor="",e.parent.style.cursor="",Et.body.style.cursor=""}function E(e){if(!("button"in e)||0===e.button){var i=this,a=n[i.a].element,r=n[i.b].element;i.dragging||Ft(t,"onDragStart",Ot)(I()),e.preventDefault(),i.dragging=!0,i.move=P.bind(i),i.stop=T.bind(i),Dt.addEventListener("mouseup",i.stop),Dt.addEventListener("touchend",i.stop),Dt.addEventListener("touchcancel",i.stop),Dt.addEventListener("mousemove",i.move),Dt.addEventListener("touchmove",i.move),a.addEventListener("selectstart",Ot),a.addEventListener("dragstart",Ot),r.addEventListener("selectstart",Ot),r.addEventListener("dragstart",Ot),a.style.userSelect="none",a.style.webkitUserSelect="none",a.style.MozUserSelect="none",a.style.pointerEvents="none",r.style.userSelect="none",r.style.webkitUserSelect="none",r.style.MozUserSelect="none",r.style.pointerEvents="none",i.gutter.style.cursor=$,i.parent.style.cursor=$,Et.body.style.cursor=$,L.call(i),i.dragOffset=U(e)-i.end}}y===Rt?(i="width",a="clientX",r="left",o="right",s="clientWidth"):"vertical"===y&&(i="height",a="clientY",r="top",o="bottom",s="clientHeight"),p=D(p);var R=[];function O(e){var t=e.i===R.length,i=t?R[e.i-1]:R[e.i];L.call(i);var a=t?i.size-e.minSize-i._c:e.minSize+i._b;A.call(i,a)}return n=l.map((function(e,t){var a,r={element:Nt(e),size:p[t],minSize:f[t],maxSize:m[t],i:t};if(t>0&&((a={a:t-1,b:t,dragging:!1,direction:y,parent:c})._b=Bt(v,t-1==0,!1,w),a._c=Bt(v,!1,t===l.length-1,w),"row-reverse"===h||"column-reverse"===h)){var o=a.a;a.a=a.b,a.b=o}if(t>0){var s=S(t,y,r.element);!function(e,t,a){var r=z(i,t,a);Object.keys(r).forEach((function(t){e.style[t]=r[t]}))}(s,v,t),a._a=E.bind(a),s.addEventListener("mousedown",a._a),s.addEventListener("touchstart",a._a),c.insertBefore(s,r.element),a.gutter=s}return C(r.element,r.size,Bt(v,0===t,t===l.length-1,w),t),t>0&&R.push(a),r})),n.forEach((function(e){var t=e.element.getBoundingClientRect()[i];t<e.minSize&&(g?O(e):e.minSize=t)})),{setSizes:function(e){var t=D(e);t.forEach((function(e,i){if(i>0){var a=R[i-1],r=n[a.a],o=n[a.b];r.size=t[i-1],o.size=e,C(r.element,r.size,a._b,r.i),C(o.element,o.size,a._c,o.i)}}))},getSizes:I,collapse:function(e){O(n[e])},destroy:function(e,t){R.forEach((function(a){if(!0!==t?a.parent.removeChild(a.gutter):(a.gutter.removeEventListener("mousedown",a._a),a.gutter.removeEventListener("touchstart",a._a)),!0!==e){var r=_(i,a.a.size,a._b);Object.keys(r).forEach((function(e){n[a.a].element.style[e]="",n[a.b].element.style[e]=""}))}}))},parent:c,pairs:R}},Vt="search://";class Kt extends X{constructor(){super(),this.sourceUrl=null,this.inited=!1,this.isLoading=!1,this.coll="",this.collInfo=null,this._replaceLoc=!1,this._locUpdateNeeded=!1,this._locationHash="",this.tabData={},this.url="",this.ts="",this.tabNames=["pages","story","resources","info"],this.tabLabels={pages:"Pages",story:"Story",resources:"URLs",info:"Archive Info"},this.menuActive=!1,this.embedDropdownActive=!1,this.hasStory=!1,this.editable=!1,this.browsable=!0,this.clearable=!0,this.showSidebar="1"===localStorage.getItem("pages:showSidebar"),this.splitter=null,this.isVisible=!0,this.favIconUrl="",this.autoUpdateInterval=10,this._autoUpdater=null,this.appName="ReplayWeb.page",this.appVersion=ge,this.appLogo=pe()}static get properties(){return{inited:{type:Boolean},sourceUrl:{type:String},loadInfo:{type:Object,attribute:!1},showSidebar:{type:Boolean},collInfo:{type:Object,attribute:!1},coll:{type:String},hasStory:{type:Boolean},isLoading:{type:Boolean},tabData:{type:Object,attribute:!1},url:{type:String},ts:{type:String},isFullscreen:{type:Boolean},menuActive:{type:Boolean},embed:{type:String},embedDropdownActive:{type:Boolean},editable:{type:Boolean},browsable:{type:Boolean},clearable:{type:Boolean},isVisible:{type:Boolean},favIconUrl:{type:String},appName:{type:String},appVersion:{type:String},appLogo:{type:String},autoUpdateInterval:{type:Number},swName:{type:String}}}firstUpdated(){this.inited=!0,window.addEventListener("hashchange",(e=>this.onHashChange(e))),this.addEventListener("fullscreenchange",(()=>{this.isFullscreen=!!document.fullscreenElement})),this.embed&&this.loadInfo&&this.loadInfo.hideOffscreen&&(this.observer=new IntersectionObserver((e=>{this.isVisible=e[0].isIntersecting})),this.observer.observe(this))}async runUpdateLoop(){try{for(;this.editable&&this.autoUpdateInterval&&(!this.collInfo||!this.collInfo.pages||this.collInfo.pages.length<100);)await new Promise((e=>setTimeout(e,1e3*this.autoUpdateInterval))),await this.doUpdateInfo(!0)}finally{this._autoUpdater=null}}updated(e){if(e.has("sourceUrl")&&this.doUpdateInfo(),e.has("editable")&&this.editable&&this.autoUpdateInterval&&!this._autoUpdater&&(this._autoUpdater=this.runUpdateLoop()),e.has("tabData")){if(!this.collInfo||!this.collInfo.coll)return;Object.keys(this.tabData).forEach((e=>!this.tabData[e]&&delete this.tabData[e]));const t="#"+new URLSearchParams(this.tabData).toString();if(this.tabData.url||(this.url=Vt+decodeURIComponent(this._paramsToString(this.tabData))),t!==this._locationHash){if(this._locationHash=t,this._replaceLoc||0===Object.keys(e.get("tabData")).length){const e=new URL(window.location.href);e.hash=this._locationHash,window.history.replaceState({},"",e.href),this._replaceLoc=!1}else if(window.location.hash=this._locationHash,!this.showSidebar){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.focus()}this.embed&&window.parent!==window&&window.parent.postMessage(this.tabData,"*")}this._locUpdateNeeded=!1}e.has("showSidebar")&&(this.embed||localStorage.setItem("pages:showSidebar",this.showSidebar?"1":"0")),(e.has("tabData")||e.has("showSidebar"))&&this.configureSplitter()}configureSplitter(){if(this.tabData.url&&this.showSidebar){const e=this.renderRoot.querySelector("#contents"),t=this.renderRoot.querySelector("wr-coll-replay");if(e&&t&&!this.splitter){const i={sizes:[30,70],minSize:[300,300],gutterSize:4,onDragStart(){t.setDisablePointer(!0)},onDragEnd(){t.setDisablePointer(!1)}};this.splitter=Gt([e,t],i)}}else if(this.splitter){try{this.splitter.destroy()}catch(e){}this.splitter=null}}async doUpdateInfo(e=!1){if(e&&this.tabData.url&&!this.showSidebar)return;let t=this.loadInfo&&this.loadInfo.customColl;if(!t){t=(await Ye(this.sourceUrl)).coll}this.coll=t;const i="./w/api/c/"+t,a="./w/"+t,r=await fetch(i+"?all=1");if(200!=r.status)return void(this.collInfo={});const o=await r.json();if(this.collInfo={apiPrefix:i,replayPrefix:a,coll:t,...o},this.loadInfo&&this.loadInfo.extraConfig&&this.loadInfo.extraConfig.headers){const e=this.loadInfo.extraConfig.headers;await fetch(`${i}/updateAuth`,{method:"POST",body:JSON.stringify({headers:e})})}this.collInfo.title||(this.collInfo.title=this.collInfo.filename),"replayonly"!==this.embed&&"replay-with-info"!==this.embed||(this.showSidebar=!1),this.hasStory=this.collInfo.desc||this.collInfo.lists.length,this.dispatchEvent(new CustomEvent("coll-loaded",{detail:{collInfo:this.collInfo,alreadyLoaded:!0}})),this.onHashChange()}onCollLoaded(e){this.doUpdateInfo(),this.loadInfo=null,e.detail.sourceUrl&&(this.sourceUrl=e.detail.sourceUrl),this.dispatchEvent(new CustomEvent("coll-loaded",{detail:{sourceUrl:this.sourceUrl,collInfo:this.collInfo}}))}onCollUpdate(e){this.editable&&(this.collInfo={...this.collInfo,...e.detail})}onHashChange(){const e=window.location.hash;if(e&&e!==this._locationHash&&(this.tabData=Object.fromEntries(new URLSearchParams(e.slice(1)).entries()),this._locationHash=e),this.collInfo.coll&&!this.tabNames.includes(this.tabData.view)){const e=this.hasStory?"story":this.editable||this.collInfo.pages.length?"pages":"resources";this.tabData={...this.tabData,view:e}}if(this.tabData.url&&this.tabData.url.startsWith("page:")){const e=Number(this.tabData.url.slice("page:".length));if(!isNaN(e)&&e<this.collInfo.pages.length){const t=this.collInfo.pages[e];this.tabData.url=t.url,this.tabData.ts=Ke(t).timestamp}}this.hasStory||"story"!==this.tabData.view||(this.tabData.view="pages"),this.tabData.url&&this.tabData.query&&(this.showSidebar=!0)}onTabClick(e){e.preventDefault();const t=e.currentTarget.getAttribute("href");return this.tabData={...this.tabData,view:t.slice(1)},!1}onCollTabNav(e){e.detail.reload?this.onRefresh(null,!0):e.target.id===this.tabData.view||"replay"===e.target.id&&this.tabData.url?this.updateTabData(e.detail.data,e.detail.replaceLoc,!1):this.showSidebar&&this.tabData.url&&this.updateTabData(e.detail.data,e.detail.replaceLoc,!0)}updateTabData(e,t=!1){this.tabData={...this.tabData,...e},this.tabData.url&&(this.url=this.tabData.url||""),this.tabData.ts&&(this.ts=this.tabData.ts||""),this._replaceLoc=!this._locUpdateNeeded&&t,this._locUpdateNeeded=!0}static get styles(){return be(Kt.compStyles)}static get compStyles(){return o`
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-width: 0px;
+      }
 
-    .icon {
-      vertical-align: text-top;
-    }
+      .icon {
+        vertical-align: text-top;
+      }
 
-    .back fa-icon {
-      width: 1.5em;
-      vertical-align: bottom;
-      line-height: 0.5em;
-    }
+      .back fa-icon {
+        width: 1.5em;
+        vertical-align: bottom;
+        line-height: 0.5em;
+      }
 
-    li.is-active {
-      font-weight: bold;
-    }
+      li.is-active {
+        font-weight: bold;
+      }
 
-    .tab-label {
-      display: inline;
-    }
-
-    @media screen and (max-width: ${me?o`1163px`:o`1053px`}) {
       .tab-label {
+        display: inline;
+      }
+
+      @media screen and (max-width: ${me?o`1163px`:o`1053px`}) {
+        .tab-label {
+          display: none;
+        }
+
+        .main.tabs span.icon {
+          margin: 0px;
+        }
+      }
+
+      .main.tabs {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 0px;
+      }
+
+      .main.tabs ul {
+        position: relative;
+      }
+
+      .main.tabs li {
+        line-height: 1.5;
+        padding: 8px 0 6px 0;
+      }
+
+      @media screen and (max-width: 319px) {
+        .main.tabs li a {
+          padding-right: 4px;
+          padding-left: 4px;
+        }
+      }
+
+      .sidebar.main.tabs li a {
+        padding-right: 6px;
+        padding-left: 6px;
+      }
+
+      #contents {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        min-height: 0px;
+        flex: auto;
+        background-color: white;
+      }
+
+      #tabContents {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        min-height: 0px;
+        flex: auto;
+      }
+
+      rwp-embed-receipt {
+        flex-direction: column;
+        display: flex;
+      }
+
+      ${Lt.embedStyles}
+
+      ${Kt.replayBarStyles}
+    `}static get replayBarStyles(){return o`
+      .breadbar {
+        display: flex;
+        align-items: center;
+        height: 35px;
+        width: 100%;
+        background-color: aliceblue;
+        padding: 0.5em;
+      }
+
+      .replay-bar {
+        padding: 0.5em 0em 0.5em 0.5em;
+        max-width: none;
+        border-bottom: solid 0.1rem #97989a;
+        width: 100%;
+        background-color: white;
+      }
+
+      input#url {
+        border-radius: 4px;
+      }
+
+      .favicon img {
+        width: 20px;
+        height: 20px;
+        margin: 8px;
+        /*filter: drop-shadow(1px 1px 2px grey);*/
+      }
+
+      #datetime {
+        position: absolute;
+        right: 1em;
+        z-index: 10;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0),
+          #fff 15%,
+          #fff
+        );
+        margin: -35px 0 0 0px;
+        padding-left: 3em;
+        line-height: 2;
+      }
+
+      .menu-head {
+        font-size: 10px;
+        font-weight: bold;
+        display: block;
+      }
+      .menu-logo {
+        vertical-align: middle;
+      }
+      .menu-version {
+        font-size: 10px;
+      }
+      .dropdown-item.info {
+        font-style: italic;
+      }
+
+      input:focus + #datetime {
         display: none;
       }
 
-      .main.tabs span.icon {
-        margin: 0px;
+      .grey-disabled {
+        --fa-icon-fill-color: lightgrey;
+        color: lightgrey;
       }
-    }
 
-    .main.tabs {
-      display: flex;
-      flex-direction: row;
-      margin-bottom: 0px;
-    }
-
-    .main.tabs ul {
-      position: relative;
-    }
-
-    .main.tabs li {
-      line-height: 1.5;
-      padding: 8px 0 6px 0;
-    }
-
-    @media screen and (max-width: 319px) {
-      .main.tabs li a {
-        padding-right: 4px;
-        padding-left: 4px;
+      .replay-bar .button:focus {
+        box-shadow: none;
       }
-    }
 
-    .sidebar.main.tabs li a {
-      padding-right: 6px;
-      padding-left: 6px;
-    }
+      .is-borderless {
+        border: 0px;
+      }
 
-    #contents {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      min-height: 0px;
-      flex: auto;
-      background-color: white;
-    }
+      .narrow {
+        padding: calc(0.5em - 1px) 0.8em;
+      }
 
-    #tabContents {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      min-height: 0px;
-      flex: auto;
-    }
+      form {
+        width: 100%;
+        margin: 0 0 0 0.5em;
+      }
 
-    rwp-embed-receipt {
-      flex-direction: column;
-      display: flex;
-    }
+      .gutter.gutter-horizontal {
+        cursor: col-resize;
+        float: left;
+        background-color: rgb(151, 152, 154);
+      }
 
-    ${Lt.embedStyles}
+      .gutter.gutter-horizontal:hover {
+        cursor: col-resize;
+      }
 
-    ${Kt.replayBarStyles}`}static get replayBarStyles(){return o`
-    .breadbar {
-      display: flex;
-      align-items: center;
-      height: 35px;
-      width: 100%;
-      background-color: aliceblue;
-      padding: 0.5em;
-    }
+      main,
+      wr-coll-replay {
+        width: 100%;
+      }
 
-    .replay-bar {
-      padding: 0.5em 0em 0.5em 0.5em;
-      max-width: none;
-      border-bottom: solid .1rem #97989A;
-      width: 100%;
-      background-color: white;
-    }
+      .info-bg {
+        background-color: whitesmoke;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        overflow: auto;
+      }
 
-    input#url {
-      border-radius: 4px;
-    }
+      .is-list {
+        margin: 1em;
+        background-color: whitesmoke;
+        height: fit-content;
+      }
 
-    .favicon img {
-      width: 20px;
-      height: 20px;
-      margin: 8px;
-      /*filter: drop-shadow(1px 1px 2px grey);*/
-    }
+      #contents.full-pages {
+        width: 100% !important;
+      }
 
-    #datetime {
-      position: absolute;
-      right: 1em;
-      z-index: 10;
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0), #FFF 15%, #FFF);
-      margin: -35px 0 0 0px;
-      padding-left: 3em;
-      line-height: 2;
-    }
+      .sidebar-nav {
+        position: absolute;
+        vertical-align: middle;
+      }
 
-    .menu-head {
-      font-size: 10px;
-      font-weight: bold;
-      display: block;
-    }
-    .menu-logo {
-      vertical-align: middle;
-    }
-    .menu-version {
-      font-size: 10px;
-    }
-    .dropdown-item.info {
-      font-style: italic;
-    }
+      .sidebar-nav a {
+        display: inline-block;
+        border-bottom: 0px;
+      }
 
-    input:focus + #datetime {
-      display: none;
-    }
+      .sidebar-nav span.nav-hover {
+        font-size: smaller;
+        display: none;
+      }
 
-    .grey-disabled {
-      --fa-icon-fill-color: lightgrey;
-      color: lightgrey;
-    }
+      .sidebar-nav:hover span.nav-hover,
+      .sidebar-nav:focus-within span.nav-hover {
+        display: initial;
+        color: rgb(72, 118, 255);
+      }
 
-    .replay-bar .button:focus {
-      box-shadow: none;
-    }
+      .sidebar-nav fa-icon {
+        vertical-align: bottom;
+      }
 
-    .is-borderless {
-      border: 0px;
-    }
+      .sidebar-nav:hover fa-icon {
+        color: rgb(72, 118, 255);
+      }
 
-    .narrow {
-      padding: calc(0.5em - 1px) 0.8em;
-    }
+      .sidebar-nav.left {
+        left: 8px;
+      }
 
-    form {
-      width: 100%;
-      margin: 0 0 0 0.5em;
-    }
+      .sidebar-nav.right {
+        right: 8px;
+      }
 
-    .gutter.gutter-horizontal {
-      cursor: col-resize;
-      float: left;
-      background-color: rgb(151, 152, 154);
-    }
-
-    .gutter.gutter-horizontal:hover {
-      cursor: col-resize;
-    }
-
-    main, wr-coll-replay {
-      width: 100%;
-    }
-
-    .info-bg {
-      background-color: whitesmoke;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      overflow: auto;
-    }
-
-    .is-list {
-      margin: 1.0em;
-      background-color: whitesmoke;
-      height: fit-content;
-    }
-
-    #contents.full-pages {
-      width: 100% !important;
-    }
-
-    .sidebar-nav {
-      position: absolute;
-      vertical-align: middle;
-    }
-
-    .sidebar-nav a {
-      display: inline-block;
-      border-bottom: 0px;
-    }
-
-    .sidebar-nav span.nav-hover {
-      font-size: smaller;
-      display: none;
-    }
-
-    .sidebar-nav:hover span.nav-hover,
-    .sidebar-nav:focus-within span.nav-hover {
-      display: initial;
-      color: rgb(72, 118, 255);
-    }
-
-    .sidebar-nav fa-icon {
-      vertical-align: bottom;
-    }
-
-    .sidebar-nav:hover fa-icon {
-      color: rgb(72, 118, 255);
-    }
-
-    .sidebar-nav.left {
-      left: 8px;
-    }
-
-    .sidebar-nav.right {
-      right: 8px;
-    }
-
-    /* Since the replay sometimes programmatically receives keyboard focus,
+      /* Since the replay sometimes programmatically receives keyboard focus,
        and that is visually unexpected for mouse-users, and since this won't
        particularly trip up keyboard users, just remove the focus style. */
-    wr-coll-replay:focus {
-      outline: none;
-    }
-    /* Some keyboard-users may see this replacement style */
-    wr-coll-replay:focus-visible {
-      outline: 1px solid rgb(72, 118, 255);
-    }
-    `}render(){if(!this.inited)return T``;const e=!!this.tabData.url,t=e&&this.showSidebar;if(!e&&this.tabData&&this.tabData.view){const e={title:this.tabLabels[this.tabData.view],replayTitle:!1};this.dispatchEvent(new CustomEvent("update-title",{bubbles:!0,composed:!0,detail:e}))}return this.collInfo&&!this.collInfo.coll?T`
-      <wr-loader .loadInfo="${this.loadInfo}" embed="${this.embed}" swName="${this.swName}"
-      .coll="${this.coll}" .sourceUrl="${this.sourceUrl}" @coll-loaded=${this.onCollLoaded}></wr-loader>`:this.collInfo?T`
-      ${this.renderLocationBar()}
-      ${this.renderVerifyInfo()}
-      <div id="tabContents">
-        <div id="contents" class="is-light ${t?"sidebar":e?"is-hidden":"full-pages"}"
-             role="${t?"complementary":""}" aria-label="${t?"Browse Contents":""}">
-          ${this.renderTabHeader(t)}
-          ${t||!e?this.renderCollTabs(t):T``}
-        </div>
-
-        ${e&&this.isVisible?T`
-          <wr-coll-replay
-          role="main"
-          tabindex="-1"
-          .collInfo="${this.collInfo}"
-          sourceUrl="${this.sourceUrl}"
-          url="${this.tabData.url||""}"
-          ts="${this.tabData.ts||""}"
-          @coll-tab-nav="${this.onCollTabNav}" id="replay"
-          @replay-loading="${e=>this.isLoading=e.detail.loading}"
-          @replay-favicons="${this.onFavIcons}"
+      wr-coll-replay:focus {
+        outline: none;
+      }
+      /* Some keyboard-users may see this replacement style */
+      wr-coll-replay:focus-visible {
+        outline: 1px solid rgb(72, 118, 255);
+      }
+    `}render(){if(!this.inited)return T``;const e=!!this.tabData.url,t=e&&this.showSidebar;if(!e&&this.tabData&&this.tabData.view){const e={title:this.tabLabels[this.tabData.view],replayTitle:!1};this.dispatchEvent(new CustomEvent("update-title",{bubbles:!0,composed:!0,detail:e}))}return this.collInfo&&!this.collInfo.coll?T` <wr-loader
+        .loadInfo="${this.loadInfo}"
+        embed="${this.embed}"
+        swName="${this.swName}"
+        .coll="${this.coll}"
+        .sourceUrl="${this.sourceUrl}"
+        @coll-loaded=${this.onCollLoaded}
+      ></wr-loader>`:this.collInfo?T`
+        ${this.renderLocationBar()} ${this.renderVerifyInfo()}
+        <div id="tabContents">
+          <div
+            id="contents"
+            class="is-light ${t?"sidebar":e?"is-hidden":"full-pages"}"
+            role="${t?"complementary":""}"
+            aria-label="${t?"Browse Contents":""}"
           >
-          </wr-coll-replay>
-        `:""}
-      </div>
-      `:T``}renderTabHeader(e){return T`
-      <nav class="main tabs is-centered ${e?"sidebar":""}" aria-label="tabs">
-        <ul>
-          ${e?T`
-          <li class="sidebar-nav left">
-            <a role="button" href="#" @click="${this.onHideSidebar}" @keyup="${ve}" class="is-marginless is-size-6 is-paddingless">
-              <fa-icon title="Hide" .svg="${kt()}" aria-hidden="true"></fa-icon>
-              <span class="nav-hover" aria-hidden="true">Hide</span>
-              <span class="is-sr-only">Hide Sidebar</span>
-            </a>
-          </li>`:""}
-
-          ${this.hasStory?T`
-          <li class="${"story"===this.tabData.view?"is-active":""}">
-            <a @click="${this.onTabClick}" href="#story" class="is-size-6" aria-label="Story" aria-current="${"story"===this.tabData.view?"location":""}">
-              <span class="icon"><fa-icon .svg="${Xe()}" aria-hidden="true" title="Story"></fa-icon></span>
-              <span class="tab-label ${e?"is-hidden":""}" title="Story">Story</span>
-            </a>
-          </li>`:""}
-
-          <li class="${"pages"===this.tabData.view?"is-active":""}">
-            <a @click="${this.onTabClick}" href="#pages" class="is-size-6" aria-label="Pages" aria-current="${"pages"===this.tabData.view?"location":""}">
-              <span class="icon"><fa-icon .svg="${nt()}" aria-hidden="true" title="Pages"></fa-icon></span>
-              <span class="tab-label ${e?"is-hidden":""}" title="Pages">Pages</span>
-            </a>
-          </li>
-
-          <li class="${"resources"===this.tabData.view?"is-active":""}">
-            <a @click="${this.onTabClick}" href="#resources" class="is-size-6" aria-label="URLs" aria-current="${"resources"===this.tabData.view?"location":""}">
-              <span class="icon"><fa-icon .svg="${ot()}" aria-hidden="true" title="URLs"></fa-icon></span>
-              <span class="tab-label ${e?"is-hidden":""}" title="URLs">URLs</span>
-            </a>
-          </li>
-
-          <li class="${"info"===this.tabData.view?"is-active":""}">
-            <a @click="${this.onTabClick}" href="#info" class="is-size-6" aria-label="Archive Info" aria-current="${"info"===this.tabData.view?"location":""}">
-              <span class="icon"><fa-icon .svg="${ct()}" aria-hidden="true" title="Archive Info"></fa-icon></span>
-              <span class="tab-label ${e?"is-hidden":""}" title="Archive Info">Info</span>
-            </a>
-          </li>
-
-          ${e?T`
-          <li class="sidebar-nav right">
-            <a role="button" href="#" @click="${this.onFullPageView}" @keyup="${ve}" class="is-marginless is-size-6 is-paddingless">
-              <span class="nav-hover" aria-hidden="true">Expand</span>
-              <span class="is-sr-only">Expand Sidebar to Full View</span>
-              <fa-icon title="Expand" .svg="${$t()}" aria-hidden="true"></fa-icon>
-            </a>
-          </li>`:""}
-        </ul>
-      </nav>`}renderLocationBar(){if("replayonly"===this.embed||"replay-with-info"==this.embed)return"";const e=Ve(this.ts).toLocaleString(),t=!!this.tabData.url,i=t&&this.favIconUrl;return T`
-    <a class="skip-link" href="#skip-replay-target" @click="${this.skipMenu}">Skip replay navigation</a>
-    <nav class="replay-bar" aria-label="replay">
-      <div class="field has-addons">
-        <a href="#" role="button" class="button narrow is-borderless is-hidden-touch" id="fullscreen" @click="${this.onFullscreenToggle}" @keyup="${ve}"
-                title="${this.isFullscreen?"Exit Full Screen":"Full Screen"}" aria-label="${this.isFullscreen?"Exit Fullscreen":"Fullscreen"}">
-          <span class="icon is-small">
-            <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${this.isFullscreen?gt():bt()}"></fa-icon>
-          </span>
-        </a>
-        <a href="#" role="button" class="button narrow is-borderless is-hidden-mobile" @click="${this.onGoBack}" @keyup="${ve}"
-                title="Back" aria-label="Back">
-          <span class="icon is-small">
-            <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${_e()}"></fa-icon>
-          </span>
-        </a>
-        <a href="#" role="button" class="button narrow is-borderless is-hidden-mobile" @click="${this.onGoForward}" @keyup="${ve}"
-                title="Forward" aria-label="Forward">
-          <span class="icon is-small">
-            <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${ze()}"></fa-icon>
-          </span>
-        </a>
-        <a href="#" role="button" class="button narrow is-borderless ${this.isLoading?"is-loading":"is-hidden-mobile"}" id="refresh" @click="${this.onRefresh}" @keyup="${ve}"
-                title="Reload" aria-label="Reload">
-          <span class="icon is-small">
-            ${this.isLoading?"":T`
-            <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${ut()}"></fa-icon>
-            `}
-          </span>
-        </a>
-        ${this.browsable?T`
-        <a href="#" role="button" class="button narrow is-borderless is-hidden-mobile ${t?"":"grey-disabled"}" @click="${this.onShowPages}" @keyup="${ve}"
-                ?disabled="${!t}" title="Browse Contents" aria-label="Browse Contents" aria-controls="contents">
-          <span class="icon is-small">
-            <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${at()}"></fa-icon>
-          </span>
-        </a>`:""}
-        ${this.renderExtraToolbar(!1)}
-        <form @submit="${this.onSubmit}">
-          <div class="control is-expanded ${i?"has-icons-left":""}">
-            <input id="url" class="input" type="text" @keydown="${this.onKeyDown}" @blur="${this.onLostFocus}" .value="${this.url}" placeholder="Enter text to search or a URL to replay"/>
-            ${t?T`<p id="datetime" class="control is-hidden-mobile">${e}</p>`:T``}
-            ${i?T`
-            <span class="favicon icon is-small is-left">
-              <img src="${this.favIconUrl}"/>
-            </span>`:T``}
+            ${this.renderTabHeader(t)}
+            ${t||!e?this.renderCollTabs(t):T``}
           </div>
-        </form>
 
-        <div class="dropdown is-right ${this.menuActive?"is-active":""}" @click="${()=>this.menuActive=!1}">
-          <div class="dropdown-trigger">
-            <button class="button is-borderless" aria-haspopup="true" aria-controls="menu-dropdown" aria-expanded="${this.menuActive}" @click="${this.onMenu}"
-                    aria-label="more replay controls">
-              <span class="icon is-small">
-                <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${wt()}"></fa-icon>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="menu-dropdown">
-            <div class="dropdown-content">
-              <a href="#" role="button" class="dropdown-item is-hidden-desktop" @click="${this.onFullscreenToggle}" @keyup="${ve}">
-                <span class="icon is-small">
-                  <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${this.isFullscreen?gt():bt()}"></fa-icon>
-                </span>
-                <span>Full Screen</span>
+          ${e&&this.isVisible?T`
+                <wr-coll-replay
+                  role="main"
+                  tabindex="-1"
+                  .collInfo="${this.collInfo}"
+                  sourceUrl="${this.sourceUrl}"
+                  url="${this.tabData.url||""}"
+                  ts="${this.tabData.ts||""}"
+                  @coll-tab-nav="${this.onCollTabNav}"
+                  id="replay"
+                  @replay-loading="${e=>this.isLoading=e.detail.loading}"
+                  @replay-favicons="${this.onFavIcons}"
+                >
+                </wr-coll-replay>
+              `:""}
+        </div>
+      `:T``}renderTabHeader(e){return T` <nav
+      class="main tabs is-centered ${e?"sidebar":""}"
+      aria-label="tabs"
+    >
+      <ul>
+        ${e?T` <li class="sidebar-nav left">
+              <a
+                role="button"
+                href="#"
+                @click="${this.onHideSidebar}"
+                @keyup="${ve}"
+                class="is-marginless is-size-6 is-paddingless"
+              >
+                <fa-icon
+                  title="Hide"
+                  .svg="${kt()}"
+                  aria-hidden="true"
+                ></fa-icon>
+                <span class="nav-hover" aria-hidden="true">Hide</span>
+                <span class="is-sr-only">Hide Sidebar</span>
               </a>
-              <a href="#" role="button" class="dropdown-item is-hidden-tablet" @click="${this.onGoBack}" @keyup="${ve}">
-                <span class="icon is-small">
-                  <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${_e()}"></fa-icon>
-                </span>
-                <span>Back</span>
+            </li>`:""}
+        ${this.hasStory?T` <li
+              class="${"story"===this.tabData.view?"is-active":""}"
+            >
+              <a
+                @click="${this.onTabClick}"
+                href="#story"
+                class="is-size-6"
+                aria-label="Story"
+                aria-current="${"story"===this.tabData.view?"location":""}"
+              >
+                <span class="icon"
+                  ><fa-icon
+                    .svg="${Xe()}"
+                    aria-hidden="true"
+                    title="Story"
+                  ></fa-icon
+                ></span>
+                <span
+                  class="tab-label ${e?"is-hidden":""}"
+                  title="Story"
+                  >Story</span
+                >
               </a>
-              <a href="#" role="button" class="dropdown-item is-hidden-tablet" @click="${this.onGoForward}" @keyup="${ve}">
-                <span class="icon is-small">
-                  <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${ze()}"></fa-icon>
-                </span>
-                <span>Forward</span>
+            </li>`:""}
+
+        <li class="${"pages"===this.tabData.view?"is-active":""}">
+          <a
+            @click="${this.onTabClick}"
+            href="#pages"
+            class="is-size-6"
+            aria-label="Pages"
+            aria-current="${"pages"===this.tabData.view?"location":""}"
+          >
+            <span class="icon"
+              ><fa-icon
+                .svg="${nt()}"
+                aria-hidden="true"
+                title="Pages"
+              ></fa-icon
+            ></span>
+            <span
+              class="tab-label ${e?"is-hidden":""}"
+              title="Pages"
+              >Pages</span
+            >
+          </a>
+        </li>
+
+        <li class="${"resources"===this.tabData.view?"is-active":""}">
+          <a
+            @click="${this.onTabClick}"
+            href="#resources"
+            class="is-size-6"
+            aria-label="URLs"
+            aria-current="${"resources"===this.tabData.view?"location":""}"
+          >
+            <span class="icon"
+              ><fa-icon
+                .svg="${ot()}"
+                aria-hidden="true"
+                title="URLs"
+              ></fa-icon
+            ></span>
+            <span class="tab-label ${e?"is-hidden":""}" title="URLs"
+              >URLs</span
+            >
+          </a>
+        </li>
+
+        <li class="${"info"===this.tabData.view?"is-active":""}">
+          <a
+            @click="${this.onTabClick}"
+            href="#info"
+            class="is-size-6"
+            aria-label="Archive Info"
+            aria-current="${"info"===this.tabData.view?"location":""}"
+          >
+            <span class="icon"
+              ><fa-icon
+                .svg="${ct()}"
+                aria-hidden="true"
+                title="Archive Info"
+              ></fa-icon
+            ></span>
+            <span
+              class="tab-label ${e?"is-hidden":""}"
+              title="Archive Info"
+              >Info</span
+            >
+          </a>
+        </li>
+
+        ${e?T` <li class="sidebar-nav right">
+              <a
+                role="button"
+                href="#"
+                @click="${this.onFullPageView}"
+                @keyup="${ve}"
+                class="is-marginless is-size-6 is-paddingless"
+              >
+                <span class="nav-hover" aria-hidden="true">Expand</span>
+                <span class="is-sr-only">Expand Sidebar to Full View</span>
+                <fa-icon
+                  title="Expand"
+                  .svg="${$t()}"
+                  aria-hidden="true"
+                ></fa-icon>
               </a>
-              <a href="#" role="button" class="dropdown-item is-hidden-tablet" @click="${this.onRefresh}" @keyup="${ve}">
+            </li>`:""}
+      </ul>
+    </nav>`}renderLocationBar(){if("replayonly"===this.embed||"replay-with-info"==this.embed)return"";const e=Ve(this.ts).toLocaleString(),t=!!this.tabData.url,i=t&&this.favIconUrl;return T` <a
+        class="skip-link"
+        href="#skip-replay-target"
+        @click="${this.skipMenu}"
+        >Skip replay navigation</a
+      >
+      <nav class="replay-bar" aria-label="replay">
+        <div class="field has-addons">
+          <a
+            href="#"
+            role="button"
+            class="button narrow is-borderless is-hidden-touch"
+            id="fullscreen"
+            @click="${this.onFullscreenToggle}"
+            @keyup="${ve}"
+            title="${this.isFullscreen?"Exit Full Screen":"Full Screen"}"
+            aria-label="${this.isFullscreen?"Exit Fullscreen":"Fullscreen"}"
+          >
+            <span class="icon is-small">
+              <fa-icon
+                size="1.0em"
+                class="has-text-grey"
+                aria-hidden="true"
+                .svg="${this.isFullscreen?gt():bt()}"
+              ></fa-icon>
+            </span>
+          </a>
+          <a
+            href="#"
+            role="button"
+            class="button narrow is-borderless is-hidden-mobile"
+            @click="${this.onGoBack}"
+            @keyup="${ve}"
+            title="Back"
+            aria-label="Back"
+          >
+            <span class="icon is-small">
+              <fa-icon
+                size="1.0em"
+                class="has-text-grey"
+                aria-hidden="true"
+                .svg="${Se()}"
+              ></fa-icon>
+            </span>
+          </a>
+          <a
+            href="#"
+            role="button"
+            class="button narrow is-borderless is-hidden-mobile"
+            @click="${this.onGoForward}"
+            @keyup="${ve}"
+            title="Forward"
+            aria-label="Forward"
+          >
+            <span class="icon is-small">
+              <fa-icon
+                size="1.0em"
+                class="has-text-grey"
+                aria-hidden="true"
+                .svg="${ze()}"
+              ></fa-icon>
+            </span>
+          </a>
+          <a
+            href="#"
+            role="button"
+            class="button narrow is-borderless ${this.isLoading?"is-loading":"is-hidden-mobile"}"
+            id="refresh"
+            @click="${this.onRefresh}"
+            @keyup="${ve}"
+            title="Reload"
+            aria-label="Reload"
+          >
+            <span class="icon is-small">
+              ${this.isLoading?"":T`
+                    <fa-icon
+                      size="1.0em"
+                      class="has-text-grey"
+                      aria-hidden="true"
+                      .svg="${ut()}"
+                    ></fa-icon>
+                  `}
+            </span>
+          </a>
+          ${this.browsable?T` <a
+                href="#"
+                role="button"
+                class="button narrow is-borderless is-hidden-mobile ${t?"":"grey-disabled"}"
+                @click="${this.onShowPages}"
+                @keyup="${ve}"
+                ?disabled="${!t}"
+                title="Browse Contents"
+                aria-label="Browse Contents"
+                aria-controls="contents"
+              >
                 <span class="icon is-small">
-                  <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${ut()}"></fa-icon>
+                  <fa-icon
+                    size="1.0em"
+                    class="has-text-grey"
+                    aria-hidden="true"
+                    .svg="${at()}"
+                  ></fa-icon>
                 </span>
-                <span>Reload</span>
-              </a>
-              ${this.browsable?T`
-              <a href="#" role="button" class="dropdown-item is-hidden-tablet ${t?"":"grey-disabled"}" @click="${this.onShowPages}" @keyup="${ve}">
-                <span class="icon is-small">
-                  <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${at()}"></fa-icon>
-                </span>
-                <span>Browse Contents</span>
               </a>`:""}
-              ${this.renderExtraToolbar(!0)}
-              ${this.clearable?T`
-              <hr class="dropdown-divider is-hidden-desktop">
-              <a href="#" role="button" class="dropdown-item" @click="${this.onPurgeCache}" @keyup="${ve}">
+          ${this.renderExtraToolbar(!1)}
+          <form @submit="${this.onSubmit}">
+            <div
+              class="control is-expanded ${i?"has-icons-left":""}"
+            >
+              <input
+                id="url"
+                class="input"
+                type="text"
+                @keydown="${this.onKeyDown}"
+                @blur="${this.onLostFocus}"
+                .value="${this.url}"
+                placeholder="Enter text to search or a URL to replay"
+              />
+              ${t?T`<p id="datetime" class="control is-hidden-mobile">
+                    ${e}
+                  </p>`:T``}
+              ${i?T` <span class="favicon icon is-small is-left">
+                    <img src="${this.favIconUrl}" />
+                  </span>`:T``}
+            </div>
+          </form>
+
+          <div
+            class="dropdown is-right ${this.menuActive?"is-active":""}"
+            @click="${()=>this.menuActive=!1}"
+          >
+            <div class="dropdown-trigger">
+              <button
+                class="button is-borderless"
+                aria-haspopup="true"
+                aria-controls="menu-dropdown"
+                aria-expanded="${this.menuActive}"
+                @click="${this.onMenu}"
+                aria-label="more replay controls"
+              >
                 <span class="icon is-small">
-                  <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${ht()}"></fa-icon>
+                  <fa-icon
+                    size="1.0em"
+                    class="has-text-grey"
+                    aria-hidden="true"
+                    .svg="${wt()}"
+                  ></fa-icon>
                 </span>
-                <span>Purge Cache + Full Reload</span>
-              </a>`:T``}
-              ${!this.editable&&this.sourceUrl.startsWith("http://")||this.sourceUrl.startsWith("https://")?T`
-              <hr class="dropdown-divider">
-              <a href="${this.sourceUrl}" role="button" class="dropdown-item" @keyup="${ve}">
-                <span class="icon is-small">
-                  <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${tt()}"></fa-icon>
-                </span>
-                <span>Download Archive</span>
-              </a>`:T``}
-              ${e?T`
-              <hr class="dropdown-divider is-hidden-desktop">
-              <div class="dropdown-item info is-hidden-desktop">
-                <span class="menu-head">Capture Date</span>${e}
-              </div>`:""}
-              <hr class="dropdown-divider">
-              <a href="#" role="button" class="dropdown-item" @click="${this.onAbout}">
-                <fa-icon class="menu-logo" size="1.0rem" aria-hidden="true" .svg=${this.appLogo}></fa-icon>
-                <span>&nbsp;About ${this.appName}</span>
-                <span class="menu-version">(${this.appVersion})</span>
-              </a>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="menu-dropdown">
+              <div class="dropdown-content">
+                <a
+                  href="#"
+                  role="button"
+                  class="dropdown-item is-hidden-desktop"
+                  @click="${this.onFullscreenToggle}"
+                  @keyup="${ve}"
+                >
+                  <span class="icon is-small">
+                    <fa-icon
+                      size="1.0em"
+                      class="has-text-grey"
+                      aria-hidden="true"
+                      .svg="${this.isFullscreen?gt():bt()}"
+                    ></fa-icon>
+                  </span>
+                  <span>Full Screen</span>
+                </a>
+                <a
+                  href="#"
+                  role="button"
+                  class="dropdown-item is-hidden-tablet"
+                  @click="${this.onGoBack}"
+                  @keyup="${ve}"
+                >
+                  <span class="icon is-small">
+                    <fa-icon
+                      size="1.0em"
+                      class="has-text-grey"
+                      aria-hidden="true"
+                      .svg="${Se()}"
+                    ></fa-icon>
+                  </span>
+                  <span>Back</span>
+                </a>
+                <a
+                  href="#"
+                  role="button"
+                  class="dropdown-item is-hidden-tablet"
+                  @click="${this.onGoForward}"
+                  @keyup="${ve}"
+                >
+                  <span class="icon is-small">
+                    <fa-icon
+                      size="1.0em"
+                      class="has-text-grey"
+                      aria-hidden="true"
+                      .svg="${ze()}"
+                    ></fa-icon>
+                  </span>
+                  <span>Forward</span>
+                </a>
+                <a
+                  href="#"
+                  role="button"
+                  class="dropdown-item is-hidden-tablet"
+                  @click="${this.onRefresh}"
+                  @keyup="${ve}"
+                >
+                  <span class="icon is-small">
+                    <fa-icon
+                      size="1.0em"
+                      class="has-text-grey"
+                      aria-hidden="true"
+                      .svg="${ut()}"
+                    ></fa-icon>
+                  </span>
+                  <span>Reload</span>
+                </a>
+                ${this.browsable?T` <a
+                      href="#"
+                      role="button"
+                      class="dropdown-item is-hidden-tablet ${t?"":"grey-disabled"}"
+                      @click="${this.onShowPages}"
+                      @keyup="${ve}"
+                    >
+                      <span class="icon is-small">
+                        <fa-icon
+                          size="1.0em"
+                          class="has-text-grey"
+                          aria-hidden="true"
+                          .svg="${at()}"
+                        ></fa-icon>
+                      </span>
+                      <span>Browse Contents</span>
+                    </a>`:""}
+                ${this.renderExtraToolbar(!0)}
+                ${this.clearable?T` <hr class="dropdown-divider is-hidden-desktop" />
+                      <a
+                        href="#"
+                        role="button"
+                        class="dropdown-item"
+                        @click="${this.onPurgeCache}"
+                        @keyup="${ve}"
+                      >
+                        <span class="icon is-small">
+                          <fa-icon
+                            size="1.0em"
+                            class="has-text-grey"
+                            aria-hidden="true"
+                            .svg="${ht()}"
+                          ></fa-icon>
+                        </span>
+                        <span>Purge Cache + Full Reload</span>
+                      </a>`:T``}
+                ${!this.editable&&this.sourceUrl.startsWith("http://")||this.sourceUrl.startsWith("https://")?T` <hr class="dropdown-divider" />
+                      <a
+                        href="${this.sourceUrl}"
+                        role="button"
+                        class="dropdown-item"
+                        @keyup="${ve}"
+                      >
+                        <span class="icon is-small">
+                          <fa-icon
+                            size="1.0em"
+                            class="has-text-grey"
+                            aria-hidden="true"
+                            .svg="${tt()}"
+                          ></fa-icon>
+                        </span>
+                        <span>Download Archive</span>
+                      </a>`:T``}
+                ${e?T` <hr class="dropdown-divider is-hidden-desktop" />
+                      <div class="dropdown-item info is-hidden-desktop">
+                        <span class="menu-head">Capture Date</span>${e}
+                      </div>`:""}
+                <hr class="dropdown-divider" />
+                <a
+                  href="#"
+                  role="button"
+                  class="dropdown-item"
+                  @click="${this.onAbout}"
+                >
+                  <fa-icon
+                    class="menu-logo"
+                    size="1.0rem"
+                    aria-hidden="true"
+                    .svg=${this.appLogo}
+                  ></fa-icon>
+                  <span>&nbsp;About ${this.appName}</span>
+                  <span class="menu-version">(${this.appVersion})</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </nav><p id="skip-replay-target" tabindex="-1" class="is-sr-only">Skipped</p>`}renderVerifyInfo(){return"replay-with-info"!==this.embed?"":T`<rwp-embed-receipt
-            .collInfo=${this.collInfo}
-            url=${this.url}
-            ts=${this.ts}
-            .appLogo=${this.appLogo}
-            >
-            </rwp-embed-receipt>`}dragStart(){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.setDisablePointer(!0)}dragEnd(){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.setDisablePointer(!1)}renderCollInfo(){return T`
-    <div class="info-bg">
+      </nav>
+      <p id="skip-replay-target" tabindex="-1" class="is-sr-only">Skipped</p>`}renderVerifyInfo(){return"replay-with-info"!==this.embed?"":T`<rwp-embed-receipt
+      .collInfo=${this.collInfo}
+      url=${this.url}
+      ts=${this.ts}
+      .appLogo=${this.appLogo}
+    >
+    </rwp-embed-receipt>`}dragStart(){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.setDisablePointer(!0)}dragEnd(){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.setDisablePointer(!1)}renderCollInfo(){return T` <div class="info-bg">
       <wr-coll-info
-      class="is-list"
-      .coll="${this.collInfo}"
-      ?detailed="${!0}"
-      ?canDelete="${!this.embed}"
-      @coll-purge="${this.onPurgeCache}"
+        class="is-list"
+        .coll="${this.collInfo}"
+        ?detailed="${!0}"
+        ?canDelete="${!this.embed}"
+        @coll-purge="${this.onPurgeCache}"
       ></wr-coll-info>
     </div>`}renderExtraToolbar(){return""}renderCollTabs(e){const t=this.hasStory&&"story"===this.tabData.view,i="pages"===this.tabData.view,a="resources"===this.tabData.view,r="info"===this.tabData.view;return T`
+      ${r?this.renderCollInfo():T``}
+      ${t?T` <wr-coll-story
+            .collInfo="${this.collInfo}"
+            .active="${t}"
+            currList="${this.tabData.currList||0}"
+            @coll-tab-nav="${this.onCollTabNav}"
+            id="story"
+            .isSidebar="${e}"
+            class="${t?"":"is-hidden"} ${e?"sidebar":""}"
+            role="${e?"":"main"}"
+          >
+          </wr-coll-story>`:""}
+      ${a?T` <wr-coll-resources
+            .collInfo="${this.collInfo}"
+            .active="${a}"
+            query="${this.tabData.query||""}"
+            urlSearchType="${this.tabData.urlSearchType||""}"
+            .currMime="${this.tabData.currMime||""}"
+            @coll-tab-nav="${this.onCollTabNav}"
+            id="resources"
+            .isSidebar="${e}"
+            class="is-paddingless ${a?"":"is-hidden"} ${e?"sidebar":""}"
+            role="${e?"":"main"}"
+          >
+          </wr-coll-resources>`:""}
+      ${i?T` <wr-page-view
+            .collInfo="${this.collInfo}"
+            .active="${i}"
+            .editable="${this.editable}"
+            .isSidebar="${e}"
+            currList="${this.tabData.currList||0}"
+            query="${this.tabData.query||""}"
+            .url="${this.tabData.url||""}"
+            .ts="${this.tabData.ts||""}"
+            @coll-tab-nav="${this.onCollTabNav}"
+            id="pages"
+            @coll-update="${this.onCollUpdate}"
+            class="${i?"":"is-hidden"} ${e?"sidebar":""}"
+            role="${e?"":"main"}"
+          >
+          </wr-page-view>`:""}
+    `}skipMenu(e){e.preventDefault(),this.renderRoot.querySelector("#skip-replay-target").focus()}onKeyDown(e){"Esc"!==e.key&&"Escape"!==e.key||(e.preventDefault(),e.currentTarget.value=this.url)}onMenu(e){e.stopPropagation(),this.menuActive=!this.menuActive,this.menuActive&&document.addEventListener("click",(()=>{this.menuActive=!1}),{once:!0})}onFullscreenToggle(e){e.preventDefault(),this.menuActive=!1,this.isFullscreen?document.exitFullscreen():this.requestFullscreen()}onGoBack(e){e.preventDefault(),this.menuActive=!1,window.history.back()}onGoForward(e){e.preventDefault(),this.menuActive=!1,window.history.forward()}onShowPages(e){e.preventDefault(),this.showSidebar||document.documentElement.clientWidth>=769?this.showSidebar=!this.showSidebar:(this.showSidebar=!1,this.updateTabData({url:"",ts:""}))}onFullPageView(e){e.preventDefault(),this.updateTabData({url:"",ts:""})}onHideSidebar(e){e.preventDefault(),this.showSidebar=!1}async onFavIcons(e){for(const t of e.detail.icons){const e=await fetch(t.href);if(200===e.status){const i=e.headers.get("Content-Type");if(i&&!i.startsWith("text/"))return void(this.favIconUrl=t.href)}}this.favIconUrl=""}onPurgeCache(e){e.preventDefault();const t=!e.detail||void 0===e.detail.reload||e.detail.reload;this.deleteFully(t)}async deleteFully(e=!1){const t=this.collInfo.apiPrefix+(e?"?reload=1":""),i=await fetch(t,{method:"DELETE"});200!==i.status&&console.warn("purge failed: "+i.status),e||this.embed?window.location.reload():window.location.search=""}onSubmit(e){e.preventDefault();const t=this.renderRoot.querySelector("input");return t.value?this.navigateTo(t.value):t.value=this.url,!1}onLostFocus(e){e.currentTarget.value||(e.currentTarget.value=this.url)}navigateTo(e){let t;if(e.startsWith("http://")||e.startsWith("https://")){if(t={url:e},e===this.tabData.url){const e=this.renderRoot.querySelector("wr-coll-replay");return void(e&&e.refresh())}}else t=e.startsWith(Vt)?this._stringToParams(e):{query:e,view:"pages"};this.updateTabData(t)}_stringToParams(e){const t=new URLSearchParams(e.slice(Vt.length)),i={url:"",ts:""};for(const e of["query","view","currList","currMime","urlSearchType"])t.has(e)&&(i[e]=t.get(e));return i}_paramsToString(e){const t=new URLSearchParams;for(const i of["query","view","currList","currMime","urlSearchType"])i in e&&t.set(i,e[i]);return t.toString()}onRefresh(e,t=!1){if(e&&e.preventDefault(),this.menuActive=!1,this.tabData.url){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.refresh()}else t||window.location.reload()}onAbout(){this.dispatchEvent(new CustomEvent("about-show"))}}function Zt(){return{baseUrl:null,breaks:!1,extensions:null,gfm:!0,headerIds:!0,headerPrefix:"",highlight:null,langPrefix:"language-",mangle:!0,pedantic:!1,renderer:null,sanitize:!1,sanitizer:null,silent:!1,smartLists:!1,smartypants:!1,tokenizer:null,walkTokens:null,xhtml:!1}}customElements.define("wr-coll",Kt);let Jt={baseUrl:null,breaks:!1,extensions:null,gfm:!0,headerIds:!0,headerPrefix:"",highlight:null,langPrefix:"language-",mangle:!0,pedantic:!1,renderer:null,sanitize:!1,sanitizer:null,silent:!1,smartLists:!1,smartypants:!1,tokenizer:null,walkTokens:null,xhtml:!1};const Yt=/[&<>"']/,Qt=/[&<>"']/g,Xt=/[<>"']|&(?!#?\w+;)/,ei=/[<>"']|&(?!#?\w+;)/g,ti={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"},ii=e=>ti[e];function ai(e,t){if(t){if(Yt.test(e))return e.replace(Qt,ii)}else if(Xt.test(e))return e.replace(ei,ii);return e}const ri=/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/gi;function oi(e){return e.replace(ri,((e,t)=>"colon"===(t=t.toLowerCase())?":":"#"===t.charAt(0)?"x"===t.charAt(1)?String.fromCharCode(parseInt(t.substring(2),16)):String.fromCharCode(+t.substring(1)):""))}const si=/(^|[^\[])\^/g;function ni(e,t){e="string"==typeof e?e:e.source,t=t||"";const i={replace:(t,a)=>(a=(a=a.source||a).replace(si,"$1"),e=e.replace(t,a),i),getRegex:()=>new RegExp(e,t)};return i}const li=/[^\w:]/g,ci=/^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;function di(e,t,i){if(e){let e;try{e=decodeURIComponent(oi(i)).replace(li,"").toLowerCase()}catch(e){return null}if(0===e.indexOf("javascript:")||0===e.indexOf("vbscript:")||0===e.indexOf("data:"))return null}t&&!ci.test(i)&&(i=function(e,t){hi[" "+e]||(pi.test(e)?hi[" "+e]=e+"/":hi[" "+e]=vi(e,"/",!0));const i=-1===(e=hi[" "+e]).indexOf(":");return"//"===t.substring(0,2)?i?t:e.replace(ui,"$1")+t:"/"===t.charAt(0)?i?t:e.replace(fi,"$1")+t:e+t}(t,i));try{i=encodeURI(i).replace(/%25/g,"%")}catch(e){return null}return i}const hi={},pi=/^[^:]+:\/*[^/]*$/,ui=/^([^:]+:)[\s\S]*$/,fi=/^([^:]+:\/*[^/]*)[\s\S]*$/;const bi={exec:function(){}};function mi(e){let t,i,a=1;for(;a<arguments.length;a++)for(i in t=arguments[a],t)Object.prototype.hasOwnProperty.call(t,i)&&(e[i]=t[i]);return e}function gi(e,t){const i=e.replace(/\|/g,((e,t,i)=>{let a=!1,r=t;for(;--r>=0&&"\\"===i[r];)a=!a;return a?"|":" |"})).split(/ \|/);let a=0;if(i[0].trim()||i.shift(),i.length>0&&!i[i.length-1].trim()&&i.pop(),i.length>t)i.splice(t);else for(;i.length<t;)i.push("");for(;a<i.length;a++)i[a]=i[a].trim().replace(/\\\|/g,"|");return i}function vi(e,t,i){const a=e.length;if(0===a)return"";let r=0;for(;r<a;){const o=e.charAt(a-r-1);if(o!==t||i){if(o===t||!i)break;r++}else r++}return e.slice(0,a-r)}function wi(e){e&&e.sanitize&&!e.silent&&console.warn("marked(): sanitize and sanitizer parameters are deprecated since version 0.7.0, should not be used and will be removed in the future. Read more here: https://marked.js.org/#/USING_ADVANCED.md#options")}function xi(e,t){if(t<1)return"";let i="";for(;t>1;)1&t&&(i+=e),t>>=1,e+=e;return i+e}function ki(e,t,i,a){const r=t.href,o=t.title?ai(t.title):null,s=e[1].replace(/\\([\[\]])/g,"$1");if("!"!==e[0].charAt(0)){a.state.inLink=!0;const e={type:"link",raw:i,href:r,title:o,text:s,tokens:a.inlineTokens(s,[])};return a.state.inLink=!1,e}return{type:"image",raw:i,href:r,title:o,text:ai(s)}}class yi{constructor(e){this.options=e||Jt}space(e){const t=this.rules.block.newline.exec(e);if(t&&t[0].length>0)return{type:"space",raw:t[0]}}code(e){const t=this.rules.block.code.exec(e);if(t){const e=t[0].replace(/^ {1,4}/gm,"");return{type:"code",raw:t[0],codeBlockStyle:"indented",text:this.options.pedantic?e:vi(e,"\n")}}}fences(e){const t=this.rules.block.fences.exec(e);if(t){const e=t[0],i=function(e,t){const i=e.match(/^(\s+)(?:```)/);if(null===i)return t;const a=i[1];return t.split("\n").map((e=>{const t=e.match(/^\s+/);if(null===t)return e;const[i]=t;return i.length>=a.length?e.slice(a.length):e})).join("\n")}(e,t[3]||"");return{type:"code",raw:e,lang:t[2]?t[2].trim():t[2],text:i}}}heading(e){const t=this.rules.block.heading.exec(e);if(t){let e=t[2].trim();if(/#$/.test(e)){const t=vi(e,"#");this.options.pedantic?e=t.trim():t&&!/ $/.test(t)||(e=t.trim())}const i={type:"heading",raw:t[0],depth:t[1].length,text:e,tokens:[]};return this.lexer.inline(i.text,i.tokens),i}}hr(e){const t=this.rules.block.hr.exec(e);if(t)return{type:"hr",raw:t[0]}}blockquote(e){const t=this.rules.block.blockquote.exec(e);if(t){const e=t[0].replace(/^ *>[ \t]?/gm,"");return{type:"blockquote",raw:t[0],tokens:this.lexer.blockTokens(e,[]),text:e}}}list(e){let t=this.rules.block.list.exec(e);if(t){let i,a,r,o,s,n,l,c,d,h,p,u,f=t[1].trim();const b=f.length>1,m={type:"list",raw:"",ordered:b,start:b?+f.slice(0,-1):"",loose:!1,items:[]};f=b?`\\d{1,9}\\${f.slice(-1)}`:`\\${f}`,this.options.pedantic&&(f=b?f:"[*+-]");const g=new RegExp(`^( {0,3}${f})((?:[\t ][^\\n]*)?(?:\\n|$))`);for(;e&&(u=!1,t=g.exec(e))&&!this.rules.block.hr.test(e);){if(i=t[0],e=e.substring(i.length),c=t[2].split("\n",1)[0],d=e.split("\n",1)[0],this.options.pedantic?(o=2,p=c.trimLeft()):(o=t[2].search(/[^ ]/),o=o>4?1:o,p=c.slice(o),o+=t[1].length),n=!1,!c&&/^ *$/.test(d)&&(i+=d+"\n",e=e.substring(d.length+1),u=!0),!u){const t=new RegExp(`^ {0,${Math.min(3,o-1)}}(?:[*+-]|\\d{1,9}[.)])((?: [^\\n]*)?(?:\\n|$))`),a=new RegExp(`^ {0,${Math.min(3,o-1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`),r=new RegExp(`^( {0,${Math.min(3,o-1)}})(\`\`\`|~~~)`);for(;e&&(h=e.split("\n",1)[0],c=h,this.options.pedantic&&(c=c.replace(/^ {1,4}(?=( {4})*[^ ])/g,"  ")),!r.test(c))&&!this.rules.block.heading.test(c)&&!t.test(c)&&!a.test(e);){if(c.search(/[^ ]/)>=o||!c.trim())p+="\n"+c.slice(o);else{if(n)break;p+="\n"+c}n||c.trim()||(n=!0),i+=h+"\n",e=e.substring(h.length+1)}}m.loose||(l?m.loose=!0:/\n *\n *$/.test(i)&&(l=!0)),this.options.gfm&&(a=/^\[[ xX]\] /.exec(p),a&&(r="[ ] "!==a[0],p=p.replace(/^\[[ xX]\] +/,""))),m.items.push({type:"list_item",raw:i,task:!!a,checked:r,loose:!1,text:p}),m.raw+=i}m.items[m.items.length-1].raw=i.trimRight(),m.items[m.items.length-1].text=p.trimRight(),m.raw=m.raw.trimRight();const v=m.items.length;for(s=0;s<v;s++){this.lexer.state.top=!1,m.items[s].tokens=this.lexer.blockTokens(m.items[s].text,[]);const e=m.items[s].tokens.filter((e=>"space"===e.type)),t=e.every((e=>{const t=e.raw.split("");let i=0;for(const e of t)if("\n"===e&&(i+=1),i>1)return!0;return!1}));!m.loose&&e.length&&t&&(m.loose=!0,m.items[s].loose=!0)}return m}}html(e){const t=this.rules.block.html.exec(e);if(t){const e={type:"html",raw:t[0],pre:!this.options.sanitizer&&("pre"===t[1]||"script"===t[1]||"style"===t[1]),text:t[0]};return this.options.sanitize&&(e.type="paragraph",e.text=this.options.sanitizer?this.options.sanitizer(t[0]):ai(t[0]),e.tokens=[],this.lexer.inline(e.text,e.tokens)),e}}def(e){const t=this.rules.block.def.exec(e);if(t){t[3]&&(t[3]=t[3].substring(1,t[3].length-1));return{type:"def",tag:t[1].toLowerCase().replace(/\s+/g," "),raw:t[0],href:t[2],title:t[3]}}}table(e){const t=this.rules.block.table.exec(e);if(t){const e={type:"table",header:gi(t[1]).map((e=>({text:e}))),align:t[2].replace(/^ *|\| *$/g,"").split(/ *\| */),rows:t[3]&&t[3].trim()?t[3].replace(/\n[ \t]*$/,"").split("\n"):[]};if(e.header.length===e.align.length){e.raw=t[0];let i,a,r,o,s=e.align.length;for(i=0;i<s;i++)/^ *-+: *$/.test(e.align[i])?e.align[i]="right":/^ *:-+: *$/.test(e.align[i])?e.align[i]="center":/^ *:-+ *$/.test(e.align[i])?e.align[i]="left":e.align[i]=null;for(s=e.rows.length,i=0;i<s;i++)e.rows[i]=gi(e.rows[i],e.header.length).map((e=>({text:e})));for(s=e.header.length,a=0;a<s;a++)e.header[a].tokens=[],this.lexer.inline(e.header[a].text,e.header[a].tokens);for(s=e.rows.length,a=0;a<s;a++)for(o=e.rows[a],r=0;r<o.length;r++)o[r].tokens=[],this.lexer.inline(o[r].text,o[r].tokens);return e}}}lheading(e){const t=this.rules.block.lheading.exec(e);if(t){const e={type:"heading",raw:t[0],depth:"="===t[2].charAt(0)?1:2,text:t[1],tokens:[]};return this.lexer.inline(e.text,e.tokens),e}}paragraph(e){const t=this.rules.block.paragraph.exec(e);if(t){const e={type:"paragraph",raw:t[0],text:"\n"===t[1].charAt(t[1].length-1)?t[1].slice(0,-1):t[1],tokens:[]};return this.lexer.inline(e.text,e.tokens),e}}text(e){const t=this.rules.block.text.exec(e);if(t){const e={type:"text",raw:t[0],text:t[0],tokens:[]};return this.lexer.inline(e.text,e.tokens),e}}escape(e){const t=this.rules.inline.escape.exec(e);if(t)return{type:"escape",raw:t[0],text:ai(t[1])}}tag(e){const t=this.rules.inline.tag.exec(e);if(t)return!this.lexer.state.inLink&&/^<a /i.test(t[0])?this.lexer.state.inLink=!0:this.lexer.state.inLink&&/^<\/a>/i.test(t[0])&&(this.lexer.state.inLink=!1),!this.lexer.state.inRawBlock&&/^<(pre|code|kbd|script)(\s|>)/i.test(t[0])?this.lexer.state.inRawBlock=!0:this.lexer.state.inRawBlock&&/^<\/(pre|code|kbd|script)(\s|>)/i.test(t[0])&&(this.lexer.state.inRawBlock=!1),{type:this.options.sanitize?"text":"html",raw:t[0],inLink:this.lexer.state.inLink,inRawBlock:this.lexer.state.inRawBlock,text:this.options.sanitize?this.options.sanitizer?this.options.sanitizer(t[0]):ai(t[0]):t[0]}}link(e){const t=this.rules.inline.link.exec(e);if(t){const e=t[2].trim();if(!this.options.pedantic&&/^</.test(e)){if(!/>$/.test(e))return;const t=vi(e.slice(0,-1),"\\");if((e.length-t.length)%2==0)return}else{const e=function(e,t){if(-1===e.indexOf(t[1]))return-1;const i=e.length;let a=0,r=0;for(;r<i;r++)if("\\"===e[r])r++;else if(e[r]===t[0])a++;else if(e[r]===t[1]&&(a--,a<0))return r;return-1}(t[2],"()");if(e>-1){const i=(0===t[0].indexOf("!")?5:4)+t[1].length+e;t[2]=t[2].substring(0,e),t[0]=t[0].substring(0,i).trim(),t[3]=""}}let i=t[2],a="";if(this.options.pedantic){const e=/^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(i);e&&(i=e[1],a=e[3])}else a=t[3]?t[3].slice(1,-1):"";return i=i.trim(),/^</.test(i)&&(i=this.options.pedantic&&!/>$/.test(e)?i.slice(1):i.slice(1,-1)),ki(t,{href:i?i.replace(this.rules.inline._escapes,"$1"):i,title:a?a.replace(this.rules.inline._escapes,"$1"):a},t[0],this.lexer)}}reflink(e,t){let i;if((i=this.rules.inline.reflink.exec(e))||(i=this.rules.inline.nolink.exec(e))){let e=(i[2]||i[1]).replace(/\s+/g," ");if(e=t[e.toLowerCase()],!e||!e.href){const e=i[0].charAt(0);return{type:"text",raw:e,text:e}}return ki(i,e,i[0],this.lexer)}}emStrong(e,t,i=""){let a=this.rules.inline.emStrong.lDelim.exec(e);if(!a)return;if(a[3]&&i.match(/[\p{L}\p{N}]/u))return;const r=a[1]||a[2]||"";if(!r||r&&(""===i||this.rules.inline.punctuation.exec(i))){const i=a[0].length-1;let r,o,s=i,n=0;const l="*"===a[0][0]?this.rules.inline.emStrong.rDelimAst:this.rules.inline.emStrong.rDelimUnd;for(l.lastIndex=0,t=t.slice(-1*e.length+i);null!=(a=l.exec(t));){if(r=a[1]||a[2]||a[3]||a[4]||a[5]||a[6],!r)continue;if(o=r.length,a[3]||a[4]){s+=o;continue}if((a[5]||a[6])&&i%3&&!((i+o)%3)){n+=o;continue}if(s-=o,s>0)continue;if(o=Math.min(o,o+s+n),Math.min(i,o)%2){const t=e.slice(1,i+a.index+o);return{type:"em",raw:e.slice(0,i+a.index+o+1),text:t,tokens:this.lexer.inlineTokens(t,[])}}const t=e.slice(2,i+a.index+o-1);return{type:"strong",raw:e.slice(0,i+a.index+o+1),text:t,tokens:this.lexer.inlineTokens(t,[])}}}}codespan(e){const t=this.rules.inline.code.exec(e);if(t){let e=t[2].replace(/\n/g," ");const i=/[^ ]/.test(e),a=/^ /.test(e)&&/ $/.test(e);return i&&a&&(e=e.substring(1,e.length-1)),e=ai(e,!0),{type:"codespan",raw:t[0],text:e}}}br(e){const t=this.rules.inline.br.exec(e);if(t)return{type:"br",raw:t[0]}}del(e){const t=this.rules.inline.del.exec(e);if(t)return{type:"del",raw:t[0],text:t[2],tokens:this.lexer.inlineTokens(t[2],[])}}autolink(e,t){const i=this.rules.inline.autolink.exec(e);if(i){let e,a;return"@"===i[2]?(e=ai(this.options.mangle?t(i[1]):i[1]),a="mailto:"+e):(e=ai(i[1]),a=e),{type:"link",raw:i[0],text:e,href:a,tokens:[{type:"text",raw:e,text:e}]}}}url(e,t){let i;if(i=this.rules.inline.url.exec(e)){let e,a;if("@"===i[2])e=ai(this.options.mangle?t(i[0]):i[0]),a="mailto:"+e;else{let t;do{t=i[0],i[0]=this.rules.inline._backpedal.exec(i[0])[0]}while(t!==i[0]);e=ai(i[0]),a="www."===i[1]?"http://"+e:e}return{type:"link",raw:i[0],text:e,href:a,tokens:[{type:"text",raw:e,text:e}]}}}inlineText(e,t){const i=this.rules.inline.text.exec(e);if(i){let e;return e=this.lexer.state.inRawBlock?this.options.sanitize?this.options.sanitizer?this.options.sanitizer(i[0]):ai(i[0]):i[0]:ai(this.options.smartypants?t(i[0]):i[0]),{type:"text",raw:i[0],text:e}}}}const $i={newline:/^(?: *(?:\n|$))+/,code:/^( {4}[^\n]+(?:\n(?: *(?:\n|$))*)?)+/,fences:/^ {0,3}(`{3,}(?=[^`\n]*\n)|~{3,})([^\n]*)\n(?:|([\s\S]*?)\n)(?: {0,3}\1[~`]* *(?=\n|$)|$)/,hr:/^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/,heading:/^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/,blockquote:/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,list:/^( {0,3}bull)([ \t][^\n]+?)?(?:\n|$)/,html:"^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$))",def:/^ {0,3}\[(label)\]: *(?:\n *)?<?([^\s>]+)>?(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/,table:bi,lheading:/^([^\n]+)\n {0,3}(=+|-+) *(?:\n+|$)/,_paragraph:/^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/,text:/^[^\n]+/,_label:/(?!\s*\])(?:\\.|[^\[\]\\])+/,_title:/(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/};$i.def=ni($i.def).replace("label",$i._label).replace("title",$i._title).getRegex(),$i.bullet=/(?:[*+-]|\d{1,9}[.)])/,$i.listItemStart=ni(/^( *)(bull) */).replace("bull",$i.bullet).getRegex(),$i.list=ni($i.list).replace(/bull/g,$i.bullet).replace("hr","\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))").replace("def","\\n+(?="+$i.def.source+")").getRegex(),$i._tag="address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul",$i._comment=/<!--(?!-?>)[\s\S]*?(?:-->|$)/,$i.html=ni($i.html,"i").replace("comment",$i._comment).replace("tag",$i._tag).replace("attribute",/ +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(),$i.paragraph=ni($i._paragraph).replace("hr",$i.hr).replace("heading"," {0,3}#{1,6} ").replace("|lheading","").replace("|table","").replace("blockquote"," {0,3}>").replace("fences"," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list"," {0,3}(?:[*+-]|1[.)]) ").replace("html","</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag",$i._tag).getRegex(),$i.blockquote=ni($i.blockquote).replace("paragraph",$i.paragraph).getRegex(),$i.normal=mi({},$i),$i.gfm=mi({},$i.normal,{table:"^ *([^\\n ].*\\|.*)\\n {0,3}(?:\\| *)?(:?-+:? *(?:\\| *:?-+:? *)*)(?:\\| *)?(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)"}),$i.gfm.table=ni($i.gfm.table).replace("hr",$i.hr).replace("heading"," {0,3}#{1,6} ").replace("blockquote"," {0,3}>").replace("code"," {4}[^\\n]").replace("fences"," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list"," {0,3}(?:[*+-]|1[.)]) ").replace("html","</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag",$i._tag).getRegex(),$i.gfm.paragraph=ni($i._paragraph).replace("hr",$i.hr).replace("heading"," {0,3}#{1,6} ").replace("|lheading","").replace("table",$i.gfm.table).replace("blockquote"," {0,3}>").replace("fences"," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list"," {0,3}(?:[*+-]|1[.)]) ").replace("html","</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag",$i._tag).getRegex(),$i.pedantic=mi({},$i.normal,{html:ni("^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:\"[^\"]*\"|'[^']*'|\\s[^'\"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))").replace("comment",$i._comment).replace(/tag/g,"(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),def:/^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,heading:/^(#{1,6})(.*)(?:\n+|$)/,fences:bi,paragraph:ni($i.normal._paragraph).replace("hr",$i.hr).replace("heading"," *#{1,6} *[^\n]").replace("lheading",$i.lheading).replace("blockquote"," {0,3}>").replace("|fences","").replace("|list","").replace("|html","").getRegex()});const Si={escape:/^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,autolink:/^<(scheme:[^\s\x00-\x1f<>]*|email)>/,url:bi,tag:"^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>",link:/^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/,reflink:/^!?\[(label)\]\[(ref)\]/,nolink:/^!?\[(ref)\](?:\[\])?/,reflinkSearch:"reflink|nolink(?!\\()",emStrong:{lDelim:/^(?:\*+(?:([punct_])|[^\s*]))|^_+(?:([punct*])|([^\s_]))/,rDelimAst:/^[^_*]*?\_\_[^_*]*?\*[^_*]*?(?=\_\_)|[^*]+(?=[^*])|[punct_](\*+)(?=[\s]|$)|[^punct*_\s](\*+)(?=[punct_\s]|$)|[punct_\s](\*+)(?=[^punct*_\s])|[\s](\*+)(?=[punct_])|[punct_](\*+)(?=[punct_])|[^punct*_\s](\*+)(?=[^punct*_\s])/,rDelimUnd:/^[^_*]*?\*\*[^_*]*?\_[^_*]*?(?=\*\*)|[^_]+(?=[^_])|[punct*](\_+)(?=[\s]|$)|[^punct*_\s](\_+)(?=[punct*\s]|$)|[punct*\s](\_+)(?=[^punct*_\s])|[\s](\_+)(?=[punct*])|[punct*](\_+)(?=[punct*])/},code:/^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,br:/^( {2,}|\\)\n(?!\s*$)/,del:bi,text:/^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/,punctuation:/^([\spunctuation])/};function _i(e){return e.replace(/---/g,"—").replace(/--/g,"–").replace(/(^|[-\u2014/(\[{"\s])'/g,"$1‘").replace(/'/g,"’").replace(/(^|[-\u2014/(\[{\u2018\s])"/g,"$1“").replace(/"/g,"”").replace(/\.{3}/g,"…")}function zi(e){let t,i,a="";const r=e.length;for(t=0;t<r;t++)i=e.charCodeAt(t),Math.random()>.5&&(i="x"+i.toString(16)),a+="&#"+i+";";return a}Si._punctuation="!\"#$%&'()+\\-.,/:;<=>?@\\[\\]`^{|}~",Si.punctuation=ni(Si.punctuation).replace(/punctuation/g,Si._punctuation).getRegex(),Si.blockSkip=/\[[^\]]*?\]\([^\)]*?\)|`[^`]*?`|<[^>]*?>/g,Si.escapedEmSt=/\\\*|\\_/g,Si._comment=ni($i._comment).replace("(?:--\x3e|$)","--\x3e").getRegex(),Si.emStrong.lDelim=ni(Si.emStrong.lDelim).replace(/punct/g,Si._punctuation).getRegex(),Si.emStrong.rDelimAst=ni(Si.emStrong.rDelimAst,"g").replace(/punct/g,Si._punctuation).getRegex(),Si.emStrong.rDelimUnd=ni(Si.emStrong.rDelimUnd,"g").replace(/punct/g,Si._punctuation).getRegex(),Si._escapes=/\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g,Si._scheme=/[a-zA-Z][a-zA-Z0-9+.-]{1,31}/,Si._email=/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/,Si.autolink=ni(Si.autolink).replace("scheme",Si._scheme).replace("email",Si._email).getRegex(),Si._attribute=/\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/,Si.tag=ni(Si.tag).replace("comment",Si._comment).replace("attribute",Si._attribute).getRegex(),Si._label=/(?:\[(?:\\.|[^\[\]\\])*\]|\\.|`[^`]*`|[^\[\]\\`])*?/,Si._href=/<(?:\\.|[^\n<>\\])+>|[^\s\x00-\x1f]*/,Si._title=/"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/,Si.link=ni(Si.link).replace("label",Si._label).replace("href",Si._href).replace("title",Si._title).getRegex(),Si.reflink=ni(Si.reflink).replace("label",Si._label).replace("ref",$i._label).getRegex(),Si.nolink=ni(Si.nolink).replace("ref",$i._label).getRegex(),Si.reflinkSearch=ni(Si.reflinkSearch,"g").replace("reflink",Si.reflink).replace("nolink",Si.nolink).getRegex(),Si.normal=mi({},Si),Si.pedantic=mi({},Si.normal,{strong:{start:/^__|\*\*/,middle:/^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,endAst:/\*\*(?!\*)/g,endUnd:/__(?!_)/g},em:{start:/^_|\*/,middle:/^()\*(?=\S)([\s\S]*?\S)\*(?!\*)|^_(?=\S)([\s\S]*?\S)_(?!_)/,endAst:/\*(?!\*)/g,endUnd:/_(?!_)/g},link:ni(/^!?\[(label)\]\((.*?)\)/).replace("label",Si._label).getRegex(),reflink:ni(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label",Si._label).getRegex()}),Si.gfm=mi({},Si.normal,{escape:ni(Si.escape).replace("])","~|])").getRegex(),_extended_email:/[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,url:/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,_backpedal:/(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,del:/^(~~?)(?=[^\s~])([\s\S]*?[^\s~])\1(?=[^~]|$)/,text:/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/}),Si.gfm.url=ni(Si.gfm.url,"i").replace("email",Si.gfm._extended_email).getRegex(),Si.breaks=mi({},Si.gfm,{br:ni(Si.br).replace("{2,}","*").getRegex(),text:ni(Si.gfm.text).replace("\\b_","\\b_| {2,}\\n").replace(/\{2,\}/g,"*").getRegex()});class Ci{constructor(e){this.tokens=[],this.tokens.links=Object.create(null),this.options=e||Jt,this.options.tokenizer=this.options.tokenizer||new yi,this.tokenizer=this.options.tokenizer,this.tokenizer.options=this.options,this.tokenizer.lexer=this,this.inlineQueue=[],this.state={inLink:!1,inRawBlock:!1,top:!0};const t={block:$i.normal,inline:Si.normal};this.options.pedantic?(t.block=$i.pedantic,t.inline=Si.pedantic):this.options.gfm&&(t.block=$i.gfm,this.options.breaks?t.inline=Si.breaks:t.inline=Si.gfm),this.tokenizer.rules=t}static get rules(){return{block:$i,inline:Si}}static lex(e,t){return new Ci(t).lex(e)}static lexInline(e,t){return new Ci(t).inlineTokens(e)}lex(e){let t;for(e=e.replace(/\r\n|\r/g,"\n"),this.blockTokens(e,this.tokens);t=this.inlineQueue.shift();)this.inlineTokens(t.src,t.tokens);return this.tokens}blockTokens(e,t=[]){let i,a,r,o;for(e=this.options.pedantic?e.replace(/\t/g,"    ").replace(/^ +$/gm,""):e.replace(/^( *)(\t+)/gm,((e,t,i)=>t+"    ".repeat(i.length)));e;)if(!(this.options.extensions&&this.options.extensions.block&&this.options.extensions.block.some((a=>!!(i=a.call({lexer:this},e,t))&&(e=e.substring(i.raw.length),t.push(i),!0)))))if(i=this.tokenizer.space(e))e=e.substring(i.raw.length),1===i.raw.length&&t.length>0?t[t.length-1].raw+="\n":t.push(i);else if(i=this.tokenizer.code(e))e=e.substring(i.raw.length),a=t[t.length-1],!a||"paragraph"!==a.type&&"text"!==a.type?t.push(i):(a.raw+="\n"+i.raw,a.text+="\n"+i.text,this.inlineQueue[this.inlineQueue.length-1].src=a.text);else if(i=this.tokenizer.fences(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.heading(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.hr(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.blockquote(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.list(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.html(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.def(e))e=e.substring(i.raw.length),a=t[t.length-1],!a||"paragraph"!==a.type&&"text"!==a.type?this.tokens.links[i.tag]||(this.tokens.links[i.tag]={href:i.href,title:i.title}):(a.raw+="\n"+i.raw,a.text+="\n"+i.raw,this.inlineQueue[this.inlineQueue.length-1].src=a.text);else if(i=this.tokenizer.table(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.lheading(e))e=e.substring(i.raw.length),t.push(i);else{if(r=e,this.options.extensions&&this.options.extensions.startBlock){let t=1/0;const i=e.slice(1);let a;this.options.extensions.startBlock.forEach((function(e){a=e.call({lexer:this},i),"number"==typeof a&&a>=0&&(t=Math.min(t,a))})),t<1/0&&t>=0&&(r=e.substring(0,t+1))}if(this.state.top&&(i=this.tokenizer.paragraph(r)))a=t[t.length-1],o&&"paragraph"===a.type?(a.raw+="\n"+i.raw,a.text+="\n"+i.text,this.inlineQueue.pop(),this.inlineQueue[this.inlineQueue.length-1].src=a.text):t.push(i),o=r.length!==e.length,e=e.substring(i.raw.length);else if(i=this.tokenizer.text(e))e=e.substring(i.raw.length),a=t[t.length-1],a&&"text"===a.type?(a.raw+="\n"+i.raw,a.text+="\n"+i.text,this.inlineQueue.pop(),this.inlineQueue[this.inlineQueue.length-1].src=a.text):t.push(i);else if(e){const t="Infinite loop on byte: "+e.charCodeAt(0);if(this.options.silent){console.error(t);break}throw new Error(t)}}return this.state.top=!0,t}inline(e,t){this.inlineQueue.push({src:e,tokens:t})}inlineTokens(e,t=[]){let i,a,r,o,s,n,l=e;if(this.tokens.links){const e=Object.keys(this.tokens.links);if(e.length>0)for(;null!=(o=this.tokenizer.rules.inline.reflinkSearch.exec(l));)e.includes(o[0].slice(o[0].lastIndexOf("[")+1,-1))&&(l=l.slice(0,o.index)+"["+xi("a",o[0].length-2)+"]"+l.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex))}for(;null!=(o=this.tokenizer.rules.inline.blockSkip.exec(l));)l=l.slice(0,o.index)+"["+xi("a",o[0].length-2)+"]"+l.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);for(;null!=(o=this.tokenizer.rules.inline.escapedEmSt.exec(l));)l=l.slice(0,o.index)+"++"+l.slice(this.tokenizer.rules.inline.escapedEmSt.lastIndex);for(;e;)if(s||(n=""),s=!1,!(this.options.extensions&&this.options.extensions.inline&&this.options.extensions.inline.some((a=>!!(i=a.call({lexer:this},e,t))&&(e=e.substring(i.raw.length),t.push(i),!0)))))if(i=this.tokenizer.escape(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.tag(e))e=e.substring(i.raw.length),a=t[t.length-1],a&&"text"===i.type&&"text"===a.type?(a.raw+=i.raw,a.text+=i.text):t.push(i);else if(i=this.tokenizer.link(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.reflink(e,this.tokens.links))e=e.substring(i.raw.length),a=t[t.length-1],a&&"text"===i.type&&"text"===a.type?(a.raw+=i.raw,a.text+=i.text):t.push(i);else if(i=this.tokenizer.emStrong(e,l,n))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.codespan(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.br(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.del(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.autolink(e,zi))e=e.substring(i.raw.length),t.push(i);else if(this.state.inLink||!(i=this.tokenizer.url(e,zi))){if(r=e,this.options.extensions&&this.options.extensions.startInline){let t=1/0;const i=e.slice(1);let a;this.options.extensions.startInline.forEach((function(e){a=e.call({lexer:this},i),"number"==typeof a&&a>=0&&(t=Math.min(t,a))})),t<1/0&&t>=0&&(r=e.substring(0,t+1))}if(i=this.tokenizer.inlineText(r,_i))e=e.substring(i.raw.length),"_"!==i.raw.slice(-1)&&(n=i.raw.slice(-1)),s=!0,a=t[t.length-1],a&&"text"===a.type?(a.raw+=i.raw,a.text+=i.text):t.push(i);else if(e){const t="Infinite loop on byte: "+e.charCodeAt(0);if(this.options.silent){console.error(t);break}throw new Error(t)}}else e=e.substring(i.raw.length),t.push(i);return t}}class Ii{constructor(e){this.options=e||Jt}code(e,t,i){const a=(t||"").match(/\S*/)[0];if(this.options.highlight){const t=this.options.highlight(e,a);null!=t&&t!==e&&(i=!0,e=t)}return e=e.replace(/\n$/,"")+"\n",a?'<pre><code class="'+this.options.langPrefix+ai(a,!0)+'">'+(i?e:ai(e,!0))+"</code></pre>\n":"<pre><code>"+(i?e:ai(e,!0))+"</code></pre>\n"}blockquote(e){return`<blockquote>\n${e}</blockquote>\n`}html(e){return e}heading(e,t,i,a){if(this.options.headerIds){return`<h${t} id="${this.options.headerPrefix+a.slug(i)}">${e}</h${t}>\n`}return`<h${t}>${e}</h${t}>\n`}hr(){return this.options.xhtml?"<hr/>\n":"<hr>\n"}list(e,t,i){const a=t?"ol":"ul";return"<"+a+(t&&1!==i?' start="'+i+'"':"")+">\n"+e+"</"+a+">\n"}listitem(e){return`<li>${e}</li>\n`}checkbox(e){return"<input "+(e?'checked="" ':"")+'disabled="" type="checkbox"'+(this.options.xhtml?" /":"")+"> "}paragraph(e){return`<p>${e}</p>\n`}table(e,t){return t&&(t=`<tbody>${t}</tbody>`),"<table>\n<thead>\n"+e+"</thead>\n"+t+"</table>\n"}tablerow(e){return`<tr>\n${e}</tr>\n`}tablecell(e,t){const i=t.header?"th":"td";return(t.align?`<${i} align="${t.align}">`:`<${i}>`)+e+`</${i}>\n`}strong(e){return`<strong>${e}</strong>`}em(e){return`<em>${e}</em>`}codespan(e){return`<code>${e}</code>`}br(){return this.options.xhtml?"<br/>":"<br>"}del(e){return`<del>${e}</del>`}link(e,t,i){if(null===(e=di(this.options.sanitize,this.options.baseUrl,e)))return i;let a='<a href="'+ai(e)+'"';return t&&(a+=' title="'+t+'"'),a+=">"+i+"</a>",a}image(e,t,i){if(null===(e=di(this.options.sanitize,this.options.baseUrl,e)))return i;let a=`<img src="${e}" alt="${i}"`;return t&&(a+=` title="${t}"`),a+=this.options.xhtml?"/>":">",a}text(e){return e}}class Ui{strong(e){return e}em(e){return e}codespan(e){return e}del(e){return e}html(e){return e}text(e){return e}link(e,t,i){return""+i}image(e,t,i){return""+i}br(){return""}}class Ai{constructor(){this.seen={}}serialize(e){return e.toLowerCase().trim().replace(/<[!\/a-z].*?>/gi,"").replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g,"").replace(/\s/g,"-")}getNextSafeSlug(e,t){let i=e,a=0;if(this.seen.hasOwnProperty(i)){a=this.seen[e];do{a++,i=e+"-"+a}while(this.seen.hasOwnProperty(i))}return t||(this.seen[e]=a,this.seen[i]=0),i}slug(e,t={}){const i=this.serialize(e);return this.getNextSafeSlug(i,t.dryrun)}}class Pi{constructor(e){this.options=e||Jt,this.options.renderer=this.options.renderer||new Ii,this.renderer=this.options.renderer,this.renderer.options=this.options,this.textRenderer=new Ui,this.slugger=new Ai}static parse(e,t){return new Pi(t).parse(e)}static parseInline(e,t){return new Pi(t).parseInline(e)}parse(e,t=!0){let i,a,r,o,s,n,l,c,d,h,p,u,f,b,m,g,v,w,x,k="";const y=e.length;for(i=0;i<y;i++)if(h=e[i],this.options.extensions&&this.options.extensions.renderers&&this.options.extensions.renderers[h.type]&&(x=this.options.extensions.renderers[h.type].call({parser:this},h),!1!==x||!["space","hr","heading","code","table","blockquote","list","html","paragraph","text"].includes(h.type)))k+=x||"";else switch(h.type){case"space":continue;case"hr":k+=this.renderer.hr();continue;case"heading":k+=this.renderer.heading(this.parseInline(h.tokens),h.depth,oi(this.parseInline(h.tokens,this.textRenderer)),this.slugger);continue;case"code":k+=this.renderer.code(h.text,h.lang,h.escaped);continue;case"table":for(c="",l="",o=h.header.length,a=0;a<o;a++)l+=this.renderer.tablecell(this.parseInline(h.header[a].tokens),{header:!0,align:h.align[a]});for(c+=this.renderer.tablerow(l),d="",o=h.rows.length,a=0;a<o;a++){for(n=h.rows[a],l="",s=n.length,r=0;r<s;r++)l+=this.renderer.tablecell(this.parseInline(n[r].tokens),{header:!1,align:h.align[r]});d+=this.renderer.tablerow(l)}k+=this.renderer.table(c,d);continue;case"blockquote":d=this.parse(h.tokens),k+=this.renderer.blockquote(d);continue;case"list":for(p=h.ordered,u=h.start,f=h.loose,o=h.items.length,d="",a=0;a<o;a++)m=h.items[a],g=m.checked,v=m.task,b="",m.task&&(w=this.renderer.checkbox(g),f?m.tokens.length>0&&"paragraph"===m.tokens[0].type?(m.tokens[0].text=w+" "+m.tokens[0].text,m.tokens[0].tokens&&m.tokens[0].tokens.length>0&&"text"===m.tokens[0].tokens[0].type&&(m.tokens[0].tokens[0].text=w+" "+m.tokens[0].tokens[0].text)):m.tokens.unshift({type:"text",text:w}):b+=w),b+=this.parse(m.tokens,f),d+=this.renderer.listitem(b,v,g);k+=this.renderer.list(d,p,u);continue;case"html":k+=this.renderer.html(h.text);continue;case"paragraph":k+=this.renderer.paragraph(this.parseInline(h.tokens));continue;case"text":for(d=h.tokens?this.parseInline(h.tokens):h.text;i+1<y&&"text"===e[i+1].type;)h=e[++i],d+="\n"+(h.tokens?this.parseInline(h.tokens):h.text);k+=t?this.renderer.paragraph(d):d;continue;default:{const e='Token with "'+h.type+'" type was not found.';if(this.options.silent)return void console.error(e);throw new Error(e)}}return k}parseInline(e,t){t=t||this.renderer;let i,a,r,o="";const s=e.length;for(i=0;i<s;i++)if(a=e[i],this.options.extensions&&this.options.extensions.renderers&&this.options.extensions.renderers[a.type]&&(r=this.options.extensions.renderers[a.type].call({parser:this},a),!1!==r||!["escape","html","link","image","strong","em","codespan","br","del","text"].includes(a.type)))o+=r||"";else switch(a.type){case"escape":case"text":o+=t.text(a.text);break;case"html":o+=t.html(a.text);break;case"link":o+=t.link(a.href,a.title,this.parseInline(a.tokens,t));break;case"image":o+=t.image(a.href,a.title,a.text);break;case"strong":o+=t.strong(this.parseInline(a.tokens,t));break;case"em":o+=t.em(this.parseInline(a.tokens,t));break;case"codespan":o+=t.codespan(a.text);break;case"br":o+=t.br();break;case"del":o+=t.del(this.parseInline(a.tokens,t));break;default:{const e='Token with "'+a.type+'" type was not found.';if(this.options.silent)return void console.error(e);throw new Error(e)}}return o}}function Li(e,t,i){if(null==e)throw new Error("marked(): input parameter is undefined or null");if("string"!=typeof e)throw new Error("marked(): input parameter is of type "+Object.prototype.toString.call(e)+", string expected");if("function"==typeof t&&(i=t,t=null),wi(t=mi({},Li.defaults,t||{})),i){const a=t.highlight;let r;try{r=Ci.lex(e,t)}catch(e){return i(e)}const o=function(e){let o;if(!e)try{t.walkTokens&&Li.walkTokens(r,t.walkTokens),o=Pi.parse(r,t)}catch(t){e=t}return t.highlight=a,e?i(e):i(null,o)};if(!a||a.length<3)return o();if(delete t.highlight,!r.length)return o();let s=0;return Li.walkTokens(r,(function(e){"code"===e.type&&(s++,setTimeout((()=>{a(e.text,e.lang,(function(t,i){if(t)return o(t);null!=i&&i!==e.text&&(e.text=i,e.escaped=!0),s--,0===s&&o()}))}),0))})),void(0===s&&o())}try{const i=Ci.lex(e,t);return t.walkTokens&&Li.walkTokens(i,t.walkTokens),Pi.parse(i,t)}catch(e){if(e.message+="\nPlease report this to https://github.com/markedjs/marked.",t.silent)return"<p>An error occurred:</p><pre>"+ai(e.message+"",!0)+"</pre>";throw e}}Li.options=Li.setOptions=function(e){var t;return mi(Li.defaults,e),t=Li.defaults,Jt=t,Li},Li.getDefaults=Zt,Li.defaults=Jt,Li.use=function(...e){const t=mi({},...e),i=Li.defaults.extensions||{renderers:{},childTokens:{}};let a;e.forEach((e=>{if(e.extensions&&(a=!0,e.extensions.forEach((e=>{if(!e.name)throw new Error("extension name required");if(e.renderer){const t=i.renderers?i.renderers[e.name]:null;i.renderers[e.name]=t?function(...i){let a=e.renderer.apply(this,i);return!1===a&&(a=t.apply(this,i)),a}:e.renderer}if(e.tokenizer){if(!e.level||"block"!==e.level&&"inline"!==e.level)throw new Error("extension level must be 'block' or 'inline'");i[e.level]?i[e.level].unshift(e.tokenizer):i[e.level]=[e.tokenizer],e.start&&("block"===e.level?i.startBlock?i.startBlock.push(e.start):i.startBlock=[e.start]:"inline"===e.level&&(i.startInline?i.startInline.push(e.start):i.startInline=[e.start]))}e.childTokens&&(i.childTokens[e.name]=e.childTokens)}))),e.renderer){const i=Li.defaults.renderer||new Ii;for(const t in e.renderer){const a=i[t];i[t]=(...r)=>{let o=e.renderer[t].apply(i,r);return!1===o&&(o=a.apply(i,r)),o}}t.renderer=i}if(e.tokenizer){const i=Li.defaults.tokenizer||new yi;for(const t in e.tokenizer){const a=i[t];i[t]=(...r)=>{let o=e.tokenizer[t].apply(i,r);return!1===o&&(o=a.apply(i,r)),o}}t.tokenizer=i}if(e.walkTokens){const i=Li.defaults.walkTokens;t.walkTokens=function(t){e.walkTokens.call(this,t),i&&i.call(this,t)}}a&&(t.extensions=i),Li.setOptions(t)}))},Li.walkTokens=function(e,t){for(const i of e)switch(t.call(Li,i),i.type){case"table":for(const e of i.header)Li.walkTokens(e.tokens,t);for(const e of i.rows)for(const i of e)Li.walkTokens(i.tokens,t);break;case"list":Li.walkTokens(i.items,t);break;default:Li.defaults.extensions&&Li.defaults.extensions.childTokens&&Li.defaults.extensions.childTokens[i.type]?Li.defaults.extensions.childTokens[i.type].forEach((function(e){Li.walkTokens(i[e],t)})):i.tokens&&Li.walkTokens(i.tokens,t)}},Li.parseInline=function(e,t){if(null==e)throw new Error("marked.parseInline(): input parameter is undefined or null");if("string"!=typeof e)throw new Error("marked.parseInline(): input parameter is of type "+Object.prototype.toString.call(e)+", string expected");wi(t=mi({},Li.defaults,t||{}));try{const i=Ci.lexInline(e,t);return t.walkTokens&&Li.walkTokens(i,t.walkTokens),Pi.parseInline(i,t)}catch(e){if(e.message+="\nPlease report this to https://github.com/markedjs/marked.",t.silent)return"<p>An error occurred:</p><pre>"+ai(e.message+"",!0)+"</pre>";throw e}},Li.Parser=Pi,Li.parser=Pi.parse,Li.Renderer=Ii,Li.TextRenderer=Ui,Li.Lexer=Ci,Li.lexer=Ci.lex,Li.Tokenizer=yi,Li.Slugger=Ai,Li.parse=Li;Li.options,Li.setOptions,Li.use,Li.walkTokens,Li.parseInline,Pi.parse,Ci.lex;class Di extends X{constructor(){super(),this.collInfo=null,this.curatedPageMap={},this.currList=0,this.active=!1,this.lastST=0,this.clickTime=0,this.isSidebar=!1,this.splitDirection=!1}static get properties(){return{collInfo:{type:Object},active:{type:Boolean},curatedPageMap:{type:Object},currList:{type:Number},isSidebar:{type:Boolean},splitDirection:{type:Boolean}}}recalcSplitter(e){this.splitDirection=this.isSidebar||e<769?"vertical":"horizontal"}firstUpdated(){this.recalcSplitter(document.documentElement.clientWidth),this.obs=new ResizeObserver((e=>{this.recalcSplitter(e[0].contentRect.width)})),this.obs.observe(this)}updated(e){e.has("collInfo")&&this.doLoadCurated(),(e.has("collInfo")||e.has("isSidebar"))&&this.recalcSplitter(document.documentElement.clientWidth),e.has("splitDirection")&&this.configureSplitter(),e.has("currList")&&this.active&&this.sendChangeEvent({currList:this.currList})}configureSplitter(){const e=this.renderRoot.querySelector(".sidebar"),t=this.renderRoot.querySelector(".main-content");if(this.splitter){try{this.splitter.destroy()}catch(e){}this.splitter=null}if(e&&t&&!this.splitter){const i={sizes:[20,80],gutterSize:4,direction:this.splitDirection};this.splitter=Gt([e,t],i)}}async doLoadCurated(){this.curatedPageMap={};const e={};for(const t of this.collInfo.pages)e[t.id]=t;for(const e of this.collInfo.curatedPages){this.curatedPageMap[e.list]||(this.curatedPageMap[e.list]=[]);const t=e,i=t.url,a=t.ts,r=t.title||t.url,o=e.desc;this.curatedPageMap[e.list].push({url:i,ts:a,title:r,desc:o})}this.scrollToList()}static get styles(){return be(o`
+      :host {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        min-width: 0px;
 
-    ${r?this.renderCollInfo():T``}
+        justify-content: flex-start;
+        align-items: center;
+      }
 
-    ${t?T`
-    <wr-coll-story .collInfo="${this.collInfo}"
-    .active="${t}"
-    currList="${this.tabData.currList||0}"
-    @coll-tab-nav="${this.onCollTabNav}" id="story"
-    .isSidebar="${e}"
-    class="${t?"":"is-hidden"} ${e?"sidebar":""}"
-    role="${e?"":"main"}"
-    >
-    </wr-coll-story>`:""}
+      :host(.sidebar) .columns {
+        display: flex !important;
+        flex-direction: column;
+      }
 
-    ${a?T`
-    <wr-coll-resources .collInfo="${this.collInfo}"
-    .active="${a}"
-    query="${this.tabData.query||""}"
-    urlSearchType="${this.tabData.urlSearchType||""}"
-    .currMime="${this.tabData.currMime||""}"
-    @coll-tab-nav="${this.onCollTabNav}" id="resources"
-    .isSidebar="${e}"
-    class="is-paddingless ${a?"":"is-hidden"} ${e?"sidebar":""}"
-    role="${e?"":"main"}"
-    >
-    </wr-coll-resources>`:""}
+      :host(.sidebar) .column.sidebar.is-one-fifth {
+        width: 100% !important;
+      }
 
-    ${i?T`
-    <wr-page-view
-    .collInfo="${this.collInfo}"
-    .active="${i}"
-    .editable="${this.editable}"
-    .isSidebar="${e}"
-    currList="${this.tabData.currList||0}"
-    query="${this.tabData.query||""}"
-    .url="${this.tabData.url||""}"
-    .ts="${this.tabData.ts||""}"
-    @coll-tab-nav="${this.onCollTabNav}" id="pages"
-    @coll-update="${this.onCollUpdate}"
-    class="${i?"":"is-hidden"} ${e?"sidebar":""}"
-    role="${e?"":"main"}"
-    >
-    </wr-page-view>`:""}
-    `}skipMenu(e){e.preventDefault(),this.renderRoot.querySelector("#skip-replay-target").focus()}onKeyDown(e){"Esc"!==e.key&&"Escape"!==e.key||(e.preventDefault(),e.currentTarget.value=this.url)}onMenu(e){e.stopPropagation(),this.menuActive=!this.menuActive,this.menuActive&&document.addEventListener("click",(()=>{this.menuActive=!1}),{once:!0})}onFullscreenToggle(e){e.preventDefault(),this.menuActive=!1,this.isFullscreen?document.exitFullscreen():this.requestFullscreen()}onGoBack(e){e.preventDefault(),this.menuActive=!1,window.history.back()}onGoForward(e){e.preventDefault(),this.menuActive=!1,window.history.forward()}onShowPages(e){e.preventDefault(),this.showSidebar||document.documentElement.clientWidth>=769?this.showSidebar=!this.showSidebar:(this.showSidebar=!1,this.updateTabData({url:"",ts:""}))}onFullPageView(e){e.preventDefault(),this.updateTabData({url:"",ts:""})}onHideSidebar(e){e.preventDefault(),this.showSidebar=!1}async onFavIcons(e){for(const t of e.detail.icons){const e=await fetch(t.href);if(200===e.status){const i=e.headers.get("Content-Type");if(i&&!i.startsWith("text/"))return void(this.favIconUrl=t.href)}}this.favIconUrl=""}onPurgeCache(e){e.preventDefault();const t=!e.detail||void 0===e.detail.reload||e.detail.reload;this.deleteFully(t)}async deleteFully(e=!1){const t=this.collInfo.apiPrefix+(e?"?reload=1":""),i=await fetch(t,{method:"DELETE"});200!==i.status&&console.warn("purge failed: "+i.status),e||this.embed?window.location.reload():window.location.search=""}onSubmit(e){e.preventDefault();const t=this.renderRoot.querySelector("input");return t.value?this.navigateTo(t.value):t.value=this.url,!1}onLostFocus(e){e.currentTarget.value||(e.currentTarget.value=this.url)}navigateTo(e){let t;if(e.startsWith("http://")||e.startsWith("https://")){if(t={url:e},e===this.tabData.url){const e=this.renderRoot.querySelector("wr-coll-replay");return void(e&&e.refresh())}}else t=e.startsWith(Vt)?this._stringToParams(e):{query:e,view:"pages"};this.updateTabData(t)}_stringToParams(e){const t=new URLSearchParams(e.slice(Vt.length)),i={url:"",ts:""};for(const e of["query","view","currList","currMime","urlSearchType"])t.has(e)&&(i[e]=t.get(e));return i}_paramsToString(e){const t=new URLSearchParams;for(const i of["query","view","currList","currMime","urlSearchType"])i in e&&t.set(i,e[i]);return t.toString()}onRefresh(e,t=!1){if(e&&e.preventDefault(),this.menuActive=!1,this.tabData.url){const e=this.renderRoot.querySelector("wr-coll-replay");e&&e.refresh()}else t||window.location.reload()}onAbout(){this.dispatchEvent(new CustomEvent("about-show"))}}function Zt(){return{baseUrl:null,breaks:!1,extensions:null,gfm:!0,headerIds:!0,headerPrefix:"",highlight:null,langPrefix:"language-",mangle:!0,pedantic:!1,renderer:null,sanitize:!1,sanitizer:null,silent:!1,smartLists:!1,smartypants:!1,tokenizer:null,walkTokens:null,xhtml:!1}}customElements.define("wr-coll",Kt);let Jt={baseUrl:null,breaks:!1,extensions:null,gfm:!0,headerIds:!0,headerPrefix:"",highlight:null,langPrefix:"language-",mangle:!0,pedantic:!1,renderer:null,sanitize:!1,sanitizer:null,silent:!1,smartLists:!1,smartypants:!1,tokenizer:null,walkTokens:null,xhtml:!1};const Yt=/[&<>"']/,Qt=/[&<>"']/g,Xt=/[<>"']|&(?!#?\w+;)/,ei=/[<>"']|&(?!#?\w+;)/g,ti={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"},ii=e=>ti[e];function ai(e,t){if(t){if(Yt.test(e))return e.replace(Qt,ii)}else if(Xt.test(e))return e.replace(ei,ii);return e}const ri=/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/gi;function oi(e){return e.replace(ri,((e,t)=>"colon"===(t=t.toLowerCase())?":":"#"===t.charAt(0)?"x"===t.charAt(1)?String.fromCharCode(parseInt(t.substring(2),16)):String.fromCharCode(+t.substring(1)):""))}const si=/(^|[^\[])\^/g;function ni(e,t){e="string"==typeof e?e:e.source,t=t||"";const i={replace:(t,a)=>(a=(a=a.source||a).replace(si,"$1"),e=e.replace(t,a),i),getRegex:()=>new RegExp(e,t)};return i}const li=/[^\w:]/g,ci=/^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;function di(e,t,i){if(e){let e;try{e=decodeURIComponent(oi(i)).replace(li,"").toLowerCase()}catch(e){return null}if(0===e.indexOf("javascript:")||0===e.indexOf("vbscript:")||0===e.indexOf("data:"))return null}t&&!ci.test(i)&&(i=function(e,t){hi[" "+e]||(pi.test(e)?hi[" "+e]=e+"/":hi[" "+e]=vi(e,"/",!0));const i=-1===(e=hi[" "+e]).indexOf(":");return"//"===t.substring(0,2)?i?t:e.replace(ui,"$1")+t:"/"===t.charAt(0)?i?t:e.replace(fi,"$1")+t:e+t}(t,i));try{i=encodeURI(i).replace(/%25/g,"%")}catch(e){return null}return i}const hi={},pi=/^[^:]+:\/*[^/]*$/,ui=/^([^:]+:)[\s\S]*$/,fi=/^([^:]+:\/*[^/]*)[\s\S]*$/;const bi={exec:function(){}};function mi(e){let t,i,a=1;for(;a<arguments.length;a++)for(i in t=arguments[a],t)Object.prototype.hasOwnProperty.call(t,i)&&(e[i]=t[i]);return e}function gi(e,t){const i=e.replace(/\|/g,((e,t,i)=>{let a=!1,r=t;for(;--r>=0&&"\\"===i[r];)a=!a;return a?"|":" |"})).split(/ \|/);let a=0;if(i[0].trim()||i.shift(),i.length>0&&!i[i.length-1].trim()&&i.pop(),i.length>t)i.splice(t);else for(;i.length<t;)i.push("");for(;a<i.length;a++)i[a]=i[a].trim().replace(/\\\|/g,"|");return i}function vi(e,t,i){const a=e.length;if(0===a)return"";let r=0;for(;r<a;){const o=e.charAt(a-r-1);if(o!==t||i){if(o===t||!i)break;r++}else r++}return e.slice(0,a-r)}function wi(e){e&&e.sanitize&&!e.silent&&console.warn("marked(): sanitize and sanitizer parameters are deprecated since version 0.7.0, should not be used and will be removed in the future. Read more here: https://marked.js.org/#/USING_ADVANCED.md#options")}function xi(e,t){if(t<1)return"";let i="";for(;t>1;)1&t&&(i+=e),t>>=1,e+=e;return i+e}function ki(e,t,i,a){const r=t.href,o=t.title?ai(t.title):null,s=e[1].replace(/\\([\[\]])/g,"$1");if("!"!==e[0].charAt(0)){a.state.inLink=!0;const e={type:"link",raw:i,href:r,title:o,text:s,tokens:a.inlineTokens(s,[])};return a.state.inLink=!1,e}return{type:"image",raw:i,href:r,title:o,text:ai(s)}}class yi{constructor(e){this.options=e||Jt}space(e){const t=this.rules.block.newline.exec(e);if(t&&t[0].length>0)return{type:"space",raw:t[0]}}code(e){const t=this.rules.block.code.exec(e);if(t){const e=t[0].replace(/^ {1,4}/gm,"");return{type:"code",raw:t[0],codeBlockStyle:"indented",text:this.options.pedantic?e:vi(e,"\n")}}}fences(e){const t=this.rules.block.fences.exec(e);if(t){const e=t[0],i=function(e,t){const i=e.match(/^(\s+)(?:```)/);if(null===i)return t;const a=i[1];return t.split("\n").map((e=>{const t=e.match(/^\s+/);if(null===t)return e;const[i]=t;return i.length>=a.length?e.slice(a.length):e})).join("\n")}(e,t[3]||"");return{type:"code",raw:e,lang:t[2]?t[2].trim():t[2],text:i}}}heading(e){const t=this.rules.block.heading.exec(e);if(t){let e=t[2].trim();if(/#$/.test(e)){const t=vi(e,"#");this.options.pedantic?e=t.trim():t&&!/ $/.test(t)||(e=t.trim())}const i={type:"heading",raw:t[0],depth:t[1].length,text:e,tokens:[]};return this.lexer.inline(i.text,i.tokens),i}}hr(e){const t=this.rules.block.hr.exec(e);if(t)return{type:"hr",raw:t[0]}}blockquote(e){const t=this.rules.block.blockquote.exec(e);if(t){const e=t[0].replace(/^ *>[ \t]?/gm,"");return{type:"blockquote",raw:t[0],tokens:this.lexer.blockTokens(e,[]),text:e}}}list(e){let t=this.rules.block.list.exec(e);if(t){let i,a,r,o,s,n,l,c,d,h,p,u,f=t[1].trim();const b=f.length>1,m={type:"list",raw:"",ordered:b,start:b?+f.slice(0,-1):"",loose:!1,items:[]};f=b?`\\d{1,9}\\${f.slice(-1)}`:`\\${f}`,this.options.pedantic&&(f=b?f:"[*+-]");const g=new RegExp(`^( {0,3}${f})((?:[\t ][^\\n]*)?(?:\\n|$))`);for(;e&&(u=!1,t=g.exec(e))&&!this.rules.block.hr.test(e);){if(i=t[0],e=e.substring(i.length),c=t[2].split("\n",1)[0],d=e.split("\n",1)[0],this.options.pedantic?(o=2,p=c.trimLeft()):(o=t[2].search(/[^ ]/),o=o>4?1:o,p=c.slice(o),o+=t[1].length),n=!1,!c&&/^ *$/.test(d)&&(i+=d+"\n",e=e.substring(d.length+1),u=!0),!u){const t=new RegExp(`^ {0,${Math.min(3,o-1)}}(?:[*+-]|\\d{1,9}[.)])((?: [^\\n]*)?(?:\\n|$))`),a=new RegExp(`^ {0,${Math.min(3,o-1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`),r=new RegExp(`^( {0,${Math.min(3,o-1)}})(\`\`\`|~~~)`);for(;e&&(h=e.split("\n",1)[0],c=h,this.options.pedantic&&(c=c.replace(/^ {1,4}(?=( {4})*[^ ])/g,"  ")),!r.test(c))&&!this.rules.block.heading.test(c)&&!t.test(c)&&!a.test(e);){if(c.search(/[^ ]/)>=o||!c.trim())p+="\n"+c.slice(o);else{if(n)break;p+="\n"+c}n||c.trim()||(n=!0),i+=h+"\n",e=e.substring(h.length+1)}}m.loose||(l?m.loose=!0:/\n *\n *$/.test(i)&&(l=!0)),this.options.gfm&&(a=/^\[[ xX]\] /.exec(p),a&&(r="[ ] "!==a[0],p=p.replace(/^\[[ xX]\] +/,""))),m.items.push({type:"list_item",raw:i,task:!!a,checked:r,loose:!1,text:p}),m.raw+=i}m.items[m.items.length-1].raw=i.trimRight(),m.items[m.items.length-1].text=p.trimRight(),m.raw=m.raw.trimRight();const v=m.items.length;for(s=0;s<v;s++){this.lexer.state.top=!1,m.items[s].tokens=this.lexer.blockTokens(m.items[s].text,[]);const e=m.items[s].tokens.filter((e=>"space"===e.type)),t=e.every((e=>{const t=e.raw.split("");let i=0;for(const e of t)if("\n"===e&&(i+=1),i>1)return!0;return!1}));!m.loose&&e.length&&t&&(m.loose=!0,m.items[s].loose=!0)}return m}}html(e){const t=this.rules.block.html.exec(e);if(t){const e={type:"html",raw:t[0],pre:!this.options.sanitizer&&("pre"===t[1]||"script"===t[1]||"style"===t[1]),text:t[0]};return this.options.sanitize&&(e.type="paragraph",e.text=this.options.sanitizer?this.options.sanitizer(t[0]):ai(t[0]),e.tokens=[],this.lexer.inline(e.text,e.tokens)),e}}def(e){const t=this.rules.block.def.exec(e);if(t){t[3]&&(t[3]=t[3].substring(1,t[3].length-1));return{type:"def",tag:t[1].toLowerCase().replace(/\s+/g," "),raw:t[0],href:t[2],title:t[3]}}}table(e){const t=this.rules.block.table.exec(e);if(t){const e={type:"table",header:gi(t[1]).map((e=>({text:e}))),align:t[2].replace(/^ *|\| *$/g,"").split(/ *\| */),rows:t[3]&&t[3].trim()?t[3].replace(/\n[ \t]*$/,"").split("\n"):[]};if(e.header.length===e.align.length){e.raw=t[0];let i,a,r,o,s=e.align.length;for(i=0;i<s;i++)/^ *-+: *$/.test(e.align[i])?e.align[i]="right":/^ *:-+: *$/.test(e.align[i])?e.align[i]="center":/^ *:-+ *$/.test(e.align[i])?e.align[i]="left":e.align[i]=null;for(s=e.rows.length,i=0;i<s;i++)e.rows[i]=gi(e.rows[i],e.header.length).map((e=>({text:e})));for(s=e.header.length,a=0;a<s;a++)e.header[a].tokens=[],this.lexer.inline(e.header[a].text,e.header[a].tokens);for(s=e.rows.length,a=0;a<s;a++)for(o=e.rows[a],r=0;r<o.length;r++)o[r].tokens=[],this.lexer.inline(o[r].text,o[r].tokens);return e}}}lheading(e){const t=this.rules.block.lheading.exec(e);if(t){const e={type:"heading",raw:t[0],depth:"="===t[2].charAt(0)?1:2,text:t[1],tokens:[]};return this.lexer.inline(e.text,e.tokens),e}}paragraph(e){const t=this.rules.block.paragraph.exec(e);if(t){const e={type:"paragraph",raw:t[0],text:"\n"===t[1].charAt(t[1].length-1)?t[1].slice(0,-1):t[1],tokens:[]};return this.lexer.inline(e.text,e.tokens),e}}text(e){const t=this.rules.block.text.exec(e);if(t){const e={type:"text",raw:t[0],text:t[0],tokens:[]};return this.lexer.inline(e.text,e.tokens),e}}escape(e){const t=this.rules.inline.escape.exec(e);if(t)return{type:"escape",raw:t[0],text:ai(t[1])}}tag(e){const t=this.rules.inline.tag.exec(e);if(t)return!this.lexer.state.inLink&&/^<a /i.test(t[0])?this.lexer.state.inLink=!0:this.lexer.state.inLink&&/^<\/a>/i.test(t[0])&&(this.lexer.state.inLink=!1),!this.lexer.state.inRawBlock&&/^<(pre|code|kbd|script)(\s|>)/i.test(t[0])?this.lexer.state.inRawBlock=!0:this.lexer.state.inRawBlock&&/^<\/(pre|code|kbd|script)(\s|>)/i.test(t[0])&&(this.lexer.state.inRawBlock=!1),{type:this.options.sanitize?"text":"html",raw:t[0],inLink:this.lexer.state.inLink,inRawBlock:this.lexer.state.inRawBlock,text:this.options.sanitize?this.options.sanitizer?this.options.sanitizer(t[0]):ai(t[0]):t[0]}}link(e){const t=this.rules.inline.link.exec(e);if(t){const e=t[2].trim();if(!this.options.pedantic&&/^</.test(e)){if(!/>$/.test(e))return;const t=vi(e.slice(0,-1),"\\");if((e.length-t.length)%2==0)return}else{const e=function(e,t){if(-1===e.indexOf(t[1]))return-1;const i=e.length;let a=0,r=0;for(;r<i;r++)if("\\"===e[r])r++;else if(e[r]===t[0])a++;else if(e[r]===t[1]&&(a--,a<0))return r;return-1}(t[2],"()");if(e>-1){const i=(0===t[0].indexOf("!")?5:4)+t[1].length+e;t[2]=t[2].substring(0,e),t[0]=t[0].substring(0,i).trim(),t[3]=""}}let i=t[2],a="";if(this.options.pedantic){const e=/^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(i);e&&(i=e[1],a=e[3])}else a=t[3]?t[3].slice(1,-1):"";return i=i.trim(),/^</.test(i)&&(i=this.options.pedantic&&!/>$/.test(e)?i.slice(1):i.slice(1,-1)),ki(t,{href:i?i.replace(this.rules.inline._escapes,"$1"):i,title:a?a.replace(this.rules.inline._escapes,"$1"):a},t[0],this.lexer)}}reflink(e,t){let i;if((i=this.rules.inline.reflink.exec(e))||(i=this.rules.inline.nolink.exec(e))){let e=(i[2]||i[1]).replace(/\s+/g," ");if(e=t[e.toLowerCase()],!e||!e.href){const e=i[0].charAt(0);return{type:"text",raw:e,text:e}}return ki(i,e,i[0],this.lexer)}}emStrong(e,t,i=""){let a=this.rules.inline.emStrong.lDelim.exec(e);if(!a)return;if(a[3]&&i.match(/[\p{L}\p{N}]/u))return;const r=a[1]||a[2]||"";if(!r||r&&(""===i||this.rules.inline.punctuation.exec(i))){const i=a[0].length-1;let r,o,s=i,n=0;const l="*"===a[0][0]?this.rules.inline.emStrong.rDelimAst:this.rules.inline.emStrong.rDelimUnd;for(l.lastIndex=0,t=t.slice(-1*e.length+i);null!=(a=l.exec(t));){if(r=a[1]||a[2]||a[3]||a[4]||a[5]||a[6],!r)continue;if(o=r.length,a[3]||a[4]){s+=o;continue}if((a[5]||a[6])&&i%3&&!((i+o)%3)){n+=o;continue}if(s-=o,s>0)continue;if(o=Math.min(o,o+s+n),Math.min(i,o)%2){const t=e.slice(1,i+a.index+o);return{type:"em",raw:e.slice(0,i+a.index+o+1),text:t,tokens:this.lexer.inlineTokens(t,[])}}const t=e.slice(2,i+a.index+o-1);return{type:"strong",raw:e.slice(0,i+a.index+o+1),text:t,tokens:this.lexer.inlineTokens(t,[])}}}}codespan(e){const t=this.rules.inline.code.exec(e);if(t){let e=t[2].replace(/\n/g," ");const i=/[^ ]/.test(e),a=/^ /.test(e)&&/ $/.test(e);return i&&a&&(e=e.substring(1,e.length-1)),e=ai(e,!0),{type:"codespan",raw:t[0],text:e}}}br(e){const t=this.rules.inline.br.exec(e);if(t)return{type:"br",raw:t[0]}}del(e){const t=this.rules.inline.del.exec(e);if(t)return{type:"del",raw:t[0],text:t[2],tokens:this.lexer.inlineTokens(t[2],[])}}autolink(e,t){const i=this.rules.inline.autolink.exec(e);if(i){let e,a;return"@"===i[2]?(e=ai(this.options.mangle?t(i[1]):i[1]),a="mailto:"+e):(e=ai(i[1]),a=e),{type:"link",raw:i[0],text:e,href:a,tokens:[{type:"text",raw:e,text:e}]}}}url(e,t){let i;if(i=this.rules.inline.url.exec(e)){let e,a;if("@"===i[2])e=ai(this.options.mangle?t(i[0]):i[0]),a="mailto:"+e;else{let t;do{t=i[0],i[0]=this.rules.inline._backpedal.exec(i[0])[0]}while(t!==i[0]);e=ai(i[0]),a="www."===i[1]?"http://"+e:e}return{type:"link",raw:i[0],text:e,href:a,tokens:[{type:"text",raw:e,text:e}]}}}inlineText(e,t){const i=this.rules.inline.text.exec(e);if(i){let e;return e=this.lexer.state.inRawBlock?this.options.sanitize?this.options.sanitizer?this.options.sanitizer(i[0]):ai(i[0]):i[0]:ai(this.options.smartypants?t(i[0]):i[0]),{type:"text",raw:i[0],text:e}}}}const $i={newline:/^(?: *(?:\n|$))+/,code:/^( {4}[^\n]+(?:\n(?: *(?:\n|$))*)?)+/,fences:/^ {0,3}(`{3,}(?=[^`\n]*\n)|~{3,})([^\n]*)\n(?:|([\s\S]*?)\n)(?: {0,3}\1[~`]* *(?=\n|$)|$)/,hr:/^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/,heading:/^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/,blockquote:/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,list:/^( {0,3}bull)([ \t][^\n]+?)?(?:\n|$)/,html:"^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$))",def:/^ {0,3}\[(label)\]: *(?:\n *)?<?([^\s>]+)>?(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/,table:bi,lheading:/^([^\n]+)\n {0,3}(=+|-+) *(?:\n+|$)/,_paragraph:/^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/,text:/^[^\n]+/,_label:/(?!\s*\])(?:\\.|[^\[\]\\])+/,_title:/(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/};$i.def=ni($i.def).replace("label",$i._label).replace("title",$i._title).getRegex(),$i.bullet=/(?:[*+-]|\d{1,9}[.)])/,$i.listItemStart=ni(/^( *)(bull) */).replace("bull",$i.bullet).getRegex(),$i.list=ni($i.list).replace(/bull/g,$i.bullet).replace("hr","\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))").replace("def","\\n+(?="+$i.def.source+")").getRegex(),$i._tag="address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul",$i._comment=/<!--(?!-?>)[\s\S]*?(?:-->|$)/,$i.html=ni($i.html,"i").replace("comment",$i._comment).replace("tag",$i._tag).replace("attribute",/ +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(),$i.paragraph=ni($i._paragraph).replace("hr",$i.hr).replace("heading"," {0,3}#{1,6} ").replace("|lheading","").replace("|table","").replace("blockquote"," {0,3}>").replace("fences"," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list"," {0,3}(?:[*+-]|1[.)]) ").replace("html","</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag",$i._tag).getRegex(),$i.blockquote=ni($i.blockquote).replace("paragraph",$i.paragraph).getRegex(),$i.normal=mi({},$i),$i.gfm=mi({},$i.normal,{table:"^ *([^\\n ].*\\|.*)\\n {0,3}(?:\\| *)?(:?-+:? *(?:\\| *:?-+:? *)*)(?:\\| *)?(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)"}),$i.gfm.table=ni($i.gfm.table).replace("hr",$i.hr).replace("heading"," {0,3}#{1,6} ").replace("blockquote"," {0,3}>").replace("code"," {4}[^\\n]").replace("fences"," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list"," {0,3}(?:[*+-]|1[.)]) ").replace("html","</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag",$i._tag).getRegex(),$i.gfm.paragraph=ni($i._paragraph).replace("hr",$i.hr).replace("heading"," {0,3}#{1,6} ").replace("|lheading","").replace("table",$i.gfm.table).replace("blockquote"," {0,3}>").replace("fences"," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list"," {0,3}(?:[*+-]|1[.)]) ").replace("html","</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag",$i._tag).getRegex(),$i.pedantic=mi({},$i.normal,{html:ni("^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:\"[^\"]*\"|'[^']*'|\\s[^'\"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))").replace("comment",$i._comment).replace(/tag/g,"(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),def:/^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,heading:/^(#{1,6})(.*)(?:\n+|$)/,fences:bi,paragraph:ni($i.normal._paragraph).replace("hr",$i.hr).replace("heading"," *#{1,6} *[^\n]").replace("lheading",$i.lheading).replace("blockquote"," {0,3}>").replace("|fences","").replace("|list","").replace("|html","").getRegex()});const _i={escape:/^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,autolink:/^<(scheme:[^\s\x00-\x1f<>]*|email)>/,url:bi,tag:"^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>",link:/^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/,reflink:/^!?\[(label)\]\[(ref)\]/,nolink:/^!?\[(ref)\](?:\[\])?/,reflinkSearch:"reflink|nolink(?!\\()",emStrong:{lDelim:/^(?:\*+(?:([punct_])|[^\s*]))|^_+(?:([punct*])|([^\s_]))/,rDelimAst:/^[^_*]*?\_\_[^_*]*?\*[^_*]*?(?=\_\_)|[^*]+(?=[^*])|[punct_](\*+)(?=[\s]|$)|[^punct*_\s](\*+)(?=[punct_\s]|$)|[punct_\s](\*+)(?=[^punct*_\s])|[\s](\*+)(?=[punct_])|[punct_](\*+)(?=[punct_])|[^punct*_\s](\*+)(?=[^punct*_\s])/,rDelimUnd:/^[^_*]*?\*\*[^_*]*?\_[^_*]*?(?=\*\*)|[^_]+(?=[^_])|[punct*](\_+)(?=[\s]|$)|[^punct*_\s](\_+)(?=[punct*\s]|$)|[punct*\s](\_+)(?=[^punct*_\s])|[\s](\_+)(?=[punct*])|[punct*](\_+)(?=[punct*])/},code:/^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,br:/^( {2,}|\\)\n(?!\s*$)/,del:bi,text:/^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/,punctuation:/^([\spunctuation])/};function Si(e){return e.replace(/---/g,"—").replace(/--/g,"–").replace(/(^|[-\u2014/(\[{"\s])'/g,"$1‘").replace(/'/g,"’").replace(/(^|[-\u2014/(\[{\u2018\s])"/g,"$1“").replace(/"/g,"”").replace(/\.{3}/g,"…")}function zi(e){let t,i,a="";const r=e.length;for(t=0;t<r;t++)i=e.charCodeAt(t),Math.random()>.5&&(i="x"+i.toString(16)),a+="&#"+i+";";return a}_i._punctuation="!\"#$%&'()+\\-.,/:;<=>?@\\[\\]`^{|}~",_i.punctuation=ni(_i.punctuation).replace(/punctuation/g,_i._punctuation).getRegex(),_i.blockSkip=/\[[^\]]*?\]\([^\)]*?\)|`[^`]*?`|<[^>]*?>/g,_i.escapedEmSt=/\\\*|\\_/g,_i._comment=ni($i._comment).replace("(?:--\x3e|$)","--\x3e").getRegex(),_i.emStrong.lDelim=ni(_i.emStrong.lDelim).replace(/punct/g,_i._punctuation).getRegex(),_i.emStrong.rDelimAst=ni(_i.emStrong.rDelimAst,"g").replace(/punct/g,_i._punctuation).getRegex(),_i.emStrong.rDelimUnd=ni(_i.emStrong.rDelimUnd,"g").replace(/punct/g,_i._punctuation).getRegex(),_i._escapes=/\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g,_i._scheme=/[a-zA-Z][a-zA-Z0-9+.-]{1,31}/,_i._email=/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/,_i.autolink=ni(_i.autolink).replace("scheme",_i._scheme).replace("email",_i._email).getRegex(),_i._attribute=/\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/,_i.tag=ni(_i.tag).replace("comment",_i._comment).replace("attribute",_i._attribute).getRegex(),_i._label=/(?:\[(?:\\.|[^\[\]\\])*\]|\\.|`[^`]*`|[^\[\]\\`])*?/,_i._href=/<(?:\\.|[^\n<>\\])+>|[^\s\x00-\x1f]*/,_i._title=/"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/,_i.link=ni(_i.link).replace("label",_i._label).replace("href",_i._href).replace("title",_i._title).getRegex(),_i.reflink=ni(_i.reflink).replace("label",_i._label).replace("ref",$i._label).getRegex(),_i.nolink=ni(_i.nolink).replace("ref",$i._label).getRegex(),_i.reflinkSearch=ni(_i.reflinkSearch,"g").replace("reflink",_i.reflink).replace("nolink",_i.nolink).getRegex(),_i.normal=mi({},_i),_i.pedantic=mi({},_i.normal,{strong:{start:/^__|\*\*/,middle:/^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,endAst:/\*\*(?!\*)/g,endUnd:/__(?!_)/g},em:{start:/^_|\*/,middle:/^()\*(?=\S)([\s\S]*?\S)\*(?!\*)|^_(?=\S)([\s\S]*?\S)_(?!_)/,endAst:/\*(?!\*)/g,endUnd:/_(?!_)/g},link:ni(/^!?\[(label)\]\((.*?)\)/).replace("label",_i._label).getRegex(),reflink:ni(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label",_i._label).getRegex()}),_i.gfm=mi({},_i.normal,{escape:ni(_i.escape).replace("])","~|])").getRegex(),_extended_email:/[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,url:/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,_backpedal:/(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,del:/^(~~?)(?=[^\s~])([\s\S]*?[^\s~])\1(?=[^~]|$)/,text:/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/}),_i.gfm.url=ni(_i.gfm.url,"i").replace("email",_i.gfm._extended_email).getRegex(),_i.breaks=mi({},_i.gfm,{br:ni(_i.br).replace("{2,}","*").getRegex(),text:ni(_i.gfm.text).replace("\\b_","\\b_| {2,}\\n").replace(/\{2,\}/g,"*").getRegex()});class Ci{constructor(e){this.tokens=[],this.tokens.links=Object.create(null),this.options=e||Jt,this.options.tokenizer=this.options.tokenizer||new yi,this.tokenizer=this.options.tokenizer,this.tokenizer.options=this.options,this.tokenizer.lexer=this,this.inlineQueue=[],this.state={inLink:!1,inRawBlock:!1,top:!0};const t={block:$i.normal,inline:_i.normal};this.options.pedantic?(t.block=$i.pedantic,t.inline=_i.pedantic):this.options.gfm&&(t.block=$i.gfm,this.options.breaks?t.inline=_i.breaks:t.inline=_i.gfm),this.tokenizer.rules=t}static get rules(){return{block:$i,inline:_i}}static lex(e,t){return new Ci(t).lex(e)}static lexInline(e,t){return new Ci(t).inlineTokens(e)}lex(e){let t;for(e=e.replace(/\r\n|\r/g,"\n"),this.blockTokens(e,this.tokens);t=this.inlineQueue.shift();)this.inlineTokens(t.src,t.tokens);return this.tokens}blockTokens(e,t=[]){let i,a,r,o;for(e=this.options.pedantic?e.replace(/\t/g,"    ").replace(/^ +$/gm,""):e.replace(/^( *)(\t+)/gm,((e,t,i)=>t+"    ".repeat(i.length)));e;)if(!(this.options.extensions&&this.options.extensions.block&&this.options.extensions.block.some((a=>!!(i=a.call({lexer:this},e,t))&&(e=e.substring(i.raw.length),t.push(i),!0)))))if(i=this.tokenizer.space(e))e=e.substring(i.raw.length),1===i.raw.length&&t.length>0?t[t.length-1].raw+="\n":t.push(i);else if(i=this.tokenizer.code(e))e=e.substring(i.raw.length),a=t[t.length-1],!a||"paragraph"!==a.type&&"text"!==a.type?t.push(i):(a.raw+="\n"+i.raw,a.text+="\n"+i.text,this.inlineQueue[this.inlineQueue.length-1].src=a.text);else if(i=this.tokenizer.fences(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.heading(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.hr(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.blockquote(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.list(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.html(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.def(e))e=e.substring(i.raw.length),a=t[t.length-1],!a||"paragraph"!==a.type&&"text"!==a.type?this.tokens.links[i.tag]||(this.tokens.links[i.tag]={href:i.href,title:i.title}):(a.raw+="\n"+i.raw,a.text+="\n"+i.raw,this.inlineQueue[this.inlineQueue.length-1].src=a.text);else if(i=this.tokenizer.table(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.lheading(e))e=e.substring(i.raw.length),t.push(i);else{if(r=e,this.options.extensions&&this.options.extensions.startBlock){let t=1/0;const i=e.slice(1);let a;this.options.extensions.startBlock.forEach((function(e){a=e.call({lexer:this},i),"number"==typeof a&&a>=0&&(t=Math.min(t,a))})),t<1/0&&t>=0&&(r=e.substring(0,t+1))}if(this.state.top&&(i=this.tokenizer.paragraph(r)))a=t[t.length-1],o&&"paragraph"===a.type?(a.raw+="\n"+i.raw,a.text+="\n"+i.text,this.inlineQueue.pop(),this.inlineQueue[this.inlineQueue.length-1].src=a.text):t.push(i),o=r.length!==e.length,e=e.substring(i.raw.length);else if(i=this.tokenizer.text(e))e=e.substring(i.raw.length),a=t[t.length-1],a&&"text"===a.type?(a.raw+="\n"+i.raw,a.text+="\n"+i.text,this.inlineQueue.pop(),this.inlineQueue[this.inlineQueue.length-1].src=a.text):t.push(i);else if(e){const t="Infinite loop on byte: "+e.charCodeAt(0);if(this.options.silent){console.error(t);break}throw new Error(t)}}return this.state.top=!0,t}inline(e,t){this.inlineQueue.push({src:e,tokens:t})}inlineTokens(e,t=[]){let i,a,r,o,s,n,l=e;if(this.tokens.links){const e=Object.keys(this.tokens.links);if(e.length>0)for(;null!=(o=this.tokenizer.rules.inline.reflinkSearch.exec(l));)e.includes(o[0].slice(o[0].lastIndexOf("[")+1,-1))&&(l=l.slice(0,o.index)+"["+xi("a",o[0].length-2)+"]"+l.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex))}for(;null!=(o=this.tokenizer.rules.inline.blockSkip.exec(l));)l=l.slice(0,o.index)+"["+xi("a",o[0].length-2)+"]"+l.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);for(;null!=(o=this.tokenizer.rules.inline.escapedEmSt.exec(l));)l=l.slice(0,o.index)+"++"+l.slice(this.tokenizer.rules.inline.escapedEmSt.lastIndex);for(;e;)if(s||(n=""),s=!1,!(this.options.extensions&&this.options.extensions.inline&&this.options.extensions.inline.some((a=>!!(i=a.call({lexer:this},e,t))&&(e=e.substring(i.raw.length),t.push(i),!0)))))if(i=this.tokenizer.escape(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.tag(e))e=e.substring(i.raw.length),a=t[t.length-1],a&&"text"===i.type&&"text"===a.type?(a.raw+=i.raw,a.text+=i.text):t.push(i);else if(i=this.tokenizer.link(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.reflink(e,this.tokens.links))e=e.substring(i.raw.length),a=t[t.length-1],a&&"text"===i.type&&"text"===a.type?(a.raw+=i.raw,a.text+=i.text):t.push(i);else if(i=this.tokenizer.emStrong(e,l,n))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.codespan(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.br(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.del(e))e=e.substring(i.raw.length),t.push(i);else if(i=this.tokenizer.autolink(e,zi))e=e.substring(i.raw.length),t.push(i);else if(this.state.inLink||!(i=this.tokenizer.url(e,zi))){if(r=e,this.options.extensions&&this.options.extensions.startInline){let t=1/0;const i=e.slice(1);let a;this.options.extensions.startInline.forEach((function(e){a=e.call({lexer:this},i),"number"==typeof a&&a>=0&&(t=Math.min(t,a))})),t<1/0&&t>=0&&(r=e.substring(0,t+1))}if(i=this.tokenizer.inlineText(r,Si))e=e.substring(i.raw.length),"_"!==i.raw.slice(-1)&&(n=i.raw.slice(-1)),s=!0,a=t[t.length-1],a&&"text"===a.type?(a.raw+=i.raw,a.text+=i.text):t.push(i);else if(e){const t="Infinite loop on byte: "+e.charCodeAt(0);if(this.options.silent){console.error(t);break}throw new Error(t)}}else e=e.substring(i.raw.length),t.push(i);return t}}class Ii{constructor(e){this.options=e||Jt}code(e,t,i){const a=(t||"").match(/\S*/)[0];if(this.options.highlight){const t=this.options.highlight(e,a);null!=t&&t!==e&&(i=!0,e=t)}return e=e.replace(/\n$/,"")+"\n",a?'<pre><code class="'+this.options.langPrefix+ai(a,!0)+'">'+(i?e:ai(e,!0))+"</code></pre>\n":"<pre><code>"+(i?e:ai(e,!0))+"</code></pre>\n"}blockquote(e){return`<blockquote>\n${e}</blockquote>\n`}html(e){return e}heading(e,t,i,a){if(this.options.headerIds){return`<h${t} id="${this.options.headerPrefix+a.slug(i)}">${e}</h${t}>\n`}return`<h${t}>${e}</h${t}>\n`}hr(){return this.options.xhtml?"<hr/>\n":"<hr>\n"}list(e,t,i){const a=t?"ol":"ul";return"<"+a+(t&&1!==i?' start="'+i+'"':"")+">\n"+e+"</"+a+">\n"}listitem(e){return`<li>${e}</li>\n`}checkbox(e){return"<input "+(e?'checked="" ':"")+'disabled="" type="checkbox"'+(this.options.xhtml?" /":"")+"> "}paragraph(e){return`<p>${e}</p>\n`}table(e,t){return t&&(t=`<tbody>${t}</tbody>`),"<table>\n<thead>\n"+e+"</thead>\n"+t+"</table>\n"}tablerow(e){return`<tr>\n${e}</tr>\n`}tablecell(e,t){const i=t.header?"th":"td";return(t.align?`<${i} align="${t.align}">`:`<${i}>`)+e+`</${i}>\n`}strong(e){return`<strong>${e}</strong>`}em(e){return`<em>${e}</em>`}codespan(e){return`<code>${e}</code>`}br(){return this.options.xhtml?"<br/>":"<br>"}del(e){return`<del>${e}</del>`}link(e,t,i){if(null===(e=di(this.options.sanitize,this.options.baseUrl,e)))return i;let a='<a href="'+ai(e)+'"';return t&&(a+=' title="'+t+'"'),a+=">"+i+"</a>",a}image(e,t,i){if(null===(e=di(this.options.sanitize,this.options.baseUrl,e)))return i;let a=`<img src="${e}" alt="${i}"`;return t&&(a+=` title="${t}"`),a+=this.options.xhtml?"/>":">",a}text(e){return e}}class Ai{strong(e){return e}em(e){return e}codespan(e){return e}del(e){return e}html(e){return e}text(e){return e}link(e,t,i){return""+i}image(e,t,i){return""+i}br(){return""}}class Ui{constructor(){this.seen={}}serialize(e){return e.toLowerCase().trim().replace(/<[!\/a-z].*?>/gi,"").replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g,"").replace(/\s/g,"-")}getNextSafeSlug(e,t){let i=e,a=0;if(this.seen.hasOwnProperty(i)){a=this.seen[e];do{a++,i=e+"-"+a}while(this.seen.hasOwnProperty(i))}return t||(this.seen[e]=a,this.seen[i]=0),i}slug(e,t={}){const i=this.serialize(e);return this.getNextSafeSlug(i,t.dryrun)}}class Pi{constructor(e){this.options=e||Jt,this.options.renderer=this.options.renderer||new Ii,this.renderer=this.options.renderer,this.renderer.options=this.options,this.textRenderer=new Ai,this.slugger=new Ui}static parse(e,t){return new Pi(t).parse(e)}static parseInline(e,t){return new Pi(t).parseInline(e)}parse(e,t=!0){let i,a,r,o,s,n,l,c,d,h,p,u,f,b,m,g,v,w,x,k="";const y=e.length;for(i=0;i<y;i++)if(h=e[i],this.options.extensions&&this.options.extensions.renderers&&this.options.extensions.renderers[h.type]&&(x=this.options.extensions.renderers[h.type].call({parser:this},h),!1!==x||!["space","hr","heading","code","table","blockquote","list","html","paragraph","text"].includes(h.type)))k+=x||"";else switch(h.type){case"space":continue;case"hr":k+=this.renderer.hr();continue;case"heading":k+=this.renderer.heading(this.parseInline(h.tokens),h.depth,oi(this.parseInline(h.tokens,this.textRenderer)),this.slugger);continue;case"code":k+=this.renderer.code(h.text,h.lang,h.escaped);continue;case"table":for(c="",l="",o=h.header.length,a=0;a<o;a++)l+=this.renderer.tablecell(this.parseInline(h.header[a].tokens),{header:!0,align:h.align[a]});for(c+=this.renderer.tablerow(l),d="",o=h.rows.length,a=0;a<o;a++){for(n=h.rows[a],l="",s=n.length,r=0;r<s;r++)l+=this.renderer.tablecell(this.parseInline(n[r].tokens),{header:!1,align:h.align[r]});d+=this.renderer.tablerow(l)}k+=this.renderer.table(c,d);continue;case"blockquote":d=this.parse(h.tokens),k+=this.renderer.blockquote(d);continue;case"list":for(p=h.ordered,u=h.start,f=h.loose,o=h.items.length,d="",a=0;a<o;a++)m=h.items[a],g=m.checked,v=m.task,b="",m.task&&(w=this.renderer.checkbox(g),f?m.tokens.length>0&&"paragraph"===m.tokens[0].type?(m.tokens[0].text=w+" "+m.tokens[0].text,m.tokens[0].tokens&&m.tokens[0].tokens.length>0&&"text"===m.tokens[0].tokens[0].type&&(m.tokens[0].tokens[0].text=w+" "+m.tokens[0].tokens[0].text)):m.tokens.unshift({type:"text",text:w}):b+=w),b+=this.parse(m.tokens,f),d+=this.renderer.listitem(b,v,g);k+=this.renderer.list(d,p,u);continue;case"html":k+=this.renderer.html(h.text);continue;case"paragraph":k+=this.renderer.paragraph(this.parseInline(h.tokens));continue;case"text":for(d=h.tokens?this.parseInline(h.tokens):h.text;i+1<y&&"text"===e[i+1].type;)h=e[++i],d+="\n"+(h.tokens?this.parseInline(h.tokens):h.text);k+=t?this.renderer.paragraph(d):d;continue;default:{const e='Token with "'+h.type+'" type was not found.';if(this.options.silent)return void console.error(e);throw new Error(e)}}return k}parseInline(e,t){t=t||this.renderer;let i,a,r,o="";const s=e.length;for(i=0;i<s;i++)if(a=e[i],this.options.extensions&&this.options.extensions.renderers&&this.options.extensions.renderers[a.type]&&(r=this.options.extensions.renderers[a.type].call({parser:this},a),!1!==r||!["escape","html","link","image","strong","em","codespan","br","del","text"].includes(a.type)))o+=r||"";else switch(a.type){case"escape":case"text":o+=t.text(a.text);break;case"html":o+=t.html(a.text);break;case"link":o+=t.link(a.href,a.title,this.parseInline(a.tokens,t));break;case"image":o+=t.image(a.href,a.title,a.text);break;case"strong":o+=t.strong(this.parseInline(a.tokens,t));break;case"em":o+=t.em(this.parseInline(a.tokens,t));break;case"codespan":o+=t.codespan(a.text);break;case"br":o+=t.br();break;case"del":o+=t.del(this.parseInline(a.tokens,t));break;default:{const e='Token with "'+a.type+'" type was not found.';if(this.options.silent)return void console.error(e);throw new Error(e)}}return o}}function Li(e,t,i){if(null==e)throw new Error("marked(): input parameter is undefined or null");if("string"!=typeof e)throw new Error("marked(): input parameter is of type "+Object.prototype.toString.call(e)+", string expected");if("function"==typeof t&&(i=t,t=null),wi(t=mi({},Li.defaults,t||{})),i){const a=t.highlight;let r;try{r=Ci.lex(e,t)}catch(e){return i(e)}const o=function(e){let o;if(!e)try{t.walkTokens&&Li.walkTokens(r,t.walkTokens),o=Pi.parse(r,t)}catch(t){e=t}return t.highlight=a,e?i(e):i(null,o)};if(!a||a.length<3)return o();if(delete t.highlight,!r.length)return o();let s=0;return Li.walkTokens(r,(function(e){"code"===e.type&&(s++,setTimeout((()=>{a(e.text,e.lang,(function(t,i){if(t)return o(t);null!=i&&i!==e.text&&(e.text=i,e.escaped=!0),s--,0===s&&o()}))}),0))})),void(0===s&&o())}try{const i=Ci.lex(e,t);return t.walkTokens&&Li.walkTokens(i,t.walkTokens),Pi.parse(i,t)}catch(e){if(e.message+="\nPlease report this to https://github.com/markedjs/marked.",t.silent)return"<p>An error occurred:</p><pre>"+ai(e.message+"",!0)+"</pre>";throw e}}Li.options=Li.setOptions=function(e){var t;return mi(Li.defaults,e),t=Li.defaults,Jt=t,Li},Li.getDefaults=Zt,Li.defaults=Jt,Li.use=function(...e){const t=mi({},...e),i=Li.defaults.extensions||{renderers:{},childTokens:{}};let a;e.forEach((e=>{if(e.extensions&&(a=!0,e.extensions.forEach((e=>{if(!e.name)throw new Error("extension name required");if(e.renderer){const t=i.renderers?i.renderers[e.name]:null;i.renderers[e.name]=t?function(...i){let a=e.renderer.apply(this,i);return!1===a&&(a=t.apply(this,i)),a}:e.renderer}if(e.tokenizer){if(!e.level||"block"!==e.level&&"inline"!==e.level)throw new Error("extension level must be 'block' or 'inline'");i[e.level]?i[e.level].unshift(e.tokenizer):i[e.level]=[e.tokenizer],e.start&&("block"===e.level?i.startBlock?i.startBlock.push(e.start):i.startBlock=[e.start]:"inline"===e.level&&(i.startInline?i.startInline.push(e.start):i.startInline=[e.start]))}e.childTokens&&(i.childTokens[e.name]=e.childTokens)}))),e.renderer){const i=Li.defaults.renderer||new Ii;for(const t in e.renderer){const a=i[t];i[t]=(...r)=>{let o=e.renderer[t].apply(i,r);return!1===o&&(o=a.apply(i,r)),o}}t.renderer=i}if(e.tokenizer){const i=Li.defaults.tokenizer||new yi;for(const t in e.tokenizer){const a=i[t];i[t]=(...r)=>{let o=e.tokenizer[t].apply(i,r);return!1===o&&(o=a.apply(i,r)),o}}t.tokenizer=i}if(e.walkTokens){const i=Li.defaults.walkTokens;t.walkTokens=function(t){e.walkTokens.call(this,t),i&&i.call(this,t)}}a&&(t.extensions=i),Li.setOptions(t)}))},Li.walkTokens=function(e,t){for(const i of e)switch(t.call(Li,i),i.type){case"table":for(const e of i.header)Li.walkTokens(e.tokens,t);for(const e of i.rows)for(const i of e)Li.walkTokens(i.tokens,t);break;case"list":Li.walkTokens(i.items,t);break;default:Li.defaults.extensions&&Li.defaults.extensions.childTokens&&Li.defaults.extensions.childTokens[i.type]?Li.defaults.extensions.childTokens[i.type].forEach((function(e){Li.walkTokens(i[e],t)})):i.tokens&&Li.walkTokens(i.tokens,t)}},Li.parseInline=function(e,t){if(null==e)throw new Error("marked.parseInline(): input parameter is undefined or null");if("string"!=typeof e)throw new Error("marked.parseInline(): input parameter is of type "+Object.prototype.toString.call(e)+", string expected");wi(t=mi({},Li.defaults,t||{}));try{const i=Ci.lexInline(e,t);return t.walkTokens&&Li.walkTokens(i,t.walkTokens),Pi.parseInline(i,t)}catch(e){if(e.message+="\nPlease report this to https://github.com/markedjs/marked.",t.silent)return"<p>An error occurred:</p><pre>"+ai(e.message+"",!0)+"</pre>";throw e}},Li.Parser=Pi,Li.parser=Pi.parse,Li.Renderer=Ii,Li.TextRenderer=Ai,Li.Lexer=Ci,Li.lexer=Ci.lex,Li.Tokenizer=yi,Li.Slugger=Ui,Li.parse=Li;Li.options,Li.setOptions,Li.use,Li.walkTokens,Li.parseInline,Pi.parse,Ci.lex;class Di extends X{constructor(){super(),this.collInfo=null,this.curatedPageMap={},this.currList=0,this.active=!1,this.lastST=0,this.clickTime=0,this.isSidebar=!1,this.splitDirection=!1}static get properties(){return{collInfo:{type:Object},active:{type:Boolean},curatedPageMap:{type:Object},currList:{type:Number},isSidebar:{type:Boolean},splitDirection:{type:Boolean}}}recalcSplitter(e){this.splitDirection=this.isSidebar||e<769?"vertical":"horizontal"}firstUpdated(){this.recalcSplitter(document.documentElement.clientWidth),this.obs=new ResizeObserver((e=>{this.recalcSplitter(e[0].contentRect.width)})),this.obs.observe(this)}updated(e){e.has("collInfo")&&this.doLoadCurated(),(e.has("collInfo")||e.has("isSidebar"))&&this.recalcSplitter(document.documentElement.clientWidth),e.has("splitDirection")&&this.configureSplitter(),e.has("currList")&&this.active&&this.sendChangeEvent({currList:this.currList})}configureSplitter(){const e=this.renderRoot.querySelector(".sidebar"),t=this.renderRoot.querySelector(".main-content");if(this.splitter){try{this.splitter.destroy()}catch(e){}this.splitter=null}if(e&&t&&!this.splitter){const i={sizes:[20,80],gutterSize:4,direction:this.splitDirection};this.splitter=Gt([e,t],i)}}async doLoadCurated(){this.curatedPageMap={};const e={};for(const t of this.collInfo.pages)e[t.id]=t;for(const e of this.collInfo.curatedPages){this.curatedPageMap[e.list]||(this.curatedPageMap[e.list]=[]);const t=e,i=t.url,a=t.ts,r=t.title||t.url,o=e.desc;this.curatedPageMap[e.list].push({url:i,ts:a,title:r,desc:o})}this.scrollToList()}static get styles(){return be(o`
-    :host {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      min-width: 0px;
+      ${Di.sidebarStyles(r(":host(.sidebar)"))}
 
-      justify-content: flex-start;
-      align-items: center;
-    }
+      .desc p {
+        margin-bottom: 1em;
+      }
 
-    :host(.sidebar) .columns {
-      display: flex !important;
-      flex-direction: column;
-    }
-
-    :host(.sidebar) .column.sidebar.is-one-fifth {
-      width: 100% !important;
-    }
-
-    ${Di.sidebarStyles(r(":host(.sidebar)"))}
-
-    .desc p {
-      margin-bottom: 1.0em;
-    }
-
-    .columns {
-      width: 100%;
-      height: 100%;
-      justify-self: stretch;
-      margin: 1.0em 0 0 0 !important;
-      min-height: 0;
-    }
-
-    .column.main-content {
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 0px;
-      margin-left: 0.75em;
-    }
-
-    .column.main-content.main-scroll {
-      padding-right: 0.75em;
-      word-break: break-all;
-    }
-
-    ul.menu-list a.is-active {
-      background-color: #55be6f;
-    }
-    ol {
-      margin-left: 30px;
-    }
-
-    @media screen and (min-width: 769px) {
       .columns {
+        width: 100%;
+        height: 100%;
+        justify-self: stretch;
+        margin: 1em 0 0 0 !important;
+        min-height: 0;
+      }
+
+      .column.main-content {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 0px;
+        margin-left: 0.75em;
+      }
+
+      .column.main-content.main-scroll {
+        padding-right: 0.75em;
+        word-break: break-all;
+      }
+
+      ul.menu-list a.is-active {
+        background-color: #55be6f;
+      }
+      ol {
+        margin-left: 30px;
+      }
+
+      @media screen and (min-width: 769px) {
+        .columns {
+          margin-top: 0.75em;
+        }
+
+        .column.sidebar {
+          max-height: 100%;
+          overflow-y: auto;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        ${Di.sidebarStyles()}
+      }
+
+      .gutter.gutter-vertical:hover {
+        cursor: row-resize;
+      }
+
+      .gutter.gutter-horizontal:hover {
+        cursor: col-resize;
+      }
+    `)}static sidebarStyles(e=o``){return o`
+      ${e} .columns {
+        position: relative;
+      }
+
+      ${e} .column.sidebar {
+        overflow-y: auto;
         margin-top: 0.75em;
       }
 
-      .column.sidebar {
-        max-height: 100%;
+      ${e} .column.main-content {
+        position: relative;
         overflow-y: auto;
+
+        border-top: 1px solid black;
+
+        height: 100%;
       }
-    }
 
-    @media screen and (max-width: 768px) {
-      ${Di.sidebarStyles()}
-    }
-
-    .gutter.gutter-vertical:hover {
-      cursor: row-resize;
-    }
-
-    .gutter.gutter-horizontal:hover {
-      cursor: col-resize;
-    }
-
-    `)}static sidebarStyles(e=o``){return o`
-    ${e} .columns {
-      position: relative;
-    }
-
-    ${e} .column.sidebar {
-      overflow-y: auto;
-      margin-top: 0.75em;
-    }
-
-    ${e} .column.main-content {
-      position: relative;
-      overflow-y: auto;
-
-      border-top: 1px solid black;
-
-      height: 100%;
-    }
-
-    ${e} .menu {
-      font-size: 0.80rem;
-    }`}render(){const e=this.currList;return T`
-    <div class="is-sr-only" role="heading" aria-level="${this.isSidebar?"2":"1"}">
-      Story for ${this.collInfo.title}
-    </div>
-    <div class="columns">
-      <div class="column sidebar is-one-fifth">
-        <aside class="menu">
-          <ul class="menu-list">
-            <li>
-              <a href="#list-0" data-list="0" class="${0===e?"is-active":""} menu-label is-size-4"
-                @click=${this.onClickScroll}>${this.collInfo.title}</a>
-              <ul class="menu-list">${this.collInfo.lists.map((t=>T`
-                <li>
-                  <a @click=${this.onClickScroll} href="#list-${t.id}"
-                  data-list="${t.id}" 
-                  class="${e===t.id?"is-active":""}">${t.title}</a>
-                </li>`))}
-              </ul>
-            </li>
-          </ul>
-        </aside>
+      ${e} .menu {
+        font-size: 0.8rem;
+      }
+    `}render(){const e=this.currList;return T`
+      <div
+        class="is-sr-only"
+        role="heading"
+        aria-level="${this.isSidebar?"2":"1"}"
+      >
+        Story for ${this.collInfo.title}
       </div>
-      <div @scroll=${this.onScroll} class="column main-content main-scroll">
-        <section id="list-0" class="desc">
-          <h2 class="has-text-centered title is-3">${this.collInfo.title}</h2>
-          ${this.collInfo.desc?se(Li(this.collInfo.desc)):""}
-        </section>
-        ${this.renderLists()}
+      <div class="columns">
+        <div class="column sidebar is-one-fifth">
+          <aside class="menu">
+            <ul class="menu-list">
+              <li>
+                <a
+                  href="#list-0"
+                  data-list="0"
+                  class="${0===e?"is-active":""} menu-label is-size-4"
+                  @click=${this.onClickScroll}
+                  >${this.collInfo.title}</a
+                >
+                <ul class="menu-list">
+                  ${this.collInfo.lists.map((t=>T` <li>
+                        <a
+                          @click=${this.onClickScroll}
+                          href="#list-${t.id}"
+                          data-list="${t.id}"
+                          class="${e===t.id?"is-active":""}"
+                          >${t.title}</a
+                        >
+                      </li>`))}
+                </ul>
+              </li>
+            </ul>
+          </aside>
+        </div>
+        <div @scroll=${this.onScroll} class="column main-content main-scroll">
+          <section id="list-0" class="desc">
+            <h2 class="has-text-centered title is-3">${this.collInfo.title}</h2>
+            ${this.collInfo.desc?se(Li(this.collInfo.desc)):""}
+          </section>
+          ${this.renderLists()}
+        </div>
       </div>
-    </div>
-  `}renderLists(){return T`
-    ${this.collInfo.lists.map((e=>T`
-    <article id="list-${e.id}">
+    `}renderLists(){return T` ${this.collInfo.lists.map((e=>T`
+        <article id="list-${e.id}">
+          <div class="content">
+            <hr />
+            <h3>${e.title}</h3>
+            <p>${e.desc}</p>
+            <ol>
+              ${this.curatedPageMap[e.id]?this.curatedPageMap[e.id].map((e=>this.renderCPage(e))):T``}
+            </ol>
+          </div>
+        </article>
+      `))}`}renderCPage(e){const t=new Date(e.ts),i=Ze(t.toISOString());return T` <li>
       <div class="content">
-        <hr/>
-        <h3>${e.title}</h3>
-        <p>${e.desc}</p>
-        <ol>
-          ${this.curatedPageMap[e.id]?this.curatedPageMap[e.id].map((e=>this.renderCPage(e))):T``}
-        </ol>
-      </div>
-    </article>
-    `))}`}renderCPage(e){const t=new Date(e.ts),i=Ze(t.toISOString());return T`
-    <li>
-      <div class="content">
-        <a @click="${this.onReplay}" data-url="${e.url}" data-ts="${i}"
-          href="${Je("story",e.url,i)}">
+        <a
+          @click="${this.onReplay}"
+          data-url="${e.url}"
+          data-ts="${i}"
+          href="${Je("story",e.url,i)}"
+        >
           <p class="is-size-6 has-text-weight-bold has-text-link">${e.title}</p>
           <p class="has-text-dark">${e.url}</p>
         </a>
         <p>${t.toLocaleString()}</p>
         <p>${e.desc}</p>
       </div>
-      <hr/>
-    </li>`}onReplay(e){e.preventDefault();const t={url:e.currentTarget.getAttribute("data-url"),ts:e.currentTarget.getAttribute("data-ts")};return this.sendChangeEvent(t),!1}sendChangeEvent(e){this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:e}}))}onClickScroll(e){return e.preventDefault(),this.currList=Number(e.currentTarget.getAttribute("data-list")),this.scrollToList(),!1}scrollToList(){this.currList>this.collInfo.lists.length&&(this.currList=0);const e={behavior:"smooth",block:"nearest",inline:"nearest"};this.clickTime=(new Date).getTime();const t=this.renderRoot.getElementById("list-"+this.currList);t&&t.scrollIntoView(e)}onScroll(e){const t=e.currentTarget,i=this.renderRoot.getElementById("list-"+this.currList);if(!i)return;let a=i;const r=t.offsetTop,o=t.scrollTop;if(o>this.lastST)for(;a.nextElementSibling&&a.nextElementSibling.getBoundingClientRect().top<r;)a=a.nextElementSibling;else for(;a.previousElementSibling&&a.previousElementSibling.getBoundingClientRect().bottom>=r;)a=a.previousElementSibling;if(this.lastST=o,a&&a!=i&&a.id.startsWith("list-")&&(this.currList=Number(a.id.slice(5))),(new Date).getTime()-this.clickTime<1e3)return;const s=this.renderRoot.querySelector(`a[data-list="${this.currList}"]`);if(s){const e={behavior:"smooth",block:"nearest",inline:"nearest"};s.scrollIntoView(e)}}}customElements.define("wr-coll-story",Di);var Ti=__webpack_require__(4199),Ei=__webpack_require__.n(Ti);customElements.define("wr-gdrive",class extends X{constructor(){super(),this.state="trypublic",this.sourceUrl="",this.scriptLoaded=!1,this.error=!1}static get properties(){return{state:{type:String},sourceUrl:{type:String},error:{type:Boolean},reauth:{type:Boolean}}}updated(e){e.has("sourceUrl")&&(this.error=!1,this.state="trypublic",this.tryPublicAccess().then((e=>{e||(this.state="tryauto",this.requestUpdate())})))}async tryPublicAccess(){try{const e=this.sourceUrl,t=e.slice("googledrive://".length),i=`${__HELPER_PROXY__}/g/${t}`;let a=null;try{a=await fetch(i)}catch(e){return!1}const r=await a.json();if(!r.url||!r.name||!r.size)return!1;if(r.size>15e6)return!1;const o=r.url;try{const e=new AbortController,t=e.signal;if(a=await fetch(o,{signal:t}),e.abort(),200!=a.status)return!1}catch(e){return!1}const s=r.name,n={publicUrl:o},l=Number(r.size);return this.dispatchEvent(new CustomEvent("load-ready",{detail:{name:s,extra:n,size:l,sourceUrl:e}})),!0}catch(e){return!1}}onLoad(){this.scriptLoaded=!0,this.gauth("none",(e=>{e.error?"implicitonly"!==this.state&&(this.state="trymanual"):this.authed(e)}))}onClickAuth(){this.gauth("select_account",(e=>{e.error||this.authed(e)}))}async authed(e){const t=this.sourceUrl,i=`https://www.googleapis.com/drive/v3/files/${t.slice("googledrive://".length)}`,a={Authorization:`Bearer ${e.access_token}`},r=await fetch(i+"?fields=name,size&supportsAllDrives=true",{headers:a});if(404===r.status||403==r.status)return"implicitonly"!==this.state&&(this.state="trymanual"),void(this.error=!0);this.error=!1;const o=await r.json(),s=o.name,n=Number(o.size);this.dispatchEvent(new CustomEvent("load-ready",{detail:{sourceUrl:t,headers:a,size:n,name:s}}))}static get styles(){return be(o``)}render(){return T`
-    ${this.script()}
-    ${"trymanual"!==this.state?T`
-    <p>Connecting to Google Drive...</p>
-    `:T`
-    ${this.error?T`
-    <div class="error has-text-danger">
-      <p>${this.reauth?"Some resources are loaded on demand from Google Drive, which requires reauthorization.":"Could not access this file with the current Google Drive account."}</p>
-      <p>If you have multiple Google Drive accounts, be sure to select the correct one.</p>
-    </div>
-    <br/>
-    `:""}
-    <button class="button is-warning is-rounded" @click="${this.onClickAuth}">
-    <span class="icon"><fa-icon .svg="${Ei()}"></fa-icon></span>
-    <span>Authorize Google Drive</span>
-    </button>
-    `}`}script(){if("trypublic"===this.state||this.scriptLoaded)return T``;const e=document.createElement("script");return e.onload=()=>this.onLoad(),e.src="https://apis.google.com/js/platform.js",e}gauth(e,t){self.gapi.load("auth2",(()=>{self.gapi.auth2.authorize({client_id:__GDRIVE_CLIENT_ID__,scope:"https://www.googleapis.com/auth/drive.file",response_type:"token",prompt:e},t)}))}});class Ri extends X{constructor(){super(),this.progress=0,this.total=0,this.percent=0,this.coll="",this.state="waiting",this.loadInfo=null,this.currentSize=0,this.totalSize=0,this.tryFileHandle=!!window.showOpenFilePicker,this.fileHandle=null,this.errorAllowRetry=!1,this.pingInterval=0,this.noWebWorker=!1}static get properties(){return{sourceUrl:{type:String},loadInfo:{type:Object},state:{type:String},progress:{type:Number},percent:{type:Number},currentSize:{type:Number},totalSize:{type:Number},error:{type:String},total:{type:Number},status:{type:String},coll:{type:String},embed:{type:String},tryFileHandle:{type:Boolean},errorAllowRetry:{type:Boolean},extraMsg:{type:String},swName:{type:String}}}firstUpdated(){this.initMessages()}initMessages(){if(this.noWebWorker=this.loadInfo&&this.loadInfo.noWebWorker,this.noWebWorker){if(!navigator.serviceWorker)return;this.worker=navigator.serviceWorker}else this.worker=new Worker(this.swName);this.worker.addEventListener("message",(e=>{switch(e.data.msg_type){case"collProgress":if(e.data.name===this.coll){if(this.percent=e.data.percent,e.data.error)if(this.error=e.data.error,this.state="errored",this.errorAllowRetry=!0,this.fileHandle=e.data.fileHandle,"missing_local_file"===this.error)this.tryFileHandle=!1;else if("permission_needed"===this.error&&e.data.fileHandle){this.state="permission_needed";break}e.data.currentSize&&e.data.totalSize&&(this.currentSize=e.data.currentSize,this.totalSize=e.data.totalSize),this.extraMsg=e.data.extraMsg}break;case"collAdded":e.data.name===this.coll&&(this.total||(this.total=100),this.progress=this.total,this.percent=100,this.dispatchEvent(new CustomEvent("coll-loaded",{detail:e.data})),this.noWebWorker?this.pingInterval&&clearInterval(this.pingInterval):this.worker.terminate(),this.worker=null)}}))}async doLoad(){let e,t,i=this.sourceUrl,a=null;if(this.percent=this.currentSize=this.totalSize=0,this.loadInfo&&this.loadInfo.swError)return this.state="errored",this.error=this.loadInfo.swError,void(this.errorAllowRetry=!1);try{const{scheme:e,host:t,path:r}=function(e){let t=e.indexOf("://"),i=0,a="",r="",o="";return t>=0?(a=e.slice(0,t),t+=3):(t++,e.startsWith("//")&&(t+=2)),i=e.indexOf("/",t),i>0?(r=e.slice(t,i),o=e.slice(i)):(r=e.slice(t),o=""),{scheme:a,host:r,path:o}}(i);switch(e){case"googledrive":this.state="googledrive",a=await this.googledriveInit();break;case"s3":a={sourceUrl:i,loadUrl:`https://${t}.s3.amazonaws.com${r}`,name:this.sourceUrl};break;case"file":if(!this.loadInfo&&!this.tryFileHandle)return this.state="errored",this.error="File URLs can not be entered directly or shared.\nYou can select a file to upload from the main page by clicking the 'Choose File...' button.",void(this.errorAllowRetry=!1);a=this.loadInfo;break;case"proxy":i="proxy:"+i.slice("proxy://".length)}}catch(e){console.log(e)}a||(a={sourceUrl:i}),this.state="started",this.loadInfo&&(a.newFullImport=this.loadInfo.newFullImport,a.loadEager=this.loadInfo.loadEager,a.noCache=this.loadInfo.noCache,this.loadInfo.extraConfig&&(t=this.loadInfo.extraConfig),i.startsWith("proxy:")&&t&&t.recording&&(e="recordingproxy"));const r={msg_type:"addColl",name:this.coll,extraConfig:t,type:e,skipExisting:!0,file:a};navigator.serviceWorker.controller||await new Promise((e=>{navigator.serviceWorker.addEventListener("controllerchange",(()=>e()))})),this.worker&&(this.noWebWorker?(navigator.serviceWorker.controller.postMessage(r),this.pingInterval=setInterval((()=>{navigator.serviceWorker.controller.postMessage({msg_type:"ping"})}),15e3)):this.worker.postMessage(r))}googledriveInit(){return this._gdWait=new Promise((e=>this._gdResolve=e)),this._gdWait}async onLoadReady(e){this._gdResolve&&this._gdResolve(e.detail)}onCancel(){if(!this.worker)return;const e={msg_type:"cancelLoad",name:this.coll};this.noWebWorker?navigator.serviceWorker&&navigator.serviceWorker.controller&&(navigator.serviceWorker.controller.postMessage(e),this.pingInterval&&clearInterval(this.pingInterval)):this.worker.postMessage(e)}updated(e){(this.sourceUrl&&e.has("sourceUrl")||e.has("tryFileHandle"))&&this.doLoad()}static get styles(){return be(o`
+      <hr />
+    </li>`}onReplay(e){e.preventDefault();const t={url:e.currentTarget.getAttribute("data-url"),ts:e.currentTarget.getAttribute("data-ts")};return this.sendChangeEvent(t),!1}sendChangeEvent(e){this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:e}}))}onClickScroll(e){return e.preventDefault(),this.currList=Number(e.currentTarget.getAttribute("data-list")),this.scrollToList(),!1}scrollToList(){this.currList>this.collInfo.lists.length&&(this.currList=0);const e={behavior:"smooth",block:"nearest",inline:"nearest"};this.clickTime=(new Date).getTime();const t=this.renderRoot.getElementById("list-"+this.currList);t&&t.scrollIntoView(e)}onScroll(e){const t=e.currentTarget,i=this.renderRoot.getElementById("list-"+this.currList);if(!i)return;let a=i;const r=t.offsetTop,o=t.scrollTop;if(o>this.lastST)for(;a.nextElementSibling&&a.nextElementSibling.getBoundingClientRect().top<r;)a=a.nextElementSibling;else for(;a.previousElementSibling&&a.previousElementSibling.getBoundingClientRect().bottom>=r;)a=a.previousElementSibling;if(this.lastST=o,a&&a!=i&&a.id.startsWith("list-")&&(this.currList=Number(a.id.slice(5))),(new Date).getTime()-this.clickTime<1e3)return;const s=this.renderRoot.querySelector(`a[data-list="${this.currList}"]`);if(s){const e={behavior:"smooth",block:"nearest",inline:"nearest"};s.scrollIntoView(e)}}}customElements.define("wr-coll-story",Di);var Ti=__webpack_require__(4199),Ei=__webpack_require__.n(Ti);customElements.define("wr-gdrive",class extends X{constructor(){super(),this.state="trypublic",this.sourceUrl="",this.scriptLoaded=!1,this.error=!1}static get properties(){return{state:{type:String},sourceUrl:{type:String},error:{type:Boolean},reauth:{type:Boolean}}}updated(e){e.has("sourceUrl")&&(this.error=!1,this.state="trypublic",this.tryPublicAccess().then((e=>{e||(this.state="tryauto",this.requestUpdate())})))}async tryPublicAccess(){try{const e=this.sourceUrl,t=e.slice("googledrive://".length),i=`${__HELPER_PROXY__}/g/${t}`;let a=null;try{a=await fetch(i)}catch(e){return!1}const r=await a.json();if(!r.url||!r.name||!r.size)return!1;if(r.size>15e6)return!1;const o=r.url;try{const e=new AbortController,t=e.signal;if(a=await fetch(o,{signal:t}),e.abort(),200!=a.status)return!1}catch(e){return!1}const s=r.name,n={publicUrl:o},l=Number(r.size);return this.dispatchEvent(new CustomEvent("load-ready",{detail:{name:s,extra:n,size:l,sourceUrl:e}})),!0}catch(e){return!1}}onLoad(){this.scriptLoaded=!0,this.gauth("none",(e=>{e.error?"implicitonly"!==this.state&&(this.state="trymanual"):this.authed(e)}))}onClickAuth(){this.gauth("select_account",(e=>{e.error||this.authed(e)}))}async authed(e){const t=this.sourceUrl,i=`https://www.googleapis.com/drive/v3/files/${t.slice("googledrive://".length)}`,a={Authorization:`Bearer ${e.access_token}`},r=await fetch(i+"?fields=name,size&supportsAllDrives=true",{headers:a});if(404===r.status||403==r.status)return"implicitonly"!==this.state&&(this.state="trymanual"),void(this.error=!0);this.error=!1;const o=await r.json(),s=o.name,n=Number(o.size);this.dispatchEvent(new CustomEvent("load-ready",{detail:{sourceUrl:t,headers:a,size:n,name:s}}))}static get styles(){return be(o``)}render(){return T` ${this.script()}
+    ${"trymanual"!==this.state?T` <p>Connecting to Google Drive...</p> `:T`
+          ${this.error?T`
+                <div class="error has-text-danger">
+                  <p>
+                    ${this.reauth?"Some resources are loaded on demand from Google Drive, which requires reauthorization.":"Could not access this file with the current Google Drive account."}
+                  </p>
+                  <p>
+                    If you have multiple Google Drive accounts, be sure to
+                    select the correct one.
+                  </p>
+                </div>
+                <br />
+              `:""}
+          <button
+            class="button is-warning is-rounded"
+            @click="${this.onClickAuth}"
+          >
+            <span class="icon"
+              ><fa-icon .svg="${Ei()}"></fa-icon
+            ></span>
+            <span>Authorize Google Drive</span>
+          </button>
+        `}`}script(){if("trypublic"===this.state||this.scriptLoaded)return T``;const e=document.createElement("script");return e.onload=()=>this.onLoad(),e.src="https://apis.google.com/js/platform.js",e}gauth(e,t){self.gapi.load("auth2",(()=>{self.gapi.auth2.authorize({client_id:__GDRIVE_CLIENT_ID__,scope:"https://www.googleapis.com/auth/drive.file",response_type:"token",prompt:e},t)}))}});class Ri extends X{constructor(){super(),this.progress=0,this.total=0,this.percent=0,this.coll="",this.state="waiting",this.loadInfo=null,this.currentSize=0,this.totalSize=0,this.tryFileHandle=!!window.showOpenFilePicker,this.fileHandle=null,this.errorAllowRetry=!1,this.pingInterval=0,this.noWebWorker=!1}static get properties(){return{sourceUrl:{type:String},loadInfo:{type:Object},state:{type:String},progress:{type:Number},percent:{type:Number},currentSize:{type:Number},totalSize:{type:Number},error:{type:String},total:{type:Number},status:{type:String},coll:{type:String},embed:{type:String},tryFileHandle:{type:Boolean},errorAllowRetry:{type:Boolean},extraMsg:{type:String},swName:{type:String}}}firstUpdated(){this.initMessages()}initMessages(){if(this.noWebWorker=this.loadInfo&&this.loadInfo.noWebWorker,this.noWebWorker){if(!navigator.serviceWorker)return;this.worker=navigator.serviceWorker}else this.worker=new Worker(this.swName);this.worker.addEventListener("message",(e=>{switch(e.data.msg_type){case"collProgress":if(e.data.name===this.coll){if(this.percent=e.data.percent,e.data.error)if(this.error=e.data.error,this.state="errored",this.errorAllowRetry=!0,this.fileHandle=e.data.fileHandle,"missing_local_file"===this.error)this.tryFileHandle=!1;else if("permission_needed"===this.error&&e.data.fileHandle){this.state="permission_needed";break}e.data.currentSize&&e.data.totalSize&&(this.currentSize=e.data.currentSize,this.totalSize=e.data.totalSize),this.extraMsg=e.data.extraMsg}break;case"collAdded":e.data.name===this.coll&&(this.total||(this.total=100),this.progress=this.total,this.percent=100,this.dispatchEvent(new CustomEvent("coll-loaded",{detail:e.data})),this.noWebWorker?this.pingInterval&&clearInterval(this.pingInterval):this.worker.terminate(),this.worker=null)}}))}async doLoad(){let e,t,i=this.sourceUrl,a=null;if(this.percent=this.currentSize=this.totalSize=0,this.loadInfo&&this.loadInfo.swError)return this.state="errored",this.error=this.loadInfo.swError,void(this.errorAllowRetry=!1);try{const{scheme:e,host:t,path:r}=function(e){let t=e.indexOf("://"),i=0,a="",r="",o="";return t>=0?(a=e.slice(0,t),t+=3):(t++,e.startsWith("//")&&(t+=2)),i=e.indexOf("/",t),i>0?(r=e.slice(t,i),o=e.slice(i)):(r=e.slice(t),o=""),{scheme:a,host:r,path:o}}(i);switch(e){case"googledrive":this.state="googledrive",a=await this.googledriveInit();break;case"s3":a={sourceUrl:i,loadUrl:`https://${t}.s3.amazonaws.com${r}`,name:this.sourceUrl};break;case"file":if(!this.loadInfo&&!this.tryFileHandle)return this.state="errored",this.error="File URLs can not be entered directly or shared.\nYou can select a file to upload from the main page by clicking the 'Choose File...' button.",void(this.errorAllowRetry=!1);a=this.loadInfo;break;case"proxy":i="proxy:"+i.slice("proxy://".length)}}catch(e){console.log(e)}a||(a={sourceUrl:i}),this.state="started",this.loadInfo&&(a.newFullImport=this.loadInfo.newFullImport,a.loadEager=this.loadInfo.loadEager,a.noCache=this.loadInfo.noCache,this.loadInfo.extraConfig&&(t=this.loadInfo.extraConfig),i.startsWith("proxy:")&&t&&t.recording&&(e="recordingproxy"));const r={msg_type:"addColl",name:this.coll,extraConfig:t,type:e,skipExisting:!0,file:a};navigator.serviceWorker.controller||await new Promise((e=>{navigator.serviceWorker.addEventListener("controllerchange",(()=>e()))})),this.worker&&(this.noWebWorker?(navigator.serviceWorker.controller.postMessage(r),this.pingInterval=setInterval((()=>{navigator.serviceWorker.controller.postMessage({msg_type:"ping"})}),15e3)):this.worker.postMessage(r))}googledriveInit(){return this._gdWait=new Promise((e=>this._gdResolve=e)),this._gdWait}async onLoadReady(e){this._gdResolve&&this._gdResolve(e.detail)}onCancel(){if(!this.worker)return;const e={msg_type:"cancelLoad",name:this.coll};this.noWebWorker?navigator.serviceWorker&&navigator.serviceWorker.controller&&(navigator.serviceWorker.controller.postMessage(e),this.pingInterval&&clearInterval(this.pingInterval)):this.worker.postMessage(e)}updated(e){(this.sourceUrl&&e.has("sourceUrl")||e.has("tryFileHandle"))&&this.doLoad()}static get styles(){return be(o`
       :host {
         height: 100%;
         display: flex;
@@ -1654,48 +2186,61 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         font-size: 0.8rem;
       }
     `)}render(){return T`
-    <section class="container">
-      <div class="has-text-centered is-flex">
-        <wr-anim-logo class="logo" size="96px"/>
-      </div>
-      ${this.embed?"":T`
-      <div class="level">
-        <p class="level-item">Loading&nbsp;<b>${this.sourceUrl}</b>...</p>
-      </div>`}
-      <div class="level">
-        <div class="level-item has-text-centered">
-        ${this.renderContent()}
+      <section class="container">
+        <div class="has-text-centered is-flex">
+          <wr-anim-logo class="logo" size="96px"></wr-anim-logo>
         </div>
-      </div>
-    </section>
-    `}renderContent(){switch(this.state){case"googledrive":return T`<wr-gdrive .sourceUrl=${this.sourceUrl} @load-ready=${this.onLoadReady}/>`;case"started":return T`
-          <div class="progress-div">
-            <progress id="progress" class="progress is-primary is-large" 
-            value="${this.percent}" max="100"></progress>
-            <label class="progress-label" for="progress">${this.percent}%</label>
-            ${this.currentSize&&this.totalSize?T`
-              <div class="loaded-prog">Loaded <b>${Re()(this.currentSize)}</b> of <b>${Re()(this.totalSize)}</b>
-              ${this.extraMsg&&T`
-              <p class="extra-msg">(${this.extraMsg})</p>
-              `}
+        ${this.embed?"":T` <div class="level">
+              <p class="level-item">Loading&nbsp;<b>${this.sourceUrl}</b>...</p>
+            </div>`}
+        <div class="level">
+          <div class="level-item has-text-centered">
+            ${this.renderContent()}
+          </div>
+        </div>
+      </section>
+    `}renderContent(){switch(this.state){case"googledrive":return T`<wr-gdrive
+          .sourceUrl=${this.sourceUrl}
+          @load-ready=${this.onLoadReady}
+        ></wr-gdrive>`;case"started":return T` <div class="progress-div">
+          <progress
+            id="progress"
+            class="progress is-primary is-large"
+            value="${this.percent}"
+            max="100"
+          ></progress>
+          <label class="progress-label" for="progress">${this.percent}%</label>
+          ${this.currentSize&&this.totalSize?T` <div class="loaded-prog">
+                Loaded <b>${Re()(this.currentSize)}</b> of
+                <b>${Re()(this.totalSize)}</b>
+                ${this.extraMsg&&T` <p class="extra-msg">(${this.extraMsg})</p> `}
               </div>`:T``}
-
-            ${this.embed?"":T`
-            <button @click="${this.onCancel}" class="button is-danger">Cancel</button>`}
-          </div>`;case"errored":return T`
-          <div class="has-text-left">
+          ${this.embed?"":T` <button @click="${this.onCancel}" class="button is-danger">
+                Cancel
+              </button>`}
+        </div>`;case"errored":return T` <div class="has-text-left">
           <div class="error has-text-danger">${this.error}</div>
           <div>
-          ${this.errorAllowRetry?T`
-          <a class="button is-warning" @click=${()=>window.parent.location.reload()}>Try Again</a>`:""}
-          ${this.embed?T``:T`
-          <a href="/" class="button is-warning">Back</a>`}
-          </div>`;case"permission_needed":return T`
-        <div class="has-text-left">
-          <div class="">Permission is needed to reload the archive file. (Click <i>Cancel</i> to cancel loading this archive.)</div>
-          <button @click="${this.onAskPermission}" class="button is-primary">Show Permission</button>
+            ${this.errorAllowRetry?T` <a
+                  class="button is-warning"
+                  @click=${()=>window.parent.location.reload()}
+                  >Try Again</a
+                >`:""}
+            ${this.embed?T``:T` <a href="/" class="button is-warning">Back</a>`}
+          </div>
+        </div>`;case"permission_needed":return T` <div class="has-text-left">
+          <div class="">
+            Permission is needed to reload the archive file. (Click
+            <i>Cancel</i> to cancel loading this archive.)
+          </div>
+          <button @click="${this.onAskPermission}" class="button is-primary">
+            Show Permission
+          </button>
           <a href="/" class="button is-danger">Cancel</a>
-        </div>`;default:return T`<progress class="progress is-primary is-large" style="max-width: 400px"/>`}}async onAskPermission(){"granted"===await this.fileHandle.requestPermission({mode:"read"})&&this.doLoad()}}customElements.define("wr-loader",Ri);var Oi=__webpack_require__(9746),Mi=__webpack_require__.n(Oi),qi=__webpack_require__(6304),Ni=__webpack_require__(6442),Fi=__webpack_require__.n(Ni),Bi=__webpack_require__(9638),ji=__webpack_require__.n(Bi);class Hi extends X{constructor(){super(),this.filteredPages=[],this.sortedPages=[],this.query="",this.flex=null,this.textPages=null,this.newQuery=null,this.loading=!1,this.updatingSearch=!1,this.showAllPages=!1,this.hasExtraPages=!1,this.currList=0,this.active=!1,this.editable=!1,this.changeNeeded=!1,this.selectedPages=new Set,this.menuActive=!1,this.sortKey="date",this.sortDesc=!0,this.isSidebar=!1,this.url="",this.ts="",this.editing=!1,this.toDeletePages=null,this.toDeletePage=null}static get sortKeys(){return[{key:"",name:"Best Match"},{key:"title",name:"Title"},{key:"date",name:"Date"}]}static get properties(){return{active:{type:Boolean},collInfo:{type:Object},currList:{type:Number},filteredPages:{type:Array},sortedPages:{type:Array},showAllPages:{type:Boolean},query:{type:String},defaultKey:{type:String},loading:{type:Boolean},updatingSearch:{type:Boolean},editable:{type:Boolean},selectedPages:{type:Set},allSelected:{type:Boolean},menuActive:{type:Boolean},sortKey:{type:String},sortDesc:{type:Boolean},isSidebar:{type:Boolean},url:{type:String},ts:{type:String},editing:{type:Boolean},toDeletePages:{type:Object},toDeletePage:{type:Object}}}_timedUpdate(){null!==this.newQuery&&(this.query=this.newQuery,this.newQuery=null,this.filter())}async updated(e){if(e.has("collInfo")?this.updateTextSearch():(e.has("query")||e.has("currList")||e.has("showAllPages"))&&this.filter(),e.has("active")&&this.active&&this.changeNeeded&&this.filter(),e.has("query")){this.query?(this.sortKey="",this.sortDesc=!1):(this.sortKey="date",this.sortDesc=!0);const e=this.renderRoot.querySelector("wr-sorter");e&&(e.sortKey=this.sortKey,e.sortDesc=this.sortDesc)}if(e.has("sortedPages")&&this.isSidebar){const e=this.renderRoot.querySelector(".current");if(e){const t={behavior:"smooth",block:"nearest",inline:"nearest"};setTimeout((()=>e.scrollIntoView(t)),100)}}}onChangeQuery(e){this.newQuery=e.currentTarget.value,this._ival&&window.clearTimeout(this._ival),this._ival=window.setTimeout((()=>this._timedUpdate()),250)}async filter(){if(this.loading)return;if(this.active||(this.changeNeeded=!0),this.loading=!0,this.flex&&this.query&&this.textPages){const e=await this.flex.searchAsync(this.query,25);this.filteredPages=e.map((e=>this.textPages[e]))}else this.showAllPages&&this.hasExtraPages?this.filteredPages=[...this.textPages]:this.filteredPages=[...this.collInfo.pages];0!==this.currList&&await this.filterCurated();for(const e of this.filteredPages){const{timestamp:t,date:i}=Ke(e);e.timestamp=t,e.date=i}this.loading=!1,this.changeNeeded=!1;const e={query:this.query,currList:this.currList};this.sendChangeEvent(e)}async filterCurated(){const e=await fetch(`${this.collInfo.apiPrefix}/curated/${this.currList}`),t=(await e.json()).curated;this.filteredPages=t}sendChangeEvent(e){this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:e}}))}addPages(e){const t=new qi.Index;return this.flex=t,this.textPages=e,this.hasExtraPages=this.textPages&&this.collInfo&&this.collInfo.pages&&this.textPages.length>this.collInfo.pages.length,Promise.all(e.map(((e,i)=>{let a=e.url;return e.title&&(a+=" "+e.title),e.text&&(a+=" "+e.text),t.addAsync(i,a)})))}async updateTextSearch(){if(this.updatingSearch)return;this.updatingSearch=!0;let e=0;try{const t=await caches.open("cache:"+this.collInfo.coll),i=`${this.collInfo.apiPrefix}/textIndex`;let a=await t.match(i);a&&Number(a.headers.get("Content-Length"))||(a=await fetch(i),200===a.status&&Number(a.headers.get("Content-Length"))&&t.put(i,a.clone()));const r=[];for await(const t of Mi()(a.body.getReader()))t.url&&(t.id=++e,r.push(t));await this.addPages(r)}catch(e){console.warn(e)}finally{0===e&&await this.addPages(this.collInfo.pages),this.updatingSearch=!1}await this.filter()}static get styles(){return be(o`
+        </div>`;default:return T`<progress
+          class="progress is-primary is-large"
+          style="max-width: 400px"
+        ></progress>`}}async onAskPermission(){"granted"===await this.fileHandle.requestPermission({mode:"read"})&&this.doLoad()}}customElements.define("wr-loader",Ri);var Oi=__webpack_require__(9746),Mi=__webpack_require__.n(Oi),qi=__webpack_require__(6304),Ni=__webpack_require__(6442),Fi=__webpack_require__.n(Ni),Bi=__webpack_require__(9638),ji=__webpack_require__.n(Bi);class Hi extends X{constructor(){super(),this.filteredPages=[],this.sortedPages=[],this.query="",this.flex=null,this.textPages=null,this.newQuery=null,this.loading=!1,this.updatingSearch=!1,this.showAllPages=!1,this.hasExtraPages=!1,this.currList=0,this.active=!1,this.editable=!1,this.changeNeeded=!1,this.selectedPages=new Set,this.menuActive=!1,this.sortKey="date",this.sortDesc=!0,this.isSidebar=!1,this.url="",this.ts="",this.editing=!1,this.toDeletePages=null,this.toDeletePage=null}static get sortKeys(){return[{key:"",name:"Best Match"},{key:"title",name:"Title"},{key:"date",name:"Date"}]}static get properties(){return{active:{type:Boolean},collInfo:{type:Object},currList:{type:Number},filteredPages:{type:Array},sortedPages:{type:Array},showAllPages:{type:Boolean},query:{type:String},defaultKey:{type:String},loading:{type:Boolean},updatingSearch:{type:Boolean},editable:{type:Boolean},selectedPages:{type:Set},allSelected:{type:Boolean},menuActive:{type:Boolean},sortKey:{type:String},sortDesc:{type:Boolean},isSidebar:{type:Boolean},url:{type:String},ts:{type:String},editing:{type:Boolean},toDeletePages:{type:Object},toDeletePage:{type:Object}}}_timedUpdate(){null!==this.newQuery&&(this.query=this.newQuery,this.newQuery=null,this.filter())}async updated(e){if(e.has("collInfo")?this.updateTextSearch():(e.has("query")||e.has("currList")||e.has("showAllPages"))&&this.filter(),e.has("active")&&this.active&&this.changeNeeded&&this.filter(),e.has("query")){this.query?(this.sortKey="",this.sortDesc=!1):(this.sortKey="date",this.sortDesc=!0);const e=this.renderRoot.querySelector("wr-sorter");e&&(e.sortKey=this.sortKey,e.sortDesc=this.sortDesc)}if(e.has("sortedPages")&&this.isSidebar){const e=this.renderRoot.querySelector(".current");if(e){const t={behavior:"smooth",block:"nearest",inline:"nearest"};setTimeout((()=>e.scrollIntoView(t)),100)}}}onChangeQuery(e){this.newQuery=e.currentTarget.value,this._ival&&window.clearTimeout(this._ival),this._ival=window.setTimeout((()=>this._timedUpdate()),250)}async filter(){if(this.loading)return;if(this.active||(this.changeNeeded=!0),this.loading=!0,this.flex&&this.query&&this.textPages){const e=await this.flex.searchAsync(this.query,25);this.filteredPages=e.map((e=>this.textPages[e]))}else this.showAllPages&&this.hasExtraPages?this.filteredPages=[...this.textPages]:this.filteredPages=[...this.collInfo.pages];0!==this.currList&&await this.filterCurated();for(const e of this.filteredPages){const{timestamp:t,date:i}=Ke(e);e.timestamp=t,e.date=i}this.loading=!1,this.changeNeeded=!1;const e={query:this.query,currList:this.currList};this.sendChangeEvent(e)}async filterCurated(){const e=await fetch(`${this.collInfo.apiPrefix}/curated/${this.currList}`),t=(await e.json()).curated;this.filteredPages=t}sendChangeEvent(e){this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:e}}))}addPages(e){const t=new qi.Index;return this.flex=t,this.textPages=e,this.hasExtraPages=this.textPages&&this.collInfo&&this.collInfo.pages&&this.textPages.length>this.collInfo.pages.length,Promise.all(e.map(((e,i)=>{let a=e.url;return e.title&&(a+=" "+e.title),e.text&&(a+=" "+e.text),t.addAsync(i,a)})))}async updateTextSearch(){if(this.updatingSearch)return;this.updatingSearch=!0;let e=0;try{const t=await caches.open("cache:"+this.collInfo.coll),i=`${this.collInfo.apiPrefix}/textIndex`;let a=await t.match(i);a&&Number(a.headers.get("Content-Length"))||(a=await fetch(i),200===a.status&&Number(a.headers.get("Content-Length"))&&t.put(i,a.clone()));const r=[];for await(const t of Mi()(a.body.getReader()))t.url&&(t.id=++e,r.push(t));await this.addPages(r)}catch(e){console.warn(e)}finally{0===e&&await this.addPages(this.collInfo.pages),this.updatingSearch=!1}await this.filter()}static get styles(){return be(o`
       :host {
         width: 100%;
         height: 100%;
@@ -1705,7 +2250,8 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         box-sizing: border-box !important;
       }
 
-      div[role="main"], #contents div[role="complementary"] {
+      div[role="main"],
+      #contents div[role="complementary"] {
         height: 100%;
       }
 
@@ -1749,7 +2295,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       .index-bar-title {
         font-size: 1.25rem;
         text-transform: uppercase;
-        margin-bottom: 1.0rem;
+        margin-bottom: 1rem;
         word-break: break-word;
       }
 
@@ -1772,7 +2318,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       }
 
       .index-bar-menu {
-        margin-top: 1.0rem;
+        margin-top: 1rem;
       }
 
       #filter-label {
@@ -1815,7 +2361,8 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         display: block !important;
       }
 
-      :host(.sidebar) .columns.is-hidden-mobile, :host(.sidebar) .is-hidden-mobile {
+      :host(.sidebar) .columns.is-hidden-mobile,
+      :host(.sidebar) .is-hidden-mobile {
         display: none !important;
       }
 
@@ -1834,7 +2381,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         flex-direction: column;
         flex: auto;
 
-        padding-bottom: 1.0em;
+        padding-bottom: 1em;
         min-height: 0px;
       }
 
@@ -1848,7 +2395,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
 
       .is-disabled {
         pointer-events: none;
-        opacity: .65;
+        opacity: 0.65;
       }
 
       .page-header {
@@ -1858,12 +2405,12 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         width: 100%;
         min-height: fit-content;
 
-        margin-bottom: 1.0em;
+        margin-bottom: 1em;
         border-bottom: 3px solid rgb(237, 237, 237);
       }
 
       .check-select {
-        padding: 0 1.0em 0 0.5em;
+        padding: 0 1em 0 0.5em;
       }
 
       .search-bar {
@@ -1871,206 +2418,327 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         display: flex;
         flex-direction: column;
       }
+
       .flex-auto {
         flex: auto;
       }
+
+      .index-bar-description {
+        margin-bottom: 20px;
+        font-style: italic;
+      }
     `)}static sidebarStyles(e=o``){return o`
-    ${e} .main.columns {
-      position: relative;
-      max-height: 100%;
-      height: 100%;
-    }
+      ${e} .main.columns {
+        position: relative;
+        max-height: 100%;
+        height: 100%;
+      }
 
-    ${e} .index-bar-menu {
-      max-height: 75px;
-      overflow-y: auto;
-      margin-top: 0.75em;
-    }
+      ${e} .index-bar-menu {
+        max-height: 75px;
+        overflow-y: auto;
+        margin-top: 0.75em;
+      }
 
-    ${e} .column.main-content {
-      position: relative;
-      overflow-y: auto;
+      ${e} .column.main-content {
+        position: relative;
+        overflow-y: auto;
 
-      width: 100%;
-      min-height: 0px;
-      height: 100%;
-      padding: 0px;
-      margin: 0px;
-    }
+        width: 100%;
+        min-height: 0px;
+        height: 100%;
+        padding: 0px;
+        margin: 0px;
+      }
 
-    ${e} .mobile-header {
-      margin: 0.5rem;
-      margin-left: 1.0rem;
-      align-items: center;
-      display: flex;
-      justify-content: space-between;
-      flex-flow: row wrap;
-      min-height: 24px;
-      width: 100%;
-    }
+      ${e} .mobile-header {
+        margin: 0.5rem;
+        margin-left: 1rem;
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        flex-flow: row wrap;
+        min-height: 24px;
+        width: 100%;
+      }
 
-    ${e} .menu {
-      font-size: 0.80rem;
-    }`}onSelectList(e){e.preventDefault(),this.currList=Number(e.currentTarget.getAttribute("data-list"))}onSelectListDrop(e){e.preventDefault(),this.currList=Number(e.currentTarget.value)}render(){const e=this.currList;return T`
-    <div class="is-sr-only" role="heading" aria-level="${this.isSidebar?"2":"1"}">
-      Pages in ${this.collInfo.title}
-    </div>
-    <div class="search-bar notification is-marginless">
-      ${this.isSidebar?T`<h3 class="is-sr-only">Search and Filter Pages</h3>`:""}
-      <div class="field flex-auto">
-        <div class="control has-icons-left ${this.loading?"is-loading":""}">
-          <input type="search" class="input" @input="${this.onChangeQuery}" .value="${this.query}" type="text"
-          placeholder="Search by Page URL, Title or Text">
-          <span class="icon is-left"><fa-icon .svg="${He()}" aria-hidden="true"></fa-icon></span>
-        </div>
+      ${e} .menu {
+        font-size: 0.8rem;
+      }
+    `}onSelectList(e){e.preventDefault(),this.currList=Number(e.currentTarget.getAttribute("data-list"))}onSelectListDrop(e){e.preventDefault(),this.currList=Number(e.currentTarget.value)}render(){const e=this.currList;return T`
+      <div
+        class="is-sr-only"
+        role="heading"
+        aria-level="${this.isSidebar?"2":"1"}"
+      >
+        Pages in ${this.collInfo.title}
       </div>
-    </div>
-    <div class="main columns">
-      <div class="column index-bar is-one-fifth ${this.isSidebar?"is-hidden-mobile":""}">
-
-        ${this.editable&&this.editing?T`
-        <form @submit="${this.onUpdateTitle}"><input id="titleEdit" class="input" value="${this.collInfo.title}" @blur="${this.onUpdateTitle}"></form>
-        `:T`
-        <div class="index-bar-title" @dblclick="${()=>this.editing=!0}">${this.collInfo.title}</div>`}
-
-        ${this.editable?T`<fa-icon class="editIcon" .svg="${ji()}"></fa-icon>`:T``}
-
-        ${this.hasExtraPages?T`
-        <span class="check-select">
-          <label class="checkbox">
-          <input @change=${e=>this.showAllPages=e.currentTarget.checked} type="checkbox" .checked="${this.showAllPages}">
-          Show Non-Seed Pages
-          </label>
-        </span>`:""}
-
-        <span class="num-results is-hidden-mobile" aria-live="polite" aria-atomic="true">${this.formatResults()}</span>
-
-        ${this.editable?T`
-        <div class="index-bar-actions">
-          ${this.renderDownloadMenu()}
-        </div>`:""}
-
-        ${this.collInfo.lists.length?T`
-        <p id="filter-label" class="menu-label">Filter By List:</p>
-        <div class="index-bar-menu menu">
-          <ul class="menu-list">
-            <li>
-              <a href="#list-0" data-list="0" class="${0===e?"is-active":""}"
-                @click=${this.onSelectList}><i>All Pages</i></a>
-            </li>
-            ${this.collInfo.lists.map((t=>T`
-              <li>
-                <a @click=${this.onSelectList} href="#list-${t.id}"
-                data-list="${t.id}"
-                class="${e===t.id?"is-active":""}">${t.title}</a>
-              </li>`))}
-          </ul>
-        </div>
-        `:""}
-      </div>
-      <div class="column main-content">
-        <div class="is-sr-only" role="heading" aria-level="${this.isSidebar?"3":"2"}">Page List</div>
-        ${this.renderPages()}
-      </div>
-    </div>
-    ${this.renderDeleteModal()}
-    `}renderDownloadMenu(){return T`
-      <div class="dropdown ${this.menuActive?"is-active":""}">
-        <div class="dropdown-trigger">
-          <button @click="${this.onMenu}" class="button is-small" aria-haspopup="true" aria-expanded="${this.menuActive}" aria-controls="dropdown-menu">
-            <span>Download</span>
-            <span class="icon is-small">
-              <fa-icon .svg="${Fi()} aria-hidden="true"></fa-icon>
-            </span>
-          </button>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu">
-          <div class="dropdown-content">
-            <a role="button" href="#"
-             @click="${e=>this.onDownload(e,"wacz")}"
-             @keyup="${ve}"
-             class="dropdown-item">
-              Download ${0===this.selectedPages.size?"All":"Selected"} as WACZ (Web Archive Collection Zip)
-            </a>
-            <a role="button" href="#"
-             @click="${e=>this.onDownload(e,"warc")}"
-             @keyup="${ve}"
-             class="dropdown-item">
-              Download ${0===this.selectedPages.size?"All":"Selected"} as WARC 1.1 Only
-            </a>
-            <a role="button" href="#"
-              @click="${e=>this.onDownload(e,"warc1.0")}"
-              @keyup="${ve}"
-              class="dropdown-item">
-              Download ${0===this.selectedPages.size?"All":"Selected"} as WARC 1.0 Only
-            </a>
+      <div class="search-bar notification is-marginless">
+        ${this.isSidebar?T`<h3 class="is-sr-only">Search and Filter Pages</h3>`:""}
+        <div class="field flex-auto">
+          <div
+            class="control has-icons-left ${this.loading?"is-loading":""}"
+          >
+            <input
+              class="input"
+              @input="${this.onChangeQuery}"
+              .value="${this.query}"
+              type="text"
+              placeholder="Search by Page URL, Title or Text"
+            />
+            <span class="icon is-left"
+              ><fa-icon .svg="${He()}" aria-hidden="true"></fa-icon
+            ></span>
           </div>
         </div>
-      </div>`}renderPageHeader(){return T`
-    ${!this.isSidebar&&this.editable&&this.filteredPages.length?T`
-    <div class="check-select">
-      <label class="checkbox">
-      <input @change=${this.onSelectAll} type="checkbox" .checked="${this.allSelected}">
-      </label>
-    </div>`:T``}
+      </div>
+      <div class="main columns">
+        <div
+          class="column index-bar is-one-fifth ${this.isSidebar?"is-hidden-mobile":""}"
+        >
+          ${this.editable&&this.editing?T`
+                <form @submit="${this.onUpdateTitle}">
+                  <input
+                    id="titleEdit"
+                    class="input"
+                    value="${this.collInfo.title}"
+                    @blur="${this.onUpdateTitle}"
+                  />
+                </form>
+              `:T` <div
+                  class="index-bar-title"
+                  @dblclick="${()=>this.editing=!0}"
+                >
+                  ${this.collInfo.name||this.collInfo.title}
+                </div>
+                ${this.collInfo.description?T`<div
+                      class="index-bar-description"
+                      @dblclick="${()=>this.editing=!0}"
+                    >
+                      ${this.collInfo.description}
+                    </div>`:T``}`}
+          ${this.editable?T`<fa-icon class="editIcon" .svg="${ji()}"></fa-icon>`:T``}
+          ${this.hasExtraPages?T` <span class="check-select">
+                <label class="checkbox">
+                  <input
+                    @change=${e=>this.showAllPages=e.currentTarget.checked}
+                    type="checkbox"
+                    .checked="${this.showAllPages}"
+                  />
+                  Show Non-Seed Pages
+                </label>
+              </span>`:""}
 
-    <div class="header columns is-hidden-mobile">
-      ${this.query?T`
-      <a role="button" href="#" @click="${this.onSort}" @keyup="${ve}" data-key="" class="column is-1 ${""===this.sortKey?this.sortDesc?"desc":"asc":""}">Match</a>`:""}
+          <span
+            class="num-results is-hidden-mobile"
+            aria-live="polite"
+            aria-atomic="true"
+            >${this.formatResults()}</span
+          >
+          ${this.editable?T` <div class="index-bar-actions">
+                ${this.renderDownloadMenu()}
+              </div>`:""}
+          ${this.collInfo.lists.length?T`
+                <p id="filter-label" class="menu-label">Filter By List:</p>
+                <div class="index-bar-menu menu">
+                  <ul class="menu-list">
+                    <li>
+                      <a
+                        href="#list-0"
+                        data-list="0"
+                        class="${0===e?"is-active":""}"
+                        @click=${this.onSelectList}
+                        ><i>All Pages</i></a
+                      >
+                    </li>
+                    ${this.collInfo.lists.map((t=>T` <li>
+                          <a
+                            @click=${this.onSelectList}
+                            href="#list-${t.id}"
+                            data-list="${t.id}"
+                            class="${e===t.id?"is-active":""}"
+                            >${t.title}</a
+                          >
+                        </li>`))}
+                  </ul>
+                </div>
+              `:""}
+        </div>
+        <div class="column main-content">
+          <div
+            class="is-sr-only"
+            role="heading"
+            aria-level="${this.isSidebar?"3":"2"}"
+          >
+            Page List
+          </div>
+          ${this.renderPages()}
+        </div>
+      </div>
+      ${this.renderDeleteModal()}
+    `}renderDownloadMenu(){return T` <div class="dropdown ${this.menuActive?"is-active":""}">
+      <div class="dropdown-trigger">
+        <button
+          @click="${this.onMenu}"
+          class="button is-small"
+          aria-haspopup="true"
+          aria-expanded="${this.menuActive}"
+          aria-controls="dropdown-menu"
+        >
+          <span>Download</span>
+          <span class="icon is-small">
+            <fa-icon .svg="${Fi()}" aria-hidden="true"></fa-icon>
+          </span>
+        </button>
+      </div>
+      <div class="dropdown-menu" id="dropdown-menu">
+        <div class="dropdown-content">
+          <a
+            role="button"
+            href="#"
+            @click="${e=>this.onDownload(e,"wacz")}"
+            @keyup="${ve}"
+            class="dropdown-item"
+          >
+            Download ${0===this.selectedPages.size?"All":"Selected"} as
+            WACZ (Web Archive Collection Zip)
+          </a>
+          <a
+            role="button"
+            href="#"
+            @click="${e=>this.onDownload(e,"warc")}"
+            @keyup="${ve}"
+            class="dropdown-item"
+          >
+            Download ${0===this.selectedPages.size?"All":"Selected"} as
+            WARC 1.1 Only
+          </a>
+          <a
+            role="button"
+            href="#"
+            @click="${e=>this.onDownload(e,"warc1.0")}"
+            @keyup="${ve}"
+            class="dropdown-item"
+          >
+            Download ${0===this.selectedPages.size?"All":"Selected"} as
+            WARC 1.0 Only
+          </a>
+        </div>
+      </div>
+    </div>`}renderPageHeader(){return T`
+      ${!this.isSidebar&&this.editable&&this.filteredPages.length?T` <div class="check-select">
+            <label class="checkbox">
+              <input
+                @change=${this.onSelectAll}
+                type="checkbox"
+                .checked="${this.allSelected}"
+              />
+            </label>
+          </div>`:T``}
 
-      <a role="button" href="#" @click="${this.onSort}" @keyup="${ve}" data-key="date" class="column is-2 ${"date"===this.sortKey?this.sortDesc?"desc":"asc":""}">Date</a>
-      <a role="button" href="#" @click="${this.onSort}" @keyup="${ve}" data-key="title" class="column is-6 pagetitle ${"title"===this.sortKey?this.sortDesc?"desc":"asc":""}">Page Title</a>
-    </div>
+      <div class="header columns is-hidden-mobile">
+        ${this.query?T` <a
+              role="button"
+              href="#"
+              @click="${this.onSort}"
+              @keyup="${ve}"
+              data-key=""
+              class="column is-1 ${""===this.sortKey?this.sortDesc?"desc":"asc":""}"
+              >Match</a
+            >`:""}
 
-    <div class="is-hidden-tablet mobile-header">
-      <div class="num-results" aria-live="polite" aria-atomic="true">${this.formatResults()}</div>
-      <wr-sorter id="pages"
-      .sortKey="${this.sortKey}"
-      .sortDesc="${this.sortDesc}"
-      .sortKeys="${Hi.sortKeys}"
-      .data="${this.filteredPages}"
-      pageResults="100"
-      @sort-changed="${this.onSortChanged}"
-      class="${this.filteredPages.length?"":"is-hidden"}">
-      </wr-sorter>
-    </div>
-    `}renderDeleteModal(){return this.toDeletePages?T`
-    <wr-modal bgClass="has-background-grey-lighter" @modal-closed="${()=>this.toDeletePages=this.toDeletePage=null}" title="Confirm Delete">
-      ${this.toDeletePage?T`
-      <p>Are you sure you want to delete the page <b>${this.toDeletePage.title}</b>?
-      (Size: <b>${Re()(this.toDeletePage.size)}</b>)</p>`:T`
-      <p>Are you sure you want to delete the <b>${this.toDeletePages.size}</b> selected pages?
-      `}
+        <a
+          role="button"
+          href="#"
+          @click="${this.onSort}"
+          @keyup="${ve}"
+          data-key="date"
+          class="column is-2 ${"date"===this.sortKey?this.sortDesc?"desc":"asc":""}"
+          >Date</a
+        >
+        <a
+          role="button"
+          href="#"
+          @click="${this.onSort}"
+          @keyup="${ve}"
+          data-key="title"
+          class="column is-6 pagetitle ${"title"===this.sortKey?this.sortDesc?"desc":"asc":""}"
+          >Page Title</a
+        >
+      </div>
+
+      <div class="is-hidden-tablet mobile-header">
+        <div class="num-results" aria-live="polite" aria-atomic="true">
+          ${this.formatResults()}
+        </div>
+        <wr-sorter
+          id="pages"
+          .sortKey="${this.sortKey}"
+          .sortDesc="${this.sortDesc}"
+          .sortKeys="${Hi.sortKeys}"
+          .data="${this.filteredPages}"
+          pageResults="100"
+          @sort-changed="${this.onSortChanged}"
+          class="${this.filteredPages.length?"":"is-hidden"}"
+        >
+        </wr-sorter>
+      </div>
+    `}renderDeleteModal(){return this.toDeletePages?T` <wr-modal
+      bgClass="has-background-grey-lighter"
+      @modal-closed="${()=>this.toDeletePages=this.toDeletePage=null}"
+      title="Confirm Delete"
+    >
+      ${this.toDeletePage?T` <p>
+            Are you sure you want to delete the page
+            <b>${this.toDeletePage.title}</b>? (Size:
+            <b>${Re()(this.toDeletePage.size)}</b>)
+          </p>`:T`
+            <p>
+              Are you sure you want to delete the
+              <b>${this.toDeletePages.size}</b> selected pages?
+            </p>
+          `}
       <p>This operation can not be undone.</p>
 
-      <button @click="${this.onDeletePages}"class="button is-danger">Delete</button>
-      <button @click="${()=>this.toDeletePages=this.toDeletePage=null}" class="button">Cancel</button>
+      <button @click="${this.onDeletePages}" class="button is-danger">
+        Delete
+      </button>
+      <button
+        @click="${()=>this.toDeletePages=this.toDeletePage=null}"
+        class="button"
+      >
+        Cancel
+      </button>
     </wr-modal>`:T``}isCurrPage(e){if(this.isSidebar&&e.url===this.url){let t=e.timestamp;return!t&&e.date?t=Ze(e.date):"string"==typeof e.ts&&(t=Ze(e.ts)),t===this.ts}return!1}renderPages(){return T`
       <div class="page-header has-text-weight-bold">
-      ${this.renderPageHeader()}
+        ${this.renderPageHeader()}
       </div>
       <ul class="scroller" @scroll="${this.onScroll}">
-        ${this.sortedPages.length?T`
-          ${this.sortedPages.map(((e,t)=>{const i=this.selectedPages.has(e.id);return T`
-          <li class="page-entry ${i?"selected":""}">
-            <wr-page-entry
-            .index="${this.query||this.isSidebar?t+1:0}"
-            .editable="${this.editable}"
-            .selected="${i}"
-            .isCurrent="${this.isCurrPage(e)}"
-            .isSidebar="${this.isSidebar}"
-            .page="${e}"
-            pid="${e.id}"
-            @sel-page="${this.onSelectToggle}"
-            @delete-page="${this.onDeleteConfirm}"
-            replayPrefix="${this.collInfo.replayPrefix}"
-            query="${this.query}"
-            class="${this.isSidebar?"sidebar":""}"
-            >
-            </wr-page-entry>
-          </li>`}))}`:T`<p class="mobile-header">${this.getNoResultsMessage()}</p>`}
+        ${this.sortedPages.length?T` ${this.sortedPages.map(((e,t)=>{const i=this.selectedPages.has(e.id);return T` <li class="page-entry ${i?"selected":""}">
+                <wr-page-entry
+                  .index="${this.query||this.isSidebar?t+1:0}"
+                  .editable="${this.editable}"
+                  .selected="${i}"
+                  .isCurrent="${this.isCurrPage(e)}"
+                  .isSidebar="${this.isSidebar}"
+                  .page="${e}"
+                  pid="${e.id}"
+                  @sel-page="${this.onSelectToggle}"
+                  @delete-page="${this.onDeleteConfirm}"
+                  replayPrefix="${this.collInfo.replayPrefix}"
+                  query="${this.query}"
+                  class="${this.isSidebar?"sidebar":""}"
+                >
+                </wr-page-entry>
+              </li>`}))}`:T`<p class="mobile-header">${this.getNoResultsMessage()}</p>`}
       </ul>
-    `}onUpdateTitle(e){if(e.preventDefault(),this.editing=!1,!this.editable)return;const t=this.renderRoot.querySelector("#titleEdit");if(!t||!t.value.trim())return;const i=t.value,a=JSON.stringify({title:i});fetch(`${this.collInfo.apiPrefix}/metadata`,{method:"POST",body:a}).then((e=>{200===e.status&&this.dispatchEvent(new CustomEvent("coll-update",{detail:{title:i}}))}))}onMenu(e){e.stopPropagation(),this.menuActive=!this.menuActive,this.menuActive&&document.addEventListener("click",(()=>{this.menuActive=!1}),{once:!0})}onSort(e){e.preventDefault();const t=e.currentTarget.getAttribute("data-key")||"";t===this.sortKey?this.sortDesc=!this.sortDesc:(this.sortDesc=!1,this.sortKey=t)}onSortChanged(e){this.sortedPages=e.detail.sortedData,this.sortKey=e.detail.sortKey,this.sortDesc=e.detail.sortDesc}onSelectToggle(e){const{page:t,selected:i}=e.detail;i?this.selectedPages.add(t):this.selectedPages.delete(t),this.allSelected=this.selectedPages.size===this.sortedPages.length,this.requestUpdate()}onSelectAll(e){this.allSelected=e.currentTarget.checked,this.allSelected?this.sortedPages.forEach((e=>{this.selectedPages.add(e.id)})):this.selectedPages.clear(),this.requestUpdate()}async onDownload(e,t){e.preventDefault();const i=this.selectedPages.size>0,a=new URLSearchParams;a.set("pages",i?Array.from(this.selectedPages.keys()).join(","):"all"),a.set("format",t),this.collInfo.filename&&a.set("filename",this.collInfo.filename),window.location.href=`${this.collInfo.apiPrefix}/dl?`+a.toString()}onDeleteConfirm(e){const t=e.currentTarget.page;this.selectedPages.has(t.id)?(this.toDeletePages=this.selectedPages,this.toDeletePage=null):(this.toDeletePages=[t.id],this.toDeletePage=t)}async onDeletePages(){const e={};for(const t of this.toDeletePages){const i=this.renderRoot.querySelector(`wr-page-entry[pid="${t}"]`);i&&(i.deleting=!0,e[t]=i)}for(const t of this.toDeletePages){const i=await fetch(`${this.collInfo.apiPrefix}/page/${t}`,{method:"DELETE"}),a=await i.json();if(a.error){console.warn(a.error);continue}const r=e[t];if(!r)continue;const o=this.collInfo.pages.indexOf(r);o<0||this.collInfo.pages.splice(o,1)}this.toDeletePages=null,this.toDeletePage=null,this.updateTextSearch(),this.requestUpdate()}formatResults(){if(!this.query){const e=this.filteredPages.length;return e===this.sortedPages.length?`${e} Page${1!==e?"s":""}`:`${this.sortedPages.length} of ${e} Pages Shown`}return 1===this.sortedPages.length?"1 Page":`${this.sortedPages.length} Pages`}getNoResultsMessage(){return this.collInfo&&this.collInfo.pages.length?this.updatingSearch?"Initializing Search...":this.loading?"Searching...":this.query?T`<span class="fix-text-wrapping">No matching pages found. Try changing the search query, or <a href="#view=resources">browse by URL</a>.</span>`:"No Pages Found":T`<span class="fix-text-wrapping">No Pages are defined in this archive. The archive may be empty. <a href="#view=resources">Try browsing by URL</a>.</span>`}onScroll(e){const t=e.currentTarget;if(t.scrollHeight-t.scrollTop-t.clientHeight<40){const e=this.renderRoot.querySelector("wr-sorter");e&&e.getMore()}}}customElements.define("wr-page-view",Hi);const Wi=new RegExp(`[${["-","[","]","/","{","}","(",")","*","+","?",".","\\","^","$","|"].join("\\")}]`,"g"),Gi=e=>e.replace(Wi,"\\$&");class Vi extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"})}static get observedAttributes(){return["keywords","delimiter"]}get keywords(){var e;return null!==(e=this.getAttribute("keywords"))&&void 0!==e?e:""}set keywords(e){this.setAttribute("keywords",e)}get delimiter(){var e;return null!==(e=this.getAttribute("delimiter"))&&void 0!==e?e:""}set delimiter(e){this.setAttribute("delimiter",e)}attributeChangedCallback(e,t,i){"keywords"!==e&&"delimiter"!==e||i!==t&&this._render()}connectedCallback(){this._render(),this.__observer=new MutationObserver((()=>{this._render()})),this.__observer.observe(this,{childList:!0,characterData:!0,subtree:!0})}disconnectedCallback(){this.__observer&&(this.__observer.disconnect(),this.__observer=void 0)}_render(){if(!this.shadowRoot)return;const e=this.textContent||"",t=this.getAttribute("keywords"),i=this.getAttribute("delimiter")||/\s+/;if(!t)return void(this.shadowRoot.textContent=e);const a=e.toLowerCase(),r=t.toLowerCase().split(i).sort(((e,t)=>t.length-e.length)),o=new RegExp(`${r.map(Gi).join("|")}`,"gi"),s=e.split(o),n=document.createElement("div");let l=0;for(const t of s)if(n.appendChild(document.createTextNode(t)),l+=t.length,l<a.length){const t=a.substring(l),i=r.find((e=>t.startsWith(e)));if(i){const t=document.createElement("mark");t.textContent=e.substr(l,i.length),n.appendChild(t),l+=i.length}}this.shadowRoot.innerHTML=`\n      <style>\n        mark {\n          color: var(--keyword-mark-color);\n          background: var(--keyword-mark-background, yellow);\n        }\n      </style>\n      ${n.innerHTML}\n    `}}customElements.define("keyword-mark",Vi);class Ki extends X{constructor(){super(),this.query="",this.textSnippet="",this.page=null,this.replayPrefix="",this.deleting=!1,this.editable=!1,this.iconValid=!1,this.index=0,this.isCurrent=!1,this.isSidebar=!1}static get properties(){return{query:{type:String},textSnippet:{type:String},page:{type:Object},replayPrefix:{type:String},deleting:{type:Boolean},selected:{type:Boolean},editable:{type:Boolean},iconValid:{type:Boolean},index:{type:Number},isCurrent:{type:Boolean},isSidebar:{type:Boolean}}}static get styles(){return be(o`
+    `}onUpdateTitle(e){if(e.preventDefault(),this.editing=!1,!this.editable)return;const t=this.renderRoot.querySelector("#titleEdit");if(!t||!t.value.trim())return;const i=t.value,a=JSON.stringify({title:i});fetch(`${this.collInfo.apiPrefix}/metadata`,{method:"POST",body:a}).then((e=>{200===e.status&&this.dispatchEvent(new CustomEvent("coll-update",{detail:{title:i}}))}))}onMenu(e){e.stopPropagation(),this.menuActive=!this.menuActive,this.menuActive&&document.addEventListener("click",(()=>{this.menuActive=!1}),{once:!0})}onSort(e){e.preventDefault();const t=e.currentTarget.getAttribute("data-key")||"";t===this.sortKey?this.sortDesc=!this.sortDesc:(this.sortDesc=!1,this.sortKey=t)}onSortChanged(e){this.sortedPages=e.detail.sortedData,this.sortKey=e.detail.sortKey,this.sortDesc=e.detail.sortDesc}onSelectToggle(e){const{page:t,selected:i}=e.detail;i?this.selectedPages.add(t):this.selectedPages.delete(t),this.allSelected=this.selectedPages.size===this.sortedPages.length,this.requestUpdate()}onSelectAll(e){this.allSelected=e.currentTarget.checked,this.allSelected?this.sortedPages.forEach((e=>{this.selectedPages.add(e.id)})):this.selectedPages.clear(),this.requestUpdate()}async onDownload(e,t){e.preventDefault();const i=this.selectedPages.size>0,a=new URLSearchParams;a.set("pages",i?Array.from(this.selectedPages.keys()).join(","):"all"),a.set("format",t),this.collInfo.filename&&a.set("filename",this.collInfo.filename),window.location.href=`${this.collInfo.apiPrefix}/dl?`+a.toString()}onDeleteConfirm(e){const t=e.currentTarget.page;this.selectedPages.has(t.id)?(this.toDeletePages=this.selectedPages,this.toDeletePage=null):(this.toDeletePages=[t.id],this.toDeletePage=t)}async onDeletePages(){const e={};for(const t of this.toDeletePages){const i=this.renderRoot.querySelector(`wr-page-entry[pid="${t}"]`);i&&(i.deleting=!0,e[t]=i)}for(const t of this.toDeletePages){const i=await fetch(`${this.collInfo.apiPrefix}/page/${t}`,{method:"DELETE"}),a=await i.json();if(a.error){console.warn(a.error);continue}const r=e[t];if(!r)continue;const o=this.collInfo.pages.indexOf(r);o<0||this.collInfo.pages.splice(o,1)}this.toDeletePages=null,this.toDeletePage=null,this.updateTextSearch(),this.requestUpdate()}formatResults(){if(!this.query){const e=this.filteredPages.length;return e===this.sortedPages.length?`${e} Page${1!==e?"s":""}`:`${this.sortedPages.length} of ${e} Pages Shown`}return 1===this.sortedPages.length?"1 Page":`${this.sortedPages.length} Pages`}getNoResultsMessage(){return this.collInfo&&this.collInfo.pages.length?this.updatingSearch?"Initializing Search...":this.loading?"Searching...":this.query?T`<span class="fix-text-wrapping"
+        >No matching pages found. Try changing the search query, or
+        <a href="#view=resources">browse by URL</a>.</span
+      >`:"No Pages Found":T`<span class="fix-text-wrapping"
+        >No Pages are defined in this archive. The archive may be empty.
+        <a href="#view=resources">Try browsing by URL</a>.</span
+      >`}onScroll(e){const t=e.currentTarget;if(t.scrollHeight-t.scrollTop-t.clientHeight<40){const e=this.renderRoot.querySelector("wr-sorter");e&&e.getMore()}}}customElements.define("wr-page-view",Hi);const Wi=new RegExp(`[${["-","[","]","/","{","}","(",")","*","+","?",".","\\","^","$","|"].join("\\")}]`,"g"),Gi=e=>e.replace(Wi,"\\$&");class Vi extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"})}static get observedAttributes(){return["keywords","delimiter"]}get keywords(){var e;return null!==(e=this.getAttribute("keywords"))&&void 0!==e?e:""}set keywords(e){this.setAttribute("keywords",e)}get delimiter(){var e;return null!==(e=this.getAttribute("delimiter"))&&void 0!==e?e:""}set delimiter(e){this.setAttribute("delimiter",e)}attributeChangedCallback(e,t,i){"keywords"!==e&&"delimiter"!==e||i!==t&&this._render()}connectedCallback(){this._render(),this.__observer=new MutationObserver((()=>{this._render()})),this.__observer.observe(this,{childList:!0,characterData:!0,subtree:!0})}disconnectedCallback(){this.__observer&&(this.__observer.disconnect(),this.__observer=void 0)}_render(){if(!this.shadowRoot)return;const e=this.textContent||"",t=this.getAttribute("keywords"),i=this.getAttribute("delimiter")||/\s+/;if(!t)return void(this.shadowRoot.textContent=e);const a=e.toLowerCase(),r=t.toLowerCase().split(i).sort(((e,t)=>t.length-e.length)),o=new RegExp(`${r.map(Gi).join("|")}`,"gi"),s=e.split(o),n=document.createElement("div");let l=0;for(const t of s)if(n.appendChild(document.createTextNode(t)),l+=t.length,l<a.length){const t=a.substring(l),i=r.find((e=>t.startsWith(e)));if(i){const t=document.createElement("mark");t.textContent=e.substr(l,i.length),n.appendChild(t),l+=i.length}}this.shadowRoot.innerHTML=`\n      <style>\n        mark {\n          color: var(--keyword-mark-color);\n          background: var(--keyword-mark-background, yellow);\n        }\n      </style>\n      ${n.innerHTML}\n    `}}customElements.define("keyword-mark",Vi);class Ki extends X{constructor(){super(),this.query="",this.textSnippet="",this.page=null,this.replayPrefix="",this.deleting=!1,this.editable=!1,this.iconValid=!1,this.index=0,this.isCurrent=!1,this.isSidebar=!1}static get properties(){return{query:{type:String},textSnippet:{type:String},page:{type:Object},replayPrefix:{type:String},deleting:{type:Boolean},selected:{type:Boolean},editable:{type:Boolean},iconValid:{type:Boolean},index:{type:Number},isCurrent:{type:Boolean},isSidebar:{type:Boolean}}}static get styles(){return be(o`
       :host {
         min-height: min-content;
         width: 100%;
@@ -2090,7 +2758,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       }
 
       .check-select {
-        padding: 0 1.0em 0 0.5em;
+        padding: 0 1em 0 0.5em;
         height: 100%;
         margin: auto 0 auto 0;
       }
@@ -2106,7 +2774,6 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       .columns:last-child {
         margin-bottom: calc(-0.75rem + 2px);
       }
-
 
       .favicon {
         width: 24px !important;
@@ -2166,79 +2833,100 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         display: block;
       }
     `)}static sidebarStyles(e=o``){return o`
-    ${e} .col-date {
-      margin-left: calc(24px + 1rem);
-      display: none;
-    }
-    ${e} .col-date div {
-      display: inline;
-    }
-    ${e} .col-index {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      margin-top: -0.75em;
-    }
-    ${e} .columns {
-      display: flex;
-      flex-direction: column-reverse;
-    }
-    ${e} .is-inline-date {
-      display: initial !important;
-      font-style: italic;
-    }
+      ${e} .col-date {
+        margin-left: calc(24px + 1rem);
+        display: none;
+      }
+      ${e} .col-date div {
+        display: inline;
+      }
+      ${e} .col-index {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        margin-top: -0.75em;
+      }
+      ${e} .columns {
+        display: flex;
+        flex-direction: column-reverse;
+      }
+      ${e} .is-inline-date {
+        display: initial !important;
+        font-style: italic;
+      }
     `}updated(e){(e.has("page")||e.has("query"))&&(this.updateSnippet(),this.iconValid=!!this.page.favIconUrl,this.deleting=!1)}render(){const e=this.page,t=this.page.date,i="number"==typeof e.size,a=this.editable&&!this.isSidebar;return T`
-    ${a?T`
-    <div class="check-select">
-      <label class="checkbox">
-      <input @change=${this.onSendSelToggle} type="checkbox" .checked="${this.selected}">
-      </label>
-    </div>`:""}
-
-    <div class="columns">
-      ${this.index?T`
-      <div class="column col-index is-1 is-size-7">${this.index}.</div>
-      `:""}
-      <div class="column col-date is-2">
-        <div>${t?t.toLocaleDateString():""}</div>
-        <div>${t?t.toLocaleTimeString():""}</div>
-      </div>
-      <div class="column">
-        <div class="media">
-          <figure class="media-left">
-            <p class="">
-            ${this.iconValid?T`
-              <img class="favicon" @error="${()=>this.iconValid=!1}" src="${this.replayPrefix}/${this.page.timestamp}id_/${e.favIconUrl}"/>`:T`
-              <span class="favicon"></span>`}
-            </p>
-          </figure>
-          <div class="media-content ${this.isCurrent?"current":""}">
-            <div role="heading" aria-level="${this.isSidebar?"4":"3"}">
-              <a @dblclick="${this.onReload}" @click="${this.onReplay}" href="${Je("pages",this.page.url,this.page.timestamp)}">
-              <p class="is-size-6 has-text-weight-bold has-text-link text">
-              <keyword-mark keywords="${this.query}">${e.title||e.url}</keyword-mark>
-              </p>
-              <p class="has-text-dark text"><keyword-mark keywords="${this.query}">${e.url}</keyword-mark></p>
-              <p class="has-text-grey-dark text is-inline-date">
-                ${t?t.toLocaleString():""}
-              </p>
-            </a>
-            ${this.textSnippet?T`
-              <div class="text"><keyword-mark keywords="${this.query}">${this.textSnippet}</keyword-mark></div>`:T``}
-          </div>
-          ${i?T`
-          <div class="media-right" style="margin-right: 2em">
-            ${Re()(e.size)}
+      ${a?T` <div class="check-select">
+            <label class="checkbox">
+              <input
+                @change=${this.onSendSelToggle}
+                type="checkbox"
+                .checked="${this.selected}"
+              />
+            </label>
           </div>`:""}
-        </div>
-      </div>
-    </div>
 
-    ${a?T`
-      ${this.deleting?T`
-      <button class="button is-loading delete-button is-static"></button>
-      `:T`
-      <button @click="${this.onSendDeletePage}" class="delete delete-button"></button>`}`:""}
+      <div class="columns">
+        ${this.index?T`
+              <div class="column col-index is-1 is-size-7">${this.index}.</div>
+            `:""}
+        <div class="column col-date is-2">
+          <div>${t?t.toLocaleDateString():""}</div>
+          <div>${t?t.toLocaleTimeString():""}</div>
+        </div>
+        <div class="column">
+          <div class="media">
+            <figure class="media-left">
+              <p class="">
+                ${this.iconValid?T` <img
+                      class="favicon"
+                      @error="${()=>this.iconValid=!1}"
+                      src="${this.replayPrefix}/${this.page.timestamp}id_/${e.favIconUrl}"
+                    />`:T` <span class="favicon"></span>`}
+              </p>
+            </figure>
+            <div class="media-content ${this.isCurrent?"current":""}">
+              <div role="heading" aria-level="${this.isSidebar?"4":"3"}">
+                <a
+                  @dblclick="${this.onReload}"
+                  @click="${this.onReplay}"
+                  href="${Je("pages",this.page.url,this.page.timestamp)}"
+                >
+                  <p class="is-size-6 has-text-weight-bold has-text-link text">
+                    <keyword-mark keywords="${this.query}"
+                      >${e.title||e.url}</keyword-mark
+                    >
+                  </p>
+                  <p class="has-text-dark text">
+                    <keyword-mark keywords="${this.query}"
+                      >${e.url}</keyword-mark
+                    >
+                  </p>
+                  <p class="has-text-grey-dark text is-inline-date">
+                    ${t?t.toLocaleString():""}
+                  </p>
+                </a>
+                ${this.textSnippet?T` <div class="text">
+                      <keyword-mark keywords="${this.query}"
+                        >${this.textSnippet}</keyword-mark
+                      >
+                    </div>`:T``}
+              </div>
+              ${i?T` <div class="media-right" style="margin-right: 2em">
+                    ${Re()(e.size)}
+                  </div>`:""}
+            </div>
+          </div>
+        </div>
+
+        ${a?T` ${this.deleting?T`
+                  <button
+                    class="button is-loading delete-button is-static"
+                  ></button>
+                `:T` <button
+                  @click="${this.onSendDeletePage}"
+                  class="delete delete-button"
+                ></button>`}`:""}
+      </div>
     `}async updateFavIcon(){if(!this.page.favIconUrl)return void(this.favIconData=null);const e=await fetch(`${this.replayPrefix}/${this.page.timestamp}id_/${this.page.favIconUrl}`);if(200!=e.status)return void(this.favIconData=null);const t=await e.arrayBuffer(),i=e.headers.get("content-type");try{this.favIconData=`data:${i};base64,${btoa(String.fromCharCode.apply(null,t))}`}catch(e){console.log(e),this.favIconData=null}}updateSnippet(){const e=this.textSnippet;if(!this.query||!this.page.text)return this.textSnippet=null,void this.requestUpdate("textSnippet",e);let t=this.page.text,i=this.query,a=t.indexOf(this.query);if(a<0){let r=t.toLowerCase(),o=i.toLowerCase();if(a=r.indexOf(o),a<0)return this.textSnippet=null,void this.requestUpdate("textSnippet",e);t=r,i=o}let r=a;a=Math.max(a-100,0),r=Math.min(r+200,t.length),0===a&&r===t.length?this.textSnippet=t:this.textSnippet="..."+t.slice(a,r)+"...",this.requestUpdate("textSnippet",e)}onReplay(e,t=!1){e.preventDefault();const i={url:this.page.url,ts:this.page.timestamp};return this.sendChangeEvent(i,t),!1}onReload(e){return this.onReplay(e,!0)}sendChangeEvent(e,t){this.dispatchEvent(new CustomEvent("coll-tab-nav",{bubbles:!0,composed:!0,detail:{data:e,reload:t}}))}onSendDeletePage(){const e=this.page;this.dispatchEvent(new CustomEvent("delete-page",{detail:{page:e}}))}onSendSelToggle(e){const t=this.page.id,i=e.currentTarget.checked;this.dispatchEvent(new CustomEvent("sel-page",{detail:{page:t,selected:i}}))}}customElements.define("wr-page-entry",Ki);customElements.define("wr-coll-replay",class extends X{constructor(){super(),this.replayUrl="",this.replayTS="",this.actualTS="",this.url="",this.ts="",this.title="",this.collInfo=null,this.showAuth=!1,this.reauthWait=null,this.authFileHandle=null}static get properties(){return{collInfo:{type:Object},sourceUrl:{type:String},url:{type:String},ts:{type:String},replayUrl:{type:String},replayTS:{type:String},actualTS:{type:String},title:{type:String},iframeUrl:{type:String},showAuth:{type:Boolean},authFileHandle:{type:Object}}}firstUpdated(){window.addEventListener("message",(e=>this.onReplayMessage(e))),navigator.serviceWorker.addEventListener("message",(e=>this.handleAuthMessage(e)))}async handleAuthMessage(e){if("authneeded"===e.data.type&&this.collInfo&&e.data.coll===this.collInfo.coll){if(e.data.fileHandle){this.authFileHandle=e.data.fileHandle;try{if("granted"===await this.authFileHandle.requestPermission({mode:"read"}))return this.showAuth=!1,this.reauthWait=null,void this.refresh()}catch(e){console.warn(e)}}else this.authFileHandle=null;this.reauthWait?await this.reauthWait:this.showAuth=!0}}doSetIframeUrl(){this.iframeUrl=this.url?`${this.collInfo.replayPrefix}/${this.ts||""}mp_/${this.url}`:""}updated(e){if((e.has("sourceUrl")||e.has("collInfo"))&&(this.reauthWait=null),!this.url||this.replayUrl==this.url&&this.replayTS==this.ts||!e.has("url")&&!e.has("ts")||(this.replayUrl=this.url,this.replayTS=this.ts,this.showAuth=!1,this.reauthWait=null,this.doSetIframeUrl()),this.iframeUrl&&e.has("iframeUrl")){this.waitForLoad();const e={title:"Archived Page",replayTitle:!1};this.dispatchEvent(new CustomEvent("update-title",{bubbles:!0,composed:!0,detail:e}))}if(this.replayUrl&&e.has("replayUrl")||this.replayTS&&e.has("replayTS")){const e={url:this.replayUrl,ts:this.replayTS};this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{replaceLoc:!0,data:e}}))}if(this.title&&(e.has("title")||e.has("actualTS"))){const e={title:this.title,url:this.replayUrl,ts:this.actualTS,replayTitle:!0};this.dispatchEvent(new CustomEvent("update-title",{bubbles:!0,composed:!0,detail:e}))}}setDisablePointer(e){const t=this.renderRoot.querySelector("iframe");t&&(t.style.pointerEvents=e?"none":"all")}onReplayMessage(e){const t=this.renderRoot.querySelector("iframe");if(t&&e.source===t.contentWindow)if("load"===e.data.wb_type||"replace-url"===e.data.wb_type){if(this.replayTS=e.data.is_live?"":e.data.ts,this.actualTS=e.data.ts,this.replayUrl=e.data.url,this.title=e.data.title||this.title,this.clearLoading(t.contentWindow),e.data.icons){const t=e.data.icons;this.dispatchEvent(new CustomEvent("replay-favicons",{bubbles:!0,composed:!0,detail:{icons:t}}))}}else"title"===e.data.wb_type&&(this.title=e.data.title)}onReAuthed(e){this.reauthWait=(async()=>{if(this.authFileHandle){if("granted"!==await this.authFileHandle.requestPermission({mode:"read"}))return void(this.reauthWait=null);this.authFileHandle=null}else{const t=e.detail.headers;await fetch(`${this.collInfo.apiPrefix}/updateAuth`,{method:"POST",body:JSON.stringify({headers:t})})}this.showAuth&&(this.showAuth=!1,this.reauthWait=null),this.refresh()})()}waitForLoad(){this.setLoading(),this._loadPoll=window.setInterval((()=>{const e=this.renderRoot.querySelector("iframe");e&&e.contentDocument&&e.contentWindow&&("complete"!==e.contentDocument.readyState||e.contentWindow._WBWombat)||this.clearLoading(e&&e.contentWindow)}),5e3)}clearLoading(e){this.dispatchEvent(new CustomEvent("replay-loading",{detail:{loading:!1}})),this._loadPoll&&(window.clearInterval(this._loadPoll),this._loadPoll=null),e&&e.addEventListener("beforeunload",(()=>{this.setLoading()}))}setLoading(){this.dispatchEvent(new CustomEvent("replay-loading",{detail:{loading:!0}}))}refresh(){const e=this.renderRoot.querySelector("iframe");if(!e)return;const t=this.iframeUrl;this.doSetIframeUrl(),t!==this.iframeUrl&&this.url!==this.replayUrl||(this.waitForLoad(),e.contentWindow.location.reload())}static get styles(){return be(o`
       :host {
         display: flex;
@@ -2264,13 +2952,13 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       }
 
       .intro-panel .panel-heading {
-        font-size: 1.0em;
+        font-size: 1em;
         display: inline-block;
       }
 
       .iframe-main.modal-bg {
         z-index: 200;
-        background-color: rgba(10, 10, 10, 0.70)
+        background-color: rgba(10, 10, 10, 0.7);
       }
 
       #wrlogo {
@@ -2278,7 +2966,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       }
 
       .intro-panel .panel-block {
-        padding: 1.0em;
+        padding: 1em;
         flex-direction: column;
         line-height: 2.5em;
       }
@@ -2290,47 +2978,70 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         margin: 3em;
         background-color: white;
       }
-    `)}render(){const e=`Replay of ${this.title?`${this.title}:`:""} ${this.url}`;return T`
+    `)}render(){const e=`Replay of ${this.title?`${this.title}:`:""} ${this.url}`;return T` <h1 id="replay-heading" class="is-sr-only">${e}</h1>
 
-    <h1 id="replay-heading" class="is-sr-only">${e}</h1>
+      ${this.iframeUrl?T`
+            <div class="iframe-container">
+              <iframe
+                class="iframe-main"
+                name="___wb_replay_top_frame"
+                @message="${this.onReplayMessage}"
+                allow="autoplay 'self'; fullscreen"
+                allowfullscreen
+                src="${this.iframeUrl}"
+                title="${e}"
+              ></iframe>
 
-    ${this.iframeUrl?T`
-
-      <div class="iframe-container">
-        <iframe class="iframe-main" name="___wb_replay_top_frame" @message="${this.onReplayMessage}" allow="autoplay 'self'; fullscreen" allowfullscreen
-        src="${this.iframeUrl}" title="${e}"></iframe>
-
-        ${this.showAuth?T`
-        <div class="iframe-main modal-bg">
-          <div class="panel intro-panel">
-            <p class="panel-heading">
-              <fa-icon id="wrlogo" size="1.5rem" .svg=${pe()} aria-hidden="true"></fa-icon>
-              Authorization Needed
-            </p>
-            <div class="panel-block">
-              ${this.authFileHandle?T`
-              <p>This archive is loaded from a local file: <b>${this.authFileHandle.name}</b></p>
-              <p>The browser needs to confirm your permission to continue loading from this file.</p>
-              <button class="button is-warning is-rounded" @click="${this.onReAuthed}">Show Confirmation</button>
-              `:T`
-              <wr-gdrive
-                .sourceUrl="${this.sourceUrl}"
-                .state="trymanual"
-                .reauth="${!0}"
-                @load-ready="${this.onReAuthed}"/>`}
+              ${this.showAuth?T`
+                    <div class="iframe-main modal-bg">
+                      <div class="panel intro-panel">
+                        <p class="panel-heading">
+                          <fa-icon
+                            id="wrlogo"
+                            size="1.5rem"
+                            .svg=${pe()}
+                            aria-hidden="true"
+                          ></fa-icon>
+                          Authorization Needed
+                        </p>
+                        <div class="panel-block">
+                          ${this.authFileHandle?T`
+                                <p>
+                                  This archive is loaded from a local file:
+                                  <b>${this.authFileHandle.name}</b>
+                                </p>
+                                <p>
+                                  The browser needs to confirm your permission
+                                  to continue loading from this file.
+                                </p>
+                                <button
+                                  class="button is-warning is-rounded"
+                                  @click="${this.onReAuthed}"
+                                >
+                                  Show Confirmation
+                                </button>
+                              `:T` <wr-gdrive
+                                .sourceUrl="${this.sourceUrl}"
+                                .state="trymanual"
+                                .reauth="${!0}"
+                                @load-ready="${this.onReAuthed}"
+                              ></wr-gdrive>`}
+                        </div>
+                      </div>
+                    </div>
+                  `:""}
             </div>
-          </div>
-        </div>
-        `:""}
-      </div>
-    `:T`
-      <div class="panel intro-panel">
-        <p class="panel-heading">Replay Web Page</p>
-        <div class="panel-block">
-          <p>Enter a URL above to replay it from the web archive!</p>
-          <p>(Or, check out <a href="#view=pages">Pages</a> or <a href="#view=resources">URLs</a> to explore the contents of this archive.)</p>
-        </div>
-      </div>`}`}});var Zi=__webpack_require__(8690),Ji=__webpack_require__.n(Zi),Yi=__webpack_require__(5761),Qi=__webpack_require__.n(Yi);customElements.define("wr-sorter",class extends X{constructor(){super(),this.sortedData=[],this.data=[],this.pageResults=0,this.numResults=0,this.sortKey=null,this.sortDesc=null}static get properties(){return{id:{type:String},pageResults:{type:Number},data:{type:Array},sortedData:{type:Array},sortKey:{type:String},sortDesc:{type:Boolean}}}firstUpdated(){if(this.id){const e=localStorage.getItem(`${this.id}:sortKey`);null!==e&&(this.sortKey=e);const t=localStorage.getItem(`${this.id}:sortDesc`);null!==t&&(this.sortDesc="1"===t)}}updated(e){const t=e.has("sortKey"),i=e.has("sortDesc"),a=e.has("data");t&&null!==this.sortKey&&localStorage.setItem(`${this.id}:sortKey`,this.sortKey),i&&null!==this.sortDesc&&localStorage.setItem(`${this.id}:sortDesc`,this.sortDesc?"1":"0"),(t||i||a)&&this.sortData()}sortData(){this.sortedData=[...this.data],this.numResults=this.pageResults,""===this.sortKey?this.sortDesc&&this.sortedData.reverse():this.sortedData.sort(((e,t)=>e[this.sortKey]===t[this.sortKey]?0:this.sortDesc==e[this.sortKey]<t[this.sortKey]?1:-1)),this.sendSortChanged()}sendSortChanged(){const e={sortKey:this.sortKey,sortDesc:this.sortDesc,sortedData:this.numResults?this.sortedData.slice(0,this.numResults):this.sortedData};this.dispatchEvent(new CustomEvent("sort-changed",{detail:e}))}getMore(e=100){this.pageResults&&this.numResults>=this.sortedData.length||(this.numResults+=e,this.sendSortChanged())}static get styles(){return be(o`
+          `:T` <div class="panel intro-panel">
+            <p class="panel-heading">Replay Web Page</p>
+            <div class="panel-block">
+              <p>Enter a URL above to replay it from the web archive!</p>
+              <p>
+                (Or, check out <a href="#view=pages">Pages</a> or
+                <a href="#view=resources">URLs</a> to explore the contents of
+                this archive.)
+              </p>
+            </div>
+          </div>`}`}});var Zi=__webpack_require__(8690),Ji=__webpack_require__.n(Zi),Yi=__webpack_require__(5761),Qi=__webpack_require__.n(Yi);customElements.define("wr-sorter",class extends X{constructor(){super(),this.sortedData=[],this.data=[],this.pageResults=0,this.numResults=0,this.sortKey=null,this.sortDesc=null}static get properties(){return{id:{type:String},pageResults:{type:Number},data:{type:Array},sortedData:{type:Array},sortKey:{type:String},sortDesc:{type:Boolean}}}firstUpdated(){if(this.id){const e=localStorage.getItem(`${this.id}:sortKey`);null!==e&&(this.sortKey=e);const t=localStorage.getItem(`${this.id}:sortDesc`);null!==t&&(this.sortDesc="1"===t)}}updated(e){const t=e.has("sortKey"),i=e.has("sortDesc"),a=e.has("data");t&&null!==this.sortKey&&localStorage.setItem(`${this.id}:sortKey`,this.sortKey),i&&null!==this.sortDesc&&localStorage.setItem(`${this.id}:sortDesc`,this.sortDesc?"1":"0"),(t||i||a)&&this.sortData()}sortData(){this.sortedData=[...this.data],this.numResults=this.pageResults,""===this.sortKey?this.sortDesc&&this.sortedData.reverse():this.sortedData.sort(((e,t)=>e[this.sortKey]===t[this.sortKey]?0:this.sortDesc==e[this.sortKey]<t[this.sortKey]?1:-1)),this.sendSortChanged()}sendSortChanged(){const e={sortKey:this.sortKey,sortDesc:this.sortDesc,sortedData:this.numResults?this.sortedData.slice(0,this.numResults):this.sortedData};this.dispatchEvent(new CustomEvent("sort-changed",{detail:e}))}getMore(e=100){this.pageResults&&this.numResults>=this.sortedData.length||(this.numResults+=e,this.sendSortChanged())}static get styles(){return be(o`
       :host {
         min-width: 100px;
         box-sizing: border-box !important;
@@ -2342,9 +3053,10 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
     <div class="select is-small">
       <select id="sort-select" @change=${e=>this.sortKey=e.currentTarget.value}>
       ${this.sortKeys.map((e=>T`
-        <option value="${e.key}" ?selected="${e.key===this.sortKey}">Sort By: ${e.name}
-        </option>
-      `))}
+          <option value="${e.key}" ?selected="${e.key===this.sortKey}">
+            Sort By: ${e.name}
+          </option>
+        `))}
       </select>
     </div>
     <button @click=${()=>this.sortDesc=!this.sortDesc} class="button is-small">
@@ -2352,168 +3064,295 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       <span class="is-sr-only">${this.sortDesc?"Ascending":"Descending"}</span>
       <span class="icon"><fa-icon aria-hidden="true" .svg=${this.sortDesc?Qi():Ji()}></span>
     </button>`}});class Xi extends X{static get filters(){return[{name:"HTML",filter:"text/html,text/xhtml"},{name:"Images",filter:"image/"},{name:"Audio/Video",filter:"audio/,video/"},{name:"PDF",filter:"application/pdf"},{name:"Javascript",filter:"application/javascript,application/x-javascript"},{name:"CSS",filter:"text/css"},{name:"Fonts",filter:"font/,application/font-woff"},{name:"Plain Text",filter:"text/plain"},{name:"JSON",filter:"application/json"},{name:"DASH/HLS",filter:"application/dash+xml,application/x-mpegURL,application/vnd.apple.mpegurl"},{name:"All URLs",filter:""}]}static get sortKeys(){return[{key:"url",name:"URL"},{key:"ts",name:"Date"},{key:"mime",name:"Mime Type"},{key:"status",name:"Status"}]}constructor(){super(),this.collInfo=null,this.isSidebar=!1,this.currMime="",this.query="",this.urlSearchType="",this.filteredResults=[],this.sortedResults=[],this.results=[],this.newQuery=null,this.tryMore=!1,this.loading=!1,this.sortKey="url",this.sortDesc=!1}static get properties(){return{collInfo:{type:Object},isSidebar:{type:Boolean},currMime:{type:String},query:{type:String},urlSearchType:{type:String},filteredResults:{type:Array},sortedResults:{type:Array},loading:{type:Boolean},sortKey:{type:String},sortDesc:{type:Boolean}}}firstUpdated(){""===this.urlSearchType&&(this.urlSearchType="prefix")}_timedUpdate(){null!==this.newQuery&&(this.query=this.newQuery,this.newQuery=null)}updated(e){if(e.has("query")||e.has("urlSearchType")||e.has("currMime")){this.doLoadResources();const t={query:this.query,urlSearchType:this.urlSearchType,currMime:this.currMime},i=!e.has("currMime")&&!e.has("urlSearchType");this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{replaceLoc:i,data:t}}))}(e.has("sortKey")||e.has("sortDesc"))&&this.filter()}async doLoadResources(e=!1){if(e&&(!this.tryMore||!this.results.length))return;if(this.loading)return;this.loading=!0;let t="contains"!==this.urlSearchType?this.query:"";const i=t&&"prefix"===this.urlSearchType?1:0;t&&!t.startsWith("http")&&(t="https://"+t);const a=this.currMime,r=new URLSearchParams({mime:a,url:t,prefix:i,count:100});if(e){const e=this.results[this.results.length-1];r.set("fromMime",e.mime),r.set("fromUrl",e.url),r.set("fromStatus",e.status),r.set("fromTs",new Date(e.date).getTime())}let o=await fetch(`${this.collInfo.apiPrefix}/urls?${r.toString()}`);o=await o.json(),this.results=e?this.results.concat(o.urls):o.urls,this.tryMore=o.urls.length>=100,this.filter(),this.loading=!1}onChangeTypeSearch(e){this.currMime=e.currentTarget.value}onChangeQuery(e){this.newQuery=e.currentTarget.value,this._ival&&window.clearTimeout(this._ival),this._ival=window.setTimeout((()=>this._timedUpdate()),250)}onClickUrlType(e){this.urlSearchType=e.currentTarget.value}filter(){const e=[],t="contains"===this.urlSearchType?this.query:"";for(const i of this.results)(!t||i.url.indexOf(t)>=0)&&e.push(i);this.filteredResults=e}onScroll(e){const t=e.currentTarget,i=t.scrollHeight-t.scrollTop-t.clientHeight;this.tryMore&&i<40&&this.doLoadResources(!0)}static get styles(){return be(o`
-    :host {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      min-width: 0px;
-      flex-direction: column;
-    }
-    :host(.sidebar) .is-hidden-tablet {
-      display: flex !important;
-    }
+      :host {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        min-width: 0px;
+        flex-direction: column;
+      }
+      :host(.sidebar) .is-hidden-tablet {
+        display: flex !important;
+      }
 
-    :host(.sidebar) .is-hidden-mobile {
-      display: none !important;
-    }
+      :host(.sidebar) .is-hidden-mobile {
+        display: none !important;
+      }
 
-    :host(.sidebar) .level, :host(.sidebar) .level-left, :host(.sidebar) .level-right {
-      display: block !important;
-    }
+      :host(.sidebar) .level,
+      :host(.sidebar) .level-left,
+      :host(.sidebar) .level-right {
+        display: block !important;
+      }
 
-    :host(.sidebar) .columns {
-      display: flex !important;
-      flex-direction: column;
-    }
+      :host(.sidebar) .columns {
+        display: flex !important;
+        flex-direction: column;
+      }
 
-    :host(.sidebar) .column {
-      width: 100% !important;
-    }
+      :host(.sidebar) .column {
+        width: 100% !important;
+      }
 
-    .notification {
-      width: 100%;
-    }
-    .all-results {
-      margin: 0 0 0 0.5em;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-    .main-scroll {
-      flex-grow: 1;
-    }
-    .minihead {
-      font-size: 10px;
-      font-weight: bold;
-    }
-    .columns {
-      margin: 0px;
-    }
-    thead {
-      margin-bottom: 24px;
-    }
-    table th:not([align]) {
-      text-align: left;
-    }
-    .result {
-      border-bottom: 1px #dbdbdb solid;
-      min-height: fit-content;
-    }
-    .results-head {
-      border-bottom: 2px #dbdbdb solid;
-      margin-right: 16px;
-      min-height: fit-content;
-      display: block;
-      width: 100%;
-    }
-    .results-head a {
-      color: black;
-    }
-    .all-results .column {
-      word-break: break-word;
-    }
-    div.sort-header {
-      padding: 10px;
-      margin-bottom: 0px !important;
-      min-height: fit-content;
-    }
-    .flex-auto {
-      flex: auto;
-    }
-    .asc:after {
-      content: "▼";
-      font-size: 0.75em;
-    }
-    .desc:after {
-      content: "▲";
-      font-size: 0.75em;
-    }
-    .num-results {
-      margin-left: 1em;
-      font-style: italic;
-    }
+      .notification {
+        width: 100%;
+      }
+      .all-results {
+        margin: 0 0 0 0.5em;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .main-scroll {
+        flex-grow: 1;
+      }
+      .minihead {
+        font-size: 10px;
+        font-weight: bold;
+      }
+      .columns {
+        margin: 0px;
+      }
+      thead {
+        margin-bottom: 24px;
+      }
+      table th:not([align]) {
+        text-align: left;
+      }
+      .result {
+        border-bottom: 1px #dbdbdb solid;
+        min-height: fit-content;
+      }
+      .results-head {
+        border-bottom: 2px #dbdbdb solid;
+        margin-right: 16px;
+        min-height: fit-content;
+        display: block;
+        width: 100%;
+      }
+      .results-head a {
+        color: black;
+      }
+      .all-results .column {
+        word-break: break-word;
+      }
+      div.sort-header {
+        padding: 10px;
+        margin-bottom: 0px !important;
+        min-height: fit-content;
+      }
+      .flex-auto {
+        flex: auto;
+      }
+      .asc:after {
+        content: "▼";
+        font-size: 0.75em;
+      }
+      .desc:after {
+        content: "▲";
+        font-size: 0.75em;
+      }
+      .num-results {
+        margin-left: 1em;
+        font-style: italic;
+      }
     `)}render(){return T`
-    <div role="heading" aria-level="${this.isSidebar?"2":"1"}" class="is-sr-only">URLs in ${this.collInfo.title}</div>
+      <div
+        role="heading"
+        aria-level="${this.isSidebar?"2":"1"}"
+        class="is-sr-only"
+      >
+        URLs in ${this.collInfo.title}
+      </div>
 
-    <div role="heading" aria-level="${this.isSidebar?"3":"2"}" class="is-sr-only">Search and Filter</div>
-    <div class="notification level is-marginless">
-      <div class="level-left flex-auto">
-        <div class="level-item flex-auto">
-          <span class="is-hidden-mobile">Search:&nbsp;&nbsp;</span>
-          <div class="select">
-            <select @change="${this.onChangeTypeSearch}">
-            ${Xi.filters.map((e=>T`
-            <option value="${e.filter}"
-            ?selected="${e.filter===this.currMime}">
-            ${e.name}
-            </option>
-            `))}
-            </select>
-          </div>
-          <div class="field flex-auto">
-            <div class="control has-icons-left ${this.loading?"is-loading":""}">
-              <input type="text" class="input" @input="${this.onChangeQuery}" .value="${this.query}" type="text" placeholder="Enter URL to Search">
-              <span class="icon is-left"><fa-icon .svg="${He()}"/></span>
+      <div
+        role="heading"
+        aria-level="${this.isSidebar?"3":"2"}"
+        class="is-sr-only"
+      >
+        Search and Filter
+      </div>
+      <div class="notification level is-marginless">
+        <div class="level-left flex-auto">
+          <div class="level-item flex-auto">
+            <span class="is-hidden-mobile">Search:&nbsp;&nbsp;</span>
+            <div class="select">
+              <select @change="${this.onChangeTypeSearch}">
+                ${Xi.filters.map((e=>T`
+                    <option
+                      value="${e.filter}"
+                      ?selected="${e.filter===this.currMime}"
+                    >
+                      ${e.name}
+                    </option>
+                  `))}
+              </select>
+            </div>
+            <div class="field flex-auto">
+              <div
+                class="control has-icons-left ${this.loading?"is-loading":""}"
+              >
+                <input
+                  type="text"
+                  class="input"
+                  @input="${this.onChangeQuery}"
+                  .value="${this.query}"
+                  placeholder="Enter URL to Search"
+                />
+                <span class="icon is-left"
+                  ><fa-icon .svg="${He()}"></fa-icon
+                ></span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="control level-right">
-        <div style="margin-left: 1em" class="control">
-          <label class="radio has-text-left"><input type="radio" name="urltype" value="contains" ?checked="${"contains"===this.urlSearchType}" @click="${this.onClickUrlType}">&nbsp;Contains</label>
-          <label class="radio has-text-left"><input type="radio" name="urltype" value="prefix" ?checked="${"prefix"===this.urlSearchType}" @click="${this.onClickUrlType}">&nbsp;Prefix</label>
-          <label class="radio has-text-left"><input type="radio" name="urltype" value="exact" ?checked="${"exact"===this.urlSearchType}" @click="${this.onClickUrlType}">&nbsp;Exact</label>
-          <span id="num-results" class="num-results" is-pulled-right" aria-live="polite" aria-atomic="true">${this.filteredResults.length} Result(s)</span>
+        <div class="control level-right">
+          <div style="margin-left: 1em" class="control">
+            <label class="radio has-text-left"
+              ><input
+                type="radio"
+                name="urltype"
+                value="contains"
+                ?checked="${"contains"===this.urlSearchType}"
+                @click="${this.onClickUrlType}"
+              />&nbsp;Contains</label
+            >
+            <label class="radio has-text-left"
+              ><input
+                type="radio"
+                name="urltype"
+                value="prefix"
+                ?checked="${"prefix"===this.urlSearchType}"
+                @click="${this.onClickUrlType}"
+              />&nbsp;Prefix</label
+            >
+            <label class="radio has-text-left"
+              ><input
+                type="radio"
+                name="urltype"
+                value="exact"
+                ?checked="${"exact"===this.urlSearchType}"
+                @click="${this.onClickUrlType}"
+              />&nbsp;Exact</label
+            >
+            <span
+              id="num-results"
+              class="num-results"
+              is-pulled-right
+              aria-live="polite"
+              aria-atomic="true"
+              >${this.filteredResults.length} Result(s)</span
+            >
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="sort-header is-hidden-tablet">
-      <wr-sorter id="urls"
-        .sortKey="${this.sortKey}"
-        .sortDesc="${this.sortDesc}"
-        .sortKeys="${Xi.sortKeys}"
-        .data="${this.filteredResults}"
-        @sort-changed="${this.onSortChanged}">
-      </wr-sorter>
-    </div>
+      <div class="sort-header is-hidden-tablet">
+        <wr-sorter
+          id="urls"
+          .sortKey="${this.sortKey}"
+          .sortDesc="${this.sortDesc}"
+          .sortKeys="${Xi.sortKeys}"
+          .data="${this.filteredResults}"
+          @sort-changed="${this.onSortChanged}"
+        >
+        </wr-sorter>
+      </div>
 
-    <div role="heading" aria-level="${this.isSidebar?"3":"2"}" id="results-heading" class="is-sr-only">Results</div>
+      <div
+        role="heading"
+        aria-level="${this.isSidebar?"3":"2"}"
+        id="results-heading"
+        class="is-sr-only"
+      >
+        Results
+      </div>
 
-    <table class="all-results" aria-labelledby="results-heading num-results">
-      <thead>
-        <tr class="columns results-head has-text-weight-bold">
-          <th scope="col" class="column col-url is-6 is-hidden-mobile"><a role="button" href="#" @click="${this.onSort}" @keyup="${ve}" data-key="url" class="${"url"===this.sortKey?this.sortDesc?"desc":"asc":""}">URL</a></th>
-          <th scope="col" class="column col-ts is-2 is-hidden-mobile"><a role="button" href="#" @click="${this.onSort}" @keyup="${ve}" data-key="ts" class="${"ts"===this.sortKey?this.sortDesc?"desc":"asc":""}">Date</a></th>
-          <th scope="col" class="column col-mime is-3 is-hidden-mobile"><a role="button" href="#" @click="${this.onSort}" @keyup="${ve}" data-key="mime" class="${"mime"===this.sortKey?this.sortDesc?"desc":"asc":""}">Mime Type</a></th>
-          <th scope="col" class="column col-status is-1 is-hidden-mobile"><a role="button" href="#" @click="${this.onSort}" @keyup="${ve}" data-key="status" class="${"status"===this.sortKey?this.sortDesc?"desc":"asc":""}">Status</a></th>
-        </tr>
-      </thead>
-
-      <tbody class="main-scroll" @scroll="${this.onScroll}">
-      ${this.sortedResults.length?this.sortedResults.map((e=>T`
-          <tr class="columns result">
-            <td class="column col-url is-6"><p class="minihead is-hidden-tablet">URL</p><a @click="${this.onReplay}" data-url="${e.url}" data-ts="${e.ts}" href="${Je("resources",e.url,e.ts)}">
-            <keyword-mark keywords="${this.query}">${e.url}</keyword-mark>
-            </a></td>
-            <td class="column col-ts is-2"><p class="minihead is-hidden-tablet">Date</p>${new Date(e.date).toLocaleString()}</td>
-            <td class="column col-mime is-3"><p class="minihead is-hidden-tablet">Mime Type</p>${e.mime}</td>
-            <td class="column col-status is-1"><p class="minihead is-hidden-tablet">Status</p>${e.status}</td>
+      <table class="all-results" aria-labelledby="results-heading num-results">
+        <thead>
+          <tr class="columns results-head has-text-weight-bold">
+            <th scope="col" class="column col-url is-6 is-hidden-mobile">
+              <a
+                role="button"
+                href="#"
+                @click="${this.onSort}"
+                @keyup="${ve}"
+                data-key="url"
+                class="${"url"===this.sortKey?this.sortDesc?"desc":"asc":""}"
+                >URL</a
+              >
+            </th>
+            <th scope="col" class="column col-ts is-2 is-hidden-mobile">
+              <a
+                role="button"
+                href="#"
+                @click="${this.onSort}"
+                @keyup="${ve}"
+                data-key="ts"
+                class="${"ts"===this.sortKey?this.sortDesc?"desc":"asc":""}"
+                >Date</a
+              >
+            </th>
+            <th scope="col" class="column col-mime is-3 is-hidden-mobile">
+              <a
+                role="button"
+                href="#"
+                @click="${this.onSort}"
+                @keyup="${ve}"
+                data-key="mime"
+                class="${"mime"===this.sortKey?this.sortDesc?"desc":"asc":""}"
+                >Mime Type</a
+              >
+            </th>
+            <th scope="col" class="column col-status is-1 is-hidden-mobile">
+              <a
+                role="button"
+                href="#"
+                @click="${this.onSort}"
+                @keyup="${ve}"
+                data-key="status"
+                class="${"status"===this.sortKey?this.sortDesc?"desc":"asc":""}"
+                >Status</a
+              >
+            </th>
           </tr>
-        `)):T`<tr class="section"><td colspan="4"><i>No Results Found.</i></td></tr>`}
-      </tbody>
-    </table>
-      `}onSort(e){e.preventDefault();const t=e.currentTarget.getAttribute("data-key");t===this.sortKey?this.sortDesc=!this.sortDesc:(this.sortDesc=!1,this.sortKey=t)}onSortChanged(e){this.sortedResults=e.detail.sortedData,this.sortKey=e.detail.sortKey,this.sortDesc=e.detail.sortDesc}onReplay(e){e.preventDefault();const t={url:e.currentTarget.getAttribute("data-url"),ts:e.currentTarget.getAttribute("data-ts")};return this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:t}})),!1}}customElements.define("wr-coll-resources",Xi);var ea=document.currentScript&&document.currentScript.src,ta="";class ia extends X{constructor(){super(),this.replaybase="./replay/",this.replayfile=ta,this.swName="sw.js",this.mainElementName="replay-app-main",this.appName="ReplayWeb.page",this.view="replay",this.ts="",this.url="",this.query="",this.config="",this.customConfig=null,this.coll="",this.paramString=null,this.deepLink=!1,this.newWindowBase="",this.inited=!1,this.embed=null,this.reloadCount=0,this.sandbox=!1,this.noWebWorker=!1,this.noCache=!1,this.noSandbox=null,this.logo=pe(),this.loading="",this.useRuffle=!1}static setDefaultReplayFile(e){ta=e}static get properties(){return{url:{type:String},ts:{type:String},query:{type:String},source:{type:String},src:{type:String},view:{type:String},embed:{type:String},replaybase:{type:String},swName:{type:String},title:{type:String},coll:{type:String},config:{type:String},inited:{type:Boolean},paramString:{type:String},hashString:{type:String},deepLink:{type:Boolean},sandbox:{type:Boolean},noSandbox:{type:Boolean},noWebWorker:{type:Boolean},noCache:{type:Boolean},hideOffscreen:{type:Boolean},newWindowBase:{type:String},errorMessage:{type:String},requireSubdomainIframe:{type:Boolean},loading:{type:String},useRuffle:{type:Boolean}}}async doRegister(){const e=new URL(this.replaybase,window.location.href);if(this.isCrossOrigin=e.origin!==window.location.origin,this.isCrossOrigin)return void(this.inited=!0);const t=this.swName,i=this.appName,a=this.replaybase,r=this.requireSubdomainIframe;this.swmanager=new Pe({name:t,scope:a,requireSubdomainIframe:r,appName:i});try{await this.swmanager.register(),this.inited=!0}catch(e){this.errorMessage=this.swmanager.renderErrorReport(this.logo)}}handleMessage(e){const t=this.renderRoot.querySelector("iframe");if(t&&e.source===t.contentWindow){if(!e.data.view)return;if(e.data.title&&(this.title=e.data.title),!this.deepLink)return;const t=new URLSearchParams(e.data),i=new URL(window.location.href);i.hash="#"+t.toString(),window.history.replaceState({},"",i)}}firstUpdated(){this.noSandbox&&console.warn("The noSandbox flag is deprecated. ReplayWeb.page does not add a sandbox by default. To enable sandboxing, use 'sandbox' flag instead. This may result in PDFs not loading and pages opening in new windows, but may be more secure in some situations"),this.doRegister(),window.addEventListener("message",(e=>this.handleMessage(e))),this.deepLink&&(this.updateFromHash(),window.addEventListener("hashchange",(()=>this.updateFromHash()))),this.loadBrowserDefaults()}loadBrowserDefaults(){void 0!==window.GestureEvent&&void 0===window.SharedWorker&&(this.noWebWorker=!0),navigator.storage&&navigator.storage.estimate||(this.noCache=!0)}updateFromHash(){const e=new URLSearchParams(window.location.hash.slice(1));e.has("url")&&(this.url=e.get("url")),e.has("ts")&&(this.ts=e.get("ts")),e.has("query")&&(this.query=e.get("query")),e.has("view")&&(this.view=e.get("view"))}mergeConfigs(){if(!this.customConfig)return this.config;if(this.config){const e={...this.customConfig,...JSON.parse(this.config)};return JSON.stringify(e)}return JSON.stringify(this.customConfig)}updated(e){if(e.has("url")||e.has("ts")||e.has("query")||e.has("view")||e.has("source")||e.has("src")){this.embed=this.embed||"default",this.src&&(this.source=this.src);const e=new URL(this.source,document.baseURI),t=this.mergeConfigs(),i={source:e,customColl:this.coll,config:t,basePageUrl:window.location.href.split("#")[0],baseUrlSourcePrefix:this.newWindowBase,embed:this.embed};this.deepLink||i.baseUrlSourcePrefix||(i.baseUrlSourcePrefix="https://replayweb.page/"),this.noWebWorker&&(i.noWebWorker="1"),this.noCache&&(i.noCache="1"),this.hideOffscreen&&(i.hideOffscreen="1"),"eager"===this.loading&&(i.loading="eager"),"sw.js"!==this.swName&&(i.swName=this.swName),this.useRuffle&&(i.ruffle="1"),this.paramString=new URLSearchParams(i).toString(),this.hashString=new URLSearchParams({url:this.url,ts:this.ts,query:this.query,view:this.view}).toString()}}static get styles(){return be(o`
+        </thead>
+
+        <tbody class="main-scroll" @scroll="${this.onScroll}">
+          ${this.sortedResults.length?this.sortedResults.map((e=>T`
+                  <tr class="columns result">
+                    <td class="column col-url is-6">
+                      <p class="minihead is-hidden-tablet">URL</p>
+                      <a
+                        @click="${this.onReplay}"
+                        data-url="${e.url}"
+                        data-ts="${e.ts}"
+                        href="${Je("resources",e.url,e.ts)}"
+                      >
+                        <keyword-mark keywords="${this.query}"
+                          >${e.url}</keyword-mark
+                        >
+                      </a>
+                    </td>
+                    <td class="column col-ts is-2">
+                      <p class="minihead is-hidden-tablet">Date</p>
+                      ${new Date(e.date).toLocaleString()}
+                    </td>
+                    <td class="column col-mime is-3">
+                      <p class="minihead is-hidden-tablet">Mime Type</p>
+                      ${e.mime}
+                    </td>
+                    <td class="column col-status is-1">
+                      <p class="minihead is-hidden-tablet">Status</p>
+                      ${e.status}
+                    </td>
+                  </tr>
+                `)):T`<tr class="section">
+                <td colspan="4"><i>No Results Found.</i></td>
+              </tr>`}
+        </tbody>
+      </table>
+    `}onSort(e){e.preventDefault();const t=e.currentTarget.getAttribute("data-key");t===this.sortKey?this.sortDesc=!this.sortDesc:(this.sortDesc=!1,this.sortKey=t)}onSortChanged(e){this.sortedResults=e.detail.sortedData,this.sortKey=e.detail.sortKey,this.sortDesc=e.detail.sortDesc}onReplay(e){e.preventDefault();const t={url:e.currentTarget.getAttribute("data-url"),ts:e.currentTarget.getAttribute("data-ts")};return this.dispatchEvent(new CustomEvent("coll-tab-nav",{detail:{data:t}})),!1}}customElements.define("wr-coll-resources",Xi);var ea=document.currentScript&&document.currentScript.src,ta="";class ia extends X{constructor(){super(),this.replaybase="./replay/",this.replayfile=ta,this.swName="sw.js",this.mainElementName="replay-app-main",this.appName="ReplayWeb.page",this.view="replay",this.ts="",this.url="",this.query="",this.config="",this.customConfig=null,this.coll="",this.paramString=null,this.deepLink=!1,this.newWindowBase="",this.inited=!1,this.embed=null,this.reloadCount=0,this.sandbox=!1,this.noWebWorker=!1,this.noCache=!1,this.noSandbox=null,this.logo=pe(),this.loading="",this.useRuffle=!1}static setDefaultReplayFile(e){ta=e}static get properties(){return{url:{type:String},ts:{type:String},query:{type:String},source:{type:String},src:{type:String},view:{type:String},embed:{type:String},replaybase:{type:String},swName:{type:String},title:{type:String},coll:{type:String},config:{type:String},inited:{type:Boolean},paramString:{type:String},hashString:{type:String},deepLink:{type:Boolean},sandbox:{type:Boolean},noSandbox:{type:Boolean},noWebWorker:{type:Boolean},noCache:{type:Boolean},hideOffscreen:{type:Boolean},newWindowBase:{type:String},errorMessage:{type:String},requireSubdomainIframe:{type:Boolean},loading:{type:String},useRuffle:{type:Boolean}}}async doRegister(){const e=new URL(this.replaybase,window.location.href);if(this.isCrossOrigin=e.origin!==window.location.origin,this.isCrossOrigin)return void(this.inited=!0);const t=this.swName,i=this.appName,a=this.replaybase,r=this.requireSubdomainIframe;this.swmanager=new Pe({name:t,scope:a,requireSubdomainIframe:r,appName:i});try{await this.swmanager.register(),this.inited=!0}catch(e){this.errorMessage=this.swmanager.renderErrorReport(this.logo)}}handleMessage(e){const t=this.renderRoot.querySelector("iframe");if(t&&e.source===t.contentWindow){if(!e.data.view)return;if(e.data.title&&(this.title=e.data.title),!this.deepLink)return;const t=new URLSearchParams(e.data),i=new URL(window.location.href);i.hash="#"+t.toString(),window.history.replaceState({},"",i)}}firstUpdated(){this.noSandbox&&console.warn("The noSandbox flag is deprecated. ReplayWeb.page does not add a sandbox by default. To enable sandboxing, use 'sandbox' flag instead. This may result in PDFs not loading and pages opening in new windows, but may be more secure in some situations"),this.doRegister(),window.addEventListener("message",(e=>this.handleMessage(e))),this.deepLink&&(this.updateFromHash(),window.addEventListener("hashchange",(()=>this.updateFromHash()))),this.loadBrowserDefaults()}loadBrowserDefaults(){void 0!==window.GestureEvent&&void 0===window.SharedWorker&&(this.noWebWorker=!0),navigator.storage&&navigator.storage.estimate||(this.noCache=!0)}updateFromHash(){const e=new URLSearchParams(window.location.hash.slice(1));e.has("url")&&(this.url=e.get("url")),e.has("ts")&&(this.ts=e.get("ts")),e.has("query")&&(this.query=e.get("query")),e.has("view")&&(this.view=e.get("view"))}mergeConfigs(){if(!this.customConfig)return this.config;if(this.config){const e={...this.customConfig,...JSON.parse(this.config)};return JSON.stringify(e)}return JSON.stringify(this.customConfig)}updated(e){if(e.has("url")||e.has("ts")||e.has("query")||e.has("view")||e.has("source")||e.has("src")){this.embed=this.embed||"default",this.src&&(this.source=this.src);const e=new URL(this.source,document.baseURI),t=this.mergeConfigs(),i={source:e,customColl:this.coll,config:t,basePageUrl:window.location.href.split("#")[0],baseUrlSourcePrefix:this.newWindowBase,embed:this.embed};this.deepLink||i.baseUrlSourcePrefix||(i.baseUrlSourcePrefix="https://replayweb.page/"),this.noWebWorker&&(i.noWebWorker="1"),this.noCache&&(i.noCache="1"),this.hideOffscreen&&(i.hideOffscreen="1"),"eager"===this.loading&&(i.loading="eager"),"sw.js"!==this.swName&&(i.swName=this.swName),this.useRuffle&&(i.ruffle="1"),this.paramString=new URLSearchParams(i).toString(),this.hashString=new URLSearchParams({url:this.url,ts:this.ts,query:this.query,view:this.view}).toString()}}static get styles(){return be(o`
       .logo {
         margin: 1em;
         flex-grow: 1;
@@ -2538,15 +3377,16 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         display: block;
       }
     `)}render(){return T`
-    ${this.paramString&&this.hashString&&this.inited?T`
-      <iframe sandbox="${(e=>null!=e?e:R)(this.sandbox?"allow-downloads allow-modals allow-orientation-lock allow-pointer-lock         allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts         allow-same-origin allow-forms":void 0)}"
-
-      @load="${this.onLoad}" src="${this.replaybase}${this.replayfile}?${this.paramString}#${this.hashString}" allow="autoplay *; fullscreen"
-      title="Replay of ${this.title?`${this.title}:`:""} ${this.url}"></iframe>
-
-      `:T``}
-
-    ${this.errorMessage}
+      ${this.paramString&&this.hashString&&this.inited?T`
+            <iframe
+              sandbox="${(e=>null!=e?e:R)(this.sandbox?"allow-downloads allow-modals allow-orientation-lock allow-pointer-lock         allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts         allow-same-origin allow-forms":void 0)}"
+              @load="${this.onLoad}"
+              src="${this.replaybase}${this.replayfile}?${this.paramString}#${this.hashString}"
+              allow="autoplay *; fullscreen"
+              title="Replay of ${this.title?`${this.title}:`:""} ${this.url}"
+            ></iframe>
+          `:T``}
+      ${this.errorMessage}
     `}onLoad(e){if(this.isCrossOrigin)return;const t=e.target.contentWindow,i=e.target.contentDocument;if(t.navigator.serviceWorker&&!t.navigator.serviceWorker.controller&&this.reloadCount<=2)return this.reloadCount++,void setTimeout((()=>t.location.reload()),100);if(this.reloadCount=0,t.customElements.get(this.mainElementName))return;const a=i.createElement("script");a.src=ea,i.head.appendChild(a)}}!async function(){customElements.define("replay-web-page",ia)}();var aa=__webpack_require__(7589),ra=__webpack_require__.n(aa),oa=__webpack_require__(2561),sa=__webpack_require__.n(oa),na=__webpack_require__(252),la=__webpack_require__.n(na);class ca extends Kt{constructor(){super(),this._sizeUpdater=null,this.totalSize=0}static get properties(){return{...Kt.properties,totalSize:{type:Number},shareOpts:{type:Object}}}static get styles(){return be(ca.compStyles)}static get compStyles(){return o`
     .rec-button {
       display: flex;
@@ -2829,7 +3669,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       (Size: <b>${Re()(this.deleteConfirm.size)}</b>)</p>
       <button @click="${this.doDelete}"class="button is-danger">Delete</button>
       <button @click="${()=>this.deleteConfirm=null}" class="button">Cancel</button>
-    </wr-modal>`:null}onIpfsShare(e){e.detail.pending?this.ipfsSharePending++:this.ipfsSharePending--}onDeleteColl(e){if(e.preventDefault(),e.stopPropagation(),!this.sortedColls)return;const t=Number(e.currentTarget.getAttribute("data-coll-index"));this.deleteConfirm=this.sortedColls[t]}async doDelete(){if(!this.deleteConfirm)return;this._deleting[this.deleteConfirm.sourceUrl]=!0,this.requestUpdate();const e=this.renderRoot.querySelector(`wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`);e&&await e.doDelete(),this.deleteConfirm=null}renderEmpty(){return T`No Archives. Click "Create New" above to create a new archive and start recording!`}});var $a=__webpack_require__(6672),_a=__webpack_require__.n($a);ia.setDefaultReplayFile("replay.html");class Sa extends ia{constructor(){super(),this.replaybase="./replay/",this.replayfile="record.html",this.mainElementName="archive-web-page-app",this.appName="Embedded ArchiveWeb.page",this.embed="default",this.noWebWorker=!0,this.proxyPrefix="https://wabac-cors-proxy.webrecorder.workers.dev/proxy/",this.archivePrefix="";const e=new URL(window.location);e.hash="",this.logo=_a(),this.customConfig={prefix:this.proxyPrefix,isLive:!1,archivePrefix:this.archivePrefix,baseUrl:e.href,baseUrlHashReplay:!1,recording:!0,noPostToGet:!0},this.downloaded=null,this.source="proxy://"+this.proxyPrefix}static get properties(){return{...ia.properties,archivePrefix:{type:String},proxyPrefix:{type:String}}}updated(e){e.has("proxyPrefix")&&(this.customConfig.proxyPrefix=this.proxyPrefix),e.has("archivePrefix")&&(this.customConfig.archivePrefix=this.archivePrefix,this.customConfig.isLive=!this.archivePrefix),super.updated(e)}handleMessage(e){this.downloaded&&"object"==typeof e.data&&"downloadedBlob"===e.data.msg_type&&(this.downloaded(e.data.url),this.downloaded=null)}doDownload(){const e=this.renderRoot.querySelector("iframe");if(!e)return;const t=new Promise((e=>{this.downloaded=e}));return e.contentWindow.postMessage({msg_type:"downloadToBlob"}),t}}!async function(){customElements.define("record-web-page",Sa)}();var za=__webpack_require__(2377),Ca=__webpack_require__.n(za),Ia=__webpack_require__(2651),Aa=__webpack_require__.n(Ia);customElements.define("wr-btrix-upload",class extends X{static get properties(){return{btrixOpts:{type:Object},coll:{type:Object},uploadColl:{type:Object},status:{type:String},uploadId:{type:String},uploadTime:{type:Number},isUploadNeeded:{type:Boolean},actualSize:{type:Number},uploadSize:{type:Number},uploadTotal:{type:Number}}}static get styles(){return be(o``)}updated(e){if(e.has("uploadColl")){const{coll:e,isUploadNeeded:t}=this.uploadColl;this.coll=e,this.actualSize=0,this.isUploadNeeded=t,this.uploadTime=this.coll.uploadTime,this.uploadId=this.coll.uploadId}e.has("coll")&&this.coll&&this.pollUploadState()}async pollUploadState(){if(this.pollingUploadState)return;this.pollingUploadState=!0;for(;;){const e=await fetch(`./w/api/c/${this.coll.id}/upload`),t=await e.json();if(this.status=t.status,this.uploadTime=t.uploadTime,this.uploadId=t.uploadId,"uploading"===this.status?this.isUploadNeeded=!1:"idle"===this.status&&this.btrixOpts&&this.btrixOpts.client&&t.uploadTime&&t.uploadId&&t.mtime<=t.uploadTime?this.getRemoteUpload():this.uploadId||(this.isUploadNeeded=!0),this.uploadSize=t.size,this.uploadTotal=t.totalSize,"uploading"!==this.status)break;await new Promise((e=>setTimeout(e,1e3)))}this.pollingUploadState=!1}async getRemoteUpload(){try{const e=await this.btrixOpts.client.getRemoteUpload(this.uploadId);this.actualSize=e.fileSize}catch(e){this.isUploadNeeded=!0,this.status="missing"}}render(){if(!this.coll)return T``;const e=this.uploadTime,t=!this.isUploadNeeded&&e;let i="";try{if(this.btrixOpts.client&&this.uploadId){const{client:e}=this.btrixOpts;i=new URL(`/orgs/${e.defaultOrg}/artifacts/upload/${this.uploadId}`,e.url).href}}catch(e){}return T`
+    </wr-modal>`:null}onIpfsShare(e){e.detail.pending?this.ipfsSharePending++:this.ipfsSharePending--}onDeleteColl(e){if(e.preventDefault(),e.stopPropagation(),!this.sortedColls)return;const t=Number(e.currentTarget.getAttribute("data-coll-index"));this.deleteConfirm=this.sortedColls[t]}async doDelete(){if(!this.deleteConfirm)return;this._deleting[this.deleteConfirm.sourceUrl]=!0,this.requestUpdate();const e=this.renderRoot.querySelector(`wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`);e&&await e.doDelete(),this.deleteConfirm=null}renderEmpty(){return T`No Archives. Click "Create New" above to create a new archive and start recording!`}});var $a=__webpack_require__(6672),Sa=__webpack_require__.n($a);ia.setDefaultReplayFile("replay.html");class _a extends ia{constructor(){super(),this.replaybase="./replay/",this.replayfile="record.html",this.mainElementName="archive-web-page-app",this.appName="Embedded ArchiveWeb.page",this.embed="default",this.noWebWorker=!0,this.proxyPrefix="https://wabac-cors-proxy.webrecorder.workers.dev/proxy/",this.archivePrefix="";const e=new URL(window.location);e.hash="",this.logo=Sa(),this.customConfig={prefix:this.proxyPrefix,isLive:!1,archivePrefix:this.archivePrefix,baseUrl:e.href,baseUrlHashReplay:!1,recording:!0,noPostToGet:!0},this.downloaded=null,this.source="proxy://"+this.proxyPrefix}static get properties(){return{...ia.properties,archivePrefix:{type:String},proxyPrefix:{type:String}}}updated(e){e.has("proxyPrefix")&&(this.customConfig.proxyPrefix=this.proxyPrefix),e.has("archivePrefix")&&(this.customConfig.archivePrefix=this.archivePrefix,this.customConfig.isLive=!this.archivePrefix),super.updated(e)}handleMessage(e){this.downloaded&&"object"==typeof e.data&&"downloadedBlob"===e.data.msg_type&&(this.downloaded(e.data.url),this.downloaded=null)}doDownload(){const e=this.renderRoot.querySelector("iframe");if(!e)return;const t=new Promise((e=>{this.downloaded=e}));return e.contentWindow.postMessage({msg_type:"downloadToBlob"}),t}}!async function(){customElements.define("record-web-page",_a)}();var za=__webpack_require__(2377),Ca=__webpack_require__.n(za),Ia=__webpack_require__(2651),Ua=__webpack_require__.n(Ia);customElements.define("wr-btrix-upload",class extends X{static get properties(){return{btrixOpts:{type:Object},coll:{type:Object},uploadColl:{type:Object},status:{type:String},uploadId:{type:String},uploadTime:{type:Number},isUploadNeeded:{type:Boolean},actualSize:{type:Number},uploadSize:{type:Number},uploadTotal:{type:Number}}}static get styles(){return be(o``)}updated(e){if(e.has("uploadColl")){const{coll:e,isUploadNeeded:t}=this.uploadColl;this.coll=e,this.actualSize=0,this.isUploadNeeded=t,this.uploadTime=this.coll.uploadTime,this.uploadId=this.coll.uploadId}e.has("coll")&&this.coll&&this.pollUploadState()}async pollUploadState(){if(this.pollingUploadState)return;this.pollingUploadState=!0;for(;;){const e=await fetch(`./w/api/c/${this.coll.id}/upload`),t=await e.json();if(this.status=t.status,this.uploadTime=t.uploadTime,this.uploadId=t.uploadId,"uploading"===this.status?this.isUploadNeeded=!1:"idle"===this.status&&this.btrixOpts&&this.btrixOpts.client&&t.uploadTime&&t.uploadId&&t.mtime<=t.uploadTime?this.getRemoteUpload():this.uploadId||(this.isUploadNeeded=!0),this.uploadSize=t.size,this.uploadTotal=t.totalSize,"uploading"!==this.status)break;await new Promise((e=>setTimeout(e,1e3)))}this.pollingUploadState=!1}async getRemoteUpload(){try{const e=await this.btrixOpts.client.getRemoteUpload(this.uploadId);this.actualSize=e.fileSize}catch(e){this.isUploadNeeded=!0,this.status="missing"}}render(){if(!this.coll)return T``;const e=this.uploadTime,t=!this.isUploadNeeded&&e;let i="";try{if(this.btrixOpts.client&&this.uploadId){const{client:e}=this.btrixOpts;i=new URL(`/orgs/${e.defaultOrg}/artifacts/upload/${this.uploadId}`,e.url).href}}catch(e){}return T`
       <wr-modal
       @modal-closed="${()=>this.coll=null}"
       title="Upload To Browsertrix Cloud">
@@ -2899,10 +3739,10 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
                   </p>
                   `;default:return""}}renderDeleteUploaded(){return T`
     <span><button class="button is-small" title="Delete Upload from Browsertrix Cloud" type="button" @click="${this.onDeleteUpload}">
-    <fa-icon aria-hidden="true" class="has-text-danger pr-2" .svg="${Aa()}"></fa-icon>
+    <fa-icon aria-hidden="true" class="has-text-danger pr-2" .svg="${Ua()}"></fa-icon>
     Delete
     </button></span>
-    `}async onUpload(){const e=this.btrixOpts.client,t=await e.getOrg(this.btrixOpts.orgName),i=new URL(`/api/orgs/${t}/uploads/stream`,e.url);this.uploadId&&i.searchParams.set("replaceId",this.uploadId);const a=(new Date).toLocaleString();i.searchParams.set("notes",`Uploaded by ArchiveWeb.page 0.11.1 at ${a}`);const r=i.href,o={Authorization:e.auth},s=JSON.stringify({url:r,headers:o});this.status="uploading",this.uploadSize=0,this.uploadTotal=0;const n=await fetch(`./w/api/c/${this.coll.id}/upload?format=wacz&pages=all`,{method:"POST",body:s});(await n.json()).uploading&&this.pollUploadState()}async onCancelUpload(){const e=JSON.stringify({abortUpload:!0});await fetch(`./w/api/c/${this.coll.id}/upload`,{method:"POST",body:e}),this.pollUploadState()}async onDeleteUpload(){try{const{client:e}=this.btrixOpts;if(!e)return;await e.deleteUpload(this.uploadId),await fetch(`./w/api/c/${this.coll.id}/upload`,{method:"DELETE"}),this.status="deleted",this.isUploadNeeded=!0,this.uploadTime=this.btrixOpts.uploadTime=null,this.uploadId=this.btrixOpts.uploadId=null}catch(e){this.status="deleteFailed"}}});class Ua{static async login({url:e,username:t,password:i,orgName:a}){const r=e+"/api/auth/jwt/login",o=new FormData;o.append("username",t),o.append("password",i);const s=await fetch(r,{method:"POST",body:o}),n=await s.json(),{token_type:l,access_token:c}=n;if(!c||!l)throw new Error("Invalid login");const d=new Ua(e,l+" "+c),h=await d.getOrg(a);return d.defaultOrg=h,d}constructor(e,t){this.url=e,this.auth=t,this.defaultOrg=null}async fetchAPI(e,t="GET",i=null){const a={Authorization:this.auth};"GET"!==t&&(a["Content-Type"]="application/json");try{const r=await fetch(this.url+e,{headers:a,method:t,body:i,duplex:"half"});return await r.json()}catch(e){return console.warn(e),{}}}async getOrg(e=""){const t=await this.fetchAPI("/api/users/me-with-orgs"),{orgs:i}=t;if(!i||!i.length)return null;if(!e)return i[0].id;for(const t of i)if(t.name===e)return t.id;return i[0].id}async getRemoteUpload(e,t=null){const i=this.defaultOrg||t,a=await this.fetchAPI(`/api/orgs/${i}/uploads/${e}`);if(!a.name)throw new Error("upload_missing");return a}async deleteUpload(e,t=null){const i=this.defaultOrg||t,a=JSON.stringify({crawl_ids:[e]});if(!(await this.fetchAPI(`/api/orgs/${i}/uploads/delete`,"POST",a)).deleted)throw new Error("delete_failed")}}const Pa="https://w3s.link/";function La(e){const{hostname:t,protocol:i,pathname:a}=new URL(e),r=i.slice(0,-1);if(!t){const[e,...t]=a.slice(2).split("/");return{type:r,cid:e,path:"/"+t.join("/")}}return{type:r,cid:t,path:a}}async function Da(e){return qa(e)?e:Na(e)?Ra(e):e}async function Ta(e){return new Response(e).blob()}async function*Ea(e){const t=await e.getReader();try{for(;;){const{done:e,value:i}=await t.read();if(e)return;yield i}}finally{t.releaseLock()}}function Ra(e){let t=e;t.next||(t=e[Symbol.asyncIterator]());const i=new TextEncoder;return new ReadableStream({async pull(e){const{value:a,done:r}=await t.next();if(r)await e.close();else{let t=a;"string"==typeof t&&(t=i.encode(t)),await e.enqueue(t)}}})}async function Oa(e){if(!e.ok){const t=await e.text(),i=e.status;throw new Error(`HTTP Error ${i}: ${t}`)}}async function Ma({url:e,file:t,fileName:i="",parameterName:a="file",fetch:r=globalThis.fetch,signal:o}){const s=new FormData,n=new Headers;Fa(e,n);const l=await async function(e){if(qa(e))return await Ta(e);if(Na(e)){const t=Ra(e);return await Ta(t)}return e instanceof Blob?e:new Blob([e])}(t);i?s.append(a,l,i):s.append(a,l);const c=await r(e,{method:"POST",body:s,headers:n,signal:o});return await Oa(c),c}function qa(e){return"function"==typeof e.getReader}function Na(e){return e[Symbol.asyncIterator]}function Fa(e,t){if(e.password)if(e.username){const i=`Basic ${btoa(`${unescape(e.username)}:${unescape(e.password)}`)}`;t.append("Authorization",unescape(i)),e.username="",e.password=""}else{const i=`Bearer ${e.password}`;t.append("Authorization",unescape(i)),e.password=""}}async function Ba({url:e,fetch:t=globalThis.fetch,signal:i}){const a=await t(e,{method:"HEAD",signal:i});await Oa(a);const r=a.headers.get("x-ipfs-datasize")||a.headers.get("Content-Length");return parseInt(r,10)}async function*ja({url:e,start:t,end:i,format:a,signal:r,fetch:o=globalThis.fetch}){const s=new Headers;Number.isInteger(t)&&(Number.isInteger(i)?s.set("Range",`bytes=${t}-${i}`):s.set("Range",`bytes=${t}-`));const n=new URL(e);a&&(s.set("Accept",`application/vnd.ipld.${a}`),s.set("cache-control","no-cache"));const l=await o(n.href,{headers:s,signal:r});await Oa(l),yield*Ea(l.body)}async function*Ha({url:e,start:t,end:i,format:a,signal:r,gatewayURL:o=Wa()}){const s=function(e,t=Wa()){const{cid:i,path:a,type:r}=La(e);return new URL(`/${r}/${i}${a}`,t)}(e,o);yield*ja({url:s,start:t,end:i,format:a,signal:r})}function Wa(){if(!globalThis.location)return Pa;const{pathname:e,hostname:t,protocol:i}=globalThis.location;if(e.startsWith("/ipfs/")||e.startsWith("/ipns/"))return`${i}//${t}/`;const[a,...r]=t.split(".");return 59===a.length&&r.length>=2?`${i}//${r.join(".")}/`:Pa}let Ga=!1;const Va=[5001,45001,45002,45003,45004,45005],Ka="https://api.web3.storage/",Za="https://api.estuary.tech/",Ja="http://localhost:5001/",Ya="agregore",Qa="daemon",Xa="daemon:preferred",er="web3.storage",tr="estuary",ir="readonly",ar=[Xa,Ya,Qa,er,tr,ir];class rr{get type(){return"invalid"}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){throw new Error("Not Implemented")}async getSize(e,t=null){throw new Error("Not Implemented")}async uploadCAR(e,t=null){throw new Error("Not Implemented")}async uploadFile(e,t,i=null){throw new Error("Not Implemented")}async clear(e,t=null){throw new Error("Not Implemented")}}async function or({daemonURL:e,web3StorageToken:t,web3StorageURL:i=Ka,estuaryToken:a,estuaryURL:r=Za,publicGatewayURL:o=Wa(),readonly:s=!0,timeout:n=1e3,fetch:l=globalThis.fetch}={}){const c=[],d=[];if(d.push(async function(e=globalThis.fetch){try{return await e("ipfs://localhost/"),!0}catch(e){return Ga&&console.warn("Unable to detect Agregore",e),!1}}(l).then((e=>e&&c.push({type:Ya,fetch:l})))),d.push(async function(){const e=Va.map((e=>`http://localhost:${e}`));try{const i=await Promise.any(e.map((e=>fr(e).then((t=>{if(t)return e;throw new Error("Not found")})))));return!!i&&(ur&&!pr&&(t=i,pr=!0,globalThis.chrome.webRequest.onBeforeSendHeaders.addListener((e=>{const{requestHeaders:i}=e;for(const e of i)if("origin"===e.name.toLowerCase())return e.value=t,{requestHeaders:i};return e.requestHeaders.push({name:"Origin",value:t}),{requestHeaders:i}}),{urls:[t+"/*"]},["blocking","requestHeaders","extraHeaders"])),i)}catch{return!1}var t}().then((e=>e&&c.push({type:Qa,url:e,fetch:l})))),e&&d.push(fr(e,n,l).then((t=>t&&c.push({type:Xa,url:e,fetch:l})))),a){const e=r,t=a;c.push({type:tr,url:e,authorization:t,fetch:l,publicGatewayURL:o})}if(t){const e=i,a=t;c.push({type:er,url:e,authorization:a,fetch:l,publicGatewayURL:o})}return s&&o&&c.push({type:ir,fetch:l,publicGatewayURL:o}),await Promise.allSettled(d),c}async function sr({chooseOrder:e=ar,...t}={}){const i=function(e,t=ar){const i=e.filter((({type:e})=>t.includes(e))).sort((({type:e},{type:i})=>t.indexOf(e)-t.indexOf(i)))[0];if(!i)throw new Error("Unable to find valid type");return i}(await or(t),e);return async function(e){const{type:t}=e;let i=null;if(t===Ya)i=new cr(e.fetch||globalThis.fetch);else if(t.startsWith(Qa))i=new hr(e.url);else if(t===er)i=new dr(e.authorization,e.url,e.publicGatewayURL);else if(t===tr)i=new lr(e.authorization,e.url,e.publicGatewayURL);else{if(t!==ir)throw new TypeError(`Unknown API type: ${t}.`);i=new nr(e.publicGatewayURL)}return i}(i)}class nr extends rr{constructor(e=Wa()){super(),this.gatewayURL=e}get type(){return ir}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){yield*Ha({url:e,start:t,end:i,format:r,gatewayURL:this.gatewayURL,signal:a})}async getSize(e,t=null){const{cid:i,path:a,type:r}=La(e);return Ba({url:new URL(`/${r}/${i}${a}`,this.gatewayURL),signal:t})}}class lr extends nr{constructor(e,t=Za,i=Wa()){super(i),this.authorization=e,this.url=t}get type(){return tr}async uploadCAR(e,t=null){throw new Error("Not Implemented")}async uploadFile(e,t,i=null){const a=new URL("/content/add",this.url);a.password=this.authorization;const r=await Ma({url:a,file:e,fileName:t,parameterName:"data",signal:i}),{cid:o}=await r.json();return`ipfs://${o}/`}}class cr extends rr{constructor(e=globalThis.fetch){super(),this.fetch=e}get type(){return Ya}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){const{fetch:o}=this;yield*ja({url:e,start:t,end:i,format:r,fetch:o,signal:a})}async getSize(e,t=null){const{fetch:i}=this;return Ba({url:e,fetch:i,signal:t})}async uploadCAR(e,t=null){const i=await Da(e),{fetch:a}=this,r=await a("ipfs://localhost",{method:"POST",headers:{"Content-Type":"application/vnd.ipld.car"},signal:t,body:i});await Oa(r);return(await r.text()).split("\n")}async uploadFile(e,t=null){const i=await Da(e),{fetch:a}=this,r=await a("ipfs://localhost",{method:"POST",headers:{"Content-Type":"application/octet-stream"},signal:t,body:i});return await Oa(r),r.headers.get("Location")}}class dr extends nr{constructor(e,t=Ka,i=Wa()){super(i),this.authorization=e,this.url=t}get type(){return er}async uploadCAR(e,t=null){const i=new URL("/car",this.url);i.password=this.authorization;const a=await async function({url:e,fileIterator:t,signal:i}){const a=new Headers;a.set("Content-Type","application/octet-stream"),Fa(e,a);const r=await Da(t),o=await fetch(e,{method:"POST",signal:i,body:r,headers:a,duplex:"half"});return await Oa(o),o}({url:i,fileIterator:e,signal:t});return(await a.text()).split("\n").filter((e=>e)).map((e=>{const{cid:t}=JSON.parse(e);return`ipfs://${t}/`}))}async uploadFile(e,{fileName:t="",signal:i=null}={}){const a=new URL("/upload",this.url);a.password=this.authorization;const r=await Ma({url:a,file:e,fileName:t,signal:i}),{cid:o}=await r.json();return`ipfs://${o}/`}}class hr extends rr{constructor(e=Ja){super(),this.url=e}get type(){return Qa}async*getFile(e,{start:t,end:i,signal:a=null,format:r=null}={}){const{cid:o,path:s,type:n}=La(e),l=new URL(`/api/v0/cat?arg=/${n}/${o}${s}`,this.url);if(t&&l.searchParams.set("offset",t),i&&l.searchParams.set("length",i-(t||0)+1),r)throw new Error("Format is unsupported on Kubo Daemons for now");const c=await fetch(l,{method:"POST",signal:a});await Oa(c),yield*Ea(c.body)}async*getRaw(e,{signal:t=null}={}){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/block/get?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s),yield*Ea(s.body)}async*getCar(e,{signal:t=null}={}){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/dag/export?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s),yield*Ea(s.body)}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){if(r)if("raw"===r)yield*this.getRaw(e,{start:t,end:i,signal:a});else{if("car"!==r)throw new Error(`Invalid format type, must be car or 'raw', got ${r}`);yield*this.getCar(e,{start:t,end:i,signal:a})}yield*this.getFile(e,{start:t,end:i,signal:a})}async getSize(e,t=null){try{const{cid:i,path:a,type:r}=La(e),o=`/api/v0/file/ls?arg=/${r}/${i}${a}&size=true`,s=new URL(o,this.url),n=await fetch(s,{method:"POST",signal:t});await Oa(n);const{Objects:l}=await n.json(),[{Size:c}]=Object.values(l);return c}catch(i){return Ga&&console.warn(i),this._getSizeWithDag(e,t)}}async _getSizeWithDag(e,t=null){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/dag/stat?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s);const{Size:n}=await s.json();return parseInt(n,10)}async _pin(e,t=null){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/pin/add?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s)}async _unpin(e,t=null){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/pin/rm?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s)}async clear(e,t=null){return this._unpin(e,t)}async uploadCAR(e,t=null){const i=new URL("/api/v0/dag/import?allow-big-block=true&pin-roots=true",this.url),a=await Ma({url:i,file:e,signal:t});return(await a.text()).split("\n").filter((e=>e)).map((e=>{const{Root:t}=JSON.parse(e);return`ipfs://${t.Cid["/"]}/`}))}async uploadFile(e,t="",i=null){const a=new URL("/api/v0/add?pin=true&cid-version=1&inline=false&raw-leaves=true",this.url),r=e.name&&e instanceof Blob;(t||r)&&a.searchParams.set("wrap-with-directory","true");const o=await Ma({url:a,file:e,fileName:t,signal:i}),s=await o.text(),[n]=s.split("\n"),{Hash:l}=JSON.parse(n),c=`ipfs://${l}/`;return await this._pin(c,i),c}}let pr=!1;const ur=!!(globalThis&&globalThis.chrome&&globalThis.chrome.webRequest&&globalThis.chrome.webRequest.onBeforeSendHeaders&&globalThis.chrome.webRequest.onBeforeSendHeaders.addListener);async function fr(e=Ja,t=1e3,i=globalThis.fetch){try{const a=new AbortController,{signal:r}=a;setTimeout((()=>a.abort()),t);const o=await i(new URL("/api/v0/version",e),{method:"POST",signal:r});return!!o.ok||!(!o.status||404===o.status)}catch(t){return Ga&&console.warn("Unable to detect Kubo Daemon",t,e),!1}}function br(e,t){return self.chrome&&self.chrome.storage?new Promise((i=>{const a={};a[e]=t,self.chrome.storage.local.set(a,(()=>i()))})):self.localStorage?Promise.resolve(localStorage.setItem(e,t)):Promise.reject()}function mr(e){return self.chrome&&self.chrome.storage?new Promise((t=>{self.chrome.storage.local.get(e,(i=>{t(i[e])}))})):self.localStorage?Promise.resolve(localStorage.getItem(e)):Promise.reject()}const gr="0.11.1",vr="https://w3s.link/ipfs/";class wr extends Le{constructor(){super(),this.navMenuShown=!1,this.showCollDrop=!1,this.colls=[],this.autorun=!1,this.settingsError="",this.settingsTab=localStorage.getItem("settingsTab")||"ipfs";try{const e=localStorage.getItem("ipfsOpts");this.ipfsOpts=JSON.parse(e)}catch(e){}this.ipfsOpts=this.ipfsOpts||{daemonUrl:"",message:"",useCustom:!1,autoDetect:!1,gatewayUrl:vr};try{const e=localStorage.getItem("btrixOpts");this.btrixOpts=JSON.parse(e),Ua.login(this.btrixOpts).then((e=>this.btrixOpts.client=e))}catch(e){this.btrixOpts=null}mr("autorunBehaviors").then((e=>this.autorun="1"===e)),window.archivewebpage&&window.archivewebpage.setDownloadCallback((e=>this.onDownloadProgress(e)))}get appName(){return"ArchiveWeb.page"}static get properties(){return{...Le.properties,showStartRecord:{type:Boolean},showCollDrop:{type:Boolean},colls:{type:Array},selCollId:{type:String},selCollTitle:{type:String},recordUrl:{type:String},autorun:{type:Boolean},showNew:{type:String},showImport:{type:Boolean},isImportExisting:{type:Boolean},loadedCollId:{type:String},showDownloadProgress:{type:Boolean},download:{type:Object},ipfsOpts:{type:Object},btrixOpts:{type:Object},uploadCollOpts:{type:Object},showSettings:{type:Boolean},settingsTab:{type:String},settingsError:{type:String},showIpfsShareFailed:{type:Boolean}}}initRoute(){const e=new URLSearchParams(window.location.search);e.has("config")?(super.initRoute(),this.handleMessages()):(this.inited=!0,this.sourceUrl=e.get("source")||""),this.embed||this.checkIPFS()}handleMessages(){window.addEventListener("message",(async e=>{if(this.embed&&this.loadedCollId&&"object"==typeof e.data&&"downloadToBlob"===e.data.msg_type){const t=await fetch(`./w/api/c/${this.loadedCollId}/dl?format=wacz&pages=all`),i=await t.blob();e.source.postMessage({msg_type:"downloadedBlob",coll:this.loadedCollId,url:URL.createObjectURL(i)})}}))}onStartLoad(e){this.embed||(this.showImport=!1,this.sourceUrl=e.detail.sourceUrl,this.loadInfo=e.detail,this.isImportExisting&&this.selCollId&&(this.loadInfo.importCollId=this.selCollId))}onCollLoaded(e){if(this.loadInfo&&this.loadInfo.importCollId&&navigator.serviceWorker.controller){const e={msg_type:"reload",full:!0,name:this.loadInfo.importCollId};navigator.serviceWorker.controller.postMessage(e)}this.embed&&(this.loadedCollId=e.detail.collInfo&&e.detail.collInfo.coll),super.onCollLoaded(e),!e.detail.alreadyLoaded&&e.detail.sourceUrl&&e.detail.sourceUrl!==this.sourceUrl&&(this.sourceUrl=e.detail.sourceUrl)}getLoadInfo(e){if(this.disableCSP(),this.loadInfo)return this.loadInfo;return{customColl:e.startsWith("local://")?e.slice("local://".length):e}}async disableCSP(){if(this.embed||!self.chrome||!self.chrome.runtime)return;const e=navigator.userAgent.match(/Chrome\/([\d]+)/);if(!e||Number(e[1])<94)return;console.log("attempt to disable CSP to ensure replay works");let t=await new Promise((e=>{chrome.tabs.getCurrent((t=>e(t.id)))}));chrome.runtime.sendMessage({msg:"disableCSP",tabId:t})}static get styles(){return be(wr.appStyles)}static get appStyles(){return be(o`
+    `}async onUpload(){const e=this.btrixOpts.client,t=await e.getOrg(this.btrixOpts.orgName),i=new URL(`/api/orgs/${t}/uploads/stream`,e.url);this.uploadId&&i.searchParams.set("replaceId",this.uploadId);const a=(new Date).toLocaleString();i.searchParams.set("notes",`Uploaded by ArchiveWeb.page 0.11.2 at ${a}`);const r=i.href,o={Authorization:e.auth},s=JSON.stringify({url:r,headers:o});this.status="uploading",this.uploadSize=0,this.uploadTotal=0;const n=await fetch(`./w/api/c/${this.coll.id}/upload?format=wacz&pages=all`,{method:"POST",body:s});(await n.json()).uploading&&this.pollUploadState()}async onCancelUpload(){const e=JSON.stringify({abortUpload:!0});await fetch(`./w/api/c/${this.coll.id}/upload`,{method:"POST",body:e}),this.pollUploadState()}async onDeleteUpload(){try{const{client:e}=this.btrixOpts;if(!e)return;await e.deleteUpload(this.uploadId),await fetch(`./w/api/c/${this.coll.id}/upload`,{method:"DELETE"}),this.status="deleted",this.isUploadNeeded=!0,this.uploadTime=this.btrixOpts.uploadTime=null,this.uploadId=this.btrixOpts.uploadId=null}catch(e){this.status="deleteFailed"}}});class Aa{static async login({url:e,username:t,password:i,orgName:a}){const r=e+"/api/auth/jwt/login",o=new FormData;o.append("username",t),o.append("password",i);const s=await fetch(r,{method:"POST",body:o}),n=await s.json(),{token_type:l,access_token:c}=n;if(!c||!l)throw new Error("Invalid login");const d=new Aa(e,l+" "+c),h=await d.getOrg(a);return d.defaultOrg=h,d}constructor(e,t){this.url=e,this.auth=t,this.defaultOrg=null}async fetchAPI(e,t="GET",i=null){const a={Authorization:this.auth};"GET"!==t&&(a["Content-Type"]="application/json");try{const r=await fetch(this.url+e,{headers:a,method:t,body:i,duplex:"half"});return await r.json()}catch(e){return console.warn(e),{}}}async getOrg(e=""){const t=await this.fetchAPI("/api/users/me-with-orgs"),{orgs:i}=t;if(!i||!i.length)return null;if(!e)return i[0].id;for(const t of i)if(t.name===e)return t.id;return i[0].id}async getRemoteUpload(e,t=null){const i=this.defaultOrg||t,a=await this.fetchAPI(`/api/orgs/${i}/uploads/${e}`);if(!a.name)throw new Error("upload_missing");return a}async deleteUpload(e,t=null){const i=this.defaultOrg||t,a=JSON.stringify({crawl_ids:[e]});if(!(await this.fetchAPI(`/api/orgs/${i}/uploads/delete`,"POST",a)).deleted)throw new Error("delete_failed")}}const Pa="https://w3s.link/";function La(e){const{hostname:t,protocol:i,pathname:a}=new URL(e),r=i.slice(0,-1);if(!t){const[e,...t]=a.slice(2).split("/");return{type:r,cid:e,path:"/"+t.join("/")}}return{type:r,cid:t,path:a}}async function Da(e){return qa(e)?e:Na(e)?Ra(e):e}async function Ta(e){return new Response(e).blob()}async function*Ea(e){const t=await e.getReader();try{for(;;){const{done:e,value:i}=await t.read();if(e)return;yield i}}finally{t.releaseLock()}}function Ra(e){let t=e;t.next||(t=e[Symbol.asyncIterator]());const i=new TextEncoder;return new ReadableStream({async pull(e){const{value:a,done:r}=await t.next();if(r)await e.close();else{let t=a;"string"==typeof t&&(t=i.encode(t)),await e.enqueue(t)}}})}async function Oa(e){if(!e.ok){const t=await e.text(),i=e.status;throw new Error(`HTTP Error ${i}: ${t}`)}}async function Ma({url:e,file:t,fileName:i="",parameterName:a="file",fetch:r=globalThis.fetch,signal:o}){const s=new FormData,n=new Headers;Fa(e,n);const l=await async function(e){if(qa(e))return await Ta(e);if(Na(e)){const t=Ra(e);return await Ta(t)}return e instanceof Blob?e:new Blob([e])}(t);i?s.append(a,l,i):s.append(a,l);const c=await r(e,{method:"POST",body:s,headers:n,signal:o});return await Oa(c),c}function qa(e){return"function"==typeof e.getReader}function Na(e){return e[Symbol.asyncIterator]}function Fa(e,t){if(e.password)if(e.username){const i=`Basic ${btoa(`${unescape(e.username)}:${unescape(e.password)}`)}`;t.append("Authorization",unescape(i)),e.username="",e.password=""}else{const i=`Bearer ${e.password}`;t.append("Authorization",unescape(i)),e.password=""}}async function Ba({url:e,fetch:t=globalThis.fetch,signal:i}){const a=await t(e,{method:"HEAD",signal:i});await Oa(a);const r=a.headers.get("x-ipfs-datasize")||a.headers.get("Content-Length");return parseInt(r,10)}async function*ja({url:e,start:t,end:i,format:a,signal:r,fetch:o=globalThis.fetch}){const s=new Headers;Number.isInteger(t)&&(Number.isInteger(i)?s.set("Range",`bytes=${t}-${i}`):s.set("Range",`bytes=${t}-`));const n=new URL(e);a&&(s.set("Accept",`application/vnd.ipld.${a}`),s.set("cache-control","no-cache"));const l=await o(n.href,{headers:s,signal:r});await Oa(l),yield*Ea(l.body)}async function*Ha({url:e,start:t,end:i,format:a,signal:r,gatewayURL:o=Wa()}){const s=function(e,t=Wa()){const{cid:i,path:a,type:r}=La(e);return new URL(`/${r}/${i}${a}`,t)}(e,o);yield*ja({url:s,start:t,end:i,format:a,signal:r})}function Wa(){if(!globalThis.location)return Pa;const{pathname:e,hostname:t,protocol:i}=globalThis.location;if(e.startsWith("/ipfs/")||e.startsWith("/ipns/"))return`${i}//${t}/`;const[a,...r]=t.split(".");return 59===a.length&&r.length>=2?`${i}//${r.join(".")}/`:Pa}let Ga=!1;const Va=[5001,45001,45002,45003,45004,45005],Ka="https://api.web3.storage/",Za="https://api.estuary.tech/",Ja="http://localhost:5001/",Ya="agregore",Qa="daemon",Xa="daemon:preferred",er="web3.storage",tr="estuary",ir="readonly",ar=[Xa,Ya,Qa,er,tr,ir];class rr{get type(){return"invalid"}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){throw new Error("Not Implemented")}async getSize(e,t=null){throw new Error("Not Implemented")}async uploadCAR(e,t=null){throw new Error("Not Implemented")}async uploadFile(e,t,i=null){throw new Error("Not Implemented")}async clear(e,t=null){throw new Error("Not Implemented")}}async function or({daemonURL:e,web3StorageToken:t,web3StorageURL:i=Ka,estuaryToken:a,estuaryURL:r=Za,publicGatewayURL:o=Wa(),readonly:s=!0,timeout:n=1e3,fetch:l=globalThis.fetch}={}){const c=[],d=[];if(d.push(async function(e=globalThis.fetch){try{return await e("ipfs://localhost/"),!0}catch(e){return Ga&&console.warn("Unable to detect Agregore",e),!1}}(l).then((e=>e&&c.push({type:Ya,fetch:l})))),d.push(async function(){const e=Va.map((e=>`http://localhost:${e}`));try{const i=await Promise.any(e.map((e=>fr(e).then((t=>{if(t)return e;throw new Error("Not found")})))));return!!i&&(ur&&!pr&&(t=i,pr=!0,globalThis.chrome.webRequest.onBeforeSendHeaders.addListener((e=>{const{requestHeaders:i}=e;for(const e of i)if("origin"===e.name.toLowerCase())return e.value=t,{requestHeaders:i};return e.requestHeaders.push({name:"Origin",value:t}),{requestHeaders:i}}),{urls:[t+"/*"]},["blocking","requestHeaders","extraHeaders"])),i)}catch{return!1}var t}().then((e=>e&&c.push({type:Qa,url:e,fetch:l})))),e&&d.push(fr(e,n,l).then((t=>t&&c.push({type:Xa,url:e,fetch:l})))),a){const e=r,t=a;c.push({type:tr,url:e,authorization:t,fetch:l,publicGatewayURL:o})}if(t){const e=i,a=t;c.push({type:er,url:e,authorization:a,fetch:l,publicGatewayURL:o})}return s&&o&&c.push({type:ir,fetch:l,publicGatewayURL:o}),await Promise.allSettled(d),c}async function sr({chooseOrder:e=ar,...t}={}){const i=function(e,t=ar){const i=e.filter((({type:e})=>t.includes(e))).sort((({type:e},{type:i})=>t.indexOf(e)-t.indexOf(i)))[0];if(!i)throw new Error("Unable to find valid type");return i}(await or(t),e);return async function(e){const{type:t}=e;let i=null;if(t===Ya)i=new cr(e.fetch||globalThis.fetch);else if(t.startsWith(Qa))i=new hr(e.url);else if(t===er)i=new dr(e.authorization,e.url,e.publicGatewayURL);else if(t===tr)i=new lr(e.authorization,e.url,e.publicGatewayURL);else{if(t!==ir)throw new TypeError(`Unknown API type: ${t}.`);i=new nr(e.publicGatewayURL)}return i}(i)}class nr extends rr{constructor(e=Wa()){super(),this.gatewayURL=e}get type(){return ir}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){yield*Ha({url:e,start:t,end:i,format:r,gatewayURL:this.gatewayURL,signal:a})}async getSize(e,t=null){const{cid:i,path:a,type:r}=La(e);return Ba({url:new URL(`/${r}/${i}${a}`,this.gatewayURL),signal:t})}}class lr extends nr{constructor(e,t=Za,i=Wa()){super(i),this.authorization=e,this.url=t}get type(){return tr}async uploadCAR(e,t=null){throw new Error("Not Implemented")}async uploadFile(e,t,i=null){const a=new URL("/content/add",this.url);a.password=this.authorization;const r=await Ma({url:a,file:e,fileName:t,parameterName:"data",signal:i}),{cid:o}=await r.json();return`ipfs://${o}/`}}class cr extends rr{constructor(e=globalThis.fetch){super(),this.fetch=e}get type(){return Ya}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){const{fetch:o}=this;yield*ja({url:e,start:t,end:i,format:r,fetch:o,signal:a})}async getSize(e,t=null){const{fetch:i}=this;return Ba({url:e,fetch:i,signal:t})}async uploadCAR(e,t=null){const i=await Da(e),{fetch:a}=this,r=await a("ipfs://localhost",{method:"POST",headers:{"Content-Type":"application/vnd.ipld.car"},signal:t,body:i});await Oa(r);return(await r.text()).split("\n")}async uploadFile(e,t=null){const i=await Da(e),{fetch:a}=this,r=await a("ipfs://localhost",{method:"POST",headers:{"Content-Type":"application/octet-stream"},signal:t,body:i});return await Oa(r),r.headers.get("Location")}}class dr extends nr{constructor(e,t=Ka,i=Wa()){super(i),this.authorization=e,this.url=t}get type(){return er}async uploadCAR(e,t=null){const i=new URL("/car",this.url);i.password=this.authorization;const a=await async function({url:e,fileIterator:t,signal:i}){const a=new Headers;a.set("Content-Type","application/octet-stream"),Fa(e,a);const r=await Da(t),o=await fetch(e,{method:"POST",signal:i,body:r,headers:a,duplex:"half"});return await Oa(o),o}({url:i,fileIterator:e,signal:t});return(await a.text()).split("\n").filter((e=>e)).map((e=>{const{cid:t}=JSON.parse(e);return`ipfs://${t}/`}))}async uploadFile(e,{fileName:t="",signal:i=null}={}){const a=new URL("/upload",this.url);a.password=this.authorization;const r=await Ma({url:a,file:e,fileName:t,signal:i}),{cid:o}=await r.json();return`ipfs://${o}/`}}class hr extends rr{constructor(e=Ja){super(),this.url=e}get type(){return Qa}async*getFile(e,{start:t,end:i,signal:a=null,format:r=null}={}){const{cid:o,path:s,type:n}=La(e),l=new URL(`/api/v0/cat?arg=/${n}/${o}${s}`,this.url);if(t&&l.searchParams.set("offset",t),i&&l.searchParams.set("length",i-(t||0)+1),r)throw new Error("Format is unsupported on Kubo Daemons for now");const c=await fetch(l,{method:"POST",signal:a});await Oa(c),yield*Ea(c.body)}async*getRaw(e,{signal:t=null}={}){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/block/get?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s),yield*Ea(s.body)}async*getCar(e,{signal:t=null}={}){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/dag/export?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s),yield*Ea(s.body)}async*get(e,{start:t,end:i,signal:a=null,format:r=null}={}){if(r)if("raw"===r)yield*this.getRaw(e,{start:t,end:i,signal:a});else{if("car"!==r)throw new Error(`Invalid format type, must be car or 'raw', got ${r}`);yield*this.getCar(e,{start:t,end:i,signal:a})}yield*this.getFile(e,{start:t,end:i,signal:a})}async getSize(e,t=null){try{const{cid:i,path:a,type:r}=La(e),o=`/api/v0/file/ls?arg=/${r}/${i}${a}&size=true`,s=new URL(o,this.url),n=await fetch(s,{method:"POST",signal:t});await Oa(n);const{Objects:l}=await n.json(),[{Size:c}]=Object.values(l);return c}catch(i){return Ga&&console.warn(i),this._getSizeWithDag(e,t)}}async _getSizeWithDag(e,t=null){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/dag/stat?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s);const{Size:n}=await s.json();return parseInt(n,10)}async _pin(e,t=null){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/pin/add?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s)}async _unpin(e,t=null){const{cid:i,path:a,type:r}=La(e),o=new URL(`/api/v0/pin/rm?arg=/${r}/${i}${a}`,this.url),s=await fetch(o,{method:"POST",signal:t});await Oa(s)}async clear(e,t=null){return this._unpin(e,t)}async uploadCAR(e,t=null){const i=new URL("/api/v0/dag/import?allow-big-block=true&pin-roots=true",this.url),a=await Ma({url:i,file:e,signal:t});return(await a.text()).split("\n").filter((e=>e)).map((e=>{const{Root:t}=JSON.parse(e);return`ipfs://${t.Cid["/"]}/`}))}async uploadFile(e,t="",i=null){const a=new URL("/api/v0/add?pin=true&cid-version=1&inline=false&raw-leaves=true",this.url),r=e.name&&e instanceof Blob;(t||r)&&a.searchParams.set("wrap-with-directory","true");const o=await Ma({url:a,file:e,fileName:t,signal:i}),s=await o.text(),[n]=s.split("\n"),{Hash:l}=JSON.parse(n),c=`ipfs://${l}/`;return await this._pin(c,i),c}}let pr=!1;const ur=!!(globalThis&&globalThis.chrome&&globalThis.chrome.webRequest&&globalThis.chrome.webRequest.onBeforeSendHeaders&&globalThis.chrome.webRequest.onBeforeSendHeaders.addListener);async function fr(e=Ja,t=1e3,i=globalThis.fetch){try{const a=new AbortController,{signal:r}=a;setTimeout((()=>a.abort()),t);const o=await i(new URL("/api/v0/version",e),{method:"POST",signal:r});return!!o.ok||!(!o.status||404===o.status)}catch(t){return Ga&&console.warn("Unable to detect Kubo Daemon",t,e),!1}}function br(e,t){return self.chrome&&self.chrome.storage?new Promise((i=>{const a={};a[e]=t,self.chrome.storage.local.set(a,(()=>i()))})):self.localStorage?Promise.resolve(localStorage.setItem(e,t)):Promise.reject()}function mr(e){return self.chrome&&self.chrome.storage?new Promise((t=>{self.chrome.storage.local.get(e,(i=>{t(i[e])}))})):self.localStorage?Promise.resolve(localStorage.getItem(e)):Promise.reject()}const gr="0.11.2",vr="https://w3s.link/ipfs/";class wr extends Le{constructor(){super(),this.navMenuShown=!1,this.showCollDrop=!1,this.colls=[],this.autorun=!1,this.settingsError="",this.settingsTab=localStorage.getItem("settingsTab")||"ipfs";try{const e=localStorage.getItem("ipfsOpts");this.ipfsOpts=JSON.parse(e)}catch(e){}this.ipfsOpts=this.ipfsOpts||{daemonUrl:"",message:"",useCustom:!1,autoDetect:!1,gatewayUrl:vr};try{const e=localStorage.getItem("btrixOpts");this.btrixOpts=JSON.parse(e),Aa.login(this.btrixOpts).then((e=>this.btrixOpts.client=e))}catch(e){this.btrixOpts=null}mr("autorunBehaviors").then((e=>this.autorun="1"===e)),window.archivewebpage&&window.archivewebpage.setDownloadCallback((e=>this.onDownloadProgress(e)))}get appName(){return"ArchiveWeb.page"}static get properties(){return{...Le.properties,showStartRecord:{type:Boolean},showCollDrop:{type:Boolean},colls:{type:Array},selCollId:{type:String},selCollTitle:{type:String},recordUrl:{type:String},autorun:{type:Boolean},showNew:{type:String},showImport:{type:Boolean},isImportExisting:{type:Boolean},loadedCollId:{type:String},showDownloadProgress:{type:Boolean},download:{type:Object},ipfsOpts:{type:Object},btrixOpts:{type:Object},uploadCollOpts:{type:Object},showSettings:{type:Boolean},settingsTab:{type:String},settingsError:{type:String},showIpfsShareFailed:{type:Boolean}}}initRoute(){const e=new URLSearchParams(window.location.search);e.has("config")?(super.initRoute(),this.handleMessages()):(this.inited=!0,this.sourceUrl=e.get("source")||""),this.embed||this.checkIPFS()}handleMessages(){window.addEventListener("message",(async e=>{if(this.embed&&this.loadedCollId&&"object"==typeof e.data&&"downloadToBlob"===e.data.msg_type){const t=await fetch(`./w/api/c/${this.loadedCollId}/dl?format=wacz&pages=all`),i=await t.blob();e.source.postMessage({msg_type:"downloadedBlob",coll:this.loadedCollId,url:URL.createObjectURL(i)})}}))}onStartLoad(e){this.embed||(this.showImport=!1,this.sourceUrl=e.detail.sourceUrl,this.loadInfo=e.detail,this.isImportExisting&&this.selCollId&&(this.loadInfo.importCollId=this.selCollId))}onCollLoaded(e){if(this.loadInfo&&this.loadInfo.importCollId&&navigator.serviceWorker.controller){const e={msg_type:"reload",full:!0,name:this.loadInfo.importCollId};navigator.serviceWorker.controller.postMessage(e)}this.embed&&(this.loadedCollId=e.detail.collInfo&&e.detail.collInfo.coll),super.onCollLoaded(e),!e.detail.alreadyLoaded&&e.detail.sourceUrl&&e.detail.sourceUrl!==this.sourceUrl&&(this.sourceUrl=e.detail.sourceUrl)}getLoadInfo(e){if(this.disableCSP(),this.loadInfo)return this.loadInfo;return{customColl:e.startsWith("local://")?e.slice("local://".length):e}}async disableCSP(){if(this.embed||!self.chrome||!self.chrome.runtime)return;const e=navigator.userAgent.match(/Chrome\/([\d]+)/);if(!e||Number(e[1])<94)return;console.log("attempt to disable CSP to ensure replay works");let t=await new Promise((e=>{chrome.tabs.getCurrent((t=>e(t.id)))}));chrome.runtime.sendMessage({msg:"disableCSP",tabId:t})}static get styles(){return be(wr.appStyles)}static get appStyles(){return be(o`
       :host {
         font-size: initial;
         overflow: auto;
@@ -2973,7 +3813,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
       }
 
       ${Le.appStyles}
-    `)}get mainLogo(){return _a()}renderNavEnd(){return T`
+    `)}get mainLogo(){return Sa()}renderNavEnd(){return T`
     <a href="https://archiveweb.page/guide" target="_blank" class="navbar-item is-size-6">
     <fa-icon .svg="${ye()}" aria-hidden="true"></fa-icon><span>&nbsp;User Guide</span>
 
@@ -3175,7 +4015,7 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
                 <div class="content">
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
-                      <fa-icon class="logo" size="48px" .svg="${_a()}"></fa-icon>
+                      <fa-icon class="logo" size="48px" .svg="${Sa()}"></fa-icon>
                       <div style="font-size: smaller; margin-bottom: 1em">${this.getDeployType()} v${gr}</div>
                     </div>
 
@@ -3303,4 +4143,4 @@ class ne extends oe{}ne.directiveName="unsafeSVG",ne.resultType=2;const le=ae(ne
         </div>
       </form>
     </wr-modal>
-    `}async onNewColl(e){this.showNew="loading",e.preventDefault();const t=this.renderRoot.querySelector("#new-title").value,i=JSON.stringify({metadata:{title:t}}),a=await fetch("./w/api/c/create",{method:"POST",body:i});await a.json();const r=this.renderRoot.querySelector("wr-rec-coll-index");r&&r.loadColls(),this.showNew=null}onSelectColl(e){this.selCollId=e.currentTarget.value}async setDefaultColl(){this.selCollId||(this.selCollId=await mr("defaultCollId")),!this.selCollId&&this.colls&&this.colls.length&&(this.selCollId=this.colls[0].id),self.chrome&&self.chrome.storage&&self.chrome.storage.local&&self.localStorage&&(await br("index:sortKey",localStorage.getItem("index:sortKey")),await br("index:sortDesc",localStorage.getItem("index:sortDesc")))}_setCurrColl(e){if(!(e instanceof CustomEvent))return void this.setDefaultColl();const{detail:t}=e;this.selCollId=t.coll,this.colls&&this.colls.length||(this.colls=[{id:t.coll,title:t.title}])}async onShowStart(e){this._setCurrColl(e),this.recordUrl=e.detail.url||"https://example.com/",this.showStartRecord=!0}onShowImport(e){this._setCurrColl(e),this.showImport=!0,this.isImportExisting=!0}onCollsLoaded(e){this.colls=e.detail.colls,this.setDefaultColl()}async onStartRecord(e){e.preventDefault();const t=this.renderRoot.querySelector("#url").value,i=this.renderRoot.querySelector("#preview"),a=i&&i.checked;this.showStartRecord=!1;const r=this.autorun,o=this.selCollId;if(await br("defaultCollId",o),await br("autorunBehaviors",r?"1":"0"),self.chrome&&self.chrome.runtime)chrome.runtime.sendMessage({msg:"startNew",url:t,collId:o,autorun:r});else if(window.archivewebpage&&window.archivewebpage.record){const e=!a;window.archivewebpage.record({url:t,collId:o,startRec:e,autorun:r})}return!1}async onTitle(e){if(super.onTitle(e),this.embed&&this.loadedCollId&&e.detail.replayTitle&&e.detail.title)try{await fetch(`./w/api/c/${this.loadedCollId}/pageTitle`,{method:"POST",body:JSON.stringify(e.detail)})}catch(e){console.warn(e)}}async onSaveSettings(e){e.preventDefault();const t=this.renderRoot.querySelector("#ipfsDaemonUrl"),i=this.renderRoot.querySelector("#ipfsGatewayUrl"),a=this.renderRoot.querySelector("#ipfsAutoDetect");if(t&&i){const e=t.value,r=i.value,o=a&&a.checked;this.ipfsOpts={daemonUrl:e,useCustom:!!e,gatewayUrl:r,autoDetect:o},await this.checkIPFS(),localStorage.setItem("ipfsOpts",JSON.stringify(this.ipfsOpts))}const r=this.renderRoot.querySelector("#btrixUrl"),o=this.renderRoot.querySelector("#btrixUsername"),s=this.renderRoot.querySelector("#btrixPassword"),n=this.renderRoot.querySelector("#btrixOrgName");if(r&&o&&s){const e=r.value,t=o.value,i=s.value,a=n&&n.value||"";if(e&&t&&i){const r={url:e,username:t,password:i,orgName:a};let o;try{o=await Ua.login(r),this.settingsError=""}catch(e){return this.settingsError="Unable to log in to Browsertrix Cloud. Check your credentials.",!1}localStorage.setItem("btrixOpts",JSON.stringify(r)),this.btrixOpts={...r,client:o}}else this.btrixOpts=null,localStorage.removeItem("btrixOpts")}return localStorage.setItem("settingsTab",this.settingsTab),this.showSettings=!1,!1}async onCancelSettings(){this.settingsError=null,this.showSettings=!1}async checkIPFS(){const e=this.ipfsOpts;if(e.useCustom&&e.daemonUrl)e.message="IPFS Access -- Custom IPFS Daemon";else if(!e.daemonUrl&&e.autoDetect){const t=await sr({web3StorageToken:""});t instanceof hr&&(e.daemonUrl=t.url),e.useCustom=!1,t instanceof dr?e.message="Sharing via remote web3.storage":e.daemonUrl?e.daemonUrl.startsWith("http://localhost:45")?e.message="Sharing via Brave IPFS node":e.daemonUrl.startsWith("http://localhost")?e.message="Sharing via local IPFS node":e.message="":e.message="IPFS Access Unknown - Sharing Not Available"}}}customElements.define("archive-web-page-app",wr)})();var __webpack_export_target__=self;for(var i in __webpack_exports__)__webpack_export_target__[i]=__webpack_exports__[i];__webpack_exports__.__esModule&&Object.defineProperty(__webpack_export_target__,"__esModule",{value:!0})})();
+    `}async onNewColl(e){this.showNew="loading",e.preventDefault();const t=this.renderRoot.querySelector("#new-title").value,i=JSON.stringify({metadata:{title:t}}),a=await fetch("./w/api/c/create",{method:"POST",body:i});await a.json();const r=this.renderRoot.querySelector("wr-rec-coll-index");r&&r.loadColls(),this.showNew=null}onSelectColl(e){this.selCollId=e.currentTarget.value}async setDefaultColl(){this.selCollId||(this.selCollId=await mr("defaultCollId")),!this.selCollId&&this.colls&&this.colls.length&&(this.selCollId=this.colls[0].id),self.chrome&&self.chrome.storage&&self.chrome.storage.local&&self.localStorage&&(await br("index:sortKey",localStorage.getItem("index:sortKey")),await br("index:sortDesc",localStorage.getItem("index:sortDesc")))}_setCurrColl(e){if(!(e instanceof CustomEvent))return void this.setDefaultColl();const{detail:t}=e;this.selCollId=t.coll,this.colls&&this.colls.length||(this.colls=[{id:t.coll,title:t.title}])}async onShowStart(e){this._setCurrColl(e),this.recordUrl=e.detail.url||"https://example.com/",this.showStartRecord=!0}onShowImport(e){this._setCurrColl(e),this.showImport=!0,this.isImportExisting=!0}onCollsLoaded(e){this.colls=e.detail.colls,this.setDefaultColl()}async onStartRecord(e){e.preventDefault();const t=this.renderRoot.querySelector("#url").value,i=this.renderRoot.querySelector("#preview"),a=i&&i.checked;this.showStartRecord=!1;const r=this.autorun,o=this.selCollId;if(await br("defaultCollId",o),await br("autorunBehaviors",r?"1":"0"),self.chrome&&self.chrome.runtime)chrome.runtime.sendMessage({msg:"startNew",url:t,collId:o,autorun:r});else if(window.archivewebpage&&window.archivewebpage.record){const e=!a;window.archivewebpage.record({url:t,collId:o,startRec:e,autorun:r})}return!1}async onTitle(e){if(super.onTitle(e),this.embed&&this.loadedCollId&&e.detail.replayTitle&&e.detail.title)try{await fetch(`./w/api/c/${this.loadedCollId}/pageTitle`,{method:"POST",body:JSON.stringify(e.detail)})}catch(e){console.warn(e)}}async onSaveSettings(e){e.preventDefault();const t=this.renderRoot.querySelector("#ipfsDaemonUrl"),i=this.renderRoot.querySelector("#ipfsGatewayUrl"),a=this.renderRoot.querySelector("#ipfsAutoDetect");if(t&&i){const e=t.value,r=i.value,o=a&&a.checked;this.ipfsOpts={daemonUrl:e,useCustom:!!e,gatewayUrl:r,autoDetect:o},await this.checkIPFS(),localStorage.setItem("ipfsOpts",JSON.stringify(this.ipfsOpts))}const r=this.renderRoot.querySelector("#btrixUrl"),o=this.renderRoot.querySelector("#btrixUsername"),s=this.renderRoot.querySelector("#btrixPassword"),n=this.renderRoot.querySelector("#btrixOrgName");if(r&&o&&s){const e=r.value,t=o.value,i=s.value,a=n&&n.value||"";if(e&&t&&i){const r={url:e,username:t,password:i,orgName:a};let o;try{o=await Aa.login(r),this.settingsError=""}catch(e){return this.settingsError="Unable to log in to Browsertrix Cloud. Check your credentials.",!1}localStorage.setItem("btrixOpts",JSON.stringify(r)),this.btrixOpts={...r,client:o}}else this.btrixOpts=null,localStorage.removeItem("btrixOpts")}return localStorage.setItem("settingsTab",this.settingsTab),this.showSettings=!1,!1}async onCancelSettings(){this.settingsError=null,this.showSettings=!1}async checkIPFS(){const e=this.ipfsOpts;if(e.useCustom&&e.daemonUrl)e.message="IPFS Access -- Custom IPFS Daemon";else if(!e.daemonUrl&&e.autoDetect){const t=await sr({web3StorageToken:""});t instanceof hr&&(e.daemonUrl=t.url),e.useCustom=!1,t instanceof dr?e.message="Sharing via remote web3.storage":e.daemonUrl?e.daemonUrl.startsWith("http://localhost:45")?e.message="Sharing via Brave IPFS node":e.daemonUrl.startsWith("http://localhost")?e.message="Sharing via local IPFS node":e.message="":e.message="IPFS Access Unknown - Sharing Not Available"}}}customElements.define("archive-web-page-app",wr)})();var __webpack_export_target__=self;for(var i in __webpack_exports__)__webpack_export_target__[i]=__webpack_exports__[i];__webpack_exports__.__esModule&&Object.defineProperty(__webpack_export_target__,"__esModule",{value:!0})})();

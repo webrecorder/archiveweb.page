@@ -1170,6 +1170,13 @@ class Recorder {
     let data = null;
 
     if (params.redirectResponse) {
+
+      if (reqresp.isSelfRedirect()) {
+        console.warn(`Skip self redirect: ${reqresp.url}`);
+        this.removeReqResp(params.requestId);
+        return;
+      }
+
       reqresp.fillResponseRedirect(params);
       data = reqresp.toDBRecord(null, this.pageInfo);
     }

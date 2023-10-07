@@ -5039,10 +5039,10 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replaywebpage@^1.8.12:
-  version "1.8.12"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.8.12.tgz#4e8504fabbc97c4b6573d06dbf41815e3b17cb38"
-  integrity sha512-gJEb8NhOsAFzqICt9bExmvLp8WlnSSIl36fkrxgf7FStU5ANVBfWty07zgOOIAl5jflkkhNTKTuaaf2H6ywYiw==
+replaywebpage@^1.8.13:
+  version "1.8.13"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-1.8.13.tgz#a846ea96f5444d09765a6eaddbe130f7dde2d3c1"
+  integrity sha512-haXIIwStg0STsgBadZ+wXPebIZ6zF/7CcqoJi0Xjvww73mxAiB7Kt9fl4yl3xgNaGQaXPn4HeTc/H0/2Gunayg==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@webrecorder/wabac" "^2.16.12"

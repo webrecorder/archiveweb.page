@@ -611,7 +611,7 @@ class ArchiveWebApp extends ReplayWebApp
                   <p>ArchiveWeb.page is part of the <a href="https://webrecorder.net/" target="_blank">Webrecorder Project</a>.</p>
 
                   <h3>Privacy Policy</h3>
-                  <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, this captured data is stored directly in the browser.
+                  <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, storing captured data directly in the browser.
                   Users can downloaded this data as files to their hard drive. Users can also delete any and all archived data at any time.
                   ArchiveWeb.page does not collect any usage or tracking data.</p>
 

@@ -316,7 +316,7 @@ class WrRecCollInfo extends CollInfo
         </p>
         <p>Your archiving session will have a unique link which can be shared with others to load it 
         via ReplayWeb.page. All archived data is loaded on-demand when replayed. This feature is experimental and likely works best with smaller archives.</p>
-        <p>You can cancel sharing at anytime. 
+        <p>You can cancel sharing at any time.
         </p>
         <p><b>Once shared, this data leaves your computer and can be read by others.</b></p>
         <p>If you do not wish to share this data, click Cancel.</p>

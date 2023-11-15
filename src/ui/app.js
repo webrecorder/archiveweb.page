@@ -477,7 +477,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="control">
           <label class="checkbox">
             <input type="checkbox" name="add-existing" .checked="${this.isImportExisting}" @change="${(e) => this.isImportExisting = e.currentTarget.checked}">
-            Add to an existing item${this.isImportExisting ? ":" : ""}
+            Add to an existing archived item${this.isImportExisting ? ":" : ""}
           </label>
         </div>
         ${this.isImportExisting ? this.renderCollList() : ""}

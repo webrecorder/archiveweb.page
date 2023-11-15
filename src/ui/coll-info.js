@@ -311,7 +311,7 @@ class WrRecCollInfo extends CollInfo
     <wr-modal bgClass="has-background-warning" @modal-closed="${() => this.shareWarn = false}" title="Start Sharing?">
       <div class="content is-size-7">
         <p>
-          Do you want to share the all the content in "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
+          Do you want to share all the content in "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
           distributed storage network?
         </p>
         <p>Your archiving session will have a unique link which can be shared with others to load it 

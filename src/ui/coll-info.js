@@ -314,8 +314,8 @@ class WrRecCollInfo extends CollInfo
           Do you want to share all the content in "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
           distributed storage network?
         </p>
-        <p>Your archiving session will have a unique link which can be shared with others to load it 
-        via ReplayWeb.page. All archived data is loaded on-demand when replayed. This feature is experimental and likely works best with smaller archives.</p>
+        <p>Your archiving session will have a unique link which can be shared with others to load and replay
+        on-demand in ReplayWeb.page. This feature is experimental and likely works best with smaller archives.</p>
         <p>You can cancel sharing at any time.
         </p>
         <p><b>Once shared, this data leaves your computer and can be read by others.</b></p>

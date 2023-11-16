@@ -113,11 +113,11 @@ class ElectronRecorderApp extends ElectronReplayApp
   async handleClose(theWindow) {
     const res = await dialog.showMessageBox(theWindow, {
       type: "question",
-      buttons: ["Cancel", "Stop Recording and Quit"],
+      buttons: ["Cancel", "Stop Archiving and Quit"],
       defaultId: 1,
       cancelId: 0,
-      title: "Stop Recording and Quit",
-      message: `There are still ${this.recorders.size} active recording sessions. Stop all and quit?`
+      title: "Stop Archiving and Quit",
+      message: `There are still ${this.recorders.size} active archiving sessions. Stop all and quit?`
     });
 
     // not closing

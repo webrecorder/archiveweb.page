@@ -466,7 +466,7 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderImportModal() {
     return html`
-    <wr-modal style="--modal-width: 740px" @modal-closed="${() => this.showImport = false}" title="Import Files">
+    <wr-modal style="--modal-width: 740px" @modal-closed="${() => this.showImport = false}" title="Import File">
       <wr-chooser
         style="flex: auto"
         .newFullImport="${true}"

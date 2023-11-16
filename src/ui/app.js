@@ -442,7 +442,7 @@ class ArchiveWebApp extends ReplayWebApp
         </div>
         ${IS_APP ? html`
         <label class="checkbox">
-          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without saving.)</span>
+          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without archiving.)</span>
         </label>` : ""}
       </form>
     </wr-modal>`;

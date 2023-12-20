@@ -22,9 +22,12 @@ import wrRec from "../../assets/recLogo.svg";
 import wrLogo from "../../assets/awp-logo.svg";
 import prettyBytes from "pretty-bytes";
 
-import { create as createAutoIpfs, DaemonAPI, Web3StorageAPI } from "auto-js-ipfs";
+import {
+  create as createAutoIpfs,
+  DaemonAPI,
+  Web3StorageAPI,
+} from "auto-js-ipfs";
 import { getLocalOption, setLocalOption } from "../localstorage";
-
 
 // eslint-disable-next-line no-undef
 const VERSION = __AWP_VERSION__;
@@ -33,10 +36,8 @@ const DEFAULT_GATEWAY_URL = "https://w3s.link/ipfs/";
 
 const DEFAULT_BTRIX_URL = "https://app.browsertrix.com";
 
-
 //============================================================================
-class ArchiveWebApp extends ReplayWebApp
-{
+class ArchiveWebApp extends ReplayWebApp {
   constructor() {
     super();
 
@@ -51,7 +52,7 @@ class ArchiveWebApp extends ReplayWebApp
 
     try {
       const res = localStorage.getItem("ipfsOpts");
-      this.ipfsOpts = JSON.parse(res);      
+      this.ipfsOpts = JSON.parse(res);
     } catch (e) {
       // ignore empty
     }
@@ -61,7 +62,7 @@ class ArchiveWebApp extends ReplayWebApp
       message: "",
       useCustom: false,
       autoDetect: false,
-      gatewayUrl: DEFAULT_GATEWAY_URL
+      gatewayUrl: DEFAULT_GATEWAY_URL,
     };
 
     try {
@@ -72,10 +73,14 @@ class ArchiveWebApp extends ReplayWebApp
       this.btrixOpts = null;
     }
 
-    getLocalOption("autorunBehaviors").then((res) => this.autorun = res === "1");
+    getLocalOption("autorunBehaviors").then(
+      (res) => (this.autorun = res === "1")
+    );
 
     if (window.archivewebpage) {
-      window.archivewebpage.setDownloadCallback((progress) => this.onDownloadProgress(progress));
+      window.archivewebpage.setDownloadCallback((progress) =>
+        this.onDownloadProgress(progress)
+      );
     }
   }
 
@@ -117,7 +122,7 @@ class ArchiveWebApp extends ReplayWebApp
 
       uploadCollOpts: { type: Object },
 
-      showSettings: {type: Boolean },
+      showSettings: { type: Boolean },
       settingsTab: { type: String },
       settingsError: { type: String },
 
@@ -132,7 +137,6 @@ class ArchiveWebApp extends ReplayWebApp
       super.initRoute();
 
       this.handleMessages();
-
     } else {
       this.inited = true;
       this.sourceUrl = pageParams.get("source") || "";
@@ -176,19 +180,30 @@ class ArchiveWebApp extends ReplayWebApp
     this.checkSW();
 
     this.initRoute();
-    
+
     window.addEventListener("popstate", () => {
       this.initRoute();
     });
-  } 
+  }
 
   handleMessages() {
     // support upload
     window.addEventListener("message", async (event) => {
-      if (this.embed && this.loadedCollId && typeof(event.data) === "object" && event.data.msg_type === "downloadToBlob") {
-        const download = await fetch(`${apiPrefix}/c/${this.loadedCollId}/dl?format=wacz&pages=all`);
+      if (
+        this.embed &&
+        this.loadedCollId &&
+        typeof event.data === "object" &&
+        event.data.msg_type === "downloadToBlob"
+      ) {
+        const download = await fetch(
+          `${apiPrefix}/c/${this.loadedCollId}/dl?format=wacz&pages=all`
+        );
         const blob = await download.blob();
-        event.source.postMessage({msg_type: "downloadedBlob", coll: this.loadedCollId, url: URL.createObjectURL(blob)});
+        event.source.postMessage({
+          msg_type: "downloadedBlob",
+          coll: this.loadedCollId,
+          url: URL.createObjectURL(blob),
+        });
       }
     });
   }
@@ -197,7 +212,7 @@ class ArchiveWebApp extends ReplayWebApp
     if (this.embed) {
       return;
     }
-    
+
     this.showImport = false;
     this.sourceUrl = event.detail.sourceUrl;
     this.loadInfo = event.detail;
@@ -210,7 +225,11 @@ class ArchiveWebApp extends ReplayWebApp
   onCollLoaded(event) {
     if (this.loadInfo && this.loadInfo.importCollId) {
       if (navigator.serviceWorker.controller) {
-        const msg = {"msg_type": "reload", "full": true, "name": this.loadInfo.importCollId};
+        const msg = {
+          msg_type: "reload",
+          full: true,
+          name: this.loadInfo.importCollId,
+        };
         navigator.serviceWorker.controller.postMessage(msg);
       }
     }
@@ -221,7 +240,11 @@ class ArchiveWebApp extends ReplayWebApp
 
     super.onCollLoaded(event);
 
-    if (!event.detail.alreadyLoaded && event.detail.sourceUrl && event.detail.sourceUrl !== this.sourceUrl) {
+    if (
+      !event.detail.alreadyLoaded &&
+      event.detail.sourceUrl &&
+      event.detail.sourceUrl !== this.sourceUrl
+    ) {
       this.sourceUrl = event.detail.sourceUrl;
     }
   }
@@ -233,15 +256,17 @@ class ArchiveWebApp extends ReplayWebApp
       return this.loadInfo;
     }
 
-    const customColl = sourceUrl.startsWith("local://") ? sourceUrl.slice("local://".length) : sourceUrl;
+    const customColl = sourceUrl.startsWith("local://")
+      ? sourceUrl.slice("local://".length)
+      : sourceUrl;
 
-    return {customColl};
+    return { customColl };
   }
 
   async disableCSP() {
     // necessary for chrome 94> up due to new bug introduced
-    // 
-    if (this.embed || (!self.chrome || !self.chrome.runtime)) {
+    //
+    if (this.embed || !self.chrome || !self.chrome.runtime) {
       return;
     }
 
@@ -257,7 +282,7 @@ class ArchiveWebApp extends ReplayWebApp
 
     chrome.runtime.sendMessage({
       msg: "disableCSP",
-      tabId
+      tabId,
     });
   }
 
@@ -278,7 +303,7 @@ class ArchiveWebApp extends ReplayWebApp
       }
 
       .recorder .modal-background {
-        background-color: rgba(10, 10, 10, 0.50);
+        background-color: rgba(10, 10, 10, 0.5);
       }
 
       .recorder .modal-card-head {
@@ -286,12 +311,12 @@ class ArchiveWebApp extends ReplayWebApp
       }
 
       .extra-padding {
-        padding: 1.0em;
+        padding: 1em;
       }
 
       .less-padding {
-        padding-top: 1.0em;
-        padding-bottom: 1.0em;
+        padding-top: 1em;
+        padding-bottom: 1em;
       }
 
       div.field.has-addons {
@@ -324,7 +349,7 @@ class ArchiveWebApp extends ReplayWebApp
         display: flex;
         flex-direction: column;
       }
-  
+
       @media screen and (max-width: 768px) {
         #url {
           border-bottom-right-radius: 4px;
@@ -345,17 +370,31 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   renderNavEnd() {
-    return html`
-    <a href="https://archiveweb.page/guide" target="_blank" class="navbar-item is-size-6">
-    <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon><span>&nbsp;User Guide</span>
+    return html` <a
+      href="https://archiveweb.page/guide"
+      target="_blank"
+      class="navbar-item is-size-6"
+    >
+      <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon
+      ><span>&nbsp;User Guide</span>
 
-    <a href="?about" @click="${(e) => { e.preventDefault(); this.showAbout = true;} }"class="navbar-item is-size-6">About
-    </a>`;
+      <a
+        href="?about"
+        @click="${(e) => {
+          e.preventDefault();
+          this.showAbout = true;
+        }}"
+        class="navbar-item is-size-6"
+        >About
+      </a></a
+    >`;
   }
 
   renderNavBrand() {
-    return html`
-      <span id="home" class="logo-text has-text-weight-bold is-size-6 has-allcaps wide-only">
+    return html` <span
+      id="home"
+      class="logo-text has-text-weight-bold is-size-6 has-allcaps wide-only"
+    >
       <span class="" style="color: #8878c3">archive</span>
       <span class="has-text-link">web.page</span>
       <span class="is-sr-only">Home</span>
@@ -368,231 +407,340 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="message is-small">
           <div class="message-body">
             <div class="buttons">
-              <button class="button is-small no-pad-mobile" title="New Archiving Session" @click="${() => this.showNew = "show"}">
+              <button
+                class="button is-small no-pad-mobile"
+                title="New Archiving Session"
+                @click="${() => (this.showNew = "show")}"
+              >
                 <span class="icon">
                   <fa-icon .svg=${fasPlus}></fa-icon>
                 </span>
                 <span class="is-hidden-mobile">New Archiving Session</span>
               </button>
-              <button class="button is-small no-pad-mobile" title="Import File" @click="${() => this.showImport = true}">
+              <button
+                class="button is-small no-pad-mobile"
+                title="Import File"
+                @click="${() => (this.showImport = true)}"
+              >
                 <span class="icon">
                   <fa-icon .svg=${fasUpload}></fa-icon>
                 </span>
                 <span class="is-hidden-mobile">Import File</span>
               </button>
-              <button class="button is-small no-pad-mobile" title="Start Archiving" ?disabled="${!this.colls}" @click="${this.onShowStart}">
+              <button
+                class="button is-small no-pad-mobile"
+                title="Start Archiving"
+                ?disabled="${!this.colls}"
+                @click="${this.onShowStart}"
+              >
                 <span class="icon">
-                  <fa-icon size="1.0em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+                  <fa-icon
+                    size="1.0em"
+                    aria-hidden="true"
+                    .svg="${wrRec}"
+                  ></fa-icon>
                 </span>
                 <span class="is-hidden-mobile">Start Archiving</span>
               </button>
               <div class="rightbar">
-                <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to archive webpages directly in your browser!</div>
-                <button class="button is-small" @click="${() => this.showSettings = true}">
+                <div class="infomsg is-hidden-mobile">
+                  The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you
+                  to archive webpages directly in your browser!
+                </div>
+                <button
+                  class="button is-small"
+                  @click="${() => (this.showSettings = true)}"
+                >
                   <fa-icon .svg=${fasCog}></fa-icon>
                 </button>
               </div>
             </div>
           </div>
-        </div> 
+        </div>
       </section>
 
       <wr-rec-coll-index
-       dateName="Date Created"
-       headerName="Archived Items"
-       .shareOpts=${{ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts}}
-       @show-start=${this.onShowStart}
-       @show-import=${this.onShowImport}
-       @colls-updated=${this.onCollsLoaded}
-       @ipfs-share-failed=${() => this.showIpfsShareFailed = true}
-       @do-upload=${(e) => this.uploadCollOpts = e.detail}
-       style="overflow: visible"
-       >
+        dateName="Date Created"
+        headerName="Archived Items"
+        .shareOpts=${{ ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }}
+        @show-start=${this.onShowStart}
+        @show-import=${this.onShowImport}
+        @colls-updated=${this.onCollsLoaded}
+        @ipfs-share-failed=${() => (this.showIpfsShareFailed = true)}
+        @do-upload=${(e) => (this.uploadCollOpts = e.detail)}
+        style="overflow: visible"
+      >
       </wr-rec-coll-index>
-     `;
+    `;
   }
 
   render() {
-    return html`
-    ${this.showStartRecord ? this.renderStartModal() : ""}
+    return html` ${this.showStartRecord ? this.renderStartModal() : ""}
     ${this.showNew ? this.renderNewCollModal() : ""}
     ${this.showImport ? this.renderImportModal() : ""}
-    ${this.showDownloadProgress && this.download ? this.renderDownloadModal() : ""}
+    ${this.showDownloadProgress && this.download
+      ? this.renderDownloadModal()
+      : ""}
     ${this.showSettings ? this.renderSettingsModal() : ""}
     ${this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""}
-    ${this.uploadCollOpts && this.btrixOpts ? this.renderBtrixUploadModal() : ""}
+    ${this.uploadCollOpts && this.btrixOpts
+      ? this.renderBtrixUploadModal()
+      : ""}
     ${super.render()}`;
   }
 
   renderColl() {
-    return html`
-    <wr-rec-coll 
-    .editable="${true}"
-    .clearable="${this.embed}"
-    .browsable="${!this.embed}"
-    .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
-    .appLogo="${this.mainLogo}"
-    .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
-    .shareOpts=${{ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts}}
-    swName=${this.swName}
-    embed="${this.embed}"
-    sourceUrl="${this.sourceUrl}"
-    appName="${this.appName}"
-    appVersion=${VERSION}
-    @replay-favicons=${this.onFavIcons}
-    @update-title=${this.onTitle}
-    @coll-loaded=${this.onCollLoaded}
-    @show-start=${this.onShowStart}
-    @show-import=${this.onShowImport}
-    @do-upload=${(e) => this.uploadCollOpts = e.detail}
-    @about-show=${() => this.showAbout = true}></wr-rec-coll>`;
+    return html` <wr-rec-coll
+      .editable="${true}"
+      .clearable="${this.embed}"
+      .browsable="${!this.embed}"
+      .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
+      .appLogo="${this.mainLogo}"
+      .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
+      .shareOpts=${{ ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }}
+      swName=${this.swName}
+      embed="${this.embed}"
+      sourceUrl="${this.sourceUrl}"
+      appName="${this.appName}"
+      appVersion=${VERSION}
+      @replay-favicons=${this.onFavIcons}
+      @update-title=${this.onTitle}
+      @coll-loaded=${this.onCollLoaded}
+      @show-start=${this.onShowStart}
+      @show-import=${this.onShowImport}
+      @do-upload=${(e) => (this.uploadCollOpts = e.detail)}
+      @about-show=${() => (this.showAbout = true)}
+    ></wr-rec-coll>`;
   }
 
   renderCollList(text = "") {
     return html`
-    <div class="dropdown-row">
-      <span>${text}&nbsp;</span>
-      <div class="select is-small">
-        <select @change="${this.onSelectColl}">
-        ${this.colls && this.colls.map((coll) => html`
-          <option value="${coll.id}"
-          ?selected="${this.selCollId === coll.id}"
-          >${coll.title || coll.loadUrl}</option>`)}
-        </select>
+      <div class="dropdown-row">
+        <span>${text}&nbsp;</span>
+        <div class="select is-small">
+          <select @change="${this.onSelectColl}">
+            ${this.colls &&
+            this.colls.map(
+              (coll) =>
+                html` <option
+                  value="${coll.id}"
+                  ?selected="${this.selCollId === coll.id}"
+                >
+                  ${coll.title || coll.loadUrl}
+                </option>`
+            )}
+          </select>
+        </div>
       </div>
-    </div>
     `;
   }
 
   renderStartModal() {
-    return html`
-    <wr-modal @modal-closed="${() => this.showStartRecord = false}" title="Start Archiving">
+    return html` <wr-modal
+      @modal-closed="${() => (this.showStartRecord = false)}"
+      title="Start Archiving"
+    >
       ${this.renderCollList("Save To:")}
       <div class="field">
         <label class="checkbox is-size-7">
-        <input type="checkbox" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
-        Start With Autopilot
+          <input
+            type="checkbox"
+            ?checked="${this.autorun}"
+            @change="${(e) => (this.autorun = e.currentTarget.checked)}"
+          />
+          Start With Autopilot
         </label>
       </div>
 
-      <form class="is-flex is-flex-direction-column" @submit="${this.onStartRecord}">
+      <form
+        class="is-flex is-flex-direction-column"
+        @submit="${this.onStartRecord}"
+      >
         <div class="field has-addons">
           <p class="control is-expanded">
-            <input class="input" type="url" required
-            name="url" id="url" value="${this.recordUrl}"
-            placeholder="Enter a URL to Start Archiving">
+            <input
+              class="input"
+              type="url"
+              required
+              name="url"
+              id="url"
+              value="${this.recordUrl}"
+              placeholder="Enter a URL to Start Archiving"
+            />
           </p>
           <div class="control">
-            <button type="submit" class="button is-hidden-mobile is-outlined is-link">
+            <button
+              type="submit"
+              class="button is-hidden-mobile is-outlined is-link"
+            >
               <span class="icon">
-                <fa-icon size="1.0em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+                <fa-icon
+                  size="1.0em"
+                  aria-hidden="true"
+                  .svg="${wrRec}"
+                ></fa-icon>
               </span>
               <span>Go!</span>
             </button>
           </div>
         </div>
-        ${IS_APP ? html`
-        <label class="checkbox">
-          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without archiving.)</span>
-        </label>` : ""}
+        ${IS_APP
+          ? html` <label class="checkbox">
+              <input id="preview" type="checkbox" /><span
+                >&nbsp;Start in Preview Mode (without archiving.)</span
+              >
+            </label>`
+          : ""}
       </form>
     </wr-modal>`;
   }
 
   renderNewCollModal() {
-    return html`
-    <wr-modal @modal-closed="${() => this.showNew = null}" title="New Archiving Session">
+    return html` <wr-modal
+      @modal-closed="${() => (this.showNew = null)}"
+      title="New Archiving Session"
+    >
       <form @submit="${this.onNewColl}" class="create-new">
         <div class="field has-addons">
           <p class="control is-expanded">
-            <input type="text" id="new-title" name="new-title" class="input" required placeholder="Give this archiving session a name">
+            <input
+              type="text"
+              id="new-title"
+              name="new-title"
+              class="input"
+              required
+              placeholder="Give this archiving session a name"
+            />
           </p>
           <div class="control">
-            <button type="submit" class="button is-hidden-mobile is-primary ${this.showNew === "loading" ? "is-loading " : ""}" ?disabled="${this.showNew === "loading"}">Create</button>
+            <button
+              type="submit"
+              class="button is-hidden-mobile is-primary ${this.showNew ===
+              "loading"
+                ? "is-loading "
+                : ""}"
+              ?disabled="${this.showNew === "loading"}"
+            >
+              Create
+            </button>
           </div>
         </div>
       </form>
-    </wr-modal`;
+    </wr-modal>`;
   }
 
   renderImportModal() {
-    return html`
-    <wr-modal style="--modal-width: 740px" @modal-closed="${() => this.showImport = false}" title="Import File">
+    return html` <wr-modal
+      style="--modal-width: 740px"
+      @modal-closed="${() => (this.showImport = false)}"
+      title="Import File"
+    >
       <wr-chooser
         style="flex: auto"
         .newFullImport="${true}"
         noHead="${true}"
-        @load-start=${this.onStartLoad}>
+        @load-start=${this.onStartLoad}
+      >
       </wr-chooser>
       <div class="is-flex is-flex-wrap-wrap is-align-items-baseline my-2">
         <div class="control">
           <label class="checkbox">
-            <input type="checkbox" name="add-existing" .checked="${this.isImportExisting}" @change="${(e) => this.isImportExisting = e.currentTarget.checked}">
+            <input
+              type="checkbox"
+              name="add-existing"
+              .checked="${this.isImportExisting}"
+              @change="${(e) =>
+                (this.isImportExisting = e.currentTarget.checked)}"
+            />
             Add to an existing archived item${this.isImportExisting ? ":" : ""}
           </label>
         </div>
         ${this.isImportExisting ? this.renderCollList() : ""}
       </div>
-    </wr-modal`;
+    </wr-modal>`;
   }
 
   renderIPFSShareFailedModal() {
-    return html`
-    <wr-modal @modal-closed="${() => this.showIpfsShareFailed = false}" title="IPFS Connection Failed">
+    return html` <wr-modal
+      @modal-closed="${() => (this.showIpfsShareFailed = false)}"
+      title="IPFS Connection Failed"
+    >
       <div>
-        <p>Sorry, IPFS sharing / unsharing failed as IPFS could not be reached.</p>
+        <p>
+          Sorry, IPFS sharing / unsharing failed as IPFS could not be reached.
+        </p>
         <p>(Check the IPFS settings and try again.)</p>
       </div>
-    </wr-modal`;
+    </wr-modal>`;
   }
 
   renderBtrixUploadModal() {
-    return html`
-      <wr-btrix-upload
+    return html` <wr-btrix-upload
       .btrixOpts=${this.btrixOpts}
       .uploadColl=${this.uploadCollOpts}
-      >
-      </wr-btrix-upload>`;
+    >
+    </wr-btrix-upload>`;
   }
 
   renderDownloadModal() {
     const renderDLStatus = () => {
       switch (this.download.state) {
-      case "progressing":
-        return html`
-          <button @click="${this.onDownloadCancel}" class="button is-danger">Cancel Download</button>
+        case "progressing":
+          return html`
+            <button @click="${this.onDownloadCancel}" class="button is-danger">
+              Cancel Download
+            </button>
           `;
 
-      case "interrupted":
-        return html`
-          <p class="has-text-weight-bold has-text-danger">The download was interrupted</p>
-          <button @click="${this.onDownloadCancel}" class="button">Close</button>
-          `;
-    
-      case "cancelled":
-        return html`
-          <p class="has-text-weight-bold has-text-danger">The download was canceled</p>
-          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+        case "interrupted":
+          return html`
+            <p class="has-text-weight-bold has-text-danger">
+              The download was interrupted
+            </p>
+            <button @click="${this.onDownloadCancel}" class="button">
+              Close
+            </button>
           `;
 
-      case "completed":
-        return html`
-          <p class="has-text-weight-bold has-text-primary">Download Completed!</p>
-          <button @click="${this.onDownloadCancel}" class="button">Close</button>
+        case "cancelled":
+          return html`
+            <p class="has-text-weight-bold has-text-danger">
+              The download was canceled
+            </p>
+            <button @click="${this.onDownloadCancel}" class="button">
+              Close
+            </button>
+          `;
+
+        case "completed":
+          return html`
+            <p class="has-text-weight-bold has-text-primary">
+              Download Completed!
+            </p>
+            <button @click="${this.onDownloadCancel}" class="button">
+              Close
+            </button>
           `;
       }
     };
 
-    return html`
-    <wr-modal .noBgClose=${true} style="--modal-width: 740px" @modal-closed="${() => this.showDownloadProgress = false}" title="Download Progress">
+    return html` <wr-modal
+      .noBgClose=${true}
+      style="--modal-width: 740px"
+      @modal-closed="${() => (this.showDownloadProgress = false)}"
+      title="Download Progress"
+    >
       <div class="dl-progress">
         <div>Downloading to: <i>${this.download.filename}</i></div>
-        <div>Size Downloaded: <b>${prettyBytes(this.download.currSize)}</b></div>
-        <div>Time Elapsed: ${Math.round((Date.now() / 1000) - this.download.startTime)} seconds</div>
-
-        <div class="has-text-centered">
-        ${renderDLStatus()}
+        <div>
+          Size Downloaded: <b>${prettyBytes(this.download.currSize)}</b>
         </div>
+        <div>
+          Time Elapsed:
+          ${Math.round(Date.now() / 1000 - this.download.startTime)} seconds
+        </div>
+
+        <div class="has-text-centered">${renderDLStatus()}</div>
       </div>
     </wr-modal>`;
   }
@@ -602,7 +750,7 @@ class ArchiveWebApp extends ReplayWebApp
       this.showDownloadProgress = true;
       this.download = progress;
     } else if (this.download) {
-      this.download = {...this.download, state: progress.state};
+      this.download = { ...this.download, state: progress.state };
     }
   }
 
@@ -635,7 +783,9 @@ class ArchiveWebApp extends ReplayWebApp
           <div class="modal-card">
             <header class="modal-card-head">
               <p class="modal-card-title">About ArchiveWeb.page ${this.getDeployType()}</p>
-              <button class="delete" aria-label="close" @click="${this.onAboutClose}"></button>
+              <button class="delete" aria-label="close" @click="${
+                this.onAboutClose
+              }"></button>
             </header>
             <section class="modal-card-body">
               <div class="container">
@@ -646,11 +796,20 @@ class ArchiveWebApp extends ReplayWebApp
                       <div style="font-size: smaller; margin-bottom: 1em">${this.getDeployType()} v${VERSION}</div>
                     </div>
 
-                    ${IS_APP ? html`
-                    <p>ArchiveWeb.page App is a standalone app for Mac, Windows and Linux that allows users to archive webpages as they browse</p>
-
-                    ` : html`
-                    <p>ArchiveWeb.page allows users to archive webpages directly in your browser!</p>`}
+                    ${
+                      IS_APP
+                        ? html`
+                            <p>
+                              ArchiveWeb.page App is a standalone app for Mac,
+                              Windows and Linux that allows users to archive
+                              webpages as they browse
+                            </p>
+                          `
+                        : html` <p>
+                            ArchiveWeb.page allows users to archive webpages
+                            directly in your browser!
+                          </p>`
+                    }
                   </div>
 
                   <p>See the <a href="https://archiveweb.page/guide" target="_blank">ArchiveWeb.page Guide</a> for more info on how to use this tool.</p>
@@ -680,7 +839,9 @@ class ArchiveWebApp extends ReplayWebApp
                   </details>
 
                   <div class="has-text-centered">
-                    <a class="button is-warning" href="#" @click="${this.onAboutClose}">Close</a>
+                    <a class="button is-warning" href="#" @click="${
+                      this.onAboutClose
+                    }">Close</a>
                   </div>
                 </div>
               </div>
@@ -696,85 +857,273 @@ class ArchiveWebApp extends ReplayWebApp
       <div class="tabs mb-3">
         <ul>
           <li class="${this.settingsTab === "browsertrix" ? "is-active" : ""}">
-            <a @click=${() => this.settingsTab = "browsertrix"}>Browsertrix</a>
+            <a @click=${() =>
+              (this.settingsTab = "browsertrix")}>Browsertrix</a>
           </li>
           <li class="${this.settingsTab === "ipfs" ? "is-active" : ""}">
-            <a @click=${() => this.settingsTab = "ipfs"}>IPFS</a>
+            <a @click=${() => (this.settingsTab = "ipfs")}>IPFS</a>
           </li>
         </ul>
       </div>
 
-      <form class="is-flex is-flex-direction-column is-size-7" @submit="${this.onSaveSettings}">
+      <form class="is-flex is-flex-direction-column is-size-7" @submit="${
+        this.onSaveSettings
+      }">
 
-        ${this.settingsTab === "ipfs" ? html`
-        <p class="is-size-6 mb-3">Configure settings for sharing archived items to IPFS.</p>
-        <fieldset>
-          <div class="field">
-            <input name="ipfsAutoDetect" id="ipfsAutoDetect" class="checkbox is-small" type="checkbox" ?checked="${this.ipfsOpts.autoDetect}"><span class="ml-1">Auto-Detect IPFS</span>
-          </div>
-          <div class="field has-addons">
-            <p class="is-expanded">
-              IPFS Daemon URL (leave blank to auto-detect IPFS):
-              <input class="input is-small" type="url"
-              name="ipfsDaemonUrl" id="ipfsDaemonUrl" value="${this.ipfsOpts.daemonUrl}"
-              placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS">
-            </p>
-          </div>
-          <div class="field has-addons">
-            <p class="is-expanded">
-              IPFS Gateway URL:
-              <input class="input is-small" type="url"
-              name="ipfsGatewayUrl" id="ipfsGatewayUrl" value="${this.ipfsOpts.gatewayUrl}"
-              placeholder="${DEFAULT_GATEWAY_URL}">
-            </p>
-          </div>
-        </fieldset>` : ""}
+        ${
+          this.settingsTab === "ipfs"
+            ? html` <p class="is-size-6 mb-3">
+                  Configure settings for sharing archived items to IPFS.
+                </p>
+                <fieldset>
+                  <div class="field">
+                    <input
+                      name="ipfsAutoDetect"
+                      id="ipfsAutoDetect"
+                      class="checkbox is-small"
+                      type="checkbox"
+                      ?checked="${this.ipfsOpts.autoDetect}"
+                    /><span class="ml-1">Auto-Detect IPFS</span>
+                  </div>
+                  <div class="field has-addons">
+                    <p class="is-expanded">
+                      IPFS Daemon URL (leave blank to auto-detect IPFS):
+                      <input
+                        class="input is-small"
+                        type="url"
+                        name="ipfsDaemonUrl"
+                        id="ipfsDaemonUrl"
+                        value="${this.ipfsOpts.daemonUrl}"
+                        placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS"
+                      />
+                    </p>
+                  </div>
+                  <div class="field has-addons">
+                    <p class="is-expanded">
+                      IPFS Gateway URL:
+                      <input
+                        class="input is-small"
+                        type="url"
+                        name="ipfsGatewayUrl"
+                        id="ipfsGatewayUrl"
+                        value="${this.ipfsOpts.gatewayUrl}"
+                        placeholder="${DEFAULT_GATEWAY_URL}"
+                      />
+                    </p>
+                  </div>
+                </fieldset>`
+            : ""
+        }
 
-        ${this.settingsTab === "browsertrix" ? html`
-        <p class="is-size-6 mb-3">Configure your credentials to upload archived items to Browsertrix.</p>
-        <p class="is-size-7 p-4 has-background-info">Don't have a Browsertrix account? Visit <a target="_blank" href="https://browsertrix.com/">https://browsertrix.com/</a> for more info.</p>
-        <fieldset>
-          <div class="field has-addons">
-            <p class="is-expanded">
-              Browsertrix URL:
-              <input class="input is-small" type="url"
-              name="btrixUrl" id="btrixUrl" value="${this.btrixOpts && this.btrixOpts.url || DEFAULT_BTRIX_URL}"
-              placeholder="${DEFAULT_BTRIX_URL}">
-            </p>
-          </div>
-          <div class="field has-addons">
-            <p class="is-expanded">
-              Username
-              <input class="input is-small" type="text"
-              name="btrixUsername" id="btrixUsername" value="${this.btrixOpts && this.btrixOpts.username}"
-              placeholder="Username">
-            </p>
-          </div>
-          <div class="field has-addons">
-            <p class="is-expanded">
-              Password
-              <input class="input is-small" type="password"
-              name="btrixPassword" id="btrixPassword" value="${this.btrixOpts && this.btrixOpts.password}"
-              placeholder="Password">
-            </p>
-          </div>
-          <div class="field has-addons">
-            <p class="is-expanded">
-              Organization Name or Slug (Optional)
-              <input class="input is-small" type="text"
-              name="btrixOrgName" id="btrixOrgName" value="${this.btrixOpts && this.btrixOpts.orgName}"
-              placeholder="my-org">
-            </p>
-          </div>
-        </fieldset>
-        ` : ""}
-        <div class="has-text-centered has-text-danger">${this.settingsError}</div>
+        ${
+          this.settingsTab === "browsertrix"
+            ? html`
+                <p class="is-size-6 mb-3">
+                  Configure your credentials to upload archived items to
+                  Browsertrix.
+                </p>
+                <p class="is-size-7 p-4 has-background-info">
+                  Don't have a Browsertrix account? Visit
+                  <a target="_blank" href="https://browsertrix.com/"
+                    >https://browsertrix.com/</a
+                  >
+                  for more info.
+                </p>
+                <fieldset>
+                  <div class="field has-addons">
+                    <p class="is-expanded">
+                      Browsertrix URL:
+                      <input
+                        class="input is-small"
+                        type="url"
+                        name="btrixUrl"
+                        id="btrixUrl"
+                        value="${(this.btrixOpts && this.btrixOpts.url) ||
+                        DEFAULT_BTRIX_URL}"
+                        placeholder="${DEFAULT_BTRIX_URL}"
+                      />
+                    </p>
+                  </div>
+                  <div class="field has-addons">
+                    <p class="is-expanded">
+                      Username
+                      <input
+                        class="input is-small"
+                        type="text"
+                        name="btrixUsername"
+                        id="btrixUsername"
+                        value="${this.btrixOpts && this.btrixOpts.username}"
+                        placeholder="Username"
+                      />
+                    </p>
+                  </div>
+                  <div class="field has-addons">
+                    <p class="is-expanded">
+                      Password
+                      <input
+                        class="input is-small"
+                        type="password"
+                        name="btrixPassword"
+                        id="btrixPassword"
+                        value="${this.btrixOpts && this.btrixOpts.password}"
+                        placeholder="Password"
+                      />
+                    </p>
+                  </div>
+                  <div class="field has-addons">
+                    <p class="is-expanded">
+                      Organization Name or Slug (Optional)
+                      <input
+                        class="input is-small"
+                        type="text"
+                        name="btrixOrgName"
+                        id="btrixOrgName"
+                        value="${this.btrixOpts && this.btrixOpts.orgName}"
+                        placeholder="my-org"
+                      />
+                    </p>
+                  </div>
+                </fieldset>
+              `
+            : ""
+        }
+        <div class="has-text-centered has-text-danger">${
+          this.settingsError
+        }</div>
         <div class="has-text-centered mt-4">
           <button class="button is-primary" type="submit">Save</button>
-          <button class="button" type="button" @click="${this.onCancelSettings}">Cancel</button>
+          <button class="button" type="button" @click="${
+            this.onCancelSettings
+          }">Cancel</button>
         </div>
-      </form>
-    </wr-modal>
+
+        <form
+          class="is-flex is-flex-direction-column is-size-7"
+          @submit="${this.onSaveSettings}"
+        >
+          ${
+            this.settingsTab === "ipfs"
+              ? html` <p class="is-size-6 mb-3">
+                    Configure settings for sharing archived items to IPFS.
+                  </p>
+                  <fieldset>
+                    <div class="field">
+                      <input
+                        name="ipfsAutoDetect"
+                        id="ipfsAutoDetect"
+                        class="checkbox is-small"
+                        type="checkbox"
+                        ?checked="${this.ipfsOpts.autoDetect}"
+                      /><span class="ml-1">Auto-Detect IPFS</span>
+                    </div>
+                    <div class="field has-addons">
+                      <p class="is-expanded">
+                        IPFS Daemon URL (leave blank to auto-detect IPFS):
+                        <input
+                          class="input is-small"
+                          type="url"
+                          name="ipfsDaemonUrl"
+                          id="ipfsDaemonUrl"
+                          value="${this.ipfsOpts.daemonUrl}"
+                          placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS"
+                        />
+                      </p>
+                    </div>
+                    <div class="field has-addons">
+                      <p class="is-expanded">
+                        IPFS Gateway URL:
+                        <input
+                          class="input is-small"
+                          type="url"
+                          name="ipfsGatewayUrl"
+                          id="ipfsGatewayUrl"
+                          value="${this.ipfsOpts.gatewayUrl}"
+                          placeholder="${DEFAULT_GATEWAY_URL}"
+                        />
+                      </p>
+                    </div>
+                  </fieldset>`
+              : ""
+          }
+          ${
+            this.settingsTab === "browsertrix"
+              ? html`
+                  <p class="is-size-6 mb-3">
+                    Configure your credentials to upload archived items to
+                    Browsertrix Cloud.
+                  </p>
+                  <fieldset>
+                    <div class="field has-addons">
+                      <p class="is-expanded">
+                        Browsertrix Cloud URL:
+                        <input
+                          class="input is-small"
+                          type="url"
+                          name="btrixUrl"
+                          id="btrixUrl"
+                          value="${this.btrixOpts && this.btrixOpts.url}"
+                          placeholder="https://..."
+                        />
+                      </p>
+                    </div>
+                    <div class="field has-addons">
+                      <p class="is-expanded">
+                        Username
+                        <input
+                          class="input is-small"
+                          type="text"
+                          name="btrixUsername"
+                          id="btrixUsername"
+                          value="${this.btrixOpts && this.btrixOpts.username}"
+                          placeholder="Username"
+                        />
+                      </p>
+                    </div>
+                    <div class="field has-addons">
+                      <p class="is-expanded">
+                        Password
+                        <input
+                          class="input is-small"
+                          type="password"
+                          name="btrixPassword"
+                          id="btrixPassword"
+                          value="${this.btrixOpts && this.btrixOpts.password}"
+                          placeholder="Password"
+                        />
+                      </p>
+                    </div>
+                    <div class="field has-addons">
+                      <p class="is-expanded">
+                        Organization Name (Optional)
+                        <input
+                          class="input is-small"
+                          type="text"
+                          name="btrixOrgName"
+                          id="btrixOrgName"
+                          value="${this.btrixOpts && this.btrixOpts.orgName}"
+                          placeholder="Organization (optional)"
+                        />
+                      </p>
+                    </div>
+                  </fieldset>
+                `
+              : ""
+          }
+          <div class="has-text-centered has-text-danger">
+            ${this.settingsError}
+          </div>
+          <div class="has-text-centered mt-4">
+            <button class="button is-primary" type="submit">Save</button>
+            <button
+              class="button"
+              type="button"
+              @click="${this.onCancelSettings}"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </wr-modal>
     `;
   }
 
@@ -784,10 +1133,10 @@ class ArchiveWebApp extends ReplayWebApp
     const title = this.renderRoot.querySelector("#new-title").value;
 
     const method = "POST";
-    const body = JSON.stringify({"metadata": {title}});
-    const resp = await fetch(`${apiPrefix}/c/create`, {method, body});
+    const body = JSON.stringify({ metadata: { title } });
+    const resp = await fetch(`${apiPrefix}/c/create`, { method, body });
     await resp.json();
-    
+
     const index = this.renderRoot.querySelector("wr-rec-coll-index");
     if (index) {
       index.loadColls();
@@ -810,9 +1159,20 @@ class ArchiveWebApp extends ReplayWebApp
       this.selCollId = this.colls[0].id;
     }
     // copy from localStorage to chrome.storage
-    if (self.chrome && self.chrome.storage && self.chrome.storage.local && self.localStorage) {
-      await setLocalOption("index:sortKey", localStorage.getItem("index:sortKey"));
-      await setLocalOption("index:sortDesc", localStorage.getItem("index:sortDesc"));
+    if (
+      self.chrome &&
+      self.chrome.storage &&
+      self.chrome.storage.local &&
+      self.localStorage
+    ) {
+      await setLocalOption(
+        "index:sortKey",
+        localStorage.getItem("index:sortKey")
+      );
+      await setLocalOption(
+        "index:sortDesc",
+        localStorage.getItem("index:sortDesc")
+      );
     }
   }
 
@@ -825,10 +1185,12 @@ class ArchiveWebApp extends ReplayWebApp
     this.selCollId = detail.coll;
     //this.selCollTitle = event.detail.title;
     if (!this.colls || !this.colls.length) {
-      this.colls = [{
-        id: detail.coll,
-        title: detail.title
-      }];
+      this.colls = [
+        {
+          id: detail.coll,
+          title: detail.title,
+        },
+      ];
     }
   }
 
@@ -856,7 +1218,7 @@ class ArchiveWebApp extends ReplayWebApp
 
     const previewCheckbox = this.renderRoot.querySelector("#preview");
     const isPreview = previewCheckbox && previewCheckbox.checked;
-    
+
     this.showStartRecord = false;
     const autorun = this.autorun;
 
@@ -874,7 +1236,7 @@ class ArchiveWebApp extends ReplayWebApp
       });
     } else if (window.archivewebpage && window.archivewebpage.record) {
       const startRec = !isPreview;
-      window.archivewebpage.record({url, collId, startRec, autorun});
+      window.archivewebpage.record({ url, collId, startRec, autorun });
     }
     return false;
   }
@@ -882,9 +1244,17 @@ class ArchiveWebApp extends ReplayWebApp
   async onTitle(event) {
     super.onTitle(event);
 
-    if (this.embed && this.loadedCollId && event.detail.replayTitle && event.detail.title) {
+    if (
+      this.embed &&
+      this.loadedCollId &&
+      event.detail.replayTitle &&
+      event.detail.title
+    ) {
       try {
-        await fetch(`${apiPrefix}/c/${this.loadedCollId}/pageTitle`, {method: "POST", body: JSON.stringify(event.detail)});
+        await fetch(`${apiPrefix}/c/${this.loadedCollId}/pageTitle`, {
+          method: "POST",
+          body: JSON.stringify(event.detail),
+        });
       } catch (e) {
         console.warn(e);
       }
@@ -905,8 +1275,10 @@ class ArchiveWebApp extends ReplayWebApp
       const autoDetect = autodetectCheck && autodetectCheck.checked;
 
       this.ipfsOpts = {
-        daemonUrl, useCustom: !!daemonUrl, gatewayUrl,
-        autoDetect
+        daemonUrl,
+        useCustom: !!daemonUrl,
+        gatewayUrl,
+        autoDetect,
       };
 
       await this.checkIPFS();
@@ -924,7 +1296,7 @@ class ArchiveWebApp extends ReplayWebApp
       const url = btrixUrl.value;
       const username = btrixUsername.value;
       const password = btrixPassword.value;
-      const orgName = btrixOrgName && btrixOrgName.value || "";
+      const orgName = (btrixOrgName && btrixOrgName.value) || "";
 
       if (url && username && password) {
         const btrixOpts = { url, username, password, orgName };
@@ -935,12 +1307,13 @@ class ArchiveWebApp extends ReplayWebApp
           client = await BtrixClient.login(btrixOpts);
           this.settingsError = "";
         } catch (e) {
-          this.settingsError = "Unable to log in to Browsertrix. Check your credentials.";
+          this.settingsError =
+            "Unable to log in to Browsertrix. Check your credentials.";
           return false;
         }
 
         localStorage.setItem("btrixOpts", JSON.stringify(btrixOpts));
-        this.btrixOpts = {...btrixOpts, client};
+        this.btrixOpts = { ...btrixOpts, client };
       } else {
         this.btrixOpts = null;
         localStorage.removeItem("btrixOpts");
@@ -971,7 +1344,9 @@ class ArchiveWebApp extends ReplayWebApp
 
     if (!ipfsOpts.daemonUrl && ipfsOpts.autoDetect) {
       // eslint-disable-next-line no-undef
-      const autoipfs = await createAutoIpfs({web3StorageToken: __WEB3_STORAGE_TOKEN__});
+      const autoipfs = await createAutoIpfs({
+        web3StorageToken: __WEB3_STORAGE_TOKEN__,
+      });
 
       if (autoipfs instanceof DaemonAPI) {
         ipfsOpts.daemonUrl = autoipfs.url;
@@ -982,7 +1357,7 @@ class ArchiveWebApp extends ReplayWebApp
       if (autoipfs instanceof Web3StorageAPI) {
         ipfsOpts.message = "Sharing via remote web3.storage";
       } else if (!ipfsOpts.daemonUrl) {
-        ipfsOpts.message = "IPFS Access Unknown - Sharing Not Available"; 
+        ipfsOpts.message = "IPFS Access Unknown - Sharing Not Available";
       } else if (ipfsOpts.daemonUrl.startsWith("http://localhost:45")) {
         ipfsOpts.message = "Sharing via Brave IPFS node";
       } else if (ipfsOpts.daemonUrl.startsWith("http://localhost")) {

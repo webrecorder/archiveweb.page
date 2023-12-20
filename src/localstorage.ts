@@ -1,7 +1,6 @@
-export function setLocalOption(name, value)
-{
+export function setLocalOption(name, value) {
   if (self.chrome && self.chrome.storage) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const data = {};
       data[name] = value;
       self.chrome.storage.local.set(data, () => resolve());
@@ -18,7 +17,7 @@ export function setLocalOption(name, value)
 // ===========================================================================
 export function getLocalOption(name) {
   if (self.chrome && self.chrome.storage) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       self.chrome.storage.local.get(name, (res) => {
         resolve(res[name]);
       });
@@ -35,7 +34,7 @@ export function getLocalOption(name) {
 // ===========================================================================
 export function removeLocalOption(name) {
   if (self.chrome && self.chrome.storage) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       self.chrome.storage.local.remove(name, () => {
         resolve();
       });

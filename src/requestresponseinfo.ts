@@ -17,13 +17,11 @@ const EXCLUDE_HEADERS = ["content-encoding", "transfer-encoding"];
 
 const encoder = new TextEncoder();
 
-
 // ===========================================================================
-class RequestResponseInfo
-{
+class RequestResponseInfo {
   constructor(requestId) {
     this._created = new Date();
-    
+
     this.requestId = requestId;
 
     this.ts = null;
@@ -106,7 +104,12 @@ class RequestResponseInfo
     const response = params.response;
 
     // if initial fetch was a 200, but now replacing with 304, don't!
-    if (response.status == 304 && this.status && this.status != 304 && this.url) {
+    if (
+      response.status == 304 &&
+      this.status &&
+      this.status != 304 &&
+      this.url
+    ) {
       return;
     }
 
@@ -138,8 +141,12 @@ class RequestResponseInfo
 
     if (response.securityDetails) {
       const issuer = response.securityDetails.issuer || "";
-      const ctc = response.securityDetails.certificateTransparencyCompliance === "compliant" ? "1" : "0";
-      this.extraOpts.cert = {issuer, ctc};
+      const ctc =
+        response.securityDetails.certificateTransparencyCompliance ===
+        "compliant"
+          ? "1"
+          : "0";
+      this.extraOpts.cert = { issuer, ctc };
     }
   }
 
@@ -153,11 +160,19 @@ class RequestResponseInfo
   toDBRecord(payload, pageInfo) {
     // don't save 304 (todo: turn into 'revisit' style entry?)
     // extra check for 206, should already be skipped
-    if (this.method === "OPTIONS" || this.method === "HEAD" || this.status == 304 || this.status === 206) {
+    if (
+      this.method === "OPTIONS" ||
+      this.method === "HEAD" ||
+      this.status == 304 ||
+      this.status === 206
+    ) {
       return null;
     }
 
-    if (!this.url || (!this.url.startsWith("https:") && !this.url.startsWith("http:"))) {
+    if (
+      !this.url ||
+      (!this.url.startsWith("https:") && !this.url.startsWith("http:"))
+    ) {
       return;
     }
 
@@ -216,19 +231,19 @@ class RequestResponseInfo
       url: this.url,
       ts: this.ts,
       status: this.status,
-      statusText:this.statusText,
+      statusText: this.statusText,
       pageId: pageInfo.id,
       payload,
       mime,
       respHeaders: respHeaders.headersDict,
       reqHeaders: reqHeaders.headersDict,
-      extraOpts: this.extraOpts
+      extraOpts: this.extraOpts,
     };
 
     if (this.method !== "GET") {
       data.method = this.method;
       if (this.postData) {
-        if (typeof(this.postData) === "string") {
+        if (typeof this.postData === "string") {
           data.requestBody = encoder.encode(this.postData);
         } else {
           data.requestBody = this.postData;
@@ -256,7 +271,10 @@ class RequestResponseInfo
     let headers = `${this.protocol} ${this.status} ${this.statusText}\r\n`;
 
     for (const header of Object.keys(this.responseHeaders)) {
-      headers += `${header}: ${this.responseHeaders[header].replace(/\n/g, ", ")}\r\n`;
+      headers += `${header}: ${this.responseHeaders[header].replace(
+        /\n/g,
+        ", ",
+      )}\r\n`;
     }
     headers += "\r\n";
     return headers;
@@ -271,7 +289,11 @@ class RequestResponseInfo
   }
 
   getResponseHeadersDict(length) {
-    return this._getHeadersDict(this.responseHeaders, this.responseHeadersList, length);
+    return this._getHeadersDict(
+      this.responseHeaders,
+      this.responseHeadersList,
+      length,
+    );
   }
 
   _getHeadersDict(headersDict, headersList, actualContentLength) {
@@ -294,7 +316,7 @@ class RequestResponseInfo
     let headers = null;
 
     if (!headersDict) {
-      return {headers: new Headers(), headersDict: {}};
+      return { headers: new Headers(), headersDict: {} };
     }
 
     try {
@@ -323,7 +345,7 @@ class RequestResponseInfo
       }
     }
 
-    return {headers, headersDict};
+    return { headers, headersDict };
   }
 
   isValidBinary() {
@@ -349,12 +371,9 @@ class RequestResponseInfo
   }
 }
 
-
 //function formatHeadersText(headersText) {
 //  condense any headers containing newlines
 //  return headersText.replace(/(\n[^:\n]+)+(?=\r\n)/g, function(value) { return value.replace(/\r?\n/g, ", ");});
 //}
-
-
 
 export { RequestResponseInfo };

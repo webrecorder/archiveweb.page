@@ -1,4 +1,3 @@
-
 import { Embed } from "replaywebpage";
 
 import awpLogo from "../../assets/awp-logo.svg";
@@ -6,10 +5,8 @@ import awpLogo from "../../assets/awp-logo.svg";
 // ===========================================================================
 Embed.setDefaultReplayFile("replay.html");
 
-
 // ===========================================================================
-class RecordEmbed extends Embed
-{
+class RecordEmbed extends Embed {
   constructor() {
     super();
 
@@ -20,7 +17,8 @@ class RecordEmbed extends Embed
     this.embed = "default";
     this.noWebWorker = true;
 
-    this.proxyPrefix = "https://wabac-cors-proxy.webrecorder.workers.dev/proxy/";
+    this.proxyPrefix =
+      "https://wabac-cors-proxy.webrecorder.workers.dev/proxy/";
     this.archivePrefix = "";
 
     const baseUrl = new URL(window.location);
@@ -29,13 +27,13 @@ class RecordEmbed extends Embed
     this.logo = awpLogo;
 
     this.customConfig = {
-      "prefix": this.proxyPrefix, 
-      "isLive": false,
-      "archivePrefix": this.archivePrefix,
-      "baseUrl": baseUrl.href,
-      "baseUrlHashReplay": false,
-      "recording": true,
-      "noPostToGet": true
+      prefix: this.proxyPrefix,
+      isLive: false,
+      archivePrefix: this.archivePrefix,
+      baseUrl: baseUrl.href,
+      baseUrlHashReplay: false,
+      recording: true,
+      noPostToGet: true,
     };
 
     this.downloaded = null;
@@ -48,7 +46,7 @@ class RecordEmbed extends Embed
       ...Embed.properties,
 
       archivePrefix: { type: String },
-      proxyPrefix: { type: String }
+      proxyPrefix: { type: String },
     };
   }
 
@@ -64,7 +62,11 @@ class RecordEmbed extends Embed
   }
 
   handleMessage(event) {
-    if (this.downloaded && typeof(event.data) === "object" && event.data.msg_type === "downloadedBlob") {
+    if (
+      this.downloaded &&
+      typeof event.data === "object" &&
+      event.data.msg_type === "downloadedBlob"
+    ) {
       this.downloaded(event.data.url);
       this.downloaded = null;
     }
@@ -76,9 +78,11 @@ class RecordEmbed extends Embed
       return;
     }
 
-    const p = new Promise((resolve) => { this.downloaded = resolve; });
+    const p = new Promise((resolve) => {
+      this.downloaded = resolve;
+    });
 
-    iframe.contentWindow.postMessage({msg_type: "downloadToBlob"});
+    iframe.contentWindow.postMessage({ msg_type: "downloadToBlob" });
 
     return p;
   }

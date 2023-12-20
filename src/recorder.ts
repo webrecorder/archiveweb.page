@@ -1,7 +1,10 @@
 import { RequestResponseInfo } from "./requestresponseinfo.js";
 
 import { getCustomRewriter } from "@webrecorder/wabac/src/rewrite";
-import { rewriteDASH, rewriteHLS } from "@webrecorder/wabac/src/rewrite/rewriteVideo";
+import {
+  rewriteDASH,
+  rewriteHLS,
+} from "@webrecorder/wabac/src/rewrite/rewriteVideo";
 import { Buffer } from "buffer";
 
 import behaviors from "browsertrix-behaviors/dist/behaviors.js";
@@ -12,7 +15,8 @@ import {
   BEHAVIOR_READY_START,
   BEHAVIOR_RUNNING,
   BEHAVIOR_PAUSED,
-  BEHAVIOR_DONE } from "./consts";
+  BEHAVIOR_DONE,
+} from "./consts";
 
 const encoder = new TextEncoder("utf-8");
 
@@ -43,7 +47,7 @@ class Recorder {
     this.stopping = false;
 
     this.frameId = null;
-    this.pageInfo = {size: 0};
+    this.pageInfo = { size: 0 };
     this.firstPageStarted = false;
 
     this.sizeNew = 0;
@@ -79,7 +83,7 @@ class Recorder {
       autoplay: true,
       autoscroll: true,
       siteSpecific: true,
-      log: BEHAVIOR_LOG_FUNC
+      log: BEHAVIOR_LOG_FUNC,
     });
 
     this.behaviorState = BEHAVIOR_WAIT_LOAD;
@@ -87,7 +91,7 @@ class Recorder {
     this.autorun = false;
 
     this.defaultFetchOpts = {
-      redirect: "manual"
+      redirect: "manual",
     };
   }
 
@@ -108,14 +112,19 @@ class Recorder {
   }
 
   getInjectScript() {
-    return behaviors + `;
+    return (
+      behaviors +
+      `;
     self.__bx_behaviors.init(${this.behaviorInitStr});
 
-    window.addEventListener("beforeunload", () => {});` + this.getFlashInjectScript();
+    window.addEventListener("beforeunload", () => {});` +
+      this.getFlashInjectScript()
+    );
   }
 
   getFlashInjectScript() {
-    return `
+    return (
+      `
     (() => {
       const description = "Shockwave Flash 32.0 r0";
       const enabledPlugin = { description };
@@ -130,7 +139,8 @@ class Recorder {
       addPlugin("application/x-shockwave-flash", "swf");
       addPlugin("application/vnd.adobe.flash-movie", "swf");
     })();
-    ` + this.addExternalInject("ruffle/ruffle.js");
+    ` + this.addExternalInject("ruffle/ruffle.js")
+    );
   }
 
   async detach() {
@@ -149,9 +159,9 @@ class Recorder {
     try {
       await Promise.race([
         Promise.all(this._fetchPending.values()),
-        sleep(15000)
+        sleep(15000),
       ]);
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
 
@@ -226,7 +236,7 @@ class Recorder {
           continue;
         }
 
-        if ((new Date() - reqresp._created) > 20000) {
+        if (new Date() - reqresp._created > 20000) {
           if (this.noResponseForStatus(reqresp.status)) {
             console.log("Dropping stale: " + key);
           } else if (!reqresp.awaitingPayload) {
@@ -250,7 +260,6 @@ class Recorder {
         this._cacheSessionTotal = 0;
         this._cacheSessionNew = 0;
       }
-
     } finally {
       this._cleaningUp = false;
     }
@@ -284,48 +293,50 @@ class Recorder {
       failureMsg: this.failureMsg,
       collId: this.collId,
       stopping: this.stopping,
-      type: "status"
+      type: "status",
     };
   }
 
   async _doInjectTopFrame() {
     await this.newDocEval(MAIN_INJECT_URL, this.getInjectScript());
 
-    await this.exposeFunction(BEHAVIOR_LOG_FUNC, ({data, type}) => {
+    await this.exposeFunction(BEHAVIOR_LOG_FUNC, ({ data, type }) => {
       switch (type) {
-      case "info":
-        this.behaviorData = data;
-        //console.log("bx log", JSON.stringify(data));
-        this.updateStatus();
-        break;
+        case "info":
+          this.behaviorData = data;
+          //console.log("bx log", JSON.stringify(data));
+          this.updateStatus();
+          break;
       }
     });
   }
 
   async newDocEval(name, source) {
     source += "\n\n//# sourceURL=" + name;
-    await this.send("Page.addScriptToEvaluateOnNewDocument", {source});
+    await this.send("Page.addScriptToEvaluateOnNewDocument", { source });
   }
 
   pageEval(name, expression, sessions = []) {
     expression += "\n\n//# sourceURL=" + name;
-    return this.send("Runtime.evaluate", {
-      expression,
-      userGesture: true,
-      includeCommandLineAPI: true,
-      allowUnsafeEvalBlockedByCSP: true,
-      //replMode: true,
-      awaitPromise: true,
-      //returnByValue: true,
-    },
-    sessions);
+    return this.send(
+      "Runtime.evaluate",
+      {
+        expression,
+        userGesture: true,
+        includeCommandLineAPI: true,
+        allowUnsafeEvalBlockedByCSP: true,
+        //replMode: true,
+        awaitPromise: true,
+        //returnByValue: true,
+      },
+      sessions,
+    );
   }
 
   async _doInjectIframe(sessions) {
     try {
       //console.log("inject to: " + sessions[0]);
       await this.pageEval(IFRAME_INJECT_URL, this.getInjectScript(), sessions);
-
     } catch (e) {
       console.warn(e);
     }
@@ -333,40 +344,50 @@ class Recorder {
 
   async toggleBehaviors() {
     switch (this.behaviorState) {
-    case BEHAVIOR_WAIT_LOAD:
-    case BEHAVIOR_DONE:
-      break;
+      case BEHAVIOR_WAIT_LOAD:
+      case BEHAVIOR_DONE:
+        break;
 
-    case BEHAVIOR_READY_START:
-      this.pageEval("__awp_behavior_run__", "self.__bx_behaviors.run();").then(() => this.behaviorState = BEHAVIOR_DONE);
-      this.behaviorState = BEHAVIOR_RUNNING;
-      break;
+      case BEHAVIOR_READY_START:
+        this.pageEval(
+          "__awp_behavior_run__",
+          "self.__bx_behaviors.run();",
+        ).then(() => (this.behaviorState = BEHAVIOR_DONE));
+        this.behaviorState = BEHAVIOR_RUNNING;
+        break;
 
-    case BEHAVIOR_RUNNING:
-      this.pageEval("__awp_behavior_unpause__", "self.__bx_behaviors.pause();");
-      this.behaviorState = BEHAVIOR_PAUSED;
-      break;
+      case BEHAVIOR_RUNNING:
+        this.pageEval(
+          "__awp_behavior_unpause__",
+          "self.__bx_behaviors.pause();",
+        );
+        this.behaviorState = BEHAVIOR_PAUSED;
+        break;
 
-    case BEHAVIOR_PAUSED:
-      this.pageEval("__awp_behavior_unpause__", "self.__bx_behaviors.unpause();");
-      this.behaviorState = BEHAVIOR_RUNNING;
-      break;
+      case BEHAVIOR_PAUSED:
+        this.pageEval(
+          "__awp_behavior_unpause__",
+          "self.__bx_behaviors.unpause();",
+        );
+        this.behaviorState = BEHAVIOR_RUNNING;
+        break;
     }
 
     this.updateStatus();
   }
 
-  async exposeFunction(name, func, sessions = [])
-  { 
+  async exposeFunction(name, func, sessions = []) {
     this._bindings[name] = func;
-    await this.send("Runtime.addBinding", {name}, sessions);
+    await this.send("Runtime.addBinding", { name }, sessions);
 
     //await this.newDocEval("__awp_binding_wrap__", `
     //self._${name} = (args) => self.${name}(JSON.stringify(args));`, sessions);
   }
 
   loaded() {
-    this._loaded = new Promise(resolve => this._loadedDoneResolve = resolve);
+    this._loaded = new Promise(
+      (resolve) => (this._loadedDoneResolve = resolve),
+    );
     return this._loaded;
   }
 
@@ -389,7 +410,10 @@ class Recorder {
   }
 
   async initPixRatio() {
-    const {result} = await this.pageEval("__awp_get_pix_ratio", "window.devicePixelRatio");
+    const { result } = await this.pageEval(
+      "__awp_get_pix_ratio",
+      "window.devicePixelRatio",
+    );
     if (result && result.type === "number") {
       this.pixelRatio = result.value;
     }
@@ -400,22 +424,42 @@ class Recorder {
       await this.send("Network.enable", null, sessions);
 
       try {
-        await this.send("Fetch.enable", {patterns: [{urlPattern: "*", requestStage: "Response"}]}, sessions);
-      } catch(e) {
+        await this.send(
+          "Fetch.enable",
+          { patterns: [{ urlPattern: "*", requestStage: "Response" }] },
+          sessions,
+        );
+      } catch (e) {
         console.log("No Fetch Available", e);
       }
 
       try {
         await this.send("Media.enable", null, sessions);
-      } catch(e) {
+      } catch (e) {
         console.log("No media events available");
       }
 
-      await this.send("Target.setAutoAttach", {autoAttach: true, waitForDebuggerOnStart: true, flatten: this.flatMode }, sessions);
+      await this.send(
+        "Target.setAutoAttach",
+        {
+          autoAttach: true,
+          waitForDebuggerOnStart: true,
+          flatten: this.flatMode,
+        },
+        sessions,
+      );
 
       // disable cache for now?
-      await this.send("Network.setCacheDisabled", {cacheDisabled: true}, sessions);
-      await this.send("Network.setBypassServiceWorker", {bypass: true}, sessions);
+      await this.send(
+        "Network.setCacheDisabled",
+        { cacheDisabled: true },
+        sessions,
+      );
+      await this.send(
+        "Network.setBypassServiceWorker",
+        { bypass: true },
+        sessions,
+      );
       // another option: clear cache, but don't disable
       await this.send("Network.clearBrowserCache", null, sessions);
     } catch (e) {
@@ -437,13 +481,20 @@ class Recorder {
 
     try {
       await this.send("Media.disable", null, sessions);
-    } catch(e) {
+    } catch (e) {
       // ignore
     }
 
-    await this.send("Target.setAutoAttach", {autoAttach: false, waitForDebuggerOnStart: false});
+    await this.send("Target.setAutoAttach", {
+      autoAttach: false,
+      waitForDebuggerOnStart: false,
+    });
 
-    await this.send("Network.setBypassServiceWorker", {bypass: false}, sessions);
+    await this.send(
+      "Network.setBypassServiceWorker",
+      { bypass: false },
+      sessions,
+    );
   }
 
   pendingReqResp(requestId, reuseOnly = false) {
@@ -467,168 +518,195 @@ class Recorder {
 
   async processMessage(method, params, sessions) {
     switch (method) {
-    case "Target.attachedToTarget":
-      sessions.push(params.sessionId);
+      case "Target.attachedToTarget":
+        sessions.push(params.sessionId);
 
-      try {
-        this.sessionSet.add(params.sessionId);
+        try {
+          this.sessionSet.add(params.sessionId);
 
-        const type = params.targetInfo.type;
+          const type = params.targetInfo.type;
 
-        const allowAttach = type !== "service_worker";
+          const allowAttach = type !== "service_worker";
 
-        if (allowAttach) {
-          await this.sessionInit(sessions);
-        }
-
-        if (params.waitingForDebugger) {
-          await this.send("Runtime.runIfWaitingForDebugger", null, sessions);
-        }
-
-        if (allowAttach) {
-          console.log("Target Attached: " + type + " " + params.targetInfo.url + " " + params.sessionId);
-
-          if (type === "page" || type === "iframe") {
-            await this._doInjectIframe(sessions);
+          if (allowAttach) {
+            await this.sessionInit(sessions);
           }
-        } else {
-          console.log("Not allowed attach for: " + type + " " + params.targetInfo.url + " " + params.sessionId);
 
-          const params2 = this.flatMode ? {sessionId: params.sessionId} : {targetId: params.targetInfo.targetId};
-          await this.send("Runtime.runIfWaitingForDebugger", params2, sessions);
+          if (params.waitingForDebugger) {
+            await this.send("Runtime.runIfWaitingForDebugger", null, sessions);
+          }
+
+          if (allowAttach) {
+            console.log(
+              "Target Attached: " +
+                type +
+                " " +
+                params.targetInfo.url +
+                " " +
+                params.sessionId,
+            );
+
+            if (type === "page" || type === "iframe") {
+              await this._doInjectIframe(sessions);
+            }
+          } else {
+            console.log(
+              "Not allowed attach for: " +
+                type +
+                " " +
+                params.targetInfo.url +
+                " " +
+                params.sessionId,
+            );
+
+            const params2 = this.flatMode
+              ? { sessionId: params.sessionId }
+              : { targetId: params.targetInfo.targetId };
+            await this.send(
+              "Runtime.runIfWaitingForDebugger",
+              params2,
+              sessions,
+            );
+          }
+        } catch (e) {
+          console.log(e);
+          console.warn(
+            "Error attaching target: " +
+              params.targetInfo.type +
+              " " +
+              params.targetInfo.url,
+          );
         }
+        break;
 
-      } catch (e) {
-        console.log(e);
-        console.warn("Error attaching target: " + params.targetInfo.type + " " + params.targetInfo.url);
-      }
-      break;
+      case "Target.detachedFromTarget":
+        console.log("Detaching from: " + params.sessionId);
+        this.sessionSet.delete(params.sessionId);
+        break;
 
-    case "Target.detachedFromTarget":
-      console.log("Detaching from: " + params.sessionId);
-      this.sessionSet.delete(params.sessionId);
-      break;
-
-    case "Target.receivedMessageFromTarget":
-      if (!this.sessionSet.has(params.sessionId)) {
-        console.warn("no such session: " + params.sessionId);
-        console.warn(params);
-        return;
-      }
-      sessions.push(params.sessionId);
-      this.receiveMessageFromTarget(params, sessions);
-      break;
-
-    case "Network.responseReceived":
-      if (params.response) {
-        const reqresp = this.pendingReqResp(params.requestId, true);
-        if (reqresp) {
-          reqresp.fillResponseReceived(params);
+      case "Target.receivedMessageFromTarget":
+        if (!this.sessionSet.has(params.sessionId)) {
+          console.warn("no such session: " + params.sessionId);
+          console.warn(params);
+          return;
         }
-      }
-      break;
+        sessions.push(params.sessionId);
+        this.receiveMessageFromTarget(params, sessions);
+        break;
 
-    case "Network.loadingFinished":
-      await this.handleLoadingFinished(params, sessions);
-      break;
-
-    case "Network.loadingFailed":
-    {
-      const reqresp = this.removeReqResp(params.requestId);
-      if (reqresp && reqresp.status !== 206) {
-        // check if this is a false positive -- a valid download that's already been fetched
-        // the abort is just for page, but download will succeed
-        if (params.type === "Document" && 
-                params.errorText === "net::ERR_ABORTED" &&
-                reqresp.isValidBinary()) {
-          this.fullCommit(reqresp, sessions);
-        } else {
-          console.log(`Loading Failed for: ${reqresp.url} ${params.errorText}`);
+      case "Network.responseReceived":
+        if (params.response) {
+          const reqresp = this.pendingReqResp(params.requestId, true);
+          if (reqresp) {
+            reqresp.fillResponseReceived(params);
+          }
         }
-      }
-      break;
-    }
+        break;
 
-    case "Network.requestServedFromCache":
-      this.removeReqResp(params.requestId);
-      break;
+      case "Network.loadingFinished":
+        await this.handleLoadingFinished(params, sessions);
+        break;
 
-    case "Network.responseReceivedExtraInfo":
-      {
-        const reqresp = this.pendingReqResp(params.requestId, true);
-        if (reqresp) {
-          reqresp.fillResponseReceivedExtraInfo(params);
+      case "Network.loadingFailed": {
+        const reqresp = this.removeReqResp(params.requestId);
+        if (reqresp && reqresp.status !== 206) {
+          // check if this is a false positive -- a valid download that's already been fetched
+          // the abort is just for page, but download will succeed
+          if (
+            params.type === "Document" &&
+            params.errorText === "net::ERR_ABORTED" &&
+            reqresp.isValidBinary()
+          ) {
+            this.fullCommit(reqresp, sessions);
+          } else {
+            console.log(
+              `Loading Failed for: ${reqresp.url} ${params.errorText}`,
+            );
+          }
         }
+        break;
       }
-      break;
 
-    case "Network.requestWillBeSent":
-      await this.handleRequestWillBeSent(params);
-      break;
+      case "Network.requestServedFromCache":
+        this.removeReqResp(params.requestId);
+        break;
 
-    case "Network.requestWillBeSentExtraInfo":
-      if (!this.shouldSkip(null, params.headers, null)) {
-        this.pendingReqResp(params.requestId).requestHeaders = params.headers;
-      }
-      break;
+      case "Network.responseReceivedExtraInfo":
+        {
+          const reqresp = this.pendingReqResp(params.requestId, true);
+          if (reqresp) {
+            reqresp.fillResponseReceivedExtraInfo(params);
+          }
+        }
+        break;
 
-    case "Fetch.requestPaused":
-      await this.handlePaused(params, sessions);
-      break;
+      case "Network.requestWillBeSent":
+        await this.handleRequestWillBeSent(params);
+        break;
 
-    case "Page.frameNavigated":
-      this.initPage(params, sessions);
-      break;
+      case "Network.requestWillBeSentExtraInfo":
+        if (!this.shouldSkip(null, params.headers, null)) {
+          this.pendingReqResp(params.requestId).requestHeaders = params.headers;
+        }
+        break;
 
-    case "Page.loadEventFired":
-      await this.updatePage(sessions);
-      break;
+      case "Fetch.requestPaused":
+        await this.handlePaused(params, sessions);
+        break;
 
-    case "Page.navigatedWithinDocument":
-      await this.updateHistory(sessions);
-      break;
+      case "Page.frameNavigated":
+        this.initPage(params, sessions);
+        break;
 
-    case "Page.windowOpen":
-      this.handleWindowOpen(params.url, sessions);
-      break;
+      case "Page.loadEventFired":
+        await this.updatePage(sessions);
+        break;
 
-    case "Page.javascriptDialogOpening":
-      if (this.behaviorState === BEHAVIOR_RUNNING) {
-        await this.send("Page.handleJavaScriptDialog", {accept: false});
-      }
-      break;
+      case "Page.navigatedWithinDocument":
+        await this.updateHistory(sessions);
+        break;
 
-    case "Debugger.paused":
-      // only unpause for beforeunload event
-      // could be paused for regular breakpoint if debugging via devtools
-      if (params.data && params.data.eventName === "listener:beforeunload") {
-        await this.unpauseAndFinish(params);
-      }
-      break;
+      case "Page.windowOpen":
+        this.handleWindowOpen(params.url, sessions);
+        break;
 
-    case "Media.playerEventsAdded":
-      this.parseMediaEventsAdded(params, sessions);
-      break;
+      case "Page.javascriptDialogOpening":
+        if (this.behaviorState === BEHAVIOR_RUNNING) {
+          await this.send("Page.handleJavaScriptDialog", { accept: false });
+        }
+        break;
 
-    case "Runtime.bindingCalled":
-      if (this._bindings[params.name]) {
-        this._bindings[params.name](JSON.parse(params.payload));
-      }
-      break;
-  
-    default:
-      //if (method.startsWith("Target.")) {
-      //  console.log(method, params);
-      //}
-      return false;
+      case "Debugger.paused":
+        // only unpause for beforeunload event
+        // could be paused for regular breakpoint if debugging via devtools
+        if (params.data && params.data.eventName === "listener:beforeunload") {
+          await this.unpauseAndFinish(params);
+        }
+        break;
+
+      case "Media.playerEventsAdded":
+        this.parseMediaEventsAdded(params, sessions);
+        break;
+
+      case "Runtime.bindingCalled":
+        if (this._bindings[params.name]) {
+          this._bindings[params.name](JSON.parse(params.payload));
+        }
+        break;
+
+      default:
+        //if (method.startsWith("Target.")) {
+        //  console.log(method, params);
+        //}
+        return false;
     }
 
     return true;
   }
 
   handleWindowOpen(url, sessions) {
-    const headers = {"Referer": this.pageInfo.url};
-    this.doAsyncFetch({url, headers, redirectOnly: true}, sessions);
+    const headers = { Referer: this.pageInfo.url };
+    this.doAsyncFetch({ url, headers, redirectOnly: true }, sessions);
   }
 
   isPagePDF() {
@@ -639,14 +717,17 @@ class Recorder {
     let success = false;
     console.log("pdfLoadURL", this.pdfLoadURL);
     if (this.pdfLoadURL) {
-      const res = await this.pageEval("__awp_pdf_extract__", `
+      const res = await this.pageEval(
+        "__awp_pdf_extract__",
+        `
       ${extractPDF};
 
       extractPDF("${this.pdfLoadURL}", "${this.getExternalInjectURL("")}");
-      `);
+      `,
+      );
 
       if (res.result) {
-        const {type, value} = res.result;
+        const { type, value } = res.result;
         if (type === "string") {
           this.pageInfo.text = value;
           success = true;
@@ -671,10 +752,10 @@ class Recorder {
       // wait upto 10s for getDocument, otherwise proceed
       return await Promise.race([
         //this.send("DOM.getDocument", {"depth": -1, "pierce": true}),
-        this.send("DOMSnapshot.captureSnapshot", {computedStyles: []}),
-        sleep(10000)
+        this.send("DOMSnapshot.captureSnapshot", { computedStyles: [] }),
+        sleep(10000),
       ]);
-    } catch(e) {
+    } catch (e) {
       console.log(e);
       return null;
     }
@@ -685,7 +766,7 @@ class Recorder {
 
     // determine if this is the unload from the injected content script
     // if not, unpause but don't extract full text
-    const ourUnload = (params.callFrames[0].url === MAIN_INJECT_URL);
+    const ourUnload = params.callFrames[0].url === MAIN_INJECT_URL;
 
     if (ourUnload && this.behaviorState !== BEHAVIOR_WAIT_LOAD) {
       domSnapshot = await this.getFullText(true);
@@ -695,7 +776,7 @@ class Recorder {
 
     try {
       await this.send("Debugger.resume");
-    } catch(e) {
+    } catch (e) {
       console.warn(e);
     }
 
@@ -711,7 +792,12 @@ class Recorder {
   }
 
   commitPage(currPage, domSnapshot, finished) {
-    if (!currPage || !currPage.url || !currPage.ts || currPage.url === "about:blank") {
+    if (
+      !currPage ||
+      !currPage.url ||
+      !currPage.ts ||
+      currPage.url === "about:blank"
+    ) {
       return;
     }
 
@@ -771,7 +857,10 @@ class Recorder {
 
   //from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
   newPageId() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
   }
 
   initPage(params, sessions) {
@@ -839,7 +928,7 @@ class Recorder {
     if (favIconUrl && this.pageInfo && this.pageInfo.favIconUrl != favIconUrl) {
       this.pageInfo.favIconUrl = favIconUrl;
 
-      this.doAsyncFetch({url: favIconUrl}, sessions);
+      this.doAsyncFetch({ url: favIconUrl }, sessions);
     }
   }
 
@@ -898,7 +987,10 @@ class Recorder {
 
     const result = await this.send("Page.getNavigationHistory", null, sessions);
     const id = result.currentIndex;
-    if (id === result.entries.length - 1 && this.historyMap[id] !== result.entries[id].url) {
+    if (
+      id === result.entries.length - 1 &&
+      this.historyMap[id] !== result.entries[id].url
+    ) {
       //console.log("New History Entry: " + JSON.stringify(result.entries[id]));
       this.historyMap[id] = result.entries[id].url;
     }
@@ -923,7 +1015,11 @@ class Recorder {
     }
 
     // skip eventsource, resourceType may not be set correctly
-    if (headers && (headers["accept"] === "text/event-stream" || headers["Accept"] === "text/event-stream")) {
+    if (
+      headers &&
+      (headers["accept"] === "text/event-stream" ||
+        headers["Accept"] === "text/event-stream")
+    ) {
       return true;
     }
 
@@ -936,7 +1032,13 @@ class Recorder {
 
     let skip = false;
 
-    if (this.shouldSkip(params.request.method, params.request.headers, params.resourceType)) {
+    if (
+      this.shouldSkip(
+        params.request.method,
+        params.request.headers,
+        params.resourceType,
+      )
+    ) {
       skip = true;
     } else if (!params.responseStatusCode && !params.responseErrorReason) {
       skip = true;
@@ -945,7 +1047,7 @@ class Recorder {
     try {
       if (!skip) {
         reqresp = await this.handleFetchResponse(params, sessions);
-    
+
         try {
           if (reqresp && reqresp.payload) {
             continued = await this.rewriteResponse(params, reqresp, sessions);
@@ -953,22 +1055,32 @@ class Recorder {
         } catch (e) {
           console.error("Fetch rewrite failed for: " + params.request.url);
           console.error(e);
-        }     
+        }
       }
-    } catch(e) {
+    } catch (e) {
       console.warn(e);
     }
 
     if (!continued) {
       try {
-        await this.send("Fetch.continueResponse", {requestId: params.requestId }, sessions);
-      } catch(e) {
+        await this.send(
+          "Fetch.continueResponse",
+          { requestId: params.requestId },
+          sessions,
+        );
+      } catch (e) {
         console.warn("Continue failed for: " + params.request.url, e);
       }
     }
 
     // if finished and matches current frameId, commit right away
-    if (reqresp && reqresp.payload && reqresp.payload.length && params.frameId === this.frameId && !isNaN(Number(reqresp.requestId))) {
+    if (
+      reqresp &&
+      reqresp.payload &&
+      reqresp.payload.length &&
+      params.frameId === this.frameId &&
+      !isNaN(Number(reqresp.requestId))
+    ) {
       this.removeReqResp(reqresp.requestId);
       this.fullCommit(reqresp, sessions);
     }
@@ -993,29 +1105,29 @@ class Recorder {
     const ct = this._getContentType(params.responseHeaders);
 
     switch (ct) {
-    case "application/x-mpegURL":
-    case "application/vnd.apple.mpegurl":
-      string = payload.toString("utf-8");
-      newString = rewriteHLS(string, {save: reqresp.extraOpts});
-      break;
+      case "application/x-mpegURL":
+      case "application/vnd.apple.mpegurl":
+        string = payload.toString("utf-8");
+        newString = rewriteHLS(string, {save: reqresp.extraOpts});
+        break;
 
-    case "application/dash+xml":
-      string = payload.toString("utf-8");
-      newString = rewriteDASH(string, {save: reqresp.extraOpts});
-      break;
+      case "application/dash+xml":
+        string = payload.toString("utf-8");
+        newString = rewriteDASH(string, {save: reqresp.extraOpts});
+        break;
 
-    case "text/html":
-    case "application/json":
-    case "text/javascript":
-    case "application/javascript":
-    case "application/x-javascript": {
-      const rw = getCustomRewriter(url, ct === "text/html");
+      case "text/html":
+      case "application/json":
+      case "text/javascript":
+      case "application/javascript":
+      case "application/x-javascript": {
+        const rw = getCustomRewriter(url, ct === "text/html");
 
-      if (rw) {
-        string = payload.toString();
-        newString = rw.rewrite(string, {live: true, save: extraOpts});
+        if (rw) {
+          string = payload.toString();
+          newString = rw.rewrite(string, {live: true, save: extraOpts});
+        }
       }
-    }
     }
 
     if (!newString) {
@@ -1032,12 +1144,16 @@ class Recorder {
     const base64Str = Buffer.from(newString).toString("base64");
 
     try {
-      await this.send("Fetch.fulfillRequest",
-        {"requestId": params.requestId,
-          "responseCode": params.responseStatusCode,
-          "responseHeaders": params.responseHeaders,
-          "body": base64Str
-        }, sessions);
+      await this.send(
+        "Fetch.fulfillRequest",
+        {
+          requestId: params.requestId,
+          responseCode: params.responseStatusCode,
+          responseHeaders: params.responseHeaders,
+          body: base64Str,
+        },
+        sessions,
+      );
       //console.log("Replace succeeded? for: " + params.request.url);
       return true;
     } catch (e) {
@@ -1058,7 +1174,7 @@ class Recorder {
   }
 
   noResponseForStatus(status) {
-    return (!status || status === 204 || (status >= 300 && status < 400));
+    return !status || status === 204 || (status >= 300 && status < 400);
   }
 
   isValidUrl(url) {
@@ -1082,7 +1198,12 @@ class Recorder {
     if (!reqresp.fetch && !payload) {
       // empty response, don't attempt to store it
       if (params.encodedDataLength) {
-        payload = await this.fetchPayloads(params, reqresp, sessions, "Network.getResponseBody");
+        payload = await this.fetchPayloads(
+          params,
+          reqresp,
+          sessions,
+          "Network.getResponseBody",
+        );
       }
       if (!payload || !payload.length) {
         return;
@@ -1116,7 +1237,11 @@ class Recorder {
       if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
         this.pageInfo.ts = reqresp.ts;
 
-        if (data.mime === "application/pdf" && reqresp.payload && this.pageInfo) {
+        if (
+          data.mime === "application/pdf" &&
+          reqresp.payload &&
+          this.pageInfo
+        ) {
           // ensure set for electron
           this.pageInfo.mime = "application/pdf";
           this.pdfLoadURL = reqresp.url;
@@ -1139,8 +1264,7 @@ class Recorder {
       if (data) {
         await this.commitResource(data);
       }
-
-    } catch(e) {
+    } catch (e) {
       console.log("error committing", e);
     }
 
@@ -1155,18 +1279,28 @@ class Recorder {
     }
 
     const securityOrigin = new URL(url).origin;
-    const storageId = {securityOrigin, isLocalStorage: true};
+    const storageId = { securityOrigin, isLocalStorage: true };
 
-    const local = await this.send("DOMStorage.getDOMStorageItems", {storageId});
+    const local = await this.send("DOMStorage.getDOMStorageItems", {
+      storageId,
+    });
     storageId.isLocalStorage = false;
 
-    const session = await this.send("DOMStorage.getDOMStorageItems", {storageId});
+    const session = await this.send("DOMStorage.getDOMStorageItems", {
+      storageId,
+    });
 
-    return JSON.stringify({local: local.entries, session: session.entries});
+    return JSON.stringify({ local: local.entries, session: session.entries });
   }
 
   async handleRequestWillBeSent(params) {
-    if (this.shouldSkip(params.request.method, params.request.headers, params.type)) {
+    if (
+      this.shouldSkip(
+        params.request.method,
+        params.request.headers,
+        params.type,
+      )
+    ) {
       this.removeReqResp(params.requestId);
       return;
     }
@@ -1176,7 +1310,6 @@ class Recorder {
     let data = null;
 
     if (params.redirectResponse) {
-
       if (reqresp.isSelfRedirect()) {
         console.warn(`Skip self redirect: ${reqresp.url}`);
         this.removeReqResp(params.requestId);
@@ -1210,12 +1343,17 @@ class Recorder {
 
     reqresp.fillFetchRequestPaused(params);
 
-    reqresp.payload = await this.fetchPayloads(params, reqresp, sessions, "Fetch.getResponseBody");
+    reqresp.payload = await this.fetchPayloads(
+      params,
+      reqresp,
+      sessions,
+      "Fetch.getResponseBody",
+    );
 
     if (reqresp.status === 206) {
       this.removeReqResp(id);
     }
-    
+
     return reqresp;
   }
 
@@ -1224,10 +1362,10 @@ class Recorder {
       return;
     }
 
-    for (const {value} of params.events) {
-      if (value.indexOf("\"kLoad\"") > 0) {
-        const {url} = JSON.parse(value);
-        this.doAsyncFetch({url}, sessions);
+    for (const { value } of params.events) {
+      if (value.indexOf('"kLoad"') > 0) {
+        const { url } = JSON.parse(value);
+        this.doAsyncFetch({ url }, sessions);
         break;
       }
     }
@@ -1236,7 +1374,7 @@ class Recorder {
   async attemptFetchRedirect(request, resp) {
     if (request.redirectOnly && resp.type === "opaqueredirect") {
       const abort = new AbortController();
-      resp = await fetch(request.url, {abort});
+      resp = await fetch(request.url, { abort });
       abort.abort();
 
       if (resp.redirected) {
@@ -1245,7 +1383,9 @@ class Recorder {
       }
     }
 
-    console.warn(`async fetch error ${resp.status}, opaque due to redirect, retrying in browser`);
+    console.warn(
+      `async fetch error ${resp.status}, opaque due to redirect, retrying in browser`,
+    );
     await this.doAsyncFetchInBrowser(request, request.sessions, true);
     return null;
   }
@@ -1280,7 +1420,11 @@ class Recorder {
   }
 
   async doBackgroundFetch() {
-    if (!this._fetchQueue.length || this._fetchPending.size >= MAX_CONCURRENT_FETCH || this.stopping) {
+    if (
+      !this._fetchQueue.length ||
+      this._fetchPending.size >= MAX_CONCURRENT_FETCH ||
+      this.stopping
+    ) {
       return;
     }
 
@@ -1305,7 +1449,7 @@ class Recorder {
 
       this._fetchPending.set(fetchId, pending);
 
-      const opts = {...this.defaultFetchOpts};
+      const opts = { ...this.defaultFetchOpts };
 
       if (request.getRequestHeadersDict) {
         opts.headers = request.getRequestHeadersDict().headers;
@@ -1321,10 +1465,14 @@ class Recorder {
           return;
         }
       } else if (resp.status >= 400) {
-        console.warn(`async fetch error ${resp.status}, retrying without headers`);
+        console.warn(
+          `async fetch error ${resp.status}, retrying without headers`,
+        );
         resp = await fetch(request.url, this.defaultFetchOpts);
         if (resp.status >= 400) {
-          console.warn(`async fetch returned: ${resp.status}, trying in-browser fetch`);
+          console.warn(
+            `async fetch returned: ${resp.status}, trying in-browser fetch`,
+          );
           await this.doAsyncFetchInBrowser(request, request.sessions, true);
           return;
         }
@@ -1350,12 +1498,12 @@ class Recorder {
         if (this.pageInfo !== request.pageInfo) {
           await this.commitPage(request.pageInfo);
         }
-
       } else {
-        console.warn("No Data Committed for: " + request.url + " Status: " + resp.status);
+        console.warn(
+          "No Data Committed for: " + request.url + " Status: " + resp.status,
+        );
       }
-
-    } catch(e) {
+    } catch (e) {
       console.log(e);
       this._fetchUrls.delete(request.url);
     } finally {
@@ -1376,16 +1524,28 @@ class Recorder {
     if (!this.noResponseForStatus(reqresp.status)) {
       try {
         reqresp.awaitingPayload = true;
-        payload = await this.send(method, {requestId: params.requestId}, sessions);
+        payload = await this.send(
+          method,
+          { requestId: params.requestId },
+          sessions,
+        );
 
         if (payload.base64Encoded) {
           payload = Buffer.from(payload.body, "base64");
         } else {
           payload = Buffer.from(payload.body, "utf-8");
         }
-
       } catch (e) {
-        console.warn("no buffer for: " + reqresp.url + " " + reqresp.status + " " + reqresp.requestId + " " + method);
+        console.warn(
+          "no buffer for: " +
+            reqresp.url +
+            " " +
+            reqresp.status +
+            " " +
+            reqresp.requestId +
+            " " +
+            method,
+        );
         console.warn(e);
         return null;
       } finally {
@@ -1397,9 +1557,13 @@ class Recorder {
 
     if (reqresp.hasPostData && !reqresp.postData) {
       try {
-        let postRes = await this.send("Network.getRequestPostData", {requestId: reqresp.requestId}, sessions);
+        let postRes = await this.send(
+          "Network.getRequestPostData",
+          { requestId: reqresp.requestId },
+          sessions,
+        );
         reqresp.postData = Buffer.from(postRes.postData, "utf-8");
-      } catch(e) {
+      } catch (e) {
         console.warn("Error getting POST data: " + e);
       }
     }
@@ -1431,7 +1595,6 @@ class Recorder {
         if (data && reqresp.url === pageInfo.url) {
           pageInfo.ts = reqresp.ts;
         }
-        
       } else {
         console.log(`Discarding Payload-less ${reqresp.url}`);
       }
@@ -1442,14 +1605,18 @@ class Recorder {
     let promise = null;
 
     if (this.flatMode && sessions.length) {
-      return this._doSendCommandFlat(method, params, sessions[sessions.length - 1]);
+      return this._doSendCommandFlat(
+        method,
+        params,
+        sessions[sessions.length - 1],
+      );
     }
 
     for (let i = sessions.length - 1; i >= 0; i--) {
       const id = this.id++;
 
       const p = new Promise((resolve, reject) => {
-        this._promises[id] = {resolve, reject, method};
+        this._promises[id] = { resolve, reject, method };
       });
 
       if (!promise) {
@@ -1457,12 +1624,12 @@ class Recorder {
       }
 
       //let message = params ? {id, method, params} : {id, method};
-      const message = JSON.stringify({id, method, params});
+      const message = JSON.stringify({ id, method, params });
 
       //const sessionId = sessions[sessions.length - 1 - i];
       const sessionId = sessions[i];
 
-      params = {sessionId, message};
+      params = { sessionId, message };
       method = "Target.sendMessageToTarget";
     }
 
@@ -1473,9 +1640,16 @@ class Recorder {
     const TEXT_NODE = 3;
     const ELEMENT_NODE = 1;
 
-    const SKIPPED_NODES = ["SCRIPT", "STYLE", "HEADER", "FOOTER", "BANNER-DIV", "NOSCRIPT"];
+    const SKIPPED_NODES = [
+      "SCRIPT",
+      "STYLE",
+      "HEADER",
+      "FOOTER",
+      "BANNER-DIV",
+      "NOSCRIPT",
+    ];
 
-    const {strings, documents} = result;
+    const { strings, documents } = result;
 
     const accum = [];
 
@@ -1523,9 +1697,9 @@ class Recorder {
   //   const EMPTY_LIST = [];
   //   const TEXT = "#text";
   //   const TITLE = "title";
-    
+
   //   const name = node.nodeName.toLowerCase();
-      
+
   //   if (SKIPPED_NODES.includes(name)) {
   //     return;
   //   }
@@ -1543,7 +1717,7 @@ class Recorder {
   //     for (let child of children) {
   //       this._parseText(child, null, title);
   //     }
-    
+
   //     if (metadata) {
   //       metadata.title = title.join(" ");
   //     } else {
@@ -1554,9 +1728,9 @@ class Recorder {
   //       this._parseText(child, metadata, accum);
   //     }
 
-  //     if (node.contentDocument) { 
+  //     if (node.contentDocument) {
   //       this._parseText(node.contentDocument, null, accum);
-  //     } 
+  //     }
   //   }
   // }
 }

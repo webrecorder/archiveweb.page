@@ -1,4 +1,10 @@
-import { html, css, wrapCss, clickOnSpacebarPress, apiPrefix } from "replaywebpage/src/misc";
+import {
+  html,
+  css,
+  wrapCss,
+  clickOnSpacebarPress,
+  apiPrefix,
+} from "replaywebpage/src/misc";
 
 import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
 
@@ -7,10 +13,8 @@ import prettyBytes from "pretty-bytes";
 import { Coll } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
-
 //============================================================================
-class WrRecColl extends Coll
-{
+class WrRecColl extends Coll {
   constructor() {
     super();
     this._sizeUpdater = null;
@@ -32,23 +36,23 @@ class WrRecColl extends Coll
 
   static get compStyles() {
     return css`
-    .rec-button {
-      display: flex;
-      flex-direction: row;
-      margin: 0 1px;
-      align-items: center;
-      border: 1px darkgrey solid;
-      border-radius: 16px;
-      padding: 0 0.5em;
-      min-width: max-content;
-    }
+      .rec-button {
+        display: flex;
+        flex-direction: row;
+        margin: 0 1px;
+        align-items: center;
+        border: 1px darkgrey solid;
+        border-radius: 16px;
+        padding: 0 0.5em;
+        min-width: max-content;
+      }
 
-    .size-label {
-      margin-left: 0.5em;
-      font-weight: bold;
-    }
+      .size-label {
+        margin-left: 0.5em;
+        font-weight: bold;
+      }
 
-    ${Coll.compStyles}
+      ${Coll.compStyles}
     `;
   }
 
@@ -70,7 +74,7 @@ class WrRecColl extends Coll
           const json = await resp.json();
           this.totalSize = json.size || 0;
         }
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
       }
     } finally {
       this._sizeUpdater = null;
@@ -81,22 +85,36 @@ class WrRecColl extends Coll
     if (this.embed) {
       if (!isDropdown) {
         return html`
-        <span class="rec-button" title="Archiving">
-          <span class="icon is-small" title="Archiving">
-            <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+          <span class="rec-button" title="Archiving">
+            <span class="icon is-small" title="Archiving">
+              <fa-icon
+                size="1.2em"
+                aria-hidden="true"
+                .svg="${wrRec}"
+              ></fa-icon>
+            </span>
+            <span class="size-label">${prettyBytes(this.totalSize)}</span>
           </span>
-          <span class="size-label">${prettyBytes(this.totalSize)}</span>
-        </span>
         `;
       } else {
         return html`
-        <a href="${apiPrefix}/c/${this.coll}/dl?format=wacz&pages=all" role="button" class="dropdown-item" @keyup="${clickOnSpacebarPress}">
-          <span class="icon is-small">
-            <fa-icon size="1.0em" class="has-text-grey" aria-hidden="true" .svg="${fasDownload}"></fa-icon>
-          </span>
-          <span>Download Archive</span>
-        </a>
-        <hr class="dropdown-divider">
+          <a
+            href="${apiPrefix}/c/${this.coll}/dl?format=wacz&pages=all"
+            role="button"
+            class="dropdown-item"
+            @keyup="${clickOnSpacebarPress}"
+          >
+            <span class="icon is-small">
+              <fa-icon
+                size="1.0em"
+                class="has-text-grey"
+                aria-hidden="true"
+                .svg="${fasDownload}"
+              ></fa-icon>
+            </span>
+            <span>Download Archive</span>
+          </a>
+          <hr class="dropdown-divider" />
         `;
       }
     }
@@ -105,11 +123,18 @@ class WrRecColl extends Coll
       return "";
     }
 
-    return html`
-    <a href="#" role="button"
-    class="${!isDropdown ? "button narrow is-borderless" : "dropdown-item is-hidden-tablet"}"
-      title="Start Archiving" aria-label="Start Archiving" aria-controls="record"
-      @click="${this.onShowStart}" @keyup="${clickOnSpacebarPress}">
+    return html` <a
+      href="#"
+      role="button"
+      class="${!isDropdown
+        ? "button narrow is-borderless"
+        : "dropdown-item is-hidden-tablet"}"
+      title="Start Archiving"
+      aria-label="Start Archiving"
+      aria-controls="record"
+      @click="${this.onShowStart}"
+      @keyup="${clickOnSpacebarPress}"
+    >
       <span class="icon is-small">
         <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
       </span>
@@ -118,13 +143,12 @@ class WrRecColl extends Coll
 
   renderCollInfo() {
     console.log(this.collInfo);
-    return html`
-    <div class="info-bg">
+    return html` <div class="info-bg">
       <wr-rec-coll-info
-      class="is-list"
-      .coll="${this.collInfo}"
-      .shareOpts=${this.shareOpts}
-      ?detailed="${true}"
+        class="is-list"
+        .coll="${this.collInfo}"
+        .shareOpts=${this.shareOpts}
+        ?detailed="${true}"
       ></wr-rec-coll-info>
     </div>`;
   }
@@ -137,7 +161,9 @@ class WrRecColl extends Coll
     const coll = this.coll;
     const title = this.collInfo.title;
     const url = this.tabData.url;
-    this.dispatchEvent(new CustomEvent("show-start", {detail: {coll, title, url}}));
+    this.dispatchEvent(
+      new CustomEvent("show-start", { detail: { coll, title, url } }),
+    );
   }
 }
 

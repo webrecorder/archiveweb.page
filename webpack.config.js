@@ -1,4 +1,5 @@
-/*eslint-env node */
+/* eslint-env node */
+/* eslint @typescript-eslint/no-var-requires: "off" */
 
 const path = require("path");
 const webpack = require("webpack");
@@ -23,27 +24,25 @@ const defaultDefines = {
   __WEB3_STORAGE_TOKEN__: JSON.stringify(""),
 };
 
-
 const DIST_EXT = path.join(__dirname, "dist", "ext");
 const DIST_ELECTRON = path.join(__dirname, "dist", "electron");
 const DIST_EMBED = path.join(__dirname, "dist", "embed");
 
-
-const moduleSettings =  {
+const moduleSettings = {
   rules: [
     {
-      test:  /\.svg$/,
-      use: "svg-inline-loader"
+      test: /\.svg$/,
+      use: "svg-inline-loader",
     },
     {
       test: /\.s(a|c)ss$/,
-      use: ["css-loader", "sass-loader"]
+      use: ["css-loader", "sass-loader"],
     },
     {
       test: /(dist\/wombat.js|src\/wombatWorkers.js|behaviors.js|extractPDF.js|ruffle.js|index.html)$/i,
       use: "raw-loader",
-    }
-  ]
+    },
+  ],
 };
 
 const optimization = {
@@ -55,19 +54,18 @@ const optimization = {
   ],
 };
 
-
 // ===========================================================================
 const electronMainConfig = (/*env, argv*/) => {
   return {
     target: "electron-main",
     mode: "production",
     entry: {
-      "electron": "./src/electron/electron-rec-main.js",
+      electron: "./src/electron/electron-rec-main.js",
     },
     optimization,
     output: {
       path: DIST_ELECTRON,
-      filename: "[name].js"
+      filename: "[name].js",
     },
     node: {
       __dirname: false,
@@ -77,15 +75,12 @@ const electronMainConfig = (/*env, argv*/) => {
       new webpack.DefinePlugin(defaultDefines),
       new webpack.BannerPlugin(BANNER),
       new CopyPlugin({
-        patterns: [
-          { from: "build/extra_prebuilds/", to: "prebuilds" },
-        ],
+        patterns: [{ from: "build/extra_prebuilds/", to: "prebuilds" }],
       }),
     ],
     module: moduleSettings,
   };
 };
-
 
 // ===========================================================================
 const electronPreloadConfig = (/*env, argv*/) => {
@@ -93,33 +88,34 @@ const electronPreloadConfig = (/*env, argv*/) => {
     target: "electron-preload",
     mode: "production",
     entry: {
-      "preload": "./src/electron/electron-rec-preload.js",
+      preload: "./src/electron/electron-rec-preload.js",
     },
     optimization,
     output: {
       path: DIST_ELECTRON,
-      filename: "[name].js"
+      filename: "[name].js",
     },
-    plugins: [
-      new webpack.DefinePlugin(defaultDefines),
-    ]
+    plugins: [new webpack.DefinePlugin(defaultDefines)],
   };
 };
 
-
 // ===========================================================================
-function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}, replayDir = false} = {}, argv) {
+function sharedBuild(
+  outputPath,
+  { plugins = [], copy = [], entry = {}, extra = {}, replayDir = false } = {},
+  argv
+) {
   if (copy.length) {
-    plugins.push(new CopyPlugin({patterns: copy}));
+    plugins.push(new CopyPlugin({ patterns: copy }));
   }
 
   return {
     mode: "production",
     target: "web",
     entry: {
-      "ui": "./src/ui/app.js",
-      "sw": "./src/sw/main.js",
-      ...entry
+      ui: "./src/ui/app.js",
+      sw: "./src/sw/main.js",
+      ...entry,
     },
     devtool: argv.mode === "production" ? undefined : "source-map",
     optimization,
@@ -130,61 +126,57 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
         const name = "[name].js";
 
         switch (chunkData.chunk.name) {
-        case "sw":
-          return replayDir ? `./replay/${name}` : name;
+          case "sw":
+            return replayDir ? `./replay/${name}` : name;
 
-        default:
-          return name;
+          default:
+            return name;
         }
       },
       libraryTarget: "global",
-      globalObject: "self"
+      globalObject: "self",
     },
     plugins: [
-      new webpack.NormalModuleReplacementPlugin(
-        /^node:*/,
-        (resource) => {
-          switch (resource.request) {
+      new webpack.NormalModuleReplacementPlugin(/^node:*/, (resource) => {
+        switch (resource.request) {
           case "node:stream":
             resource.request = "stream-browserify";
             break;
-          }
-        },
-      ),
+        }
+      }),
       new webpack.ProvidePlugin({
         process: "process/browser.js",
         Buffer: ["buffer", "Buffer"],
       }),
       new MiniCssExtractPlugin(),
       new webpack.BannerPlugin(BANNER),
-      new webpack.DefinePlugin({...defaultDefines}),
-      ...plugins
+      new webpack.DefinePlugin({ ...defaultDefines }),
+      ...plugins,
     ],
 
     module: moduleSettings,
-    ...extra
+    ...extra,
   };
 }
 
-
 // ===========================================================================
 const extensionWebConfig = (env, argv) => {
-  const icon = (argv.mode === "production") ? "icon.png" : "icon-dev.png";
+  const icon = argv.mode === "production" ? "icon.png" : "icon-dev.png";
 
   const generateManifest = (name, value) => {
     switch (value) {
-    case "$VERSION":
-      return AWP_PACKAGE.version;
+      case "$VERSION":
+        return AWP_PACKAGE.version;
 
-    case "$ICON":
-      return icon;
+      case "$ICON":
+        return icon;
     }
 
     return value;
   };
 
   const plugins = [
-    new GenerateJsonPlugin("manifest.json", manifest, generateManifest, 2)
+    new GenerateJsonPlugin("manifest.json", manifest, generateManifest, 2),
   ];
 
   const copy = [
@@ -193,18 +185,17 @@ const extensionWebConfig = (env, argv) => {
   ];
 
   const entry = {
-    "bg": "./src/ext/bg.js",
-    "popup": "./src/popup.js"
+    bg: "./src/ext/bg.js",
+    popup: "./src/popup.js",
   };
 
-  return sharedBuild(DIST_EXT, {plugins, copy, entry}, argv);
+  return sharedBuild(DIST_EXT, { plugins, copy, entry }, argv);
 };
-
 
 // ===========================================================================
 const electronWebConfig = (env, argv) => {
   const entry = {
-    "rec-window": "./src/electron/rec-window.js"
+    "rec-window": "./src/electron/rec-window.js",
   };
 
   const copy = [
@@ -214,14 +205,12 @@ const electronWebConfig = (env, argv) => {
     { from: "src/electron/rec-window.html", to: "" },
   ];
 
-  return sharedBuild(DIST_ELECTRON, {copy, entry}, argv);
+  return sharedBuild(DIST_ELECTRON, { copy, entry }, argv);
 };
 
 // ===========================================================================
 const embedWebConfig = (env, argv) => {
-  const copy = [
-    { from: "src/embed.html", to: "./index.html" },
-  ];
+  const copy = [{ from: "src/embed.html", to: "./index.html" }];
 
   const extra = {
     devServer: {
@@ -230,18 +219,20 @@ const embedWebConfig = (env, argv) => {
       open: true,
       static: {
         directory: DIST_EMBED,
-      }
-    }
+      },
+    },
   };
 
   const replayDir = true;
 
-  return sharedBuild(DIST_EMBED, {copy, extra, replayDir}, argv);
+  return sharedBuild(DIST_EMBED, { copy, extra, replayDir }, argv);
 };
 
-
-
-
 // ===========================================================================
-module.exports = [ extensionWebConfig, electronWebConfig, embedWebConfig, electronMainConfig, electronPreloadConfig ];
-
+module.exports = [
+  extensionWebConfig,
+  electronWebConfig,
+  embedWebConfig,
+  electronMainConfig,
+  electronPreloadConfig,
+];

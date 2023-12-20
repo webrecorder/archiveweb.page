@@ -4,8 +4,11 @@ import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 
 import { listAllMsg } from "../utils";
 
-import { getLocalOption, removeLocalOption, setLocalOption } from "../localstorage";
-
+import {
+  getLocalOption,
+  removeLocalOption,
+  setLocalOption,
+} from "../localstorage";
 
 // ===========================================================================
 self.recorders = {};
@@ -23,21 +26,28 @@ const collLoader = new CollectionLoader();
 
 const disabledCSPTabs = new Set();
 
-
 // ===========================================================================
 
 function main() {
-  chrome.action.setBadgeBackgroundColor({color: "#64e986"});
+  chrome.action.setBadgeBackgroundColor({ color: "#64e986" });
 
-  chrome.contextMenus.create({"id": "toggle-rec", "title": "Start Recording", "contexts": ["browser_action"]});
-  chrome.contextMenus.create({"id": "view-rec", "title": "View Web Archives", "contexts": ["all"]});
+  chrome.contextMenus.create({
+    id: "toggle-rec",
+    title: "Start Recording",
+    contexts: ["browser_action"],
+  });
+  chrome.contextMenus.create({
+    id: "view-rec",
+    title: "View Web Archives",
+    contexts: ["all"],
+  });
 }
 
 chrome.runtime.onConnect.addListener((port) => {
   switch (port.name) {
-  case "popup-port":
-    popupHandler(port);
-    break;
+    case "popup-port":
+      popupHandler(port);
+      break;
   }
 });
 
@@ -50,36 +60,36 @@ function popupHandler(port) {
 
   port.onMessage.addListener(async (message) => {
     switch (message.type) {
-    case "startUpdates":
-      tabId = message.tabId;
-      if (self.recorders[tabId]) {
-        self.recorders[tabId].port = port;
-        self.recorders[tabId].doUpdateStatus();
+      case "startUpdates":
+        tabId = message.tabId;
+        if (self.recorders[tabId]) {
+          self.recorders[tabId].port = port;
+          self.recorders[tabId].doUpdateStatus();
+        }
+        port.postMessage(await listAllMsg(collLoader));
+        break;
+
+      case "startRecording": {
+        const { collId, autorun } = message;
+        startRecorder(tabId, { collId, port, autorun }, message.url);
+        break;
       }
-      port.postMessage(await listAllMsg(collLoader));
-      break;
 
-    case "startRecording": {
-      const {collId, autorun} = message;
-      startRecorder(tabId, {collId, port, autorun}, message.url);
-      break;
-    }
+      case "stopRecording":
+        stopRecorder(tabId);
+        break;
 
-    case "stopRecording":
-      stopRecorder(tabId);
-      break;
+      case "toggleBehaviors":
+        toggleBehaviors(tabId);
+        break;
 
-    case "toggleBehaviors":
-      toggleBehaviors(tabId);
-      break;
-
-    case "newColl": {
-      const { name } = await collLoader.initNewColl({title: message.title});
-      defaultCollId = name;
-      port.postMessage(await listAllMsg(collLoader, {defaultCollId}));
-      await setLocalOption("defaultCollId", defaultCollId);
-      break;
-    }
+      case "newColl": {
+        const { name } = await collLoader.initNewColl({ title: message.title });
+        defaultCollId = name;
+        port.postMessage(await listAllMsg(collLoader, { defaultCollId }));
+        await setLocalOption("defaultCollId", defaultCollId);
+        break;
+      }
     }
   });
 
@@ -89,7 +99,6 @@ function popupHandler(port) {
     }
   });
 }
-
 
 // ===========================================================================
 chrome.debugger.onDetach.addListener((tab, reason) => {
@@ -117,8 +126,12 @@ chrome.tabs.onCreated.addListener((tab) => {
     collId = newRecCollId || defaultCollId;
     newRecUrl = null;
     newRecCollId = null;
-  } else if (tab.openerTabId && (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
-             self.recorders[tab.openerTabId] && self.recorders[tab.openerTabId].running) {
+  } else if (
+    tab.openerTabId &&
+    (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
+    self.recorders[tab.openerTabId] &&
+    self.recorders[tab.openerTabId].running
+  ) {
     collId = self.recorders[tab.openerTabId].collId;
 
     start = true;
@@ -132,7 +145,11 @@ chrome.tabs.onCreated.addListener((tab) => {
     if (openUrl && !isValidUrl(openUrl)) {
       return;
     }
-    startRecorder(tab.id, {waitForTabUpdate, collId, openUrl, autorun}, openUrl);
+    startRecorder(
+      tab.id,
+      { waitForTabUpdate, collId, openUrl, autorun },
+      openUrl
+    );
   }
 });
 
@@ -157,14 +174,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
         return;
       }
     }
-
   } else if (changeInfo.url && openWinMap.has(changeInfo.url)) {
     const collId = openWinMap.get(changeInfo.url);
     openWinMap.delete(changeInfo.url);
     if (!tabId || !isValidUrl(changeInfo.url)) {
       return;
     }
-    startRecorder(tabId, {collId, autorun}, changeInfo.url);
+    startRecorder(tabId, { collId, autorun }, changeInfo.url);
   }
 });
 
@@ -177,19 +193,19 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 // ===========================================================================
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   switch (info.menuItemId) {
-  case "view-rec":
-    chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
-    break;
+    case "view-rec":
+      chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
+      break;
 
-  case "toggle-rec":
-    if (!isRecording(tab.id)) {
-      if (isValidUrl(tab.url)) {
-        startRecorder(tab.id);
+    case "toggle-rec":
+      if (!isRecording(tab.id)) {
+        if (isValidUrl(tab.url)) {
+          startRecorder(tab.id);
+        }
+      } else {
+        stopRecorder(tab.id);
       }
-    } else {
-      stopRecorder(tab.id);
-    }
-    break;
+      break;
   }
 });
 
@@ -198,20 +214,20 @@ async function startRecorder(tabId, opts) {
   if (!self.recorders[tabId]) {
     opts.collLoader = collLoader;
     opts.openWinMap = openWinMap;
-    self.recorders[tabId] = new BrowserRecorder({tabId}, opts);
+    self.recorders[tabId] = new BrowserRecorder({ tabId }, opts);
   } else {
     self.recorders[tabId].setAutoRunBehavior(opts.autorun);
   }
 
   let err = null;
 
-  const {waitForTabUpdate} = opts;
+  const { waitForTabUpdate } = opts;
 
   if (!waitForTabUpdate && !self.recorders[tabId].running) {
     try {
       self.recorders[tabId].setCollId(opts.collId);
       await self.recorders[tabId].attach();
-    } catch(e) {
+    } catch (e) {
       console.warn(e);
       err = e;
     }
@@ -246,25 +262,32 @@ function isRecording(tabId) {
 
 // ===========================================================================
 function isValidUrl(url) {
-  return url && (url === "about:blank" || url.startsWith("https:") || url.startsWith("http:"));
+  return (
+    url &&
+    (url === "about:blank" ||
+      url.startsWith("https:") ||
+      url.startsWith("http:"))
+  );
 }
 
 // ===========================================================================
-chrome.runtime.onMessage.addListener(async (message, /*sender, sendResponse*/) => {
-  switch (message.msg) {
-  case "startNew":
-    newRecUrl = message.url;
-    newRecCollId = message.collId;
-    autorun = message.autorun;
-    defaultCollId = await getLocalOption("defaultCollId");
-    chrome.tabs.create({url: "about:blank"});
-    break;
+chrome.runtime.onMessage.addListener(
+  async (message /*sender, sendResponse*/) => {
+    switch (message.msg) {
+      case "startNew":
+        newRecUrl = message.url;
+        newRecCollId = message.collId;
+        autorun = message.autorun;
+        defaultCollId = await getLocalOption("defaultCollId");
+        chrome.tabs.create({ url: "about:blank" });
+        break;
 
-  case "disableCSP":
-    disableCSPForTab(message.tabId);
-    break;
+      case "disableCSP":
+        disableCSPForTab(message.tabId);
+        break;
+    }
   }
-});
+);
 
 // ===========================================================================
 async function disableCSPForTab(tabId) {
@@ -273,11 +296,18 @@ async function disableCSPForTab(tabId) {
   }
 
   await new Promise((resolve) => {
-    chrome.debugger.attach({tabId}, "1.3", () => { resolve(); });
+    chrome.debugger.attach({ tabId }, "1.3", () => {
+      resolve();
+    });
   });
 
   await new Promise((resolve) => {
-    chrome.debugger.sendCommand({tabId}, "Page.setBypassCSP", {enabled: true}, (resp) => resolve(resp));
+    chrome.debugger.sendCommand(
+      { tabId },
+      "Page.setBypassCSP",
+      { enabled: true },
+      (resp) => resolve(resp)
+    );
   });
 
   disabledCSPTabs.add(tabId);
@@ -290,7 +320,9 @@ async function disableCSPForTab(tabId) {
   }
 
   await new Promise((resolve) => {
-    chrome.debugger.detach({tabId}, () => { resolve();});
+    chrome.debugger.detach({ tabId }, () => {
+      resolve();
+    });
   });
 }
 

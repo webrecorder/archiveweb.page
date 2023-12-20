@@ -2,13 +2,10 @@ import { CollIndex } from "replaywebpage";
 
 import { html } from "replaywebpage/src/misc";
 
-
 import prettyBytes from "pretty-bytes";
 
-
 //============================================================================
-class WrRecCollIndex extends CollIndex
-{
+class WrRecCollIndex extends CollIndex {
   constructor() {
     super();
     this.deleteConfirm = null;
@@ -17,20 +14,15 @@ class WrRecCollIndex extends CollIndex
 
   get sortKeys() {
     return [
-      {key: "title",
-        name: "Title"},
+      { key: "title", name: "Title" },
 
-      {key: "ctime",
-        name: this.dateName},
+      { key: "ctime", name: this.dateName },
 
-      {key: "mtime",
-        name: "Date Modified"},
+      { key: "mtime", name: "Date Modified" },
 
-      {key: "size",
-        name: "Total Size"},
+      { key: "size", name: "Total Size" },
 
-      {key: "loadUrl",
-        name: "Source"},
+      { key: "loadUrl", name: "Source" },
     ];
   }
 
@@ -46,9 +38,17 @@ class WrRecCollIndex extends CollIndex
 
   updated(changedProperties) {
     super.updated(changedProperties);
-    
-    if (changedProperties.has("sortedColls") && this.sortedColls && this.sortedColls.length) {
-      this.dispatchEvent(new CustomEvent("colls-updated", {detail: {colls: this.sortedColls}}));
+
+    if (
+      changedProperties.has("sortedColls") &&
+      this.sortedColls &&
+      this.sortedColls.length
+    ) {
+      this.dispatchEvent(
+        new CustomEvent("colls-updated", {
+          detail: { colls: this.sortedColls },
+        }),
+      );
     }
   }
 
@@ -62,20 +62,18 @@ class WrRecCollIndex extends CollIndex
   }
 
   renderCollInfo(coll) {
-    return html`
-    <wr-rec-coll-info
-      style="overflow: visible" data-coll="${coll.id}"
+    return html` <wr-rec-coll-info
+      style="overflow: visible"
+      data-coll="${coll.id}"
       .coll=${coll}
       .shareOpts=${this.shareOpts}
-      @ipfs-share="${this.onIpfsShare}">
+      @ipfs-share="${this.onIpfsShare}"
+    >
     </wr-rec-coll-info>`;
   }
 
   render() {
-    return html`
-    ${super.render()}
-    ${this.renderDeleteConfirm()}
-    `;
+    return html` ${super.render()} ${this.renderDeleteConfirm()} `;
   }
 
   renderDeleteConfirm() {
@@ -83,12 +81,20 @@ class WrRecCollIndex extends CollIndex
       return null;
     }
 
-    return html`
-    <wr-modal bgClass="has-background-grey-lighter" @modal-closed="${() => this.deleteConfirm = null}" title="Confirm Delete">
-      <p>Are you sure you want to permanentely delete the archive <b>${this.deleteConfirm.title}</b>
-      (Size: <b>${prettyBytes(this.deleteConfirm.size)}</b>)</p>
-      <button @click="${this.doDelete}"class="button is-danger">Delete</button>
-      <button @click="${() => this.deleteConfirm = null}" class="button">Cancel</button>
+    return html` <wr-modal
+      bgClass="has-background-grey-lighter"
+      @modal-closed="${() => (this.deleteConfirm = null)}"
+      title="Confirm Delete"
+    >
+      <p>
+        Are you sure you want to permanentely delete the archive
+        <b>${this.deleteConfirm.title}</b> (Size:
+        <b>${prettyBytes(this.deleteConfirm.size)}</b>)
+      </p>
+      <button @click="${this.doDelete}" class="button is-danger">Delete</button>
+      <button @click="${() => (this.deleteConfirm = null)}" class="button">
+        Cancel
+      </button>
     </wr-modal>`;
   }
 
@@ -121,7 +127,9 @@ class WrRecCollIndex extends CollIndex
     this._deleting[this.deleteConfirm.sourceUrl] = true;
     this.requestUpdate();
 
-    const info = this.renderRoot.querySelector(`wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`);
+    const info = this.renderRoot.querySelector(
+      `wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`,
+    );
 
     if (info) {
       await info.doDelete();
@@ -131,7 +139,8 @@ class WrRecCollIndex extends CollIndex
   }
 
   renderEmpty() {
-    return html`No archived items. Click "New Archiving Session" above to begin archiving pages!`;
+    return html`No archived items. Click "New Archiving Session" above to begin
+    archiving pages!`;
   }
 }
 

@@ -1,9 +1,12 @@
 /*eslint-env node */
 
-import {app, session, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, session, BrowserWindow, ipcMain, dialog } from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
-import { ElectronReplayApp, STATIC_PREFIX } from "replaywebpage/src/electron-replay-app";
+import {
+  ElectronReplayApp,
+  STATIC_PREFIX,
+} from "replaywebpage/src/electron-replay-app";
 
 import path from "path";
 
@@ -11,10 +14,8 @@ import { unusedFilenameSync } from "unused-filename";
 
 app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
 
-
 // ===========================================================================
-class ElectronRecorderApp extends ElectronReplayApp
-{
+class ElectronRecorderApp extends ElectronReplayApp {
   constructor(opts) {
     super(opts);
 
@@ -28,7 +29,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       plugins: true,
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-      sandbox: false
+      sandbox: false,
     };
   }
 
@@ -44,10 +45,14 @@ class ElectronRecorderApp extends ElectronReplayApp
 
       console.log(`will-download: ${origFilename}`);
 
-      item.setSavePath(unusedFilenameSync(path.join(app.getPath("downloads"), origFilename)));
+      item.setSavePath(
+        unusedFilenameSync(path.join(app.getPath("downloads"), origFilename)),
+      );
 
       ipcMain.on("dlcancel:" + origFilename, () => {
-        console.log(`Canceled download for ${origFilename} to ${item.getSavePath()}`);
+        console.log(
+          `Canceled download for ${origFilename} to ${item.getSavePath()}`,
+        );
         item.cancel();
       });
 
@@ -73,7 +78,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       item.once("done", (event, state) => {
         const dlprogress = {
           origFilename,
-          state
+          state,
         };
         try {
           webContents.send("download-progress", dlprogress);
@@ -81,7 +86,6 @@ class ElectronRecorderApp extends ElectronReplayApp
           console.log("download update failed", e);
         }
       });
-
     });
 
     super.onAppReady();
@@ -117,7 +121,7 @@ class ElectronRecorderApp extends ElectronReplayApp
       defaultId: 1,
       cancelId: 0,
       title: "Stop Archiving and Quit",
-      message: `There are still ${this.recorders.size} active archiving sessions. Stop all and quit?`
+      message: `There are still ${this.recorders.size} active archiving sessions. Stop all and quit?`,
     });
 
     // not closing
@@ -138,7 +142,12 @@ class ElectronRecorderApp extends ElectronReplayApp
     app.exit(0);
   }
 
-  createRecordWindow({url, collId = "", startRec = true, autorun = false} = {}) {
+  createRecordWindow({
+    url,
+    collId = "",
+    startRec = true,
+    autorun = false,
+  } = {}) {
     console.log("start rec window: " + url);
 
     const recWindow = new BrowserWindow({
@@ -149,8 +158,8 @@ class ElectronRecorderApp extends ElectronReplayApp
       webPreferences: {
         contextIsolation: true,
         webviewTag: true,
-        preload: path.join(__dirname, "rec-preload.js")
-      }
+        preload: path.join(__dirname, "rec-preload.js"),
+      },
     });
 
     recWindow.webContents.on("did-attach-webview", (event, contents) => {
@@ -162,7 +171,15 @@ class ElectronRecorderApp extends ElectronReplayApp
     return recWindow;
   }
 
-  async initRecorder(recWindow, recWebContents, url, collId, startRec, autorun, popupView = null) {
+  async initRecorder(
+    recWindow,
+    recWebContents,
+    url,
+    collId,
+    startRec,
+    autorun,
+    popupView = null,
+  ) {
     const id = recWebContents.id;
 
     const recorder = new ElectronRecorder({
@@ -184,7 +201,9 @@ class ElectronRecorderApp extends ElectronReplayApp
       });
     });
 
-    const newWinContents = popupView ? popupView.webContents : recWindow.webContents;
+    const newWinContents = popupView
+      ? popupView.webContents
+      : recWindow.webContents;
 
     newWinContents.on("new-window", (event, url) => {
       event.preventDefault();
@@ -196,26 +215,45 @@ class ElectronRecorderApp extends ElectronReplayApp
 
     ipcMain.on("popup-msg-" + id, async (event, msg) => {
       switch (msg.type) {
-      case "startRecording":
-        await recorder.attach();
-        recWebContents.reload();
-        break;
+        case "startRecording":
+          await recorder.attach();
+          recWebContents.reload();
+          break;
 
-      case "stopRecording":
-        await recorder.detach();
-        break;
+        case "stopRecording":
+          await recorder.detach();
+          break;
 
-      case "toggleBehaviors":
-        await recorder.toggleBehaviors();
-        break;
+        case "toggleBehaviors":
+          await recorder.toggleBehaviors();
+          break;
       }
     });
 
-    recWebContents.on("new-window", (event, url, frameName, disposition, options, additionalFeatures, referrer) => {
-      event.preventDefault();
-      event.newGuest = this.createRecordWindow({url, collId, startRec});
-      console.log("new-window", url, frameName, disposition, options, additionalFeatures, referrer);
-    });
+    recWebContents.on(
+      "new-window",
+      (
+        event,
+        url,
+        frameName,
+        disposition,
+        options,
+        additionalFeatures,
+        referrer,
+      ) => {
+        event.preventDefault();
+        event.newGuest = this.createRecordWindow({ url, collId, startRec });
+        console.log(
+          "new-window",
+          url,
+          frameName,
+          disposition,
+          options,
+          additionalFeatures,
+          referrer,
+        );
+      },
+    );
 
     recWebContents.on("destroyed", () => {
       this.recorders.delete(id);
@@ -233,7 +271,7 @@ class ElectronRecorderApp extends ElectronReplayApp
         type: "status",
         recording: false,
         collId,
-        pageUrl: url
+        pageUrl: url,
       });
     }
 
@@ -248,6 +286,5 @@ class ElectronRecorderApp extends ElectronReplayApp
     }
   }
 }
-
 
 export { ElectronRecorderApp };

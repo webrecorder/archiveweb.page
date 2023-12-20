@@ -5,10 +5,8 @@ import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 import { listAllMsg } from "../utils";
 import { setLocalOption } from "../localstorage";
 
-
 // ===========================================================================
-class AppRecPopup extends RecPopup
-{
+class AppRecPopup extends RecPopup {
   constructor() {
     super();
 
@@ -57,11 +55,11 @@ class AppRecPopup extends RecPopup
     }
 
     //ipcRenderer.send("popup-msg-" + this.tabId, message);
-    this.dispatchEvent(new CustomEvent("send-msg", {detail: message}));
+    this.dispatchEvent(new CustomEvent("send-msg", { detail: message }));
   }
 
   async makeNewColl(message) {
-    const newColl = await this.collLoader.initNewColl({title: message.title});
+    const newColl = await this.collLoader.initNewColl({ title: message.title });
 
     await setLocalOption("defaultCollId", newColl.name);
 

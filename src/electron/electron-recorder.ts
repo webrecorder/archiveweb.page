@@ -10,11 +10,18 @@ const DEBUG = false;
 
 const PROXY_URL = "https://proxy.archiveweb.page/";
 
-
 // ===========================================================================
-class ElectronRecorder extends Recorder
-{
-  constructor({recWC, appWC, collId, staticPrefix, recWindow, popup, autorun, userAgent}) {
+class ElectronRecorder extends Recorder {
+  constructor({
+    recWC,
+    appWC,
+    collId,
+    staticPrefix,
+    recWindow,
+    popup,
+    autorun,
+    userAgent,
+  }) {
     super();
     this.appWC = appWC;
     this.collId = collId;
@@ -34,10 +41,12 @@ class ElectronRecorder extends Recorder
     this.autorun = autorun;
 
     this.defaultFetchOpts.headers = {
-      "User-Agent": userAgent
+      "User-Agent": userAgent,
     };
 
-    this.shutdownPromise = new Promise((resolve) => this._shutdownResolve = resolve);
+    this.shutdownPromise = new Promise(
+      (resolve) => (this._shutdownResolve = resolve),
+    );
 
     this.recWC.on("did-navigate", (event, url) => {
       this.didNavigateInitPage(url);
@@ -67,7 +76,7 @@ class ElectronRecorder extends Recorder
       this.favicons = favicons;
       for (const icon of favicons) {
         //this.recWC.send("async-fetch", {url: icon});
-        this.doAsyncFetch({url: icon});
+        this.doAsyncFetch({ url: icon });
       }
     });
   }
@@ -87,7 +96,7 @@ class ElectronRecorder extends Recorder
     if (!this.running || url === "about:blank") {
       return;
     }
-    
+
     if (this.nextFrameId) {
       if (this.nextFrameId != this.frameId) {
         this.historyMap = {};
@@ -111,13 +120,13 @@ class ElectronRecorder extends Recorder
     }
 
     switch (method) {
-    case "Page.frameStartedLoading":
-      this.nextFrameId = params.frameId;
-      break;
+      case "Page.frameStartedLoading":
+        this.nextFrameId = params.frameId;
+        break;
 
-    case "Page.frameStoppedLoading":
-      this.nextFrameId = null;
-      break;
+      case "Page.frameStoppedLoading":
+        this.nextFrameId = null;
+        break;
     }
   }
 
@@ -156,23 +165,30 @@ class ElectronRecorder extends Recorder
     console.log("PROXY (not recording): " + fullPath);
 
     if (origin) {
-      responseHeaders.push({name: "Access-Control-Allow-Origin", value: origin});
+      responseHeaders.push({
+        name: "Access-Control-Allow-Origin",
+        value: origin,
+      });
     }
 
     if (mimeType) {
-      responseHeaders.push({name: "Content-Type", value: mimeType});
+      responseHeaders.push({ name: "Content-Type", value: mimeType });
     }
 
     try {
-      await this.send("Fetch.fulfillRequest",
-        {"requestId": params.requestId,
-          "responseCode": 200,
-          "responseHeaders": responseHeaders,
-          "body": base64Str
-        }, sessions);
+      await this.send(
+        "Fetch.fulfillRequest",
+        {
+          requestId: params.requestId,
+          responseCode: 200,
+          responseHeaders: responseHeaders,
+          body: base64Str,
+        },
+        sessions,
+      );
     } catch (e) {
       console.warn(e);
-    } 
+    }
   }
 
   _doDetach() {
@@ -247,7 +263,7 @@ class ElectronRecorder extends Recorder
   _doSendCommandFlat(method, params, sessionId) {
     try {
       return this.debugger.sendCommand(method, params, sessionId);
-    } catch(e) {
+    } catch (e) {
       console.warn(e);
     }
   }

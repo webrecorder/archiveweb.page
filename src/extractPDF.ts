@@ -10,7 +10,7 @@ async function getPDFText(url) {
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
     const textContent = await page.getTextContent();
-    textContent.items.map(item => strings.push(item.str));
+    textContent.items.map((item) => strings.push(item.str));
     console.log("Processing Page: " + i);
   }
 
@@ -24,11 +24,14 @@ async function extractPDF(url, baseUrl) {
   try {
     const res = await fetch(new URL("pdf/pdf.min.js", baseUrl).href);
     eval(await res.text());
-    
+
     //pdfjsLib should now exist
     // eslint-disable-next-line no-undef
-    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdf/pdf.worker.min.js", baseUrl).href;
-    
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+      "pdf/pdf.worker.min.js",
+      baseUrl,
+    ).href;
+
     if (url || document.querySelector("embed[type='application/pdf']")) {
       pdfText = await getPDFText(url);
     } else {
@@ -41,4 +44,3 @@ async function extractPDF(url, baseUrl) {
 
   return pdfText;
 }
-

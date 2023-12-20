@@ -3,8 +3,18 @@
   "description": "Create high-fidelity web archives directly in your browser",
   "version": "$VERSION",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "storage", "unlimitedStorage", "webRequest", "webRequestBlocking", "<all_urls>"],
-  "background": { 
+  "permissions": [
+    "debugger",
+    "contextMenus",
+    "tabs",
+    "activeTab",
+    "storage",
+    "unlimitedStorage",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "background": {
     "scripts": ["bg.js"],
     "persistent": true
   },
@@ -19,10 +29,6 @@
     "default_title": "Webrecorder ArchiveWeb.page",
     "default_popup": "popup.html"
   },
-  "web_accessible_resources": [
-    "pdf/*",
-    "replay/*",
-    "ruffle/*"
-  ],
+  "web_accessible_resources": ["pdf/*", "replay/*", "ruffle/*"],
   "manifest_version": 2
 }

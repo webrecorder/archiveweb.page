@@ -2,19 +2,27 @@
 
 import { BEHAVIOR_RUNNING } from "../consts";
 import { getLocalOption } from "../localstorage";
-import { Recorder }  from "../recorder";
-
+import { Recorder } from "../recorder";
 
 // ===========================================================================
 const DEBUG = false;
 
 const IS_AGREGORE = navigator.userAgent.includes("agregore-browser");
 
-
 // ===========================================================================
 class BrowserRecorder extends Recorder {
-  constructor(debuggee, {collId, collLoader, waitForTabUpdate = false, openUrl = null, port = null, 
-    openWinMap = null, autorun = false}) {
+  constructor(
+    debuggee,
+    {
+      collId,
+      collLoader,
+      waitForTabUpdate = false,
+      openUrl = null,
+      port = null,
+      openWinMap = null,
+      autorun = false,
+    },
+  ) {
     super();
 
     this.openUrl = openUrl;
@@ -33,7 +41,7 @@ class BrowserRecorder extends Recorder {
     this.port = port;
 
     this.recordStorage = false;
-    getLocalOption("recordStorage").then((res) => this.recordStorage = !!res);
+    getLocalOption("recordStorage").then((res) => (this.recordStorage = !!res));
 
     this._onDetached = (tab, reason) => {
       if (tab && this.tabId !== tab.tabId) {
@@ -90,7 +98,9 @@ class BrowserRecorder extends Recorder {
     }
 
     if (numOtherRecorders > 0) {
-      console.log(`closing session, not detaching, ${numOtherRecorders} other recording tab(s) left`);
+      console.log(
+        `closing session, not detaching, ${numOtherRecorders} other recording tab(s) left`,
+      );
       return this.sessionClose([]);
     } else {
       console.log("detaching debugger, already tabs stopped");
@@ -166,14 +176,15 @@ class BrowserRecorder extends Recorder {
       } else {
         await this.send("Page.reload", {
           ignoreCache: true,
-          scriptToEvaluateOnLoad: this.getInjectScript()
+          scriptToEvaluateOnLoad: this.getInjectScript(),
         });
       }
 
       this.doUpdateStatus();
-
     } catch (msg) {
-      this.failureMsg = chrome.runtime.lastError ? chrome.runtime.lastError.message : msg;
+      this.failureMsg = chrome.runtime.lastError
+        ? chrome.runtime.lastError.message
+        : msg;
       this.doUpdateStatus();
       throw msg;
     }
@@ -188,12 +199,10 @@ class BrowserRecorder extends Recorder {
         title = "Archiving: Autopilot Running!";
         color = "#3298dc";
         text = " ";
-
       } else if (this.numPending === 0) {
         title = "Archiving: No URLs pending, can continue";
         color = "#64e986";
         text = " ";
-
       } else {
         title = `Archiving: ${this.numPending} URLs pending, please wait`;
         color = "#bb9f08";
@@ -209,9 +218,9 @@ class BrowserRecorder extends Recorder {
       color = "#64e986";
     }
 
-    chrome.browserAction.setTitle({title, tabId});
-    chrome.browserAction.setBadgeBackgroundColor({color, tabId});
-    chrome.browserAction.setBadgeText({text, tabId});
+    chrome.browserAction.setTitle({ title, tabId });
+    chrome.browserAction.setBadgeBackgroundColor({ color, tabId });
+    chrome.browserAction.setBadgeText({ text, tabId });
 
     if (this.port) {
       const status = this.getStatusMsg();
@@ -234,7 +243,7 @@ class BrowserRecorder extends Recorder {
 
     try {
       await this.db.initing;
-      
+
       if (await this.db.addResource(data)) {
         writtenSize = payloadSize;
       }
@@ -275,7 +284,7 @@ class BrowserRecorder extends Recorder {
   _doSendCommand(method, params, promise) {
     let prr;
     const p = new Promise((resolve, reject) => {
-      prr = {resolve, reject, method};
+      prr = { resolve, reject, method };
     });
 
     if (!promise) {
@@ -286,12 +295,14 @@ class BrowserRecorder extends Recorder {
       if (res) {
         prr.resolve(res);
       } else {
-        prr.reject(chrome.runtime.lastError ? chrome.runtime.lastError.message : "");
+        prr.reject(
+          chrome.runtime.lastError ? chrome.runtime.lastError.message : "",
+        );
       }
     };
 
     if (DEBUG) {
-      console.log("SEND " + JSON.stringify({command: method, params}));
+      console.log("SEND " + JSON.stringify({ command: method, params }));
     }
 
     chrome.debugger.sendCommand(this.debuggee, method, params, callback);
@@ -300,16 +311,20 @@ class BrowserRecorder extends Recorder {
 
   _doSendCommandFlat(method, params, sessionId) {
     if (DEBUG) {
-      console.log("SEND " + JSON.stringify({command: method, params}));
+      console.log("SEND " + JSON.stringify({ command: method, params }));
     }
 
     try {
-      return chrome.debugger.sendCommand(this.debuggee, method, params, sessionId);
-    } catch(e) {
+      return chrome.debugger.sendCommand(
+        this.debuggee,
+        method,
+        params,
+        sessionId,
+      );
+    } catch (e) {
       console.warn(e);
     }
   }
-
 
   handleWindowOpen(url, sessions) {
     super.handleWindowOpen(url, sessions);

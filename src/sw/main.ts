@@ -11,7 +11,7 @@ if (self.registration) {
   const defaultConfig = {
     injectScripts: ["/ruffle/ruffle.js"],
     baseUrlSourcePrefix: "/replay/index.html",
-    convertPostToGet: false
+    convertPostToGet: false,
   };
 
   const staticData = new Map();
@@ -19,17 +19,29 @@ if (self.registration) {
   const prefix = self.registration.scope;
 
   // for backwards compatibility to support <replay-web-page> tag
-  staticData.set(prefix + "replay.html", {type: "text/html", content: RWP_INDEX_HTML});
+  staticData.set(prefix + "replay.html", {
+    type: "text/html",
+    content: RWP_INDEX_HTML,
+  });
 
   // for use with <record-web-page> tag
-  staticData.set(prefix + "record.html", {type: "text/html", content: REC_INDEX_HTML});
+  staticData.set(prefix + "record.html", {
+    type: "text/html",
+    content: REC_INDEX_HTML,
+  });
 
   const ApiClass = ExtAPI;
   const CollectionsClass = RecordingCollections;
 
   const autoipfsOpts = {};
 
-  self.sw = new SWReplay({ApiClass, staticData, autoipfsOpts, defaultConfig, CollectionsClass});
+  self.sw = new SWReplay({
+    ApiClass,
+    staticData,
+    autoipfsOpts,
+    defaultConfig,
+    CollectionsClass,
+  });
 } else {
   new WorkerLoader(self);
 }

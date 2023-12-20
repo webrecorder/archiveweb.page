@@ -1,4 +1,10 @@
-import { html, css, wrapCss, apiPrefix, LitElement } from "replaywebpage/src/misc";
+import {
+  html,
+  css,
+  wrapCss,
+  apiPrefix,
+  LitElement,
+} from "replaywebpage/src/misc";
 import prettyBytes from "pretty-bytes";
 
 import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync-alt.svg";
@@ -9,8 +15,7 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times-circle.svg";
 // eslint-disable-next-line no-undef
 const VERSION = __AWP_VERSION__;
 
-class BtrixUploader extends LitElement
-{
+class BtrixUploader extends LitElement {
   static get properties() {
     return {
       btrixOpts: { type: Object },
@@ -27,7 +32,7 @@ class BtrixUploader extends LitElement
       actualSize: { type: Number },
 
       uploadSize: { type: Number },
-      uploadTotal: { type: Number }
+      uploadTotal: { type: Number },
     };
   }
 
@@ -63,14 +68,20 @@ class BtrixUploader extends LitElement
       const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/upload`);
       const json = await resp.json();
       this.status = json.status;
-      
+
       this.uploadTime = json.uploadTime;
       this.uploadId = json.uploadId;
 
       if (this.status === "uploading") {
         this.isUploadNeeded = false;
-      } else if (this.status === "idle" && this.btrixOpts && this.btrixOpts.client && 
-                json.uploadTime && json.uploadId && (json.mtime <= json.uploadTime)) {
+      } else if (
+        this.status === "idle" &&
+        this.btrixOpts &&
+        this.btrixOpts.client &&
+        json.uploadTime &&
+        json.uploadId &&
+        json.mtime <= json.uploadTime
+      ) {
         this.getRemoteUpload();
       } else if (!this.uploadId) {
         this.isUploadNeeded = true;
@@ -83,7 +94,7 @@ class BtrixUploader extends LitElement
         break;
       }
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     this.pollingUploadState = false;
@@ -96,7 +107,7 @@ class BtrixUploader extends LitElement
       this.actualSize = upload.fileSize;
     } catch (e) {
       this.isUploadNeeded = true;
-      this.status = "missing";  
+      this.status = "missing";
     }
   }
 
@@ -114,19 +125,20 @@ class BtrixUploader extends LitElement
     try {
       if (this.btrixOpts.client && this.uploadId) {
         const { client } = this.btrixOpts;
-        btrixUploadUrl = new URL(`/orgs/${client.defaultOrg}/artifacts/upload/${this.uploadId}`,
-          client.url).href;
+        btrixUploadUrl = new URL(
+          `/orgs/${client.defaultOrg}/artifacts/upload/${this.uploadId}`,
+          client.url,
+        ).href;
       }
     } catch (e) {
       // ignore
     }
 
-
-
     return html`
       <wr-modal
-      @modal-closed="${() => this.coll = null}"
-      title="Upload To Browsertrix Cloud">
+        @modal-closed="${() => (this.coll = null)}"
+        title="Upload To Browsertrix Cloud"
+      >
         <table class="is-size-6" style="margin-left: 3.0rem">
           <tr class="is-italic">
             <td class="has-text-right pr-4">Collection:</td>
@@ -136,36 +148,74 @@ class BtrixUploader extends LitElement
             <td class="has-text-right pr-4">Local Size:</td>
             <td>${prettyBytes(this.coll.size)}</td>
           </tr>
-          ${this.actualSize ? html`
-          <tr class="is-italic">
-            <td class="has-text-right pr-4">Uploaded Size:</td>
-            <td>${prettyBytes(this.actualSize)}</td>
-          </tr>` : ""}
-          ${uploadTime ? html`
-          <tr class="is-italic">
-            <td class="has-text-right pr-4">Last Uploaded At:</td>
-            <td>${new Date(uploadTime).toLocaleString()}</td>
-          </tr>` : ""}
-          ${btrixUploadUrl ? html`
-          <tr class="is-italic">
-            <td class="has-text-right pr-4">Link:</td>
-            <td><a href="${btrixUploadUrl}" target="_blank">
-            <fa-icon aria-hidden="true" class="" size="0.7em" .svg="${fasExternal}"></fa-icon>
-            View in Browsertrix Cloud</a></td>
-          </tr>` : ""}
+          ${this.actualSize
+            ? html` <tr class="is-italic">
+                <td class="has-text-right pr-4">Uploaded Size:</td>
+                <td>${prettyBytes(this.actualSize)}</td>
+              </tr>`
+            : ""}
+          ${uploadTime
+            ? html` <tr class="is-italic">
+                <td class="has-text-right pr-4">Last Uploaded At:</td>
+                <td>${new Date(uploadTime).toLocaleString()}</td>
+              </tr>`
+            : ""}
+          ${btrixUploadUrl
+            ? html` <tr class="is-italic">
+                <td class="has-text-right pr-4">Link:</td>
+                <td>
+                  <a href="${btrixUploadUrl}" target="_blank">
+                    <fa-icon
+                      aria-hidden="true"
+                      class=""
+                      size="0.7em"
+                      .svg="${fasExternal}"
+                    ></fa-icon>
+                    View in Browsertrix Cloud</a
+                  >
+                </td>
+              </tr>`
+            : ""}
         </table>
         <div class="is-flex is-flex-direction-column">
           <div class="has-text-centered mt-2 mb-2">
             ${this.renderUploadStatus()}
           </div>
           <div class="has-text-centered mt-4">
-            ${this.status === "uploading" ? html`
-            <button class="button is-danger" type="button" @click="${this.onCancelUpload}">Cancel Upload</button>
-            <button class="button" type="button" @click="${() => this.coll = null}">Close</button>
-            ` : html`
-            <button class="button ${!this.isUploadNeeded ? "" : "is-primary"}" type="button" @click="${this.onUpload}">${alreadyUploaded ? "Upload Again" : "Upload"}</button>
-            <button class="button" type="button" @click="${() => this.coll = null}" title="Cancel without uploading">Cancel</button>
-            `}
+            ${this.status === "uploading"
+              ? html`
+                  <button
+                    class="button is-danger"
+                    type="button"
+                    @click="${this.onCancelUpload}"
+                  >
+                    Cancel Upload
+                  </button>
+                  <button
+                    class="button"
+                    type="button"
+                    @click="${() => (this.coll = null)}"
+                  >
+                    Close
+                  </button>
+                `
+              : html`
+                  <button
+                    class="button ${!this.isUploadNeeded ? "" : "is-primary"}"
+                    type="button"
+                    @click="${this.onUpload}"
+                  >
+                    ${alreadyUploaded ? "Upload Again" : "Upload"}
+                  </button>
+                  <button
+                    class="button"
+                    type="button"
+                    @click="${() => (this.coll = null)}"
+                    title="Cancel without uploading"
+                  >
+                    Cancel
+                  </button>
+                `}
           </div>
         </div>
       </wr-modal>
@@ -174,69 +224,114 @@ class BtrixUploader extends LitElement
 
   renderUploadStatus() {
     switch (this.status) {
-    case "done":
-      return html`<p class="has-text-weight-bold has-text-primary">Upload Finished</p>`;
+      case "done":
+        return html`<p class="has-text-weight-bold has-text-primary">
+          Upload Finished
+        </p>`;
 
-    case "failed":
-      return html`<p class="has-text-weight-bold has-text-danger">Sorry, Upload Failed, or, the Browsertrix credentials may be incorrect.</p>;
-                  <p>Check your credentials in <i>Settings</i> and then click <b>Upload</b> to try again.</p>`;
-
-    case "aborted":
-      return html`<p class="has-text-weight-bold has-text-danger">Upload has been canceled</p>`;
-
-    case "uploading":
-      return html`
-          <progress value="${this.uploadSize}" max="${this.uploadTotal}" class="progress is-primary is-small mt-3 mb-1">
-          </progress>
-          <p class="has-text-centered is-size-7">
-            ${prettyBytes(this.uploadSize || 0)} / ${prettyBytes(this.uploadTotal || 0)}
+      case "failed":
+        return html`<p class="has-text-weight-bold has-text-danger">
+            Sorry, Upload Failed, or, the Browsertrix credentials may be
+            incorrect.
+          </p>
+          ;
+          <p>
+            Check your credentials in <i>Settings</i> and then click
+            <b>Upload</b> to try again.
           </p>`;
 
-    case "missing":
-      return html`<p class="has-text-weight-bold has-text-danger">Previously uploaded data not found, or, the Browsertrix credentials may be incorrect.</p>
-                  <p>Check your credentials in <i>Settings</i> and then click <b>Upload</b> to try again.</p>`;
+      case "aborted":
+        return html`<p class="has-text-weight-bold has-text-danger">
+          Upload has been canceled
+        </p>`;
 
-    case "idle":
-      if (!this.isUploadNeeded) {
-        return html`<p class="is-italic">
-        <fa-icon aria-hidden="true" class="has-text-success" .svg="${fasCheck}"></fa-icon>
-        Archive already uploaded to Browsertrix Cloud.
-        ${this.renderDeleteUploaded()}
-        </p>
-        `;
-      } else if (this.uploadId) {
-        return html`<p class="has-text-weight-bold has-text-warning-dark">
-        <fa-icon aria-hidden="true" class="has-text-warning-dark" .svg="${fasSync}"></fa-icon>
-        Archive updated since last upload. Click "Upload" below to upload latest.
-        ${this.renderDeleteUploaded()}
-        </p>
-        `;
-      } else {
-        return html`<p class="has-text-weight-bold has-text-primary">Archive not yet uploaded. Click "Upload" below to start.</p>`;
-      }
+      case "uploading":
+        return html` <progress
+            value="${this.uploadSize}"
+            max="${this.uploadTotal}"
+            class="progress is-primary is-small mt-3 mb-1"
+          ></progress>
+          <p class="has-text-centered is-size-7">
+            ${prettyBytes(this.uploadSize || 0)} /
+            ${prettyBytes(this.uploadTotal || 0)}
+          </p>`;
 
-    case "deleted":
-      return html`<p class="has-text-weight-bold has-text-primary">Upload to Browsertrix Cloud has been deleted.</p>
-      <p>(Data is still saved locally in your browser)</p>`;
+      case "missing":
+        return html`<p class="has-text-weight-bold has-text-danger">
+            Previously uploaded data not found, or, the Browsertrix credentials
+            may be incorrect.
+          </p>
+          <p>
+            Check your credentials in <i>Settings</i> and then click
+            <b>Upload</b> to try again.
+          </p>`;
 
-    case "deleteFailed":
-      return html`<p class="has-text-weight-bold has-text-danger">Sorry, deleting upload has failed, or, the Browsertrix credentials may be incorrect.</p>;
-                  <p>Check your credentials in <i>Settings</i> and then click <b>Delete</b> to try again.
-                  ${this.renderDeleteUploaded()}
-                  </p>
-                  `;
-  
-    default:
-      return "";
+      case "idle":
+        if (!this.isUploadNeeded) {
+          return html`<p class="is-italic">
+            <fa-icon
+              aria-hidden="true"
+              class="has-text-success"
+              .svg="${fasCheck}"
+            ></fa-icon>
+            Archive already uploaded to Browsertrix Cloud.
+            ${this.renderDeleteUploaded()}
+          </p> `;
+        } else if (this.uploadId) {
+          return html`<p class="has-text-weight-bold has-text-warning-dark">
+            <fa-icon
+              aria-hidden="true"
+              class="has-text-warning-dark"
+              .svg="${fasSync}"
+            ></fa-icon>
+            Archive updated since last upload. Click "Upload" below to upload
+            latest. ${this.renderDeleteUploaded()}
+          </p> `;
+        } else {
+          return html`<p class="has-text-weight-bold has-text-primary">
+            Archive not yet uploaded. Click "Upload" below to start.
+          </p>`;
+        }
+
+      case "deleted":
+        return html`<p class="has-text-weight-bold has-text-primary">
+            Upload to Browsertrix Cloud has been deleted.
+          </p>
+          <p>(Data is still saved locally in your browser)</p>`;
+
+      case "deleteFailed":
+        return html`<p class="has-text-weight-bold has-text-danger">
+            Sorry, deleting upload has failed, or, the Browsertrix credentials
+            may be incorrect.
+          </p>
+          ;
+          <p>
+            Check your credentials in <i>Settings</i> and then click
+            <b>Delete</b> to try again. ${this.renderDeleteUploaded()}
+          </p> `;
+
+      default:
+        return "";
     }
   }
 
   renderDeleteUploaded() {
     return html`
-    <span><button class="button is-small" title="Delete Upload from Browsertrix Cloud" type="button" @click="${this.onDeleteUpload}">
-    <fa-icon aria-hidden="true" class="has-text-danger pr-2" .svg="${fasX}"></fa-icon>
-    Delete
-    </button></span>
+      <span
+        ><button
+          class="button is-small"
+          title="Delete Upload from Browsertrix Cloud"
+          type="button"
+          @click="${this.onDeleteUpload}"
+        >
+          <fa-icon
+            aria-hidden="true"
+            class="has-text-danger pr-2"
+            .svg="${fasX}"
+          ></fa-icon>
+          Delete
+        </button></span
+      >
     `;
   }
 
@@ -252,13 +347,16 @@ class BtrixUploader extends LitElement
     }
 
     const now = new Date().toLocaleString();
-    urlObj.searchParams.set("notes", `Uploaded by ArchiveWeb.page ${VERSION} at ${now}`);
+    urlObj.searchParams.set(
+      "notes",
+      `Uploaded by ArchiveWeb.page ${VERSION} at ${now}`,
+    );
 
     const url = urlObj.href;
 
-    const headers = {"Authorization": client.auth};
+    const headers = { Authorization: client.auth };
 
-    const body = JSON.stringify({url, headers});
+    const body = JSON.stringify({ url, headers });
 
     const method = "POST";
 
@@ -266,7 +364,10 @@ class BtrixUploader extends LitElement
     this.uploadSize = 0;
     this.uploadTotal = 0;
 
-    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/upload?format=wacz&pages=all`, {method, body});
+    const resp = await fetch(
+      `${apiPrefix}/c/${this.coll.id}/upload?format=wacz&pages=all`,
+      { method, body },
+    );
 
     const json = await resp.json();
 
@@ -277,8 +378,8 @@ class BtrixUploader extends LitElement
 
   async onCancelUpload() {
     const method = "POST";
-    const body = JSON.stringify({abortUpload: true});
-    await fetch(`${apiPrefix}/c/${this.coll.id}/upload`, {method, body});
+    const body = JSON.stringify({ abortUpload: true });
+    await fetch(`${apiPrefix}/c/${this.coll.id}/upload`, { method, body });
     this.pollUploadState();
   }
 
@@ -289,16 +390,17 @@ class BtrixUploader extends LitElement
       if (!client) {
         return;
       }
-  
+
       await client.deleteUpload(this.uploadId);
-  
-      await fetch(`${apiPrefix}/c/${this.coll.id}/upload`, {method: "DELETE"});
+
+      await fetch(`${apiPrefix}/c/${this.coll.id}/upload`, {
+        method: "DELETE",
+      });
 
       this.status = "deleted";
       this.isUploadNeeded = true;
       this.uploadTime = this.btrixOpts.uploadTime = null;
       this.uploadId = this.btrixOpts.uploadId = null;
-
     } catch (e) {
       this.status = "deleteFailed";
     }
@@ -307,18 +409,17 @@ class BtrixUploader extends LitElement
 
 customElements.define("wr-btrix-upload", BtrixUploader);
 
-export class BtrixClient
-{
-  static async login({url, username, password, orgName}) {   
+export class BtrixClient {
+  static async login({ url, username, password, orgName }) {
     const loginUrl = url + "/api/auth/jwt/login";
 
     const form = new FormData();
     form.append("username", username);
     form.append("password", password);
 
-    const res = await fetch(loginUrl, {method: "POST", body: form});
+    const res = await fetch(loginUrl, { method: "POST", body: form });
     const auth = await res.json();
-    const {token_type, access_token} = auth;
+    const { token_type, access_token } = auth;
     if (!access_token || !token_type) {
       throw new Error("Invalid login");
     }
@@ -338,13 +439,18 @@ export class BtrixClient
     this.defaultOrg = null;
   }
 
-  async fetchAPI(endpoint, method="GET", body=null) {
-    const headers = {"Authorization": this.auth};
+  async fetchAPI(endpoint, method = "GET", body = null) {
+    const headers = { Authorization: this.auth };
     if (method !== "GET") {
       headers["Content-Type"] = "application/json";
     }
     try {
-      const resp = await fetch(this.url + endpoint, {headers, method, body, duplex: "half"});
+      const resp = await fetch(this.url + endpoint, {
+        headers,
+        method,
+        body,
+        duplex: "half",
+      });
       return await resp.json();
     } catch (e) {
       console.warn(e);
@@ -352,7 +458,7 @@ export class BtrixClient
     }
   }
 
-  async getOrg(name="") {
+  async getOrg(name = "") {
     const json = await this.fetchAPI("/api/users/me-with-orgs");
     const { orgs } = json;
     if (!orgs || !orgs.length) {
@@ -380,8 +486,12 @@ export class BtrixClient
 
   async deleteUpload(uploadId, orgId = null) {
     const org = this.defaultOrg || orgId;
-    const deleteStr = JSON.stringify({crawl_ids: [uploadId]});
-    const res = await this.fetchAPI(`/api/orgs/${org}/uploads/delete`, "POST", deleteStr);
+    const deleteStr = JSON.stringify({ crawl_ids: [uploadId] });
+    const res = await this.fetchAPI(
+      `/api/orgs/${org}/uploads/delete`,
+      "POST",
+      deleteStr,
+    );
     if (!res.deleted) {
       throw new Error("delete_failed");
     }

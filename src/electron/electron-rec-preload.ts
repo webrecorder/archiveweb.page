@@ -10,7 +10,6 @@ const { ipcRenderer, contextBridge } = require("electron");
 
 let downloadCallback;
 
-
 // ===========================================================================
 contextBridge.exposeInMainWorld("archivewebpage", {
   record: (opts) => {
@@ -23,10 +22,8 @@ contextBridge.exposeInMainWorld("archivewebpage", {
 
   downloadCancel: (dlprogress) => {
     ipcRenderer.send("dlcancel:" + dlprogress.origFilename);
-  }
-
+  },
 });
-
 
 // ===========================================================================
 ipcRenderer.on("add-resource", async (event, data, collId) => {
@@ -55,7 +52,6 @@ ipcRenderer.on("add-resource", async (event, data, collId) => {
   }
 });
 
-
 // ===========================================================================
 ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
   const db = await getDB(collId);
@@ -64,14 +60,12 @@ ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
   //console.log("add-page", pageInfo);
 });
 
-
 // ===========================================================================
 ipcRenderer.on("inc-sizes", async (event, totalSize, writtenSize, collId) => {
   if (totalSize > 0) {
     loader.updateSize(collId, totalSize, writtenSize);
   }
 });
-
 
 // ===========================================================================
 ipcRenderer.on("download-progress", async (event, progress) => {
@@ -81,8 +75,7 @@ ipcRenderer.on("download-progress", async (event, progress) => {
 });
 
 // ===========================================================================
-async function main()
-{
+async function main() {
   await ensureDefaultColl(loader);
 }
 

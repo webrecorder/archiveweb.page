@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "module": "esnext",
+    "target": "es6",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "strict": true,
+    "checkJs": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "strict": true,
+        "rules": {
+          // This seems to produce a bunch of false positives, so we've turned it off for now.
+          // Relevant issues:
+          // https://github.com/runem/lit-analyzer/issues/293
+          // https://github.com/runem/lit-analyzer/issues/302
+          // https://github.com/runem/lit-analyzer/issues/266
+          "no-missing-import": "off",
+
+          // ts-lit-plugin also doesn't seem to understand string interpolations in CSS, so this is also turned off.
+          "no-invalid-css": "off"
+        }
+      }
+    ],
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.js"]
+}

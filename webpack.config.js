@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const GenerateJsonPlugin = require("generate-json-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const AWP_PACKAGE = require("./package.json");
 const RWP_PACKAGE = require("./node_modules/replaywebpage/package.json");
@@ -28,6 +29,7 @@ const DIST_EXT = path.join(__dirname, "dist", "ext");
 const DIST_ELECTRON = path.join(__dirname, "dist", "electron");
 const DIST_EMBED = path.join(__dirname, "dist", "embed");
 
+/** @type {import('webpack').Configuration['module']} */
 const moduleSettings = {
   rules: [
     {
@@ -45,6 +47,7 @@ const moduleSettings = {
   ],
 };
 
+/** @type {import('webpack').Configuration['optimization']} */
 const optimization = {
   minimize: true,
   minimizer: [
@@ -54,7 +57,14 @@ const optimization = {
   ],
 };
 
+/** @type {import('webpack').Configuration['resolve']} */
+const resolve = {
+  extensions: [".ts", ".js"],
+  plugins: [new TsconfigPathsPlugin()],
+};
+
 // ===========================================================================
+/** @returns {import('webpack').Configuration} */
 const electronMainConfig = (/*env, argv*/) => {
   return {
     target: "electron-main",
@@ -79,10 +89,12 @@ const electronMainConfig = (/*env, argv*/) => {
       }),
     ],
     module: moduleSettings,
+    resolve,
   };
 };
 
 // ===========================================================================
+/** @returns {import('webpack').Configuration} */
 const electronPreloadConfig = (/*env, argv*/) => {
   return {
     target: "electron-preload",
@@ -96,13 +108,15 @@ const electronPreloadConfig = (/*env, argv*/) => {
       filename: "[name].js",
     },
     plugins: [new webpack.DefinePlugin(defaultDefines)],
+    resolve,
   };
 };
 
 // ===========================================================================
+/** @returns {import('webpack').Configuration} */
 function sharedBuild(
   outputPath,
-  { plugins = [], copy = [], entry = {}, extra = {}, flat = false } = {},
+  { plugins = [], copy = [], entry = {}, extra = {}, flat = false } = {}
 ) {
   if (copy.length) {
     plugins.push(new CopyPlugin({ patterns: copy }));
@@ -157,6 +171,7 @@ function sharedBuild(
     ],
 
     module: moduleSettings,
+    resolve,
     ...extra,
   };
 }
@@ -181,7 +196,7 @@ const extensionWebConfig = (env, argv) => {
     new GenerateJsonPlugin("manifest.json", manifest, generateManifest, 2),
   ];
 
-  const copy = [{ from: "src/static/", to: "./" }];
+  const copy = [{ from: "static/", to: "./" }];
 
   const entry = {
     bg: "./src/ext/bg.js",
@@ -198,7 +213,7 @@ const electronWebConfig = (/*env, argv*/) => {
   };
 
   const copy = [
-    { from: "src/static/", to: "./" },
+    { from: "static/", to: "./" },
     { from: "src/electron/rec-preload.js", to: "" },
     { from: "src/electron/rec-window.html", to: "" },
   ];

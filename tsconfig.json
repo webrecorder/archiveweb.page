@@ -30,8 +30,8 @@
         }
       }
     ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": { "@/static/*": ["./static/*"] }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.js"],
-  "exclude": ["src/static/**/*"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.js"]
 }

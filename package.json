@@ -25,6 +25,7 @@
     "pretty-bytes": "^5.6.0",
     "replaywebpage": "1.8.17",
     "stream-browserify": "^3.0.0",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
     "uuid": "^8.3.2",
     "warcio": "^2.2.1"

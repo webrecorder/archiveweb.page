@@ -1,0 +1,14 @@
+declare module "*.svg";
+declare module "*.html";
+declare module "*.scss";
+declare const __SW_NAME__: string;
+declare const __HELPER_PROXY__: string;
+declare const __GDRIVE_CLIENT_ID__: string;
+declare const __AWP_VERSION__: string;
+declare const __VERSION__: string;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const pdfjsLib: any;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare type TODOFixMe = any;

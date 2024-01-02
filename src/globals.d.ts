@@ -6,6 +6,7 @@ declare const __HELPER_PROXY__: string;
 declare const __GDRIVE_CLIENT_ID__: string;
 declare const __AWP_VERSION__: string;
 declare const __VERSION__: string;
+declare const __WEB3_STORAGE_TOKEN__: string;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const pdfjsLib: any;

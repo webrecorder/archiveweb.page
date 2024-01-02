@@ -1,11 +1,10 @@
-async function getPDFText(url) {
+async function getPDFText(url: string) {
   url = url || window.location.href;
 
-  // eslint-disable-next-line no-undef
   let doc = pdfjsLib.getDocument(url);
   doc = await doc.promise;
 
-  const strings = [];
+  const strings: string[] = [];
 
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
@@ -17,19 +16,18 @@ async function getPDFText(url) {
   return strings.join(" ").replace(/[\W]+/g, " ");
 }
 
-// eslint-disable-next-line no-unused-vars
-async function extractPDF(url, baseUrl) {
-  let pdfText = null;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function extractPDF(url: string, baseUrl: string) {
+  let pdfText: string | null = null;
 
   try {
     const res = await fetch(new URL("pdf/pdf.min.js", baseUrl).href);
     eval(await res.text());
 
     //pdfjsLib should now exist
-    // eslint-disable-next-line no-undef
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
       "pdf/pdf.worker.min.js",
-      baseUrl,
+      baseUrl
     ).href;
 
     if (url || document.querySelector("embed[type='application/pdf']")) {

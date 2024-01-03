@@ -22,28 +22,41 @@ import { BEHAVIOR_RUNNING } from "../consts";
 class RecWindowUI extends LitElement {
   constructor() {
     super();
+    // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
     this.url = "about:blank";
+    // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
     this.isLoading = false;
+    // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
     this.favIconUrl = null;
+    // @ts-expect-error - TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'.
     this.favIcons = null;
 
+    // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
     this.canGoBack = false;
+    // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
     this.canGoForward = false;
 
+    // @ts-expect-error - TS2339 - Property 'showPopup' does not exist on type 'RecWindowUI'.
     this.showPopup = false;
 
     this.initStats();
   }
 
   initStats() {
+    // @ts-expect-error - TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
     this.stats = null;
+    // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
     this.numPending = 0;
 
     window.addEventListener("message", (event) => {
       if (event.data.stats) {
+        // @ts-expect-error - TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
         this.stats = event.data.stats;
+        // @ts-expect-error - TS2339 - Property 'recording' does not exist on type 'RecWindowUI'. | TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
         this.recording = this.stats.recording;
+        // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'. | TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
         this.numPending = this.stats.numPending;
+        // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'RecWindowUI'. | TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
         this.autorun = this.stats.behaviorState === BEHAVIOR_RUNNING;
       }
     });
@@ -183,7 +196,10 @@ class RecWindowUI extends LitElement {
             <span class="icon is-small">
               <fa-icon
                 size="1.0em"
-                class="${this.canGoBack ? "" : "grey-disabled"}"
+                class="${
+                  // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
+                  this.canGoBack ? "" : "grey-disabled"
+                }"
                 aria-hidden="true"
                 .svg="${fasLeft}"
               ></fa-icon>
@@ -201,7 +217,10 @@ class RecWindowUI extends LitElement {
             <span class="icon is-small">
               <fa-icon
                 size="1.0em"
-                class="${this.canGoForward ? "" : "grey-disabled"}"
+                class="${
+                  // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
+                  this.canGoForward ? "" : "grey-disabled"
+                }"
                 aria-hidden="true"
                 .svg="${fasRight}"
               ></fa-icon>
@@ -211,30 +230,37 @@ class RecWindowUI extends LitElement {
             href="#"
             role="button"
             id="refresh"
-            class="button is-borderless ${this.isLoading ? "is-loading" : ""}"
+            class="button is-borderless ${
+              // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+              this.isLoading ? "is-loading" : ""
+            }"
             @click="${this.onRefresh}"
             @keyup="${clickOnSpacebarPress}"
             title="Reload"
             aria-label="Reload"
           >
             <span class="icon is-small">
-              ${!this.isLoading
-                ? html`
-                    <fa-icon
-                      size="1.0em"
-                      class="has-text-grey"
-                      aria-hidden="true"
-                      .svg="${fasRefresh}"
-                    ></fa-icon>
-                  `
-                : ""}
+              ${
+                // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+                !this.isLoading
+                  ? html`
+                      <fa-icon
+                        size="1.0em"
+                        class="has-text-grey"
+                        aria-hidden="true"
+                        .svg="${fasRefresh}"
+                      ></fa-icon>
+                    `
+                  : ""
+              }
             </span>
           </a>
           <form @submit="${this.onSubmit}">
             <div
-              class="control is-expanded ${this.favIconUrl
-                ? "has-icons-left"
-                : "has-icons-left"}"
+              class="control is-expanded ${
+                // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
+                this.favIconUrl ? "has-icons-left" : "has-icons-left"
+              }"
             >
               <input
                 id="url"
@@ -242,17 +268,27 @@ class RecWindowUI extends LitElement {
                 type="url"
                 @keydown="${this.onKeyDown}"
                 @blur="${this.onLostFocus}"
-                .value="${this.url}"
+                .value="${
+                  // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
+                  this.url
+                }"
                 placeholder="Enter text to search or a URL to replay"
               />
-              ${this.favIconUrl
-                ? html` <span class="favicon icon is-small is-left">
-                    <img
-                      src="${this.favIconUrl}"
-                      @error="${this.tryNextIcon}"
-                    />
-                  </span>`
-                : html``}
+
+              ${
+                // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
+                this.favIconUrl
+                  ? html` <span class="favicon icon is-small is-left">
+                      <img
+                        src="${
+                          // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
+                          this.favIconUrl
+                        }"
+                        @error="${this.tryNextIcon}"
+                      />
+                    </span>`
+                  : html``
+              }
             </div>
           </form>
           <a
@@ -268,17 +304,25 @@ class RecWindowUI extends LitElement {
                 .svg="${wrLogo}"
                 aria-hidden="true"
               ></fa-icon>
-              ${this.recording
-                ? html` ${this.autorun
-                    ? html`<span class="overlay overlay-auto"></span>`
-                    : !this.numPending
-                      ? html` <span class="overlay overlay-idle"></span>`
-                      : html`
-                          <span class="overlay overlay-waiting"
-                            >${this.numPending}</span
-                          >
-                        `}`
-                : ""}
+              ${
+                // @ts-expect-error - TS2339 - Property 'recording' does not exist on type 'RecWindowUI'.
+                this.recording
+                  ? // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'RecWindowUI'.
+                    html` ${this.autorun
+                      ? html`<span class="overlay overlay-auto"></span>`
+                      : // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
+                        !this.numPending
+                        ? html` <span class="overlay overlay-idle"></span>`
+                        : html`
+                            <span class="overlay overlay-waiting"
+                              >${
+                                // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
+                                this.numPending
+                              }</span
+                            >
+                          `}`
+                  : ""
+              }
             </span>
           </a>
         </div>
@@ -290,8 +334,14 @@ class RecWindowUI extends LitElement {
   renderWebView() {
     return html` <webview
       partition="persist:wr"
-      @did-start-loading="${() => (this.isLoading = true)}"
-      @did-stop-loading="${() => (this.isLoading = false)}"
+      @did-start-loading="${
+        // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+        () => (this.isLoading = true)
+      }"
+      @did-stop-loading="${
+        // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+        () => (this.isLoading = false)
+      }"
       @page-favicon-updated="${this.onFaviconUpdated}"
       @will-navigate="${this.onWillNavigate}"
       @did-navigate="${this.onDidNavigate}"
@@ -302,12 +352,19 @@ class RecWindowUI extends LitElement {
   }
 
   renderPopup() {
+    // @ts-expect-error - TS2339 - Property 'showPopup' does not exist on type 'RecWindowUI'.
     if (!this.showPopup) {
       return;
     }
 
     return html`
-      <wr-app-popup .msg="${this.stats}" @send-msg="${this.onSendMsg}">
+      <wr-app-popup
+        .msg="${
+          // @ts-expect-error - TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
+          this.stats
+        }"
+        @send-msg="${this.onSendMsg}"
+      >
       </wr-app-popup>
     `;
   }
@@ -317,58 +374,78 @@ class RecWindowUI extends LitElement {
 
     const webview = this.renderRoot.querySelector("webview");
 
+    // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'.
     if (webview && window.archivewebpage.sendMsg) {
+      // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'getWebContentsId' does not exist on type 'Element'.
       window.archivewebpage.sendMsg(webview.getWebContentsId(), msg);
     }
   }
 
   onFaviconUpdated(event) {
+    // @ts-expect-error - TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'.
     this.favIcons = event.favicons;
     this.tryNextIcon();
   }
 
   onWillNavigate(event) {
+    // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
     this.url = event.url;
 
+    // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
     this.canGoBack = event.currentTarget.canGoBack();
+    // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
     this.canGoForward = event.currentTarget.canGoForward();
   }
 
   onDidNavigate(event) {
+    // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
     this.url = event.url;
 
+    // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
     this.canGoBack = event.currentTarget.canGoBack();
+    // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
     this.canGoForward = event.currentTarget.canGoForward();
+    // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
     this.isLoading = false;
   }
 
   onDidNavigateInPage(event) {
+    // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
     this.url = event.url;
 
+    // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
     this.canGoBack = event.currentTarget.canGoBack();
+    // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
     this.canGoForward = event.currentTarget.canGoForward();
   }
 
   onTogglePopup() {
     //ipcRenderer.send("popup-toggle-" + this.wcId);
+    // @ts-expect-error - TS2339 - Property 'showPopup' does not exist on type 'RecWindowUI'. | TS2339 - Property 'showPopup' does not exist on type 'RecWindowUI'.
     this.showPopup = !this.showPopup;
   }
 
   async tryNextIcon() {
+    // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
     this.favIconUrl =
+      // @ts-expect-error - TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'. | TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'. | TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'.
       this.favIcons && this.favIcons.length ? this.favIcons.shift() : null;
   }
 
   onGoBack() {
     const webview = this.renderRoot.querySelector("webview");
+    // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
     if (webview && this.canGoBack) {
+      // @ts-expect-error - TS2339 - Property 'goBack' does not exist on type 'Element'.
       webview.goBack();
     }
   }
 
   onGoForward() {
     const webview = this.renderRoot.querySelector("webview");
+    // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
     if (webview && this.canGoForward) {
+      // @ts-expect-error - TS2339 - Property 'goForward' does not exist on type 'Element'.
       webview.goForward();
     }
   }
@@ -376,6 +453,7 @@ class RecWindowUI extends LitElement {
   onRefresh() {
     const webview = this.renderRoot.querySelector("webview");
     if (webview) {
+      // @ts-expect-error - TS2339 - Property 'reload' does not exist on type 'Element'.
       webview.reload();
     }
   }
@@ -385,9 +463,12 @@ class RecWindowUI extends LitElement {
     const input = this.renderRoot.querySelector("input");
     const webview = this.renderRoot.querySelector("webview");
 
+    // @ts-expect-error - TS2531 - Object is possibly 'null'.
     if (webview && input.value) {
+      // @ts-expect-error - TS2339 - Property 'loadURL' does not exist on type 'Element'. | TS2531 - Object is possibly 'null'.
       webview.loadURL(input.value);
     } else {
+      // @ts-expect-error - TS2531 - Object is possibly 'null'. | TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
       input.value = this.url;
     }
   }
@@ -395,12 +476,14 @@ class RecWindowUI extends LitElement {
   onKeyDown(event) {
     if (event.key === "Esc" || event.key === "Escape") {
       event.preventDefault();
+      // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
       event.currentTarget.value = this.url;
     }
   }
 
   onLostFocus(event) {
     if (!event.currentTarget.value) {
+      // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
       event.currentTarget.value = this.url;
     }
   }

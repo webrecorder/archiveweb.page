@@ -19,11 +19,14 @@ class ElectronRecorderApp extends ElectronReplayApp {
   constructor(opts) {
     super(opts);
 
+// @ts-expect-error - TS2339 - Property 'userAgent' does not exist on type 'ElectronRecorderApp'.
     this.userAgent = null;
 
+// @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
     this.recorders = new Map();
   }
 
+// @ts-expect-error - TS2416 - Property 'mainWindowWebPreferences' in type 'ElectronRecorderApp' is not assignable to the same property in base type 'ElectronReplayApp'.
   get mainWindowWebPreferences() {
     return {
       plugins: true,
@@ -109,8 +112,10 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     super.onAppReady();
 
+// @ts-expect-error - TS2339 - Property 'userAgent' does not exist on type 'ElectronRecorderApp'. | TS2531 - Object is possibly 'null'.
     this.userAgent = this.origUA.replace(/ Electron[^\s]+/, "");
 
+// @ts-expect-error - TS2339 - Property 'userAgent' does not exist on type 'ElectronRecorderApp'.
     app.userAgentFallback = this.userAgent;
   }
 
@@ -122,6 +127,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
     const theWindow = super.createMainWindow(argv);
 
     theWindow.on("close", async (event) => {
+// @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
       if (this.recorders.size) {
         event.preventDefault();
         event.returnValue = false;
@@ -140,6 +146,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
       defaultId: 1,
       cancelId: 0,
       title: "Stop Archiving and Quit",
+// @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
       message: `There are still ${this.recorders.size} active archiving sessions. Stop all and quit?`,
     });
 
@@ -150,7 +157,9 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     const promises = [];
 
+// @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
     for (const rec of this.recorders.values()) {
+// @ts-expect-error - TS2345 - Argument of type 'any' is not assignable to parameter of type 'never'.
       promises.push(rec.shutdownPromise);
       //rec.detach();
       rec.recWindow.close();
@@ -162,6 +171,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
   }
 
   createRecordWindow({
+// @ts-expect-error - TS2525 - Initializer provides no value for this binding element and the binding element has no default value.
     url,
     collId = "",
     startRec = true,
@@ -203,12 +213,14 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     const recorder = new ElectronRecorder({
       recWC: recWebContents,
+// @ts-expect-error - TS2531 - Object is possibly 'null'.
       appWC: this.mainWindow.webContents,
       recWindow,
       collId,
       autorun,
       popup: popupView,
       staticPrefix: this.staticContentPath,
+// @ts-expect-error - TS2339 - Property 'userAgent' does not exist on type 'ElectronRecorderApp'.
       userAgent: this.userAgent,
     });
 
@@ -216,18 +228,22 @@ class ElectronRecorderApp extends ElectronReplayApp {
       console.log("closing...");
       event.preventDefault();
       recorder.shutdown().then(() => {
+// @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
         this.recorders.delete(id);
       });
     });
 
     const newWinContents = popupView
+// @ts-expect-error - TS2339 - Property 'webContents' does not exist on type 'never'.
       ? popupView.webContents
       : recWindow.webContents;
 
     newWinContents.on("new-window", (event, url) => {
       event.preventDefault();
       if (url.startsWith(STATIC_PREFIX)) {
+// @ts-expect-error - TS2531 - Object is possibly 'null'.
         this.mainWindow.loadURL(url);
+// @ts-expect-error - TS2531 - Object is possibly 'null'.
         this.mainWindow.show();
       }
     });
@@ -275,6 +291,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
     );
 
     recWebContents.on("destroyed", () => {
+// @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
       this.recorders.delete(id);
     });
 
@@ -282,6 +299,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     recWebContents.clearHistory();
 
+// @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
     this.recorders.set(id, recorder);
     if (startRec) {
       await recorder.attach();

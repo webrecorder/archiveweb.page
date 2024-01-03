@@ -27,7 +27,6 @@ import {
 } from "auto-js-ipfs";
 import { getLocalOption, setLocalOption } from "../localstorage";
 
-// eslint-disable-next-line no-undef
 const VERSION = __AWP_VERSION__;
 
 const DEFAULT_GATEWAY_URL = "https://w3s.link/ipfs/";
@@ -295,7 +294,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
 
     console.log("attempt to disable CSP to ensure replay works");
-    let tabId = await new Promise((resolve) => {
+    const tabId = await new Promise((resolve) => {
       chrome.tabs.getCurrent((msg) => resolve(msg.id));
     });
 
@@ -989,7 +988,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     <summary>Legalese:</summary>
                     <p style="font-size: 0.8rem">DISCLAIMER OF SOFTWARE WARRANTY. WEBRECORDER SOFTWARE PROVIDES THIS SOFTWARE TO YOU "AS AVAILABLE"
                     AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,
-                    INCLUDING WITHOUT LIMITATION ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+                    INCLUDING WITHOUT LIMITATION ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</p>
                   </details>
 
                   <div class="has-text-centered">
@@ -1550,7 +1549,6 @@ class ArchiveWebApp extends ReplayWebApp {
     }
 
     if (!ipfsOpts.daemonUrl && ipfsOpts.autoDetect) {
-      // eslint-disable-next-line no-undef
       const autoipfs = await createAutoIpfs({
         web3StorageToken: __WEB3_STORAGE_TOKEN__,
       });

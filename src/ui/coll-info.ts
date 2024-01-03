@@ -214,7 +214,7 @@ class WrRecCollInfo extends CollInfo {
               href="${apiPrefix}/c/${
                 // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
                 this.coll.id
-              }/dl?format=wacz&pages=all"
+              }/dl?format=wacz&amp;pages=all"
               class="button is-small"
               title="Download"
             >
@@ -387,7 +387,6 @@ class WrRecCollInfo extends CollInfo {
       : html`
           <div class="is-flex is-flex-direction-column">
             <button
-// @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
               class="button is-small ${
                 // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
                 this.shareWait ? "is-loading" : ""

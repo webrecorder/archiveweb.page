@@ -18,7 +18,6 @@ class WrRecCollIndex extends CollIndex {
     return [
       { key: "title", name: "Title" },
 
-      // @ts-expect-error - TS2339 - Property 'dateName' does not exist on type 'WrRecCollIndex'.
       { key: "ctime", name: this.dateName },
 
       { key: "mtime", name: "Date Modified" },
@@ -53,7 +52,6 @@ class WrRecCollIndex extends CollIndex {
       // @ts-expect-error - TS2339 - Property 'sortedColls' does not exist on type 'WrRecCollIndex'.
       this.sortedColls.length
     ) {
-      // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollIndex'.
       this.dispatchEvent(
         new CustomEvent("colls-updated", {
           // @ts-expect-error - TS2339 - Property 'sortedColls' does not exist on type 'WrRecCollIndex'.
@@ -166,16 +164,15 @@ class WrRecCollIndex extends CollIndex {
 
     // @ts-expect-error - TS2339 - Property '_deleting' does not exist on type 'WrRecCollIndex'. | TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
     this._deleting[this.deleteConfirm.sourceUrl] = true;
-    // @ts-expect-error - TS2339 - Property 'requestUpdate' does not exist on type 'WrRecCollIndex'.
     this.requestUpdate();
 
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'WrRecCollIndex'.
     const info = this.renderRoot.querySelector(
       // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
       `wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`
     );
 
     if (info) {
+      // @ts-expect-error - TS2339 - Property 'doDelete' does not exist on type 'Element'.
       await info.doDelete();
     }
 
@@ -189,5 +186,4 @@ class WrRecCollIndex extends CollIndex {
   }
 }
 
-// @ts-expect-error - TS2345 - Argument of type 'typeof WrRecCollIndex' is not assignable to parameter of type 'CustomElementConstructor'.
 customElements.define("wr-rec-coll-index", WrRecCollIndex);

@@ -36,7 +36,6 @@ class ArchiveWebApp extends ReplayWebApp {
   constructor() {
     super();
 
-    // @ts-expect-error - TS2339 - Property 'navMenuShown' does not exist on type 'ArchiveWebApp'.
     this.navMenuShown = false;
     // @ts-expect-error - TS2339 - Property 'showCollDrop' does not exist on type 'ArchiveWebApp'.
     this.showCollDrop = false;
@@ -142,13 +141,10 @@ class ArchiveWebApp extends ReplayWebApp {
 
       this.handleMessages();
     } else {
-      // @ts-expect-error - TS2339 - Property 'inited' does not exist on type 'ArchiveWebApp'.
       this.inited = true;
-      // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
       this.sourceUrl = pageParams.get("source") || "";
     }
 
-    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (!this.embed) {
       this.checkIPFS();
     }
@@ -158,7 +154,6 @@ class ArchiveWebApp extends ReplayWebApp {
     // support upload
     window.addEventListener("message", async (event) => {
       if (
-        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
         this.embed &&
         // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
         this.loadedCollId &&
@@ -182,16 +177,13 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   onStartLoad(event) {
-    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (this.embed) {
       return;
     }
 
     // @ts-expect-error - TS2551 - Property 'showImport' does not exist on type 'ArchiveWebApp'. Did you mean 'onShowImport'?
     this.showImport = false;
-    // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
     this.sourceUrl = event.detail.sourceUrl;
-    // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
     this.loadInfo = event.detail;
 
     // @ts-expect-error - TS2339 - Property 'isImportExisting' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
@@ -215,7 +207,6 @@ class ArchiveWebApp extends ReplayWebApp {
       }
     }
 
-    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (this.embed) {
       // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
       this.loadedCollId = event.detail.collInfo && event.detail.collInfo.coll;
@@ -226,10 +217,8 @@ class ArchiveWebApp extends ReplayWebApp {
     if (
       !event.detail.alreadyLoaded &&
       event.detail.sourceUrl &&
-      // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
       event.detail.sourceUrl !== this.sourceUrl
     ) {
-      // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
       this.sourceUrl = event.detail.sourceUrl;
     }
   }
@@ -237,9 +226,7 @@ class ArchiveWebApp extends ReplayWebApp {
   getLoadInfo(sourceUrl) {
     this.disableCSP();
 
-    // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
     if (this.loadInfo) {
-      // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
       return this.loadInfo;
     }
 
@@ -370,7 +357,6 @@ class ArchiveWebApp extends ReplayWebApp {
         href="?about"
         @click="${(e) => {
           e.preventDefault();
-          // @ts-expect-error - TS2339 - Property 'showAbout' does not exist on type 'ArchiveWebApp'.
           this.showAbout = true;
         }}"
         class="navbar-item is-size-6"
@@ -519,18 +505,9 @@ class ArchiveWebApp extends ReplayWebApp {
   renderColl() {
     return html` <wr-rec-coll
       .editable="${true}"
-      .clearable="${
-        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
-        this.embed
-      }"
-      .browsable="${
-        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
-        !this.embed
-      }"
-      .loadInfo="${
-        // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
-        this.getLoadInfo(this.sourceUrl)
-      }"
+      .clearable="${this.embed}"
+      .browsable="${!this.embed}"
+      .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
       .appLogo="${this.mainLogo}"
       .autoUpdateInterval=${
         // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'. | TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'?
@@ -544,20 +521,11 @@ class ArchiveWebApp extends ReplayWebApp {
         // @ts-expect-error - TS2339 - Property 'swName' does not exist on type 'ArchiveWebApp'.
         this.swName
       }
-      embed="${
-        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
-        this.embed
-      }"
-      sourceUrl="${
-        // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
-        this.sourceUrl
-      }"
+      embed="${this.embed}"
+      sourceUrl="${this.sourceUrl}"
       appName="${this.appName}"
       appVersion=${VERSION}
-      @replay-favicons=${
-        // @ts-expect-error - TS2339 - Property 'onFavIcons' does not exist on type 'ArchiveWebApp'.
-        this.onFavIcons
-      }
+      @replay-favicons=${this.onFavIcons}
       @update-title=${this.onTitle}
       @coll-loaded=${this.onCollLoaded}
       @show-start=${this.onShowStart}
@@ -566,10 +534,7 @@ class ArchiveWebApp extends ReplayWebApp {
         // @ts-expect-error - TS2339 - Property 'uploadCollOpts' does not exist on type 'ArchiveWebApp'.
         (e) => (this.uploadCollOpts = e.detail)
       }
-      @about-show=${
-        // @ts-expect-error - TS2339 - Property 'showAbout' does not exist on type 'ArchiveWebApp'.
-        () => (this.showAbout = true)
-      }
+      @about-show=${() => (this.showAbout = true)}
     ></wr-rec-coll>`;
   }
 
@@ -904,7 +869,6 @@ class ArchiveWebApp extends ReplayWebApp {
       return "App";
     }
 
-    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (this.embed) {
       return "Embedded";
     }
@@ -915,15 +879,11 @@ class ArchiveWebApp extends ReplayWebApp {
   renderAbout() {
     return html`
       <div class="modal is-active">
-        <div class="modal-background" @click="${
-          // @ts-expect-error - TS2339 - Property 'onAboutClose' does not exist on type 'ArchiveWebApp'.
-          this.onAboutClose
-        }"></div>
+        <div class="modal-background" @click="${this.onAboutClose}"></div>
           <div class="modal-card">
             <header class="modal-card-head">
               <p class="modal-card-title">About ArchiveWeb.page ${this.getDeployType()}</p>
               <button class="delete" aria-label="close" @click="${
-                // @ts-expect-error - TS2339 - Property 'onAboutClose' does not exist on type 'ArchiveWebApp'.
                 this.onAboutClose
               }"></button>
             </header>
@@ -980,7 +940,6 @@ class ArchiveWebApp extends ReplayWebApp {
 
                   <div class="has-text-centered">
                     <a class="button is-warning" href="#" @click="${
-                      // @ts-expect-error - TS2339 - Property 'onAboutClose' does not exist on type 'ArchiveWebApp'.
                       this.onAboutClose
                     }">Close</a>
                   </div>
@@ -1196,9 +1155,9 @@ class ArchiveWebApp extends ReplayWebApp {
     const resp = await fetch(`${apiPrefix}/c/create`, { method, body });
     await resp.json();
 
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const index = this.renderRoot.querySelector("wr-rec-coll-index");
     if (index) {
+      // @ts-expect-error - TS2339 - Property 'loadColls' does not exist on type 'Element'.
       index.loadColls();
     }
     // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
@@ -1294,8 +1253,8 @@ class ArchiveWebApp extends ReplayWebApp {
     // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const url = this.renderRoot.querySelector("#url").value;
 
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const previewCheckbox = this.renderRoot.querySelector("#preview");
+    // @ts-expect-error - TS2339 - Property 'checked' does not exist on type 'Element'.
     const isPreview = previewCheckbox && previewCheckbox.checked;
 
     // @ts-expect-error - TS2551 - Property 'showStartRecord' does not exist on type 'ArchiveWebApp'. Did you mean 'onStartRecord'?
@@ -1330,7 +1289,6 @@ class ArchiveWebApp extends ReplayWebApp {
     super.onTitle(event);
 
     if (
-      // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
       this.embed &&
       // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
       this.loadedCollId &&
@@ -1353,16 +1311,16 @@ class ArchiveWebApp extends ReplayWebApp {
     event.preventDefault();
 
     // IPFS settings
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const daemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const gatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const autodetectCheck = this.renderRoot.querySelector("#ipfsAutoDetect");
 
     if (daemonUrlText && gatewayUrlText) {
+      // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const daemonUrl = daemonUrlText.value;
+      // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const gatewayUrl = gatewayUrlText.value;
+      // @ts-expect-error - TS2339 - Property 'checked' does not exist on type 'Element'.
       const autoDetect = autodetectCheck && autodetectCheck.checked;
 
       // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'.
@@ -1380,19 +1338,19 @@ class ArchiveWebApp extends ReplayWebApp {
     }
 
     // Browsertrix Settings
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixUrl = this.renderRoot.querySelector("#btrixUrl");
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixUsername = this.renderRoot.querySelector("#btrixUsername");
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixPassword = this.renderRoot.querySelector("#btrixPassword");
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixOrgName = this.renderRoot.querySelector("#btrixOrgName");
 
     if (btrixUrl && btrixUsername && btrixPassword) {
+      // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const url = btrixUrl.value;
+      // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const username = btrixUsername.value;
+      // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const password = btrixPassword.value;
+      // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const orgName = (btrixOrgName && btrixOrgName.value) || "";
 
       if (url && username && password) {
@@ -1474,7 +1432,6 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 }
 
-// @ts-expect-error - TS2345 - Argument of type 'typeof ArchiveWebApp' is not assignable to parameter of type 'CustomElementConstructor'.
 customElements.define("archive-web-page-app", ArchiveWebApp);
 
 export { ArchiveWebApp, Loader, Embed };

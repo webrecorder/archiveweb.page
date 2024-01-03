@@ -12,7 +12,6 @@ import fasCheck from "@fortawesome/fontawesome-free/svgs/solid/check-circle.svg"
 import fasExternal from "@fortawesome/fontawesome-free/svgs/solid/external-link-alt.svg";
 import fasX from "@fortawesome/fontawesome-free/svgs/solid/times-circle.svg";
 
-// eslint-disable-next-line no-undef
 const VERSION = __AWP_VERSION__;
 
 class BtrixUploader extends LitElement {
@@ -71,7 +70,7 @@ class BtrixUploader extends LitElement {
     // @ts-expect-error - TS2339 - Property 'pollingUploadState' does not exist on type 'BtrixUploader'.
     this.pollingUploadState = true;
 
-    let loop = true;
+    const loop = true;
 
     while (loop) {
       // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.

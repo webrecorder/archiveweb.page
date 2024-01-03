@@ -6,6 +6,7 @@ import { ensureDefaultColl } from "../utils";
 
 import { loader, getDB } from "replaywebpage/src/electron-preload";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { ipcRenderer, contextBridge } = require("electron");
 
 let downloadCallback;

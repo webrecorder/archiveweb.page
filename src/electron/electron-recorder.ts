@@ -189,7 +189,7 @@ class ElectronRecorder extends Recorder {
 
     const base64Str = data.toString("base64");
 
-    const responseHeaders = [];
+    const responseHeaders: { name: string; value: string }[] = [];
 
     const origin = headers.get("origin");
 
@@ -199,15 +199,12 @@ class ElectronRecorder extends Recorder {
 
     if (origin) {
       responseHeaders.push({
-        // @ts-expect-error - TS2322 - Type 'string' is not assignable to type 'never'.
         name: "Access-Control-Allow-Origin",
-        // @ts-expect-error - TS2322 - Type 'string' is not assignable to type 'never'.
         value: origin,
       });
     }
 
     if (mimeType) {
-      // @ts-expect-error - TS2322 - Type 'string' is not assignable to type 'never'. | TS2322 - Type 'any' is not assignable to type 'never'.
       responseHeaders.push({ name: "Content-Type", value: mimeType });
     }
 

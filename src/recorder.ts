@@ -1370,7 +1370,7 @@ class Recorder {
   }
 
   _getContentType(headers) {
-    for (let header of headers) {
+    for (const header of headers) {
       if (header.name.toLowerCase() === "content-type") {
         return header.value.split(";")[0];
       }
@@ -1807,7 +1807,7 @@ class Recorder {
 
     if (reqresp.hasPostData && !reqresp.postData) {
       try {
-        let postRes = await this.send(
+        const postRes = await this.send(
           "Network.getRequestPostData",
           // @ts-expect-error - TS2345 - Argument of type '{ requestId: any; }' is not assignable to parameter of type 'null | undefined'.
           { requestId: reqresp.requestId },

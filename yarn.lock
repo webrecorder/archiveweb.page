@@ -7649,6 +7649,30 @@ repeat-string@^1.6.1:
     split.js "^1.6.4"
     stream-browserify "^3.0.0"
 
+"replaywebpage@git+https://github.com/webrecorder/replayweb.page.git#emma/publish-generated-types":
+  version "2.0.0-beta"
+  resolved "git+https://github.com/webrecorder/replayweb.page.git#095989d0bc0ebd6291921d5eef0fe8cac567292c"
+  dependencies:
+    "@fortawesome/fontawesome-free" "^5.15.4"
+    "@shoelace-style/shoelace" "^2.8.0"
+    "@webrecorder/wabac" "^2.16.13"
+    bulma "^0.9.3"
+    electron-log "^4.4.1"
+    electron-updater "^5.3.0"
+    fetch-ndjson "^1.1.6"
+    flexsearch "^0.7.31"
+    keyword-mark-element "^0.2.0"
+    lit "^2.8.0"
+    marked "^4.0.10"
+    mime-types "^2.1.32"
+    minimist "^1.2.5"
+    node-fetch "^3.3.0"
+    pretty-bytes "^5.6.0"
+    process "^0.11.10"
+    register-service-worker "^1.7.2"
+    split.js "^1.6.4"
+    stream-browserify "^3.0.0"
+
 require-directory@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/require-directory/-/require-directory-2.1.1.tgz#8c64ad5fd30dab1c976e2344ffe7f792a6a6df42"

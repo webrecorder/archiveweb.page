@@ -38,15 +38,19 @@ export async function listAllMsg(collLoader, { defaultCollId = null } = {}) {
   const sortDesc = (await getLocalOption("index:sortDesc")) === "1";
 
   colls.sort((first, second) => {
+// @ts-expect-error - TS2538 - Type 'unknown' cannot be used as an index type. | TS2538 - Type 'unknown' cannot be used as an index type.
     if (first[sortKey] === second[sortKey]) {
       return 0;
     }
 
+// @ts-expect-error - TS2538 - Type 'unknown' cannot be used as an index type. | TS2538 - Type 'unknown' cannot be used as an index type.
     return sortDesc == first[sortKey] < second[sortKey] ? 1 : -1;
   });
 
   const msg = { type: "collections" };
+// @ts-expect-error - TS2339 - Property 'collId' does not exist on type '{ type: string; }'.
   msg.collId = defaultCollId || (await getLocalOption("defaultCollId"));
+// @ts-expect-error - TS2339 - Property 'collections' does not exist on type '{ type: string; }'.
   msg.collections = colls.map((coll) => ({
     id: coll.id,
     title: coll.title || coll.filename,

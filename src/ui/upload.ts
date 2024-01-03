@@ -42,54 +42,77 @@ class BtrixUploader extends LitElement {
 
   updated(changedProps) {
     if (changedProps.has("uploadColl")) {
+      // @ts-expect-error - TS2339 - Property 'uploadColl' does not exist on type 'BtrixUploader'.
       const { coll, isUploadNeeded } = this.uploadColl;
+      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
       this.coll = coll;
+      // @ts-expect-error - TS2339 - Property 'actualSize' does not exist on type 'BtrixUploader'.
       this.actualSize = 0;
+      // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
       this.isUploadNeeded = isUploadNeeded;
+      // @ts-expect-error - TS2339 - Property 'uploadTime' does not exist on type 'BtrixUploader'. | TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
       this.uploadTime = this.coll.uploadTime;
+      // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'. | TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
       this.uploadId = this.coll.uploadId;
     }
 
+    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
     if (changedProps.has("coll") && this.coll) {
       this.pollUploadState();
     }
   }
 
   async pollUploadState() {
+    // @ts-expect-error - TS2339 - Property 'pollingUploadState' does not exist on type 'BtrixUploader'.
     if (this.pollingUploadState) {
       return;
     }
 
+    // @ts-expect-error - TS2339 - Property 'pollingUploadState' does not exist on type 'BtrixUploader'.
     this.pollingUploadState = true;
 
     let loop = true;
 
     while (loop) {
+      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
       const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/upload`);
       const json = await resp.json();
+      // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
       this.status = json.status;
 
+      // @ts-expect-error - TS2339 - Property 'uploadTime' does not exist on type 'BtrixUploader'.
       this.uploadTime = json.uploadTime;
+      // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
       this.uploadId = json.uploadId;
 
+      // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
       if (this.status === "uploading") {
+        // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
         this.isUploadNeeded = false;
       } else if (
+        // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
         this.status === "idle" &&
+        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
         this.btrixOpts &&
+        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
         this.btrixOpts.client &&
         json.uploadTime &&
         json.uploadId &&
         json.mtime <= json.uploadTime
       ) {
         this.getRemoteUpload();
+        // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
       } else if (!this.uploadId) {
+        // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
         this.isUploadNeeded = true;
       }
 
+      // @ts-expect-error - TS2339 - Property 'uploadSize' does not exist on type 'BtrixUploader'.
       this.uploadSize = json.size;
+      // @ts-expect-error - TS2339 - Property 'uploadTotal' does not exist on type 'BtrixUploader'.
       this.uploadTotal = json.totalSize;
 
+      // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
       if (this.status !== "uploading") {
         break;
       }
@@ -97,35 +120,46 @@ class BtrixUploader extends LitElement {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
+    // @ts-expect-error - TS2339 - Property 'pollingUploadState' does not exist on type 'BtrixUploader'.
     this.pollingUploadState = false;
   }
 
   async getRemoteUpload() {
     try {
+      // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'. | TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
       const upload = await this.btrixOpts.client.getRemoteUpload(this.uploadId);
       //this.coll.title = upload.name;
+      // @ts-expect-error - TS2339 - Property 'actualSize' does not exist on type 'BtrixUploader'.
       this.actualSize = upload.fileSize;
     } catch (e) {
+      // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
       this.isUploadNeeded = true;
+      // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
       this.status = "missing";
     }
   }
 
   render() {
+    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
     if (!this.coll) {
       return html``;
     }
 
+    // @ts-expect-error - TS2339 - Property 'uploadTime' does not exist on type 'BtrixUploader'.
     const uploadTime = this.uploadTime;
 
+    // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
     const alreadyUploaded = !this.isUploadNeeded && uploadTime;
 
     let btrixUploadUrl = "";
 
     try {
+      // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'. | TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
       if (this.btrixOpts.client && this.uploadId) {
+        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
         const { client } = this.btrixOpts;
         btrixUploadUrl = new URL(
+          // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
           `/orgs/${client.defaultOrg}/artifacts/upload/${this.uploadId}`,
           client.url
         ).href;
@@ -142,18 +176,36 @@ class BtrixUploader extends LitElement {
         <table class="is-size-6" style="margin-left: 3.0rem">
           <tr class="is-italic">
             <td class="has-text-right pr-4">Collection:</td>
-            <td>${this.coll.title}</td>
+            <td>
+              ${
+                // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
+                this.coll.title
+              }
+            </td>
           </tr>
           <tr class="is-italic">
             <td class="has-text-right pr-4">Local Size:</td>
-            <td>${prettyBytes(this.coll.size)}</td>
+            <td>
+              ${
+                // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
+                prettyBytes(this.coll.size)
+              }
+            </td>
           </tr>
-          ${this.actualSize
-            ? html` <tr class="is-italic">
-                <td class="has-text-right pr-4">Uploaded Size:</td>
-                <td>${prettyBytes(this.actualSize)}</td>
-              </tr>`
-            : ""}
+          ${
+            // @ts-expect-error - TS2339 - Property 'actualSize' does not exist on type 'BtrixUploader'.
+            this.actualSize
+              ? html` <tr class="is-italic">
+                  <td class="has-text-right pr-4">Uploaded Size:</td>
+                  <td>
+                    ${
+                      // @ts-expect-error - TS2339 - Property 'actualSize' does not exist on type 'BtrixUploader'.
+                      prettyBytes(this.actualSize)
+                    }
+                  </td>
+                </tr>`
+              : ""
+          }
           ${uploadTime
             ? html` <tr class="is-italic">
                 <td class="has-text-right pr-4">Last Uploaded At:</td>
@@ -182,40 +234,52 @@ class BtrixUploader extends LitElement {
             ${this.renderUploadStatus()}
           </div>
           <div class="has-text-centered mt-4">
-            ${this.status === "uploading"
-              ? html`
-                  <button
-                    class="button is-danger"
-                    type="button"
-                    @click="${this.onCancelUpload}"
-                  >
-                    Cancel Upload
-                  </button>
-                  <button
-                    class="button"
-                    type="button"
-                    @click="${() => (this.coll = null)}"
-                  >
-                    Close
-                  </button>
-                `
-              : html`
-                  <button
-                    class="button ${!this.isUploadNeeded ? "" : "is-primary"}"
-                    type="button"
-                    @click="${this.onUpload}"
-                  >
-                    ${alreadyUploaded ? "Upload Again" : "Upload"}
-                  </button>
-                  <button
-                    class="button"
-                    type="button"
-                    @click="${() => (this.coll = null)}"
-                    title="Cancel without uploading"
-                  >
-                    Cancel
-                  </button>
-                `}
+            ${
+              // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
+              this.status === "uploading"
+                ? html`
+                    <button
+                      class="button is-danger"
+                      type="button"
+                      @click="${this.onCancelUpload}"
+                    >
+                      Cancel Upload
+                    </button>
+                    <button
+                      class="button"
+                      type="button"
+                      @click="${
+                        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
+                        () => (this.coll = null)
+                      }"
+                    >
+                      Close
+                    </button>
+                  `
+                : html`
+                    <button
+                      class="button ${
+                        // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
+                        !this.isUploadNeeded ? "" : "is-primary"
+                      }"
+                      type="button"
+                      @click="${this.onUpload}"
+                    >
+                      ${alreadyUploaded ? "Upload Again" : "Upload"}
+                    </button>
+                    <button
+                      class="button"
+                      type="button"
+                      @click="${
+                        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
+                        () => (this.coll = null)
+                      }"
+                      title="Cancel without uploading"
+                    >
+                      Cancel
+                    </button>
+                  `
+            }
           </div>
         </div>
       </wr-modal>
@@ -223,6 +287,7 @@ class BtrixUploader extends LitElement {
   }
 
   renderUploadStatus() {
+    // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
     switch (this.status) {
       case "done":
         return html`<p class="has-text-weight-bold has-text-primary">
@@ -279,6 +344,7 @@ class BtrixUploader extends LitElement {
           <p>(Data is still saved locally in your browser)</p>`;
 
       case "idle":
+        // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
         if (!this.isUploadNeeded) {
           return html`<p class="is-italic">
             <fa-icon
@@ -289,6 +355,7 @@ class BtrixUploader extends LitElement {
             Archive already uploaded to Browsertrix Cloud.
             ${this.renderDeleteUploaded()}
           </p> `;
+          // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
         } else if (this.uploadId) {
           return html`<p class="has-text-weight-bold has-text-warning-dark">
             <fa-icon
@@ -348,13 +415,17 @@ class BtrixUploader extends LitElement {
   }
 
   async onUpload() {
+    // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
     const client = this.btrixOpts.client;
 
+    // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
     const org = await client.getOrg(this.btrixOpts.orgName);
 
     const urlObj = new URL(`/api/orgs/${org}/uploads/stream`, client.url);
 
+    // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
     if (this.uploadId) {
+      // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
       urlObj.searchParams.set("replaceId", this.uploadId);
     }
 
@@ -372,11 +443,15 @@ class BtrixUploader extends LitElement {
 
     const method = "POST";
 
+    // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
     this.status = "uploading";
+    // @ts-expect-error - TS2339 - Property 'uploadSize' does not exist on type 'BtrixUploader'.
     this.uploadSize = 0;
+    // @ts-expect-error - TS2339 - Property 'uploadTotal' does not exist on type 'BtrixUploader'.
     this.uploadTotal = 0;
 
     const resp = await fetch(
+      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
       `${apiPrefix}/c/${this.coll.id}/upload?format=wacz&pages=all`,
       { method, body }
     );
@@ -391,29 +466,38 @@ class BtrixUploader extends LitElement {
   async onCancelUpload() {
     const method = "POST";
     const body = JSON.stringify({ abortUpload: true });
+    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
     await fetch(`${apiPrefix}/c/${this.coll.id}/upload`, { method, body });
     this.pollUploadState();
   }
 
   async onDeleteUpload() {
     try {
+      // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
       const { client } = this.btrixOpts;
 
       if (!client) {
         return;
       }
 
+      // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
       await client.deleteUpload(this.uploadId);
 
+      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
       await fetch(`${apiPrefix}/c/${this.coll.id}/upload`, {
         method: "DELETE",
       });
 
+      // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
       this.status = "deleted";
+      // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
       this.isUploadNeeded = true;
+      // @ts-expect-error - TS2339 - Property 'uploadTime' does not exist on type 'BtrixUploader'. | TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
       this.uploadTime = this.btrixOpts.uploadTime = null;
+      // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'. | TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
       this.uploadId = this.btrixOpts.uploadId = null;
     } catch (e) {
+      // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
       this.status = "deleteFailed";
     }
   }
@@ -440,27 +524,34 @@ export class BtrixClient {
     const client = new BtrixClient(url, authToken);
 
     const org = await client.getOrg(orgName);
+    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     client.defaultOrg = org;
 
     return client;
   }
 
   constructor(url, auth) {
+    // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'BtrixClient'.
     this.url = url;
+    // @ts-expect-error - TS2339 - Property 'auth' does not exist on type 'BtrixClient'.
     this.auth = auth;
+    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     this.defaultOrg = null;
   }
 
   async fetchAPI(endpoint, method = "GET", body = null) {
+    // @ts-expect-error - TS2339 - Property 'auth' does not exist on type 'BtrixClient'.
     const headers = { Authorization: this.auth };
     if (method !== "GET") {
       headers["Content-Type"] = "application/json";
     }
     try {
+      // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'BtrixClient'.
       const resp = await fetch(this.url + endpoint, {
         headers,
         method,
         body,
+        // @ts-expect-error - TS2345 - Argument of type '{ headers: { Authorization: any; }; method: string; body: null; duplex: string; }' is not assignable to parameter of type 'RequestInit'.
         duplex: "half",
       });
       return await resp.json();
@@ -488,6 +579,7 @@ export class BtrixClient {
   }
 
   async getRemoteUpload(uploadId, orgId = null) {
+    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     const org = this.defaultOrg || orgId;
     const res = await this.fetchAPI(`/api/orgs/${org}/uploads/${uploadId}`);
     if (!res.name) {
@@ -497,6 +589,7 @@ export class BtrixClient {
   }
 
   async deleteUpload(uploadId, orgId = null) {
+    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     const org = this.defaultOrg || orgId;
     const deleteStr = JSON.stringify({ crawl_ids: [uploadId] });
     const res = await this.fetchAPI(

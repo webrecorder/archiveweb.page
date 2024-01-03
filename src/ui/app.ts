@@ -39,22 +39,29 @@ class ArchiveWebApp extends ReplayWebApp {
   constructor() {
     super();
 
+    // @ts-expect-error - TS2339 - Property 'navMenuShown' does not exist on type 'ArchiveWebApp'.
     this.navMenuShown = false;
+    // @ts-expect-error - TS2339 - Property 'showCollDrop' does not exist on type 'ArchiveWebApp'.
     this.showCollDrop = false;
+    // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
     this.colls = [];
+    // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'ArchiveWebApp'.
     this.autorun = false;
 
+    // @ts-expect-error - TS2339 - Property 'settingsError' does not exist on type 'ArchiveWebApp'.
     this.settingsError = "";
 
     this.settingsTab = localStorage.getItem("settingsTab") || "browsertrix";
 
     try {
       const res = localStorage.getItem("ipfsOpts");
+      // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'. | TS2345 - Argument of type 'string | null' is not assignable to parameter of type 'string'.
       this.ipfsOpts = JSON.parse(res);
     } catch (e) {
       // ignore empty
     }
 
+    // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'.
     this.ipfsOpts = this.ipfsOpts || {
       daemonUrl: "",
       message: "",
@@ -65,9 +72,11 @@ class ArchiveWebApp extends ReplayWebApp {
 
     try {
       const res = localStorage.getItem("btrixOpts");
+      // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'. | TS2345 - Argument of type 'string | null' is not assignable to parameter of type 'string'.
       this.btrixOpts = JSON.parse(res);
       this.doBtrixLogin();
     } catch (e) {
+      // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
       this.btrixOpts = null;
     }
 
@@ -75,7 +84,9 @@ class ArchiveWebApp extends ReplayWebApp {
       (res) => (this.autorun = res === "1")
     );
 
+    // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'.
     if (window.archivewebpage) {
+      // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'.
       window.archivewebpage.setDownloadCallback((progress) =>
         this.onDownloadProgress(progress)
       );
@@ -136,10 +147,13 @@ class ArchiveWebApp extends ReplayWebApp {
 
       this.handleMessages();
     } else {
+      // @ts-expect-error - TS2339 - Property 'inited' does not exist on type 'ArchiveWebApp'.
       this.inited = true;
+      // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
       this.sourceUrl = pageParams.get("source") || "";
     }
 
+    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (!this.embed) {
       this.checkIPFS();
     }
@@ -176,7 +190,9 @@ class ArchiveWebApp extends ReplayWebApp {
     // support upload
     window.addEventListener("message", async (event) => {
       if (
+        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
         this.embed &&
+        // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
         this.loadedCollId &&
         typeof event.data === "object" &&
         event.data.msg_type === "downloadToBlob"
@@ -185,8 +201,10 @@ class ArchiveWebApp extends ReplayWebApp {
           `${apiPrefix}/c/${this.loadedCollId}/dl?format=wacz&pages=all`
         );
         const blob = await download.blob();
+        // @ts-expect-error - TS2531 - Object is possibly 'null'.
         event.source.postMessage({
           msg_type: "downloadedBlob",
+          // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
           coll: this.loadedCollId,
           url: URL.createObjectURL(blob),
         });
@@ -195,32 +213,42 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   onStartLoad(event) {
+    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (this.embed) {
       return;
     }
 
+    // @ts-expect-error - TS2551 - Property 'showImport' does not exist on type 'ArchiveWebApp'. Did you mean 'onShowImport'?
     this.showImport = false;
+    // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
     this.sourceUrl = event.detail.sourceUrl;
+    // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
     this.loadInfo = event.detail;
 
+    // @ts-expect-error - TS2339 - Property 'isImportExisting' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
     if (this.isImportExisting && this.selCollId) {
+      // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
       this.loadInfo.importCollId = this.selCollId;
     }
   }
 
   onCollLoaded(event) {
+    // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
     if (this.loadInfo && this.loadInfo.importCollId) {
       if (navigator.serviceWorker.controller) {
         const msg = {
           msg_type: "reload",
           full: true,
+          // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
           name: this.loadInfo.importCollId,
         };
         navigator.serviceWorker.controller.postMessage(msg);
       }
     }
 
+    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (this.embed) {
+      // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
       this.loadedCollId = event.detail.collInfo && event.detail.collInfo.coll;
     }
 
@@ -229,8 +257,10 @@ class ArchiveWebApp extends ReplayWebApp {
     if (
       !event.detail.alreadyLoaded &&
       event.detail.sourceUrl &&
+      // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
       event.detail.sourceUrl !== this.sourceUrl
     ) {
+      // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
       this.sourceUrl = event.detail.sourceUrl;
     }
   }
@@ -238,7 +268,9 @@ class ArchiveWebApp extends ReplayWebApp {
   getLoadInfo(sourceUrl) {
     this.disableCSP();
 
+    // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
     if (this.loadInfo) {
+      // @ts-expect-error - TS2339 - Property 'loadInfo' does not exist on type 'ArchiveWebApp'.
       return this.loadInfo;
     }
 
@@ -252,6 +284,7 @@ class ArchiveWebApp extends ReplayWebApp {
   async disableCSP() {
     // necessary for chrome 94> up due to new bug introduced
     //
+    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
     if (this.embed || !self.chrome || !self.chrome.runtime) {
       return;
     }
@@ -368,6 +401,7 @@ class ArchiveWebApp extends ReplayWebApp {
         href="?about"
         @click="${(e) => {
           e.preventDefault();
+          // @ts-expect-error - TS2339 - Property 'showAbout' does not exist on type 'ArchiveWebApp'.
           this.showAbout = true;
         }}"
         class="navbar-item is-size-6"
@@ -461,6 +495,7 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   render() {
+    // @ts-expect-error - TS2551 - Property 'showStartRecord' does not exist on type 'ArchiveWebApp'. Did you mean 'onStartRecord'?
     return html` ${this.showStartRecord ? this.renderStartModal() : ""}
     ${this.showNew ? this.renderNewCollModal() : ""}
     ${this.showImport ? this.renderImportModal() : ""}
@@ -506,6 +541,7 @@ class ArchiveWebApp extends ReplayWebApp {
         <div class="select is-small">
           <select @change="${this.onSelectColl}">
             ${this.colls &&
+            // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
             this.colls.map(
               (coll) =>
                 html` <option
@@ -523,7 +559,10 @@ class ArchiveWebApp extends ReplayWebApp {
 
   renderStartModal() {
     return html` <wr-modal
-      @modal-closed="${() => (this.showStartRecord = false)}"
+      @modal-closed="${
+        // @ts-expect-error - TS2551 - Property 'showStartRecord' does not exist on type 'ArchiveWebApp'. Did you mean 'onStartRecord'?
+        () => (this.showStartRecord = false)
+      }"
       title="Start Archiving"
     >
       ${this.renderCollList("Save To:")}
@@ -531,8 +570,14 @@ class ArchiveWebApp extends ReplayWebApp {
         <label class="checkbox is-size-7">
           <input
             type="checkbox"
-            ?checked="${this.autorun}"
-            @change="${(e) => (this.autorun = e.currentTarget.checked)}"
+            ?checked="${
+              // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'ArchiveWebApp'.
+              this.autorun
+            }"
+            @change="${
+              // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'ArchiveWebApp'.
+              (e) => (this.autorun = e.currentTarget.checked)
+            }"
           />
           Start With Autopilot
         </label>
@@ -550,7 +595,10 @@ class ArchiveWebApp extends ReplayWebApp {
               required
               name="url"
               id="url"
-              value="${this.recordUrl}"
+              value="${
+                // @ts-expect-error - TS2339 - Property 'recordUrl' does not exist on type 'ArchiveWebApp'.
+                this.recordUrl
+              }"
               placeholder="Enter a URL to Start Archiving"
             />
           </p>
@@ -641,7 +689,10 @@ class ArchiveWebApp extends ReplayWebApp {
             Add to an existing archived item${this.isImportExisting ? ":" : ""}
           </label>
         </div>
-        ${this.isImportExisting ? this.renderCollList() : ""}
+        ${
+          // @ts-expect-error - TS2339 - Property 'isImportExisting' does not exist on type 'ArchiveWebApp'.
+          this.isImportExisting ? this.renderCollList() : ""
+        }
       </div>
     </wr-modal>`;
   }
@@ -662,14 +713,21 @@ class ArchiveWebApp extends ReplayWebApp {
 
   renderBtrixUploadModal() {
     return html` <wr-btrix-upload
-      .btrixOpts=${this.btrixOpts}
-      .uploadColl=${this.uploadCollOpts}
+      .btrixOpts=${
+        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
+        this.btrixOpts
+      }
+      .uploadColl=${
+        // @ts-expect-error - TS2339 - Property 'uploadCollOpts' does not exist on type 'ArchiveWebApp'.
+        this.uploadCollOpts
+      }
     >
     </wr-btrix-upload>`;
   }
 
   renderDownloadModal() {
     const renderDLStatus = () => {
+      // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
       switch (this.download.state) {
         case "progressing":
           return html`
@@ -713,17 +771,38 @@ class ArchiveWebApp extends ReplayWebApp {
     return html` <wr-modal
       .noBgClose=${true}
       style="--modal-width: 740px"
-      @modal-closed="${() => (this.showDownloadProgress = false)}"
+      @modal-closed="${
+        // @ts-expect-error - TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'?
+        () => (this.showDownloadProgress = false)
+      }"
       title="Download Progress"
     >
       <div class="dl-progress">
-        <div>Downloading to: <i>${this.download.filename}</i></div>
         <div>
-          Size Downloaded: <b>${prettyBytes(this.download.currSize)}</b>
+          Downloading to:
+          <i
+            >${
+              // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
+              this.download.filename
+            }</i
+          >
+        </div>
+        <div>
+          Size Downloaded:
+          <b
+            >${
+              // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
+              prettyBytes(this.download.currSize)
+            }</b
+          >
         </div>
         <div>
           Time Elapsed:
-          ${Math.round(Date.now() / 1000 - this.download.startTime)} seconds
+          ${
+            // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
+            Math.round(Date.now() / 1000 - this.download.startTime)
+          }
+          seconds
         </div>
 
         <div class="has-text-centered">${renderDLStatus()}</div>
@@ -733,18 +812,26 @@ class ArchiveWebApp extends ReplayWebApp {
 
   onDownloadProgress(progress) {
     if (progress.filename) {
+      // @ts-expect-error - TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'?
       this.showDownloadProgress = true;
+      // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
       this.download = progress;
+      // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
     } else if (this.download) {
+      // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
       this.download = { ...this.download, state: progress.state };
     }
   }
 
   onDownloadCancel() {
+    // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'.
     if (window.archivewebpage) {
+      // @ts-expect-error - TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
       if (this.download && this.download.state === "progressing") {
+        // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
         window.archivewebpage.downloadCancel(this.download);
       } else {
+        // @ts-expect-error - TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'?
         this.showDownloadProgress = false;
       }
     }
@@ -755,6 +842,7 @@ class ArchiveWebApp extends ReplayWebApp {
       return "App";
     }
 
+    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
     if (this.embed) {
       return "Embedded";
     }
@@ -765,11 +853,15 @@ class ArchiveWebApp extends ReplayWebApp {
   renderAbout() {
     return html`
       <div class="modal is-active">
-        <div class="modal-background" @click="${this.onAboutClose}"></div>
+        <div class="modal-background" @click="${
+          // @ts-expect-error - TS2339 - Property 'onAboutClose' does not exist on type 'ArchiveWebApp'.
+          this.onAboutClose
+        }"></div>
           <div class="modal-card">
             <header class="modal-card-head">
               <p class="modal-card-title">About ArchiveWeb.page ${this.getDeployType()}</p>
               <button class="delete" aria-label="close" @click="${
+                // @ts-expect-error - TS2339 - Property 'onAboutClose' does not exist on type 'ArchiveWebApp'.
                 this.onAboutClose
               }"></button>
             </header>
@@ -826,6 +918,7 @@ class ArchiveWebApp extends ReplayWebApp {
 
                   <div class="has-text-centered">
                     <a class="button is-warning" href="#" @click="${
+                      // @ts-expect-error - TS2339 - Property 'onAboutClose' does not exist on type 'ArchiveWebApp'.
                       this.onAboutClose
                     }">Close</a>
                   </div>
@@ -1096,7 +1189,10 @@ class ArchiveWebApp extends ReplayWebApp {
               : ""
           }
           <div class="has-text-centered has-text-danger">
-            ${this.settingsError}
+            ${
+              // @ts-expect-error - TS2339 - Property 'settingsError' does not exist on type 'ArchiveWebApp'.
+              this.settingsError
+            }
           </div>
           <div class="has-text-centered mt-4">
             <button class="button is-primary" type="submit">Save</button>
@@ -1114,8 +1210,10 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   async onNewColl(event) {
+    // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
     this.showNew = "loading";
     event.preventDefault();
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const title = this.renderRoot.querySelector("#new-title").value;
 
     const method = "POST";
@@ -1123,10 +1221,12 @@ class ArchiveWebApp extends ReplayWebApp {
     const resp = await fetch(`${apiPrefix}/c/create`, { method, body });
     await resp.json();
 
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const index = this.renderRoot.querySelector("wr-rec-coll-index");
     if (index) {
       index.loadColls();
     }
+    // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
     this.showNew = null;
   }
 
@@ -1134,20 +1234,28 @@ class ArchiveWebApp extends ReplayWebApp {
     //this.selCollId = event.currentTarget.getAttribute("data-id");
     //this.selCollTitle = event.currentTarget.getAttribute("data-title");
     //this.showCollDrop = false;
+    // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
     this.selCollId = event.currentTarget.value;
   }
 
   async setDefaultColl() {
+    // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
     if (!this.selCollId) {
+      // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
       this.selCollId = await getLocalOption("defaultCollId");
     }
+    // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
     if (!this.selCollId && this.colls && this.colls.length) {
+      // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
       this.selCollId = this.colls[0].id;
     }
     // copy from localStorage to chrome.storage
     if (
+      // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
       self.chrome &&
+      // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
       self.chrome.storage &&
+      // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
       self.chrome.storage.local &&
       self.localStorage
     ) {
@@ -1168,9 +1276,12 @@ class ArchiveWebApp extends ReplayWebApp {
       return;
     }
     const { detail } = event;
+    // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
     this.selCollId = detail.coll;
     //this.selCollTitle = event.detail.title;
+    // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
     if (!this.colls || !this.colls.length) {
+      // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
       this.colls = [
         {
           id: detail.coll,
@@ -1182,17 +1293,22 @@ class ArchiveWebApp extends ReplayWebApp {
 
   async onShowStart(event) {
     this._setCurrColl(event);
+    // @ts-expect-error - TS2339 - Property 'recordUrl' does not exist on type 'ArchiveWebApp'.
     this.recordUrl = event.detail.url || "https://example.com/";
+    // @ts-expect-error - TS2551 - Property 'showStartRecord' does not exist on type 'ArchiveWebApp'. Did you mean 'onStartRecord'?
     this.showStartRecord = true;
   }
 
   onShowImport(event) {
     this._setCurrColl(event);
+    // @ts-expect-error - TS2551 - Property 'showImport' does not exist on type 'ArchiveWebApp'. Did you mean 'onShowImport'?
     this.showImport = true;
+    // @ts-expect-error - TS2339 - Property 'isImportExisting' does not exist on type 'ArchiveWebApp'.
     this.isImportExisting = true;
   }
 
   onCollsLoaded(event) {
+    // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
     this.colls = event.detail.colls;
     //this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
     this.setDefaultColl();
@@ -1200,19 +1316,25 @@ class ArchiveWebApp extends ReplayWebApp {
 
   async onStartRecord(event) {
     event.preventDefault();
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const url = this.renderRoot.querySelector("#url").value;
 
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const previewCheckbox = this.renderRoot.querySelector("#preview");
     const isPreview = previewCheckbox && previewCheckbox.checked;
 
+    // @ts-expect-error - TS2551 - Property 'showStartRecord' does not exist on type 'ArchiveWebApp'. Did you mean 'onStartRecord'?
     this.showStartRecord = false;
+    // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'ArchiveWebApp'.
     const autorun = this.autorun;
 
+    // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
     const collId = this.selCollId;
 
     await setLocalOption("defaultCollId", collId);
     await setLocalOption("autorunBehaviors", autorun ? "1" : "0");
 
+    // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
     if (self.chrome && self.chrome.runtime) {
       chrome.runtime.sendMessage({
         msg: "startNew",
@@ -1220,8 +1342,10 @@ class ArchiveWebApp extends ReplayWebApp {
         collId,
         autorun,
       });
+      // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'.
     } else if (window.archivewebpage && window.archivewebpage.record) {
       const startRec = !isPreview;
+      // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'.
       window.archivewebpage.record({ url, collId, startRec, autorun });
     }
     return false;
@@ -1231,12 +1355,15 @@ class ArchiveWebApp extends ReplayWebApp {
     super.onTitle(event);
 
     if (
+      // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
       this.embed &&
+      // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
       this.loadedCollId &&
       event.detail.replayTitle &&
       event.detail.title
     ) {
       try {
+        // @ts-expect-error - TS2339 - Property 'loadedCollId' does not exist on type 'ArchiveWebApp'.
         await fetch(`${apiPrefix}/c/${this.loadedCollId}/pageTitle`, {
           method: "POST",
           body: JSON.stringify(event.detail),
@@ -1251,8 +1378,11 @@ class ArchiveWebApp extends ReplayWebApp {
     event.preventDefault();
 
     // IPFS settings
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const daemonUrlText = this.renderRoot.querySelector("#ipfsDaemonUrl");
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const gatewayUrlText = this.renderRoot.querySelector("#ipfsGatewayUrl");
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const autodetectCheck = this.renderRoot.querySelector("#ipfsAutoDetect");
 
     if (daemonUrlText && gatewayUrlText) {
@@ -1260,6 +1390,7 @@ class ArchiveWebApp extends ReplayWebApp {
       const gatewayUrl = gatewayUrlText.value;
       const autoDetect = autodetectCheck && autodetectCheck.checked;
 
+      // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'.
       this.ipfsOpts = {
         daemonUrl,
         useCustom: !!daemonUrl,
@@ -1269,13 +1400,18 @@ class ArchiveWebApp extends ReplayWebApp {
 
       await this.checkIPFS();
 
+      // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'.
       localStorage.setItem("ipfsOpts", JSON.stringify(this.ipfsOpts));
     }
 
     // Browsertrix Settings
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixUrl = this.renderRoot.querySelector("#btrixUrl");
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixUsername = this.renderRoot.querySelector("#btrixUsername");
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixPassword = this.renderRoot.querySelector("#btrixPassword");
+    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
     const btrixOrgName = this.renderRoot.querySelector("#btrixOrgName");
 
     if (btrixUrl && btrixUsername && btrixPassword) {
@@ -1291,34 +1427,43 @@ class ArchiveWebApp extends ReplayWebApp {
 
         try {
           client = await BtrixClient.login(btrixOpts);
+          // @ts-expect-error - TS2339 - Property 'settingsError' does not exist on type 'ArchiveWebApp'.
           this.settingsError = "";
         } catch (e) {
+          // @ts-expect-error - TS2339 - Property 'settingsError' does not exist on type 'ArchiveWebApp'.
           this.settingsError =
             "Unable to log in to Browsertrix. Check your credentials.";
           return false;
         }
 
         localStorage.setItem("btrixOpts", JSON.stringify(btrixOpts));
+        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
         this.btrixOpts = { ...btrixOpts, client };
       } else {
+        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
         this.btrixOpts = null;
         localStorage.removeItem("btrixOpts");
       }
     }
 
+    // @ts-expect-error - TS2339 - Property 'settingsTab' does not exist on type 'ArchiveWebApp'.
     localStorage.setItem("settingsTab", this.settingsTab);
 
+    // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
     this.showSettings = false;
 
     return false;
   }
 
   async onCancelSettings() {
+    // @ts-expect-error - TS2339 - Property 'settingsError' does not exist on type 'ArchiveWebApp'.
     this.settingsError = null;
+    // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
     this.showSettings = false;
   }
 
   async checkIPFS() {
+    // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'.
     const ipfsOpts = this.ipfsOpts;
 
     // use auto-js-ipfs to get possible local daemon url (eg. for Brave)
@@ -1355,6 +1500,7 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 }
 
+// @ts-expect-error - TS2345 - Argument of type 'typeof ArchiveWebApp' is not assignable to parameter of type 'CustomElementConstructor'.
 customElements.define("archive-web-page-app", ArchiveWebApp);
 
 export { ArchiveWebApp, Loader, Embed };

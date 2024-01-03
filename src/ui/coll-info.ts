@@ -23,7 +23,6 @@ const REPLAY_URL = "https://replayweb.page/";
 class WrRecCollInfo extends CollInfo {
   constructor() {
     super();
-    // @ts-expect-error - TS2339 - Property 'detailed' does not exist on type 'WrRecCollInfo'.
     this.detailed = false;
     // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
     this.ipfsURL = null;
@@ -116,7 +115,6 @@ class WrRecCollInfo extends CollInfo {
   }
 
   firstUpdated() {
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'WrRecCollInfo'.
     this.renderRoot.addEventListener(
       "click",
       // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
@@ -177,7 +175,6 @@ class WrRecCollInfo extends CollInfo {
   render() {
     // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
     const coll = this.coll;
-    // @ts-expect-error - TS2339 - Property 'detailed' does not exist on type 'WrRecCollInfo'.
     const detailed = this.detailed;
 
     // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'WrRecCollInfo'.
@@ -268,12 +265,7 @@ class WrRecCollInfo extends CollInfo {
           ? html` <div class="column is-3">
               <p class="minihead">Imported From</p>
               ${coll.loadUrl}
-              <a
-                @click="${
-                  // @ts-expect-error - TS2339 - Property 'onCopy' does not exist on type 'WrRecCollInfo'.
-                  (e) => this.onCopy(e, coll.loadUrl)
-                }"
-                class="copy"
+              <a @click="${(e) => this.onCopy(e, coll.loadUrl)}" class="copy"
                 ><fa-icon .svg="${fasCopy}"></fa-icon
               ></a>
             </div>`
@@ -514,7 +506,6 @@ class WrRecCollInfo extends CollInfo {
     const coll = this.coll.id;
     // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
     const title = this.coll.title;
-    // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollInfo'.
     this.dispatchEvent(
       new CustomEvent("show-import", {
         bubbles: true,
@@ -536,7 +527,6 @@ class WrRecCollInfo extends CollInfo {
     const coll = this.coll.id;
     // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
     const title = this.coll.title;
-    // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollInfo'.
     this.dispatchEvent(
       new CustomEvent("show-start", {
         bubbles: true,
@@ -579,7 +569,6 @@ class WrRecCollInfo extends CollInfo {
       this.onCopyGatewayLink();
     } catch (e) {
       console.log("ipfs share failed");
-      // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollInfo'.
       this.dispatchEvent(
         new CustomEvent("ipfs-share-failed", { bubbles: true, composed: true })
       );
@@ -598,7 +587,6 @@ class WrRecCollInfo extends CollInfo {
       // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
       this.ipfsURL = null;
     } else {
-      // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollInfo'.
       this.dispatchEvent(
         new CustomEvent("ipfs-share-failed", { bubbles: true, composed: true })
       );
@@ -608,7 +596,6 @@ class WrRecCollInfo extends CollInfo {
   }
 
   ipfsAdd() {
-    // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollInfo'.
     this.dispatchEvent(
       new CustomEvent("ipfs-share", { detail: { pending: true } })
     );
@@ -644,7 +631,6 @@ class WrRecCollInfo extends CollInfo {
           } else {
             pc.reject();
           }
-          // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollInfo'.
           this.dispatchEvent(
             new CustomEvent("ipfs-share", { detail: { pending: false } })
           );
@@ -721,7 +707,6 @@ class WrRecCollInfo extends CollInfo {
   onUpload() {
     // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'isUploadNeeded' does not exist on type 'WrRecCollInfo'.
     const detail = { coll: this.coll, isUploadNeeded: this.isUploadNeeded };
-    // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecCollInfo'.
     this.dispatchEvent(
       new CustomEvent("do-upload", { bubbles: true, composed: true, detail })
     );
@@ -745,7 +730,6 @@ class WrRecCollInfo extends CollInfo {
   }
 }
 
-// @ts-expect-error - TS2345 - Argument of type 'typeof WrRecCollInfo' is not assignable to parameter of type 'CustomElementConstructor'.
 customElements.define("wr-rec-coll-info", WrRecCollInfo);
 
 export { WrRecCollInfo, wrRec };

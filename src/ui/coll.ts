@@ -72,7 +72,6 @@ class WrRecColl extends Coll {
 
   async runSizeUpdater() {
     try {
-      // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'WrRecColl'.
       while (this.embed) {
         // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecColl'.
         if (this.coll) {
@@ -90,8 +89,8 @@ class WrRecColl extends Coll {
     }
   }
 
+  // @ts-expect-error - TS2416 - Property 'renderExtraToolbar' in type 'WrRecColl' is not assignable to the same property in base type 'Item'.
   renderExtraToolbar(isDropdown = false) {
-    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'WrRecColl'.
     if (this.embed) {
       if (!isDropdown) {
         return html`
@@ -179,7 +178,6 @@ class WrRecColl extends Coll {
   }
 
   onShowStart() {
-    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'WrRecColl'.
     if (this.embed) {
       return;
     }
@@ -188,16 +186,13 @@ class WrRecColl extends Coll {
     const coll = this.coll;
     // @ts-expect-error - TS2339 - Property 'collInfo' does not exist on type 'WrRecColl'.
     const title = this.collInfo.title;
-    // @ts-expect-error - TS2339 - Property 'tabData' does not exist on type 'WrRecColl'.
     const url = this.tabData.url;
-    // @ts-expect-error - TS2339 - Property 'dispatchEvent' does not exist on type 'WrRecColl'.
     this.dispatchEvent(
       new CustomEvent("show-start", { detail: { coll, title, url } })
     );
   }
 }
 
-// @ts-expect-error - TS2345 - Argument of type 'typeof WrRecColl' is not assignable to parameter of type 'CustomElementConstructor'.
 customElements.define("wr-rec-coll", WrRecColl);
 
 export { WrRecColl };

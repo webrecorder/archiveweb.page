@@ -10,17 +10,11 @@ class RecordEmbed extends Embed {
   constructor() {
     super();
 
-    // @ts-expect-error - TS2339 - Property 'replaybase' does not exist on type 'RecordEmbed'.
     this.replaybase = "./replay/";
-    // @ts-expect-error - TS2339 - Property 'replayfile' does not exist on type 'RecordEmbed'.
     this.replayfile = "record.html";
-    // @ts-expect-error - TS2339 - Property 'mainElementName' does not exist on type 'RecordEmbed'.
     this.mainElementName = "archive-web-page-app";
-    // @ts-expect-error - TS2339 - Property 'appName' does not exist on type 'RecordEmbed'.
     this.appName = "Embedded ArchiveWeb.page";
-    // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'RecordEmbed'.
     this.embed = "default";
-    // @ts-expect-error - TS2339 - Property 'noWebWorker' does not exist on type 'RecordEmbed'.
     this.noWebWorker = true;
 
     // @ts-expect-error - TS2339 - Property 'proxyPrefix' does not exist on type 'RecordEmbed'.
@@ -33,7 +27,6 @@ class RecordEmbed extends Embed {
     const baseUrl = new URL(window.location);
     baseUrl.hash = "";
 
-    // @ts-expect-error - TS2339 - Property 'logo' does not exist on type 'RecordEmbed'.
     this.logo = awpLogo;
 
     // @ts-expect-error - TS2339 - Property 'customConfig' does not exist on type 'RecordEmbed'.
@@ -94,7 +87,6 @@ class RecordEmbed extends Embed {
   }
 
   doDownload() {
-    // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'RecordEmbed'.
     const iframe = this.renderRoot.querySelector("iframe");
     if (!iframe) {
       return;
@@ -105,6 +97,7 @@ class RecordEmbed extends Embed {
       this.downloaded = resolve;
     });
 
+    // @ts-expect-error - TS2531 - Object is possibly 'null'.
     iframe.contentWindow.postMessage({ msg_type: "downloadToBlob" });
 
     return p;
@@ -113,7 +106,6 @@ class RecordEmbed extends Embed {
 
 // ===========================================================================
 async function main() {
-  // @ts-expect-error - TS2345 - Argument of type 'typeof RecordEmbed' is not assignable to parameter of type 'CustomElementConstructor'.
   customElements.define("record-web-page", RecordEmbed);
 }
 

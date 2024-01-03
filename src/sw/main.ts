@@ -1,5 +1,6 @@
 import { SWReplay } from "@webrecorder/wabac/src/swmain";
 
+// @ts-expect-error - TS2307 - Cannot find module '@webrecorder/awp-sw' or its corresponding type declarations.
 import { ExtAPI, RecordingCollections } from "@webrecorder/awp-sw";
 
 import REC_INDEX_HTML from "@/static/replay/index.html";
@@ -7,6 +8,7 @@ import RWP_INDEX_HTML from "replaywebpage/index.html";
 
 import { WorkerLoader } from "@webrecorder/wabac/src/loaders";
 
+// @ts-expect-error - TS2339 - Property 'registration' does not exist on type 'Window & typeof globalThis'.
 if (self.registration) {
   const defaultConfig = {
     injectScripts: ["/ruffle/ruffle.js"],
@@ -16,6 +18,7 @@ if (self.registration) {
 
   const staticData = new Map();
 
+  // @ts-expect-error - TS2339 - Property 'registration' does not exist on type 'Window & typeof globalThis'.
   const prefix = self.registration.scope;
 
   // for backwards compatibility to support <replay-web-page> tag
@@ -35,6 +38,7 @@ if (self.registration) {
 
   const autoipfsOpts = {};
 
+  // @ts-expect-error - TS2339 - Property 'sw' does not exist on type 'Window & typeof globalThis'.
   self.sw = new SWReplay({
     ApiClass,
     staticData,

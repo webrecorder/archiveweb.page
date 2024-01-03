@@ -10,12 +10,15 @@ class AppRecPopup extends RecPopup {
   constructor() {
     super();
 
+// @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
     this.collLoader = new CollectionLoader();
 
     //this.tabId = 0;//window.location.hash && Number(window.location.hash.slice(1));
 
+// @ts-expect-error - TS2339 - Property 'allowCreate' does not exist on type 'AppRecPopup'.
     this.allowCreate = false;
 
+// @ts-expect-error - TS2339 - Property 'msg' does not exist on type 'AppRecPopup'.
     this.msg = null;
   }
 
@@ -26,9 +29,11 @@ class AppRecPopup extends RecPopup {
     };
   }
 
+// @ts-expect-error - TS2416 - Property 'firstUpdated' in type 'AppRecPopup' is not assignable to the same property in base type 'RecPopup'.
   firstUpdated() {
     super.firstUpdated();
 
+// @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
     listAllMsg(this.collLoader).then((msg) => {
       this.onMessage(msg);
     });
@@ -38,6 +43,7 @@ class AppRecPopup extends RecPopup {
     super.updated(changedProperties);
 
     if (changedProperties.has("msg")) {
+// @ts-expect-error - TS2339 - Property 'msg' does not exist on type 'AppRecPopup'.
       this.onMessage(this.msg);
     }
   }
@@ -59,10 +65,12 @@ class AppRecPopup extends RecPopup {
   }
 
   async makeNewColl(message) {
+// @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
     const newColl = await this.collLoader.initNewColl({ title: message.title });
 
     await setLocalOption("defaultCollId", newColl.name);
 
+// @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
     const respMsg = await listAllMsg(this.collLoader);
 
     this.onMessage(respMsg);

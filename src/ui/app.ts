@@ -444,7 +444,10 @@ class ArchiveWebApp extends ReplayWebApp {
               <button
                 class="button is-small no-pad-mobile"
                 title="New Archiving Session"
-                @click="${() => (this.showNew = "show")}"
+                @click="${
+                  // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
+                  () => (this.showNew = "show")
+                }"
               >
                 <span class="icon">
                   <fa-icon .svg=${fasPlus}></fa-icon>
@@ -454,7 +457,10 @@ class ArchiveWebApp extends ReplayWebApp {
               <button
                 class="button is-small no-pad-mobile"
                 title="Import File"
-                @click="${() => (this.showImport = true)}"
+                @click="${
+                  // @ts-expect-error - TS2551 - Property 'showImport' does not exist on type 'ArchiveWebApp'. Did you mean 'onShowImport'?
+                  () => (this.showImport = true)
+                }"
               >
                 <span class="icon">
                   <fa-icon .svg=${fasUpload}></fa-icon>
@@ -464,7 +470,10 @@ class ArchiveWebApp extends ReplayWebApp {
               <button
                 class="button is-small no-pad-mobile"
                 title="Start Archiving"
-                ?disabled="${!this.colls}"
+                ?disabled="${
+                  // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
+                  !this.colls
+                }"
                 @click="${this.onShowStart}"
               >
                 <span class="icon">
@@ -483,7 +492,10 @@ class ArchiveWebApp extends ReplayWebApp {
                 </div>
                 <button
                   class="button is-small"
-                  @click="${() => (this.showSettings = true)}"
+                  @click="${
+                    // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
+                    () => (this.showSettings = true)
+                  }"
                 >
                   <fa-icon .svg=${fasCog}></fa-icon>
                 </button>
@@ -496,12 +508,21 @@ class ArchiveWebApp extends ReplayWebApp {
       <wr-rec-coll-index
         dateName="Date Created"
         headerName="Archived Items"
-        .shareOpts=${{ ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }}
+        .shareOpts=${
+          // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
+          { ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }
+        }
         @show-start=${this.onShowStart}
         @show-import=${this.onShowImport}
         @colls-updated=${this.onCollsLoaded}
-        @ipfs-share-failed=${() => (this.showIpfsShareFailed = true)}
-        @do-upload=${(e) => (this.uploadCollOpts = e.detail)}
+        @ipfs-share-failed=${
+          // @ts-expect-error - TS2339 - Property 'showIpfsShareFailed' does not exist on type 'ArchiveWebApp'.
+          () => (this.showIpfsShareFailed = true)
+        }
+        @do-upload=${
+          // @ts-expect-error - TS2339 - Property 'uploadCollOpts' does not exist on type 'ArchiveWebApp'.
+          (e) => (this.uploadCollOpts = e.detail)
+        }
         style="overflow: visible"
       >
       </wr-rec-coll-index>
@@ -511,40 +532,89 @@ class ArchiveWebApp extends ReplayWebApp {
   render() {
     // @ts-expect-error - TS2551 - Property 'showStartRecord' does not exist on type 'ArchiveWebApp'. Did you mean 'onStartRecord'?
     return html` ${this.showStartRecord ? this.renderStartModal() : ""}
-    ${this.showNew ? this.renderNewCollModal() : ""}
-    ${this.showImport ? this.renderImportModal() : ""}
-    ${this.showDownloadProgress && this.download
-      ? this.renderDownloadModal()
-      : ""}
-    ${this.showSettings ? this.renderSettingsModal() : ""}
-    ${this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""}
-    ${this.uploadCollOpts && this.btrixOpts
-      ? this.renderBtrixUploadModal()
-      : ""}
+    ${
+      // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
+      this.showNew ? this.renderNewCollModal() : ""
+    }
+    ${
+      // @ts-expect-error - TS2551 - Property 'showImport' does not exist on type 'ArchiveWebApp'. Did you mean 'onShowImport'?
+      this.showImport ? this.renderImportModal() : ""
+    }
+    ${
+      // @ts-expect-error - TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'? | TS2339 - Property 'download' does not exist on type 'ArchiveWebApp'.
+      this.showDownloadProgress && this.download
+        ? this.renderDownloadModal()
+        : ""
+    }
+    ${
+      // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
+      this.showSettings ? this.renderSettingsModal() : ""
+    }
+    ${
+      // @ts-expect-error - TS2339 - Property 'showIpfsShareFailed' does not exist on type 'ArchiveWebApp'.
+      this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""
+    }
+    ${
+      // @ts-expect-error - TS2339 - Property 'uploadCollOpts' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
+      this.uploadCollOpts && this.btrixOpts ? this.renderBtrixUploadModal() : ""
+    }
     ${super.render()}`;
   }
 
   renderColl() {
     return html` <wr-rec-coll
       .editable="${true}"
-      .clearable="${this.embed}"
-      .browsable="${!this.embed}"
-      .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
+      .clearable="${
+        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
+        this.embed
+      }"
+      .browsable="${
+        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
+        !this.embed
+      }"
+      .loadInfo="${
+        // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
+        this.getLoadInfo(this.sourceUrl)
+      }"
       .appLogo="${this.mainLogo}"
-      .autoUpdateInterval=${this.embed || this.showDownloadProgress ? 0 : 10}
-      .shareOpts=${{ ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }}
-      swName=${this.swName}
-      embed="${this.embed}"
-      sourceUrl="${this.sourceUrl}"
+      .autoUpdateInterval=${
+        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'. | TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'?
+        this.embed || this.showDownloadProgress ? 0 : 10
+      }
+      .shareOpts=${
+        // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
+        { ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }
+      }
+      swName=${
+        // @ts-expect-error - TS2339 - Property 'swName' does not exist on type 'ArchiveWebApp'.
+        this.swName
+      }
+      embed="${
+        // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'.
+        this.embed
+      }"
+      sourceUrl="${
+        // @ts-expect-error - TS2339 - Property 'sourceUrl' does not exist on type 'ArchiveWebApp'.
+        this.sourceUrl
+      }"
       appName="${this.appName}"
       appVersion=${VERSION}
-      @replay-favicons=${this.onFavIcons}
+      @replay-favicons=${
+        // @ts-expect-error - TS2339 - Property 'onFavIcons' does not exist on type 'ArchiveWebApp'.
+        this.onFavIcons
+      }
       @update-title=${this.onTitle}
       @coll-loaded=${this.onCollLoaded}
       @show-start=${this.onShowStart}
       @show-import=${this.onShowImport}
-      @do-upload=${(e) => (this.uploadCollOpts = e.detail)}
-      @about-show=${() => (this.showAbout = true)}
+      @do-upload=${
+        // @ts-expect-error - TS2339 - Property 'uploadCollOpts' does not exist on type 'ArchiveWebApp'.
+        (e) => (this.uploadCollOpts = e.detail)
+      }
+      @about-show=${
+        // @ts-expect-error - TS2339 - Property 'showAbout' does not exist on type 'ArchiveWebApp'.
+        () => (this.showAbout = true)
+      }
     ></wr-rec-coll>`;
   }
 
@@ -554,17 +624,23 @@ class ArchiveWebApp extends ReplayWebApp {
         <span>${text}&nbsp;</span>
         <div class="select is-small">
           <select @change="${this.onSelectColl}">
-            ${this.colls &&
-            // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
-            this.colls.map(
-              (coll) =>
-                html` <option
-                  value="${coll.id}"
-                  ?selected="${this.selCollId === coll.id}"
-                >
-                  ${coll.title || coll.loadUrl}
-                </option>`
-            )}
+            ${
+              // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
+              this.colls &&
+              // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
+              this.colls.map(
+                (coll) =>
+                  html` <option
+                    value="${coll.id}"
+                    ?selected="${
+                      // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
+                      this.selCollId === coll.id
+                    }"
+                  >
+                    ${coll.title || coll.loadUrl}
+                  </option>`
+              )
+            }
           </select>
         </div>
       </div>

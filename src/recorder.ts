@@ -139,7 +139,10 @@ class Recorder {
     (function () {
       window.addEventListener("DOMContentLoaded", () => {
         const e = document.createElement("script");
-        e.src = "${this.getExternalInjectURL(path)}";
+        e.src = "${
+          // @ts-expect-error - TS2339 - Property 'getExternalInjectURL' does not exist on type 'Recorder'.
+          this.getExternalInjectURL(path)
+        }";
         document.head.appendChild(e);
       });
     })();
@@ -150,7 +153,10 @@ class Recorder {
     return (
       behaviors +
       `;
-    self.__bx_behaviors.init(${this.behaviorInitStr});
+    self.__bx_behaviors.init(${
+      // @ts-expect-error - TS2339 - Property 'behaviorInitStr' does not exist on type 'Recorder'.
+      this.behaviorInitStr
+    });
 
     window.addEventListener("beforeunload", () => {});` +
       this.getFlashInjectScript()
@@ -861,7 +867,13 @@ class Recorder {
         `
       ${extractPDF};
 
-      extractPDF("${this.pdfLoadURL}", "${this.getExternalInjectURL("")}");
+      extractPDF("${
+        // @ts-expect-error - TS2339 - Property 'pdfLoadURL' does not exist on type 'Recorder'.
+        this.pdfLoadURL
+      }", "${
+        // @ts-expect-error - TS2339 - Property 'getExternalInjectURL' does not exist on type 'Recorder'.
+        this.getExternalInjectURL("")
+      }");
       `
       );
 

@@ -1,4 +1,6 @@
-import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/src/misc";
+import { ifDefined } from "lit/directives/if-defined.js";
+
+import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/dist/misc";
 
 // replaywebpage imports
 import { ReplayWebApp, Embed, Loader } from "replaywebpage";
@@ -549,7 +551,7 @@ class ArchiveWebApp extends ReplayWebApp {
   renderColl() {
     return html` <wr-rec-coll
       .editable="${true}"
-      .clearable="${this.embed}"
+      .clearable="${Boolean(this.embed)}"
       .browsable="${!this.embed}"
       .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
       .appLogo="${this.mainLogo}"
@@ -561,12 +563,11 @@ class ArchiveWebApp extends ReplayWebApp {
         // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
         { ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }
       }
-      swName=${
-        // @ts-expect-error - TS2339 - Property 'swName' does not exist on type 'ArchiveWebApp'.
-        this.swName
-      }
-      embed="${this.embed}"
-      sourceUrl="${this.sourceUrl}"
+      swName=${ifDefined(this.swName)}
+      embed="${ifDefined(this.embed === null ? undefined : this.embed)}"
+      sourceUrl="${ifDefined(
+        this.sourceUrl === null ? undefined : this.sourceUrl
+      )}"
       appName="${this.appName}"
       appVersion=${VERSION}
       @replay-favicons=${this.onFavIcons}

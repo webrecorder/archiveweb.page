@@ -100,7 +100,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
     target: "electron-preload",
     mode: "production",
     entry: {
-      preload: "./src/electron/electron-rec-preload.js",
+      preload: "./src/electron/electron-rec-preload.ts",
     },
     optimization,
     output: {

@@ -1,4 +1,4 @@
-import { html, css, wrapCss, apiPrefix } from "replaywebpage/src/misc";
+import { html, css, wrapCss, apiPrefix } from "replaywebpage/dist/misc";
 
 import prettyBytes from "pretty-bytes";
 
@@ -14,33 +14,31 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 
 import btrixCloud from "../../assets/btrix-cloud.svg";
 
-import { CollInfo } from "replaywebpage";
+import { ItemInfo } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
+import { type WrRecItem } from "../types";
 
 const REPLAY_URL = "https://replayweb.page/";
 
 //============================================================================
-class WrRecCollInfo extends CollInfo {
-  constructor() {
-    super();
-    this.detailed = false;
-    // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
-    this.ipfsURL = null;
-    // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
-    this.shareWait = false;
-    // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
-    this.showShareMenu = false;
-    // @ts-expect-error - TS2339 - Property 'shareWarn' does not exist on type 'WrRecCollInfo'.
-    this.shareWarn = false;
-    // @ts-expect-error - TS2339 - Property 'shareProgressSize' does not exist on type 'WrRecCollInfo'.
-    this.shareProgressSize = 0;
-    // @ts-expect-error - TS2339 - Property 'shareProgressTotalSize' does not exist on type 'WrRecCollInfo'.
-    this.shareProgressTotalSize = 0;
-  }
+class WrRecCollInfo extends ItemInfo {
+  ipfsURL: string | null = null;
+  shareWait: boolean = false;
+  showShareMenu: boolean = false;
+  shareWarn: boolean = false;
+  shareProgressSize: number = 0;
+  shareProgressTotalSize: number = 0;
+
+  items?: WrRecItem[];
+  item: WrRecItem | null = null;
+  isUploadNeeded?: boolean;
+  shareOpts: TODOFixMe;
+  ipfsOpts: TODOFixMe;
+  btrixOpts: TODOFixMe;
 
   static get properties() {
     return {
-      coll: { type: Object },
+      item: { type: Object },
       detailed: { type: Boolean },
       ipfsURL: { type: String },
       shareWait: { type: Boolean },
@@ -110,76 +108,56 @@ class WrRecCollInfo extends CollInfo {
         width: calc(100% - 0.5em);
       }
 
-      ${CollInfo.compStyles}
+      ${ItemInfo.compStyles}
     `;
   }
 
   firstUpdated() {
     this.renderRoot.addEventListener(
       "click",
-      // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
       () => (this.showShareMenu = false)
     );
 
-    // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'WrRecCollInfo'.
-    this.isUploadNeeded =
-      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-      this.coll &&
-      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-      this.coll.uploadTime &&
-      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-      this.coll.mtime > this.coll.uploadTime;
+    this.isUploadNeeded = Boolean(
+      this.item &&
+        this.item.uploadTime &&
+        this.item.mtime > this.item.uploadTime
+    );
   }
 
   updated(changedProps) {
-    // @ts-expect-error - TS2339 - Property 'shareOpts' does not exist on type 'WrRecCollInfo'.
     if (changedProps.has("shareOpts") && this.shareOpts) {
-      // @ts-expect-error - TS2339 - Property 'shareOpts' does not exist on type 'WrRecCollInfo'.
       const { ipfsOpts, btrixOpts } = this.shareOpts;
-      // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'.
       this.ipfsOpts = ipfsOpts;
-      // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'WrRecCollInfo'.
       this.btrixOpts = btrixOpts;
     }
 
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    if (changedProps.has("coll") && this.coll) {
+    if (changedProps.has("coll") && this.item) {
       // Fix for loading single collection from previous versions
       if (
-        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-        this.coll.id === "main.archive" &&
-        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-        this.coll.sourceUrl !== "local://main.archive"
+        this.item.id === "main.archive" &&
+        this.item.sourceUrl !== "local://main.archive"
       ) {
-        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-        this.coll = { ...this.coll, sourceUrl: "local://main.archive" };
+        this.item = { ...this.item, sourceUrl: "local://main.archive" };
       }
 
-      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-      if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
-        // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-        this.ipfsURL = this.coll.ipfsPins[this.coll.ipfsPins.length - 1].url;
+      if (this.item.ipfsPins && this.item.ipfsPins.length) {
+        this.ipfsURL = this.item.ipfsPins[this.item.ipfsPins.length - 1].url;
       }
 
-      // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'WrRecCollInfo'.
-      this.isUploadNeeded =
-        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-        this.coll &&
-        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-        this.coll.uploadTime &&
-        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-        this.coll.mtime > this.coll.uploadTime;
+      this.isUploadNeeded = Boolean(
+        this.item &&
+          this.item.uploadTime &&
+          this.item.mtime > this.item.uploadTime
+      );
     }
   }
 
   render() {
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const coll = this.coll;
+    const coll = this.item;
     const detailed = this.detailed;
 
-    // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'WrRecCollInfo'.
     const hasUpload = !!this.btrixOpts;
-    // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'.
     const hasIpfs = !!this.ipfsOpts && this.ipfsOpts.daemonUrl;
 
     return html`
@@ -187,31 +165,29 @@ class WrRecCollInfo extends CollInfo {
         <div class="column is-2">
           <p class="minihead">Name</p>
           <span class="subtitle has-text-weight-bold">
-            ${detailed
-              ? html` ${coll.title} `
+            ${detailed || coll?.sourceUrl == null
+              ? html` ${coll?.title} `
               : html` <a href="?source=${encodeURIComponent(coll.sourceUrl)}"
-                  >${coll.title}</a
+                  >${coll?.title}</a
                 >`}
           </span>
         </div>
 
         <div class="column is-2">
           <p class="minihead">Date Created</p>
-          ${coll.ctime ? new Date(coll.ctime).toLocaleString() : ""}
+          ${coll?.ctime ? new Date(coll.ctime).toLocaleString() : ""}
         </div>
         <div class="column is-1">
           <p class="minihead">Total Size</p>
-          ${prettyBytes(Number(coll.size || 0))}
+          ${prettyBytes(Number(coll?.size || 0))}
         </div>
 
         <div class="column is-2">
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
             <a
-              href="${apiPrefix}/c/${
-                // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-                this.coll.id
-              }/dl?format=wacz&amp;pages=all"
+              href="${apiPrefix}/c/${this.item
+                ?.id}/dl?format=wacz&amp;pages=all"
               class="button is-small"
               title="Download"
             >
@@ -261,7 +237,7 @@ class WrRecCollInfo extends CollInfo {
         </div>
         `
           : ""}
-        ${coll.loadUrl
+        ${coll?.loadUrl
           ? html` <div class="column is-3">
               <p class="minihead">Imported From</p>
               ${coll.loadUrl}
@@ -271,31 +247,23 @@ class WrRecCollInfo extends CollInfo {
             </div>`
           : ""}
       </div>
-      ${
-        // @ts-expect-error - TS2339 - Property 'shareWarn' does not exist on type 'WrRecCollInfo'.
-        this.shareWarn ? this.renderShareWarn() : ""
-      }
+      ${this.shareWarn ? this.renderShareWarn() : ""}
     `;
   }
 
   renderIPFSSharing() {
-    // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
     return this.ipfsURL
       ? html`
           <div class="is-flex is-flex-direction-column">
             <div
-              class="dropdown is-up ${
-                // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
-                this.showShareMenu ? "is-active" : ""
-              }"
+              class="dropdown is-up ${this.showShareMenu ? "is-active" : ""}"
             >
               <div class="dropdown-trigger">
                 <button
                   @click="${this.onShowShareMenu}"
-                  class="button is-link is-light is-small ${
-                    // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
-                    this.shareWait ? "is-loading" : ""
-                  }"
+                  class="button is-link is-light is-small ${this.shareWait
+                    ? "is-loading"
+                    : ""}"
                   aria-haspopup="true"
                   aria-controls="dropdown-menu"
                 >
@@ -314,10 +282,7 @@ class WrRecCollInfo extends CollInfo {
                 <div class="dropdown-content">
                   <div class="dropdown-item">
                     <i class="is-size-7"
-                      >${
-                        // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'.
-                        (this.ipfsOpts && this.ipfsOpts.message) || ""
-                      }</i
+                      >${(this.ipfsOpts && this.ipfsOpts.message) || ""}</i
                     >
                   </div>
                   <hr class="dropdown-divider" />
@@ -353,19 +318,11 @@ class WrRecCollInfo extends CollInfo {
               </div>
             </div>
             <progress
-              value="${
-                // @ts-expect-error - TS2339 - Property 'shareProgressSize' does not exist on type 'WrRecCollInfo'.
-
-                this.shareProgressSize
-              }"
-              max="${
-                // @ts-expect-error - TS2339 - Property 'shareProgressTotalSize' does not exist on type 'WrRecCollInfo'.
-                this.shareProgressTotalSize
-              }"
-              class="progress is-small ${
-                // @ts-expect-error - TS2339 - Property 'shareProgressTotalSize' does not exist on type 'WrRecCollInfo'.
-                this.shareProgressTotalSize ? "mini" : "is-hidden"
-              }"
+              value="${this.shareProgressSize}"
+              max="${this.shareProgressTotalSize}"
+              class="progress is-small ${this.shareProgressTotalSize
+                ? "mini"
+                : "is-hidden"}"
             ></progress>
           </div>
 
@@ -379,10 +336,7 @@ class WrRecCollInfo extends CollInfo {
       : html`
           <div class="is-flex is-flex-direction-column">
             <button
-              class="button is-small ${
-                // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
-                this.shareWait ? "is-loading" : ""
-              }"
+              class="button is-small ${this.shareWait ? "is-loading" : ""}"
               @click="${this.onPinOrWarn}"
             >
               <span class="icon is-small">
@@ -391,26 +345,18 @@ class WrRecCollInfo extends CollInfo {
               <span>Start</span>
             </button>
             <progress
-              value="${
-                // @ts-expect-error - TS2339 - Property 'shareProgressSize' does not exist on type 'WrRecCollInfo'.
-                this.shareProgressSize
-              }"
-              max="${
-                // @ts-expect-error - TS2339 - Property 'shareProgressTotalSize' does not exist on type 'WrRecCollInfo'.
-                this.shareProgressTotalSize
-              }"
-              class="progress is-small ${
-                // @ts-expect-error - TS2339 - Property 'shareProgressTotalSize' does not exist on type 'WrRecCollInfo'.
-                this.shareProgressTotalSize ? "mini" : "is-hidden"
-              }"
+              value="${this.shareProgressSize}"
+              max="${this.shareProgressTotalSize}"
+              class="progress is-small ${this.shareProgressTotalSize
+                ? "mini"
+                : "is-hidden"}"
             ></progress>
           </div>
         `;
   }
 
   renderBtrixUpload() {
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const { uploadId, uploadTime } = this.coll;
+    const { uploadId, uploadTime } = this.item!;
 
     return html`
       <div class="is-flex is-flex-direction-column">
@@ -421,8 +367,7 @@ class WrRecCollInfo extends CollInfo {
         >
           <span class="icon">
             ${uploadTime && uploadId
-              ? // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'WrRecCollInfo'.
-                !this.isUploadNeeded
+              ? !this.isUploadNeeded
                 ? html`
                     <fa-icon
                       aria-hidden="true"
@@ -453,19 +398,12 @@ class WrRecCollInfo extends CollInfo {
   renderShareWarn() {
     return html` <wr-modal
       bgClass="has-background-warning"
-      @modal-closed="${
-        // @ts-expect-error - TS2339 - Property 'shareWarn' does not exist on type 'WrRecCollInfo'.
-        () => (this.shareWarn = false)
-      }"
+      @modal-closed="${() => (this.shareWarn = false)}"
       title="Start Sharing?"
     >
       <div class="content is-size-7">
         <p>
-          Do you want to share all the content in
-          "<i>${
-            // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-            this.coll.title
-          }</i>"
+          Do you want to share all the content in "<i>${this.item?.title}</i>"
           via IPFS, a peer-to-peer distributed storage network?
         </p>
         <p>
@@ -489,23 +427,15 @@ class WrRecCollInfo extends CollInfo {
         </label>
       </div>
       <button @click="${this.onPin}" class="button is-primary">Share</button>
-      <button
-        @click="${
-          // @ts-expect-error - TS2339 - Property 'shareWarn' does not exist on type 'WrRecCollInfo'.
-          () => (this.shareWarn = false)
-        }"
-        class="button"
-      >
+      <button @click="${() => (this.shareWarn = false)}" class="button">
         Cancel
       </button>
     </wr-modal>`;
   }
 
   onShowImport() {
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const coll = this.coll.id;
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const title = this.coll.title;
+    const coll = this.item?.id;
+    const title = this.item?.title;
     this.dispatchEvent(
       new CustomEvent("show-import", {
         bubbles: true,
@@ -518,15 +448,12 @@ class WrRecCollInfo extends CollInfo {
   async onShowShareMenu(event) {
     event.preventDefault();
     event.stopPropagation();
-    // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'? | TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
     this.showShareMenu = !this.showShareMenu;
   }
 
   onShowStart() {
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const coll = this.coll.id;
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const title = this.coll.title;
+    const coll = this.item?.id;
+    const title = this.item?.title;
     this.dispatchEvent(
       new CustomEvent("show-start", {
         bubbles: true,
@@ -547,23 +474,18 @@ class WrRecCollInfo extends CollInfo {
     if (localStorage.getItem("nosharewarn") === "1") {
       this.onPin();
     } else {
-      // @ts-expect-error - TS2339 - Property 'shareWarn' does not exist on type 'WrRecCollInfo'.
       this.shareWarn = true;
     }
   }
 
   async onPin() {
-    // @ts-expect-error - TS2339 - Property 'shareWarn' does not exist on type 'WrRecCollInfo'.
     this.shareWarn = false;
 
-    // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
     this.shareWait = true;
 
     try {
-      // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'unknown'.
       const { ipfsURL } = await this.ipfsAdd();
 
-      // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
       this.ipfsURL = ipfsURL;
 
       this.onCopyGatewayLink();
@@ -574,24 +496,20 @@ class WrRecCollInfo extends CollInfo {
       );
     }
 
-    // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
     this.shareWait = false;
   }
 
   async onUnpin() {
-    // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
     this.shareWait = true;
     const { removed } = await this.ipfsRemove();
 
     if (removed) {
-      // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
       this.ipfsURL = null;
     } else {
       this.dispatchEvent(
         new CustomEvent("ipfs-share-failed", { bubbles: true, composed: true })
       );
     }
-    // @ts-expect-error - TS2339 - Property 'shareWait' does not exist on type 'WrRecCollInfo'.
     this.shareWait = false;
   }
 
@@ -601,33 +519,42 @@ class WrRecCollInfo extends CollInfo {
     );
 
     //let id = 0;
-    let pc;
+    let pc: {
+      resolve: (
+        value:
+          | {
+              ipfsURL: string;
+            }
+          | PromiseLike<{
+              ipfsURL: string;
+            }>
+      ) => void;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      reject: (reason?: any) => void;
+    };
 
-    const p = new Promise((resolve, reject) => (pc = { resolve, reject }));
+    const p = new Promise<{ ipfsURL: string }>(
+      (resolve, reject) => (pc = { resolve, reject })
+    );
 
     const listener = (event) => {
       const { data } = event;
 
-      // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-      if (!data || data.collId !== this.coll.id) {
+      if (!data || data.collId !== this.item?.id) {
         return;
       }
 
       switch (data.type) {
         case "ipfsProgress":
-          // @ts-expect-error - TS2339 - Property 'shareProgressSize' does not exist on type 'WrRecCollInfo'.
           this.shareProgressSize = data.size;
-          // @ts-expect-error - TS2339 - Property 'shareProgressTotalSize' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-          this.shareProgressTotalSize = data.totalSize || this.coll.size;
+          this.shareProgressTotalSize = data.totalSize || this.item?.size;
           break;
 
         case "ipfsAdd":
-          // @ts-expect-error - TS2339 - Property 'shareProgressSize' does not exist on type 'WrRecCollInfo'.
           this.shareProgressSize = 0;
-          // @ts-expect-error - TS2339 - Property 'shareProgressTotalSize' does not exist on type 'WrRecCollInfo'.
           this.shareProgressTotalSize = 0;
           if (data.result) {
-            pc.resolve(data.result);
+            pc.resolve(data.result as { ipfsURL: string });
           } else {
             pc.reject();
           }
@@ -642,11 +569,9 @@ class WrRecCollInfo extends CollInfo {
 
     navigator.serviceWorker.addEventListener("message", listener);
 
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
+    fetch(`${apiPrefix}/c/${this.item!.id}/ipfs`, {
       method: "POST",
       body: JSON.stringify({
-        // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'.
         ipfsDaemonUrl: this.ipfsOpts.daemonUrl,
         gzip: false,
         customSplits: true,
@@ -661,11 +586,9 @@ class WrRecCollInfo extends CollInfo {
   }
 
   async ipfsRemove() {
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}/ipfs`, {
+    const resp = await fetch(`${apiPrefix}/c/${this.item!.id}/ipfs`, {
       method: "DELETE",
       body: JSON.stringify({
-        // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'.
         ipfsDaemonUrl: this.ipfsOpts.daemonUrl,
       }),
     });
@@ -675,57 +598,46 @@ class WrRecCollInfo extends CollInfo {
 
   onCopyRWPLink() {
     const params = new URLSearchParams();
-    // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
-    params.set("source", this.ipfsURL);
+    params.set("source", this.ipfsURL!);
     const url = REPLAY_URL + params.toString();
 
-    // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);
   }
 
   onCopyGatewayLink() {
-    // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
-    const hash = this.ipfsURL.split("/")[2];
-    // @ts-expect-error - TS2339 - Property 'ipfsOpts' does not exist on type 'WrRecCollInfo'.
+    const hash = this.ipfsURL!.split("/")[2];
     const url = this.ipfsOpts.gatewayUrl + hash + "/";
 
-    // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
     this.showShareMenu = false;
     navigator.clipboard.writeText(url);
   }
 
   onCopyIPFSLink() {
-    // @ts-expect-error - TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'ipfsURL' does not exist on type 'WrRecCollInfo'.
-    const ipfsPath = this.ipfsURL.slice(0, this.ipfsURL.lastIndexOf("/") + 1);
+    const ipfsPath = this.ipfsURL!.slice(0, this.ipfsURL!.lastIndexOf("/") + 1);
 
-    // @ts-expect-error - TS2551 - Property 'showShareMenu' does not exist on type 'WrRecCollInfo'. Did you mean 'onShowShareMenu'?
     this.showShareMenu = false;
     navigator.clipboard.writeText(ipfsPath);
   }
 
   onUpload() {
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'isUploadNeeded' does not exist on type 'WrRecCollInfo'.
-    const detail = { coll: this.coll, isUploadNeeded: this.isUploadNeeded };
+    const detail = { coll: this.item, isUploadNeeded: this.isUploadNeeded };
     this.dispatchEvent(
       new CustomEvent("do-upload", { bubbles: true, composed: true, detail })
     );
   }
 
   async doDelete() {
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'. | TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    if (this.coll.ipfsPins && this.coll.ipfsPins.length) {
+    if (this.item!.ipfsPins && this.item!.ipfsPins.length) {
       await this.ipfsRemove();
     }
 
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecCollInfo'.
-    const resp = await fetch(`${apiPrefix}/c/${this.coll.id}`, {
+    const resp = await fetch(`${apiPrefix}/c/${this.item!.id}`, {
       method: "DELETE",
     });
     if (resp.status === 200) {
       const json = await resp.json();
-      // @ts-expect-error - TS2339 - Property 'colls' does not exist on type 'WrRecCollInfo'.
-      this.colls = json.colls;
+      this.items = json.colls;
     }
   }
 }

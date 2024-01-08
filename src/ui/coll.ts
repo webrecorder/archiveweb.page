@@ -4,7 +4,7 @@ import {
   wrapCss,
   clickOnSpacebarPress,
   apiPrefix,
-} from "replaywebpage/src/misc";
+} from "replaywebpage/dist/misc";
 
 import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
 
@@ -164,7 +164,7 @@ class WrRecColl extends Coll {
     return html` <div class="info-bg">
       <wr-rec-coll-info
         class="is-list"
-        .coll="${
+        .item="${
           // @ts-expect-error - TS2339 - Property 'collInfo' does not exist on type 'WrRecColl'.
           this.collInfo
         }"

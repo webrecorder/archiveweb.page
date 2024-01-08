@@ -1,18 +1,26 @@
-import { CollIndex } from "replaywebpage";
+import { ItemIndex } from "replaywebpage";
+import type { PropertyValues } from "lit";
+import { property } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
-import { html } from "replaywebpage/src/misc";
+import { html } from "replaywebpage/dist/misc";
 
 import prettyBytes from "pretty-bytes";
+import { type WrRecCollInfo } from "./coll-info";
+import { WrRecItem } from "../types";
 
 //============================================================================
-class WrRecCollIndex extends CollIndex {
-  constructor() {
-    super();
-    // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
-    this.deleteConfirm = null;
-    // @ts-expect-error - TS2339 - Property 'ipfsSharePending' does not exist on type 'WrRecCollIndex'.
-    this.ipfsSharePending = 0;
-  }
+class WrRecCollIndex extends ItemIndex {
+  @property({ type: Object })
+  deleteConfirm: WrRecItem | null = null;
+  ipfsSharePending: number = 0;
+
+  private _poll?: number | NodeJS.Timer;
+
+  sortedItems: WrRecItem[] = [];
+
+  @property({ type: Object })
+  shareOpts: unknown;
 
   get sortKeys() {
     return [
@@ -29,56 +37,37 @@ class WrRecCollIndex extends CollIndex {
   }
 
   firstUpdated() {
-    // @ts-expect-error - TS2339 - Property 'loadColls' does not exist on type 'WrRecCollIndex'.
-    this.loadColls();
+    this.loadItems();
 
-    // @ts-expect-error - TS2339 - Property '_poll' does not exist on type 'WrRecCollIndex'.
     this._poll = setInterval(() => {
-      // @ts-expect-error - TS2339 - Property 'ipfsSharePending' does not exist on type 'WrRecCollIndex'.
       if (!this.ipfsSharePending) {
-        // @ts-expect-error - TS2339 - Property 'loadColls' does not exist on type 'WrRecCollIndex'.
-        this.loadColls();
+        this.loadItems();
       }
     }, 10000);
   }
 
-  updated(changedProperties) {
+  updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     if (
-      changedProperties.has("sortedColls") &&
-      // @ts-expect-error - TS2339 - Property 'sortedColls' does not exist on type 'WrRecCollIndex'.
-      this.sortedColls &&
-      // @ts-expect-error - TS2339 - Property 'sortedColls' does not exist on type 'WrRecCollIndex'.
-      this.sortedColls.length
+      changedProperties.has("sortedItems") &&
+      this.sortedItems &&
+      this.sortedItems.length
     ) {
       this.dispatchEvent(
         new CustomEvent("colls-updated", {
-          // @ts-expect-error - TS2339 - Property 'sortedColls' does not exist on type 'WrRecCollIndex'.
-          detail: { colls: this.sortedColls },
+          detail: { colls: this.sortedItems },
         })
       );
     }
   }
 
-  static get properties() {
-    return {
-      ...CollIndex.properties,
-
-      deleteConfirm: { type: Object },
-      shareOpts: { type: Object },
-    };
-  }
-
-  renderCollInfo(coll) {
+  renderItemInfo(item: WrRecItem) {
     return html` <wr-rec-coll-info
       style="overflow: visible"
-      data-coll="${coll.id}"
-      .coll=${coll}
-      .shareOpts=${
-        // @ts-expect-error - TS2339 - Property 'shareOpts' does not exist on type 'WrRecCollIndex'.
-        this.shareOpts
-      }
+      data-coll="${ifDefined(item.id)}"
+      .item=${item}
+      .shareOpts=${this.shareOpts}
       @ipfs-share="${this.onIpfsShare}"
     >
     </wr-rec-coll-info>`;
@@ -89,43 +78,23 @@ class WrRecCollIndex extends CollIndex {
   }
 
   renderDeleteConfirm() {
-    // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
     if (!this.deleteConfirm) {
       return null;
     }
 
     return html` <wr-modal
       bgClass="has-background-grey-lighter"
-      @modal-closed="${
-        // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
-        () => (this.deleteConfirm = null)
-      }"
+      @modal-closed="${() => (this.deleteConfirm = null)}"
       title="Confirm Delete"
     >
       <p>
         Are you sure you want to permanentely delete the archive
-        <b
-          >${
-            // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
-            this.deleteConfirm.title
-          }</b
-        >
+        <b>${this.deleteConfirm.title}</b>
         (Size:
-        <b
-          >${
-            // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
-            prettyBytes(this.deleteConfirm.size)
-          }</b
-        >)
+        <b>${prettyBytes(Number(this.deleteConfirm.size))}</b>)
       </p>
       <button @click="${this.doDelete}" class="button is-danger">Delete</button>
-      <button
-        @click="${
-          // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
-          () => (this.deleteConfirm = null)
-        }"
-        class="button"
-      >
+      <button @click="${() => (this.deleteConfirm = null)}" class="button">
         Cancel
       </button>
     </wr-modal>`;
@@ -133,10 +102,8 @@ class WrRecCollIndex extends CollIndex {
 
   onIpfsShare(event) {
     if (event.detail.pending) {
-      // @ts-expect-error - TS2339 - Property 'ipfsSharePending' does not exist on type 'WrRecCollIndex'.
       this.ipfsSharePending++;
     } else {
-      // @ts-expect-error - TS2339 - Property 'ipfsSharePending' does not exist on type 'WrRecCollIndex'.
       this.ipfsSharePending--;
     }
   }
@@ -145,38 +112,31 @@ class WrRecCollIndex extends CollIndex {
     event.preventDefault();
     event.stopPropagation();
 
-    // @ts-expect-error - TS2339 - Property 'sortedColls' does not exist on type 'WrRecCollIndex'.
-    if (!this.sortedColls) {
+    if (!this.sortedItems) {
       return;
     }
 
     const index = Number(event.currentTarget.getAttribute("data-coll-index"));
 
-    // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'. | TS2339 - Property 'sortedColls' does not exist on type 'WrRecCollIndex'.
-    this.deleteConfirm = this.sortedColls[index];
+    this.deleteConfirm = this.sortedItems[index];
   }
 
   async doDelete() {
-    // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
     if (!this.deleteConfirm) {
       return;
     }
 
-    // @ts-expect-error - TS2339 - Property '_deleting' does not exist on type 'WrRecCollIndex'. | TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
     this._deleting[this.deleteConfirm.sourceUrl] = true;
     this.requestUpdate();
 
     const info = this.renderRoot.querySelector(
-      // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
       `wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`
-    );
+    ) as WrRecCollInfo;
 
     if (info) {
-      // @ts-expect-error - TS2339 - Property 'doDelete' does not exist on type 'Element'.
       await info.doDelete();
     }
 
-    // @ts-expect-error - TS2339 - Property 'deleteConfirm' does not exist on type 'WrRecCollIndex'.
     this.deleteConfirm = null;
   }
 

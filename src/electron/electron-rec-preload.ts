@@ -12,7 +12,7 @@ const { ipcRenderer, contextBridge } = require("electron");
 let downloadCallback;
 
 // ===========================================================================
-contextBridge.exposeInMainWorld("archivewebpage", {
+const globalAPI = {
   record: (opts) => {
     ipcRenderer.send("start-rec", opts);
   },
@@ -24,7 +24,10 @@ contextBridge.exposeInMainWorld("archivewebpage", {
   downloadCancel: (dlprogress) => {
     ipcRenderer.send("dlcancel:" + dlprogress.origFilename);
   },
-});
+} as const;
+export type GlobalAPI = typeof globalAPI;
+
+contextBridge.exposeInMainWorld("archivewebpage", globalAPI);
 
 // ===========================================================================
 ipcRenderer.on("add-resource", async (event, data, collId) => {

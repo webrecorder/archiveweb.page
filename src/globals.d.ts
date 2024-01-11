@@ -13,5 +13,9 @@ declare const __WEB3_STORAGE_TOKEN__: string;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const pdfjsLib: any;
 
+interface Window {
+  archivewebpage?: import("./electron/electron-rec-preload").GlobalAPI;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare type TODOFixMe = any;

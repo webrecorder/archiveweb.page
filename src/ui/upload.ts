@@ -11,10 +11,12 @@ import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync-alt.svg";
 import fasCheck from "@fortawesome/fontawesome-free/svgs/solid/check-circle.svg";
 import fasExternal from "@fortawesome/fontawesome-free/svgs/solid/external-link-alt.svg";
 import fasX from "@fortawesome/fontawesome-free/svgs/solid/times-circle.svg";
+import { BtrixOpts } from "../types";
 
 const VERSION = __AWP_VERSION__;
 
 class BtrixUploader extends LitElement {
+  btrixOpts: BtrixOpts | null = null;
   static get properties() {
     return {
       btrixOpts: { type: Object },
@@ -91,9 +93,7 @@ class BtrixUploader extends LitElement {
       } else if (
         // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
         this.status === "idle" &&
-        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
         this.btrixOpts &&
-        // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
         this.btrixOpts.client &&
         json.uploadTime &&
         json.uploadId &&
@@ -414,13 +414,12 @@ class BtrixUploader extends LitElement {
   }
 
   async onUpload() {
-    // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
-    const client = this.btrixOpts.client;
+    const client = this.btrixOpts!.client;
 
     // @ts-expect-error - TS2339 - Property 'btrixOpts' does not exist on type 'BtrixUploader'.
     const org = await client.getOrg(this.btrixOpts.orgName);
 
-    const urlObj = new URL(`/api/orgs/${org}/uploads/stream`, client.url);
+    const urlObj = new URL(`/api/orgs/${org}/uploads/stream`, client!.url);
 
     // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
     if (this.uploadId) {
@@ -436,7 +435,7 @@ class BtrixUploader extends LitElement {
 
     const url = urlObj.href;
 
-    const headers = { Authorization: client.auth };
+    const headers = { Authorization: client!.auth };
 
     const body = JSON.stringify({ url, headers });
 
@@ -505,6 +504,9 @@ class BtrixUploader extends LitElement {
 customElements.define("wr-btrix-upload", BtrixUploader);
 
 export class BtrixClient {
+  url: string | URL | undefined;
+  auth: TODOFixMe;
+  defaultOrg: null;
   static async login({ url, username, password, orgName }) {
     const loginUrl = url + "/api/auth/jwt/login";
 
@@ -523,29 +525,23 @@ export class BtrixClient {
     const client = new BtrixClient(url, authToken);
 
     const org = await client.getOrg(orgName);
-    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     client.defaultOrg = org;
 
     return client;
   }
 
   constructor(url, auth) {
-    // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'BtrixClient'.
     this.url = url;
-    // @ts-expect-error - TS2339 - Property 'auth' does not exist on type 'BtrixClient'.
     this.auth = auth;
-    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     this.defaultOrg = null;
   }
 
   async fetchAPI(endpoint, method = "GET", body = null) {
-    // @ts-expect-error - TS2339 - Property 'auth' does not exist on type 'BtrixClient'.
     const headers = { Authorization: this.auth };
     if (method !== "GET") {
       headers["Content-Type"] = "application/json";
     }
     try {
-      // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'BtrixClient'.
       const resp = await fetch(this.url + endpoint, {
         headers,
         method,
@@ -578,7 +574,6 @@ export class BtrixClient {
   }
 
   async getRemoteUpload(uploadId, orgId = null) {
-    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     const org = this.defaultOrg || orgId;
     const res = await this.fetchAPI(`/api/orgs/${org}/uploads/${uploadId}`);
     if (!res.name) {
@@ -588,7 +583,6 @@ export class BtrixClient {
   }
 
   async deleteUpload(uploadId, orgId = null) {
-    // @ts-expect-error - TS2339 - Property 'defaultOrg' does not exist on type 'BtrixClient'.
     const org = this.defaultOrg || orgId;
     const deleteStr = JSON.stringify({ crawl_ids: [uploadId] });
     const res = await this.fetchAPI(

@@ -33,6 +33,13 @@ const DIST_EMBED = path.join(__dirname, "dist", "embed");
 const moduleSettings = {
   rules: [
     {
+      test: /\.tsx?$/,
+      loader: "ts-loader",
+      options: {
+        onlyCompileBundledFiles: true,
+      },
+    },
+    {
       test: /\.svg$/,
       use: "svg-inline-loader",
     },
@@ -70,7 +77,7 @@ const electronMainConfig = (/*env, argv*/) => {
     target: "electron-main",
     mode: "production",
     entry: {
-      electron: "./src/electron/electron-rec-main.js",
+      electron: "./src/electron/electron-rec-main.ts",
     },
     optimization,
     output: {
@@ -108,12 +115,22 @@ const electronPreloadConfig = (/*env, argv*/) => {
       filename: "[name].js",
     },
     plugins: [new webpack.DefinePlugin(defaultDefines)],
+    module: moduleSettings,
     resolve,
   };
 };
 
 // ===========================================================================
-/** @returns {import('webpack').Configuration} */
+/**
+ * @param {string} outputPath
+ * @param {Object} [param1={}]
+ * @param {import('webpack').Configuration['plugins']} [param1.plugins=[]]
+ * @param {import('copy-webpack-plugin').CopyPlugin['Configuration']['patterns']} [param1.copy=[]]
+ * @param {import('webpack').Configuration['entry']} [param1.entry={}]
+ * @param {Partial<import('webpack').Configuration>} [param1.extra={}]
+ * @param {boolean} [param1.flat=false]
+ * @returns {import('webpack').Configuration}
+ */
 function sharedBuild(
   outputPath,
   { plugins = [], copy = [], entry = {}, extra = {}, flat = false } = {}
@@ -126,8 +143,8 @@ function sharedBuild(
     mode: "production",
     target: "web",
     entry: {
-      ui: "./src/ui/app.js",
-      sw: "./src/sw/main.js",
+      ui: "./src/ui/app.ts",
+      sw: "./src/sw/main.ts",
       ...entry,
     },
     optimization,
@@ -199,8 +216,8 @@ const extensionWebConfig = (env, argv) => {
   const copy = [{ from: "static/", to: "./" }];
 
   const entry = {
-    bg: "./src/ext/bg.js",
-    popup: "./src/popup.js",
+    bg: "./src/ext/bg.ts",
+    popup: "./src/popup.ts",
   };
 
   return sharedBuild(DIST_EXT, { plugins, copy, entry });
@@ -209,12 +226,12 @@ const extensionWebConfig = (env, argv) => {
 // ===========================================================================
 const electronWebConfig = (/*env, argv*/) => {
   const entry = {
-    "rec-window": "./src/electron/rec-window.js",
+    "rec-window": "./src/electron/rec-window.ts",
   };
 
   const copy = [
     { from: "static/", to: "./" },
-    { from: "src/electron/rec-preload.js", to: "" },
+    { from: "src/electron/rec-preload.ts", to: "" },
     { from: "src/electron/rec-window.html", to: "" },
   ];
 

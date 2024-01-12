@@ -6,7 +6,7 @@ import { ElectronRecorder } from "./electron-recorder";
 import {
   ElectronReplayApp,
   STATIC_PREFIX,
-} from "replaywebpage/dist/electron-replay-app";
+} from "replaywebpage/src/electron-replay-app";
 
 import path from "path";
 

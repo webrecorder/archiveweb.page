@@ -1,4 +1,4 @@
-import { RequestResponseInfo } from "./requestresponseinfo.js";
+import { RequestResponseInfo } from "./requestresponseinfo";
 
 import { baseRules as baseDSRules } from "@webrecorder/wabac/src/rewrite";
 import {

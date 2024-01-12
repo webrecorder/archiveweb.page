@@ -74,7 +74,7 @@ class ArchiveWebApp extends ReplayWebApp {
       // ignore empty
     }
 
-    this.ipfsOpts = this.ipfsOpts || {
+    this.ipfsOpts ||= {
       daemonUrl: "",
       message: "",
       useCustom: false,

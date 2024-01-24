@@ -1,9 +1,8 @@
 import { ItemIndex } from "replaywebpage";
 import type { PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
-import { ifDefined } from "lit/directives/if-defined.js";
 
-import { html } from "replaywebpage/dist/misc";
+import { html } from "replaywebpage/src/misc";
 
 import prettyBytes from "pretty-bytes";
 import { type WrRecCollInfo } from "./coll-info";
@@ -65,7 +64,7 @@ class WrRecCollIndex extends ItemIndex {
   renderItemInfo(item: WrRecItem) {
     return html` <wr-rec-coll-info
       style="overflow: visible"
-      data-coll="${ifDefined(item.id)}"
+      data-coll="${item.id!}"
       .item=${item}
       .shareOpts=${this.shareOpts}
       @ipfs-share="${this.onIpfsShare}"

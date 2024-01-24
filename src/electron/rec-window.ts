@@ -4,7 +4,7 @@ import {
   css,
   wrapCss,
   clickOnSpacebarPress,
-} from "replaywebpage/dist/misc";
+} from "replaywebpage/src/misc";
 
 import fasRefresh from "@fortawesome/fontawesome-free/svgs/solid/redo-alt.svg";
 //import fasFullscreen from '@fortawesome/fontawesome-free/svgs/solid/desktop.svg';

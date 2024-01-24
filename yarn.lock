@@ -7642,7 +7642,7 @@ repeat-string@^1.6.1:
 
 "replaywebpage@git+https://github.com/webrecorder/replayweb.page.git#emma/publish-generated-types":
   version "2.0.0-beta"
-  resolved "git+https://github.com/webrecorder/replayweb.page.git#7a7232896e98c6f7a6c98ce85b76f1667cc527bd"
+  resolved "git+https://github.com/webrecorder/replayweb.page.git#d4db282c78407d7e248c9a3bc2953a3b40c101ee"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "^2.8.0"

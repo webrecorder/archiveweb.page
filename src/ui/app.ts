@@ -1,6 +1,4 @@
-import { ifDefined } from "lit/directives/if-defined.js";
-
-import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/dist/misc";
+import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/src/misc";
 
 // replaywebpage imports
 import { ReplayWebApp, Embed, Loader } from "replaywebpage";
@@ -498,11 +496,9 @@ class ArchiveWebApp extends ReplayWebApp {
         this.embed || this.showDownloadProgress ? 0 : 10
       }
       .shareOpts=${{ ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts }}
-      swName=${ifDefined(this.swName)}
-      embed="${ifDefined(this.embed === null ? undefined : this.embed)}"
-      sourceUrl="${ifDefined(
-        this.sourceUrl === null ? undefined : this.sourceUrl
-      )}"
+      .swName=${this.swName ?? null}
+      .embed="${this.embed}"
+      .sourceUrl="${this.sourceUrl}"
       appName="${this.appName}"
       appVersion=${VERSION}
       @replay-favicons=${this.onFavIcons}
@@ -994,7 +990,7 @@ class ArchiveWebApp extends ReplayWebApp {
                         type="url"
                         name="btrixUrl"
                         id="btrixUrl"
-                        value="${this.btrixOpts && this.btrixOpts.url}"
+                        value="${this.btrixOpts?.url || ""}"
                         placeholder="https://..."
                       />
                     </p>
@@ -1007,7 +1003,7 @@ class ArchiveWebApp extends ReplayWebApp {
                         type="text"
                         name="btrixUsername"
                         id="btrixUsername"
-                        value="${this.btrixOpts && this.btrixOpts.username}"
+                        value="${this.btrixOpts?.username || ""}"
                         placeholder="Username"
                       />
                     </p>
@@ -1020,7 +1016,7 @@ class ArchiveWebApp extends ReplayWebApp {
                         type="password"
                         name="btrixPassword"
                         id="btrixPassword"
-                        value="${this.btrixOpts && this.btrixOpts.password}"
+                        value="${this.btrixOpts?.password || ""}"
                         placeholder="Password"
                       />
                     </p>
@@ -1033,7 +1029,7 @@ class ArchiveWebApp extends ReplayWebApp {
                         type="text"
                         name="btrixOrgName"
                         id="btrixOrgName"
-                        value="${this.btrixOpts && this.btrixOpts.orgName}"
+                        value="${this.btrixOpts?.orgName || ""}"
                         placeholder="Organization (optional)"
                       />
                     </p>

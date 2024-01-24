@@ -1,4 +1,4 @@
-import { html, css, wrapCss, apiPrefix } from "replaywebpage/dist/misc";
+import { html, css, wrapCss, apiPrefix } from "replaywebpage/src/misc";
 
 import prettyBytes from "pretty-bytes";
 

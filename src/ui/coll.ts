@@ -4,17 +4,17 @@ import {
   wrapCss,
   clickOnSpacebarPress,
   apiPrefix,
-} from "replaywebpage/dist/misc";
+} from "replaywebpage/src/misc";
 
 import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
 
 import prettyBytes from "pretty-bytes";
 
-import { Coll } from "replaywebpage";
+import { Item } from "replaywebpage";
 import wrRec from "../../assets/recLogo.svg";
 
 //============================================================================
-class WrRecColl extends Coll {
+class WrRecColl extends Item {
   constructor() {
     super();
     // @ts-expect-error - TS2551 - Property '_sizeUpdater' does not exist on type 'WrRecColl'. Did you mean 'runSizeUpdater'?
@@ -25,7 +25,7 @@ class WrRecColl extends Coll {
 
   static get properties() {
     return {
-      ...Coll.properties,
+      ...Item.properties,
 
       totalSize: { type: Number },
       shareOpts: { type: Object },
@@ -54,7 +54,7 @@ class WrRecColl extends Coll {
         font-weight: bold;
       }
 
-      ${Coll.compStyles}
+      ${Item.compStyles}
     `;
   }
 
@@ -89,7 +89,6 @@ class WrRecColl extends Coll {
     }
   }
 
-  // @ts-expect-error - TS2416 - Property 'renderExtraToolbar' in type 'WrRecColl' is not assignable to the same property in base type 'Item'.
   renderExtraToolbar(isDropdown = false) {
     if (this.embed) {
       if (!isDropdown) {

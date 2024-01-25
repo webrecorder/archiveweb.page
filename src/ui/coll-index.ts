@@ -6,13 +6,13 @@ import { html } from "replaywebpage/src/misc";
 
 import prettyBytes from "pretty-bytes";
 import { type WrRecCollInfo } from "./coll-info";
-import { WrRecItem } from "../types";
+import { type WrRecItem } from "../types";
 
 //============================================================================
 class WrRecCollIndex extends ItemIndex {
   @property({ type: Object })
   deleteConfirm: WrRecItem | null = null;
-  ipfsSharePending: number = 0;
+  ipfsSharePending = 0;
 
   private _poll?: number | NodeJS.Timer;
 
@@ -48,11 +48,7 @@ class WrRecCollIndex extends ItemIndex {
   updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (
-      changedProperties.has("sortedItems") &&
-      this.sortedItems &&
-      this.sortedItems.length
-    ) {
+    if (changedProperties.has("sortedItems") && this.sortedItems?.length) {
       this.dispatchEvent(
         new CustomEvent("colls-updated", {
           detail: { colls: this.sortedItems },
@@ -128,9 +124,9 @@ class WrRecCollIndex extends ItemIndex {
     this._deleting[this.deleteConfirm.sourceUrl] = true;
     this.requestUpdate();
 
-    const info = this.renderRoot.querySelector(
+    const info = this.renderRoot.querySelector<WrRecCollInfo>(
       `wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`
-    ) as WrRecCollInfo;
+    );
 
     if (info) {
       await info.doDelete();

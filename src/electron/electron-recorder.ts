@@ -260,7 +260,7 @@ class ElectronRecorder extends Recorder {
       this.frameWC.send("stats", stats);
     }
     // @ts-expect-error - TS2339 - Property 'popup' does not exist on type 'ElectronRecorder'. | TS2339 - Property 'popup' does not exist on type 'ElectronRecorder'.
-    if (this.popup && this.popup.webContents) {
+    if (this.popup?.webContents) {
       // @ts-expect-error - TS2339 - Property 'popup' does not exist on type 'ElectronRecorder'.
       this.popup.webContents.send("popup", stats);
     }
@@ -268,7 +268,7 @@ class ElectronRecorder extends Recorder {
 
   getFavIcon() {
     // @ts-expect-error - TS2339 - Property 'favicons' does not exist on type 'ElectronRecorder'. | TS2339 - Property 'favicons' does not exist on type 'ElectronRecorder'. | TS2339 - Property 'favicons' does not exist on type 'ElectronRecorder'.
-    return this.favicons && this.favicons.length ? this.favicons[0] : null;
+    return this.favicons?.length ? this.favicons[0] : null;
   }
 
   async _doAddResource(data) {

@@ -42,6 +42,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-lit": "^1.11.0",
     "eslint-plugin-prettier": "^5.1.0",
+    "eslint-plugin-wc": "^2.0.4",
     "generate-json-webpack-plugin": "^2.0.0",
     "mini-css-extract-plugin": "^2.3.0",
     "prettier": "^3.1.1",

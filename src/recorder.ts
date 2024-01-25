@@ -892,7 +892,7 @@ class Recorder {
 
   async getFullText(finishing = false) {
     // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'. | TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
-    if (!this.pageInfo || !this.pageInfo.url) {
+    if (!this.pageInfo?.url) {
       return null;
     }
 
@@ -950,12 +950,7 @@ class Recorder {
   }
 
   commitPage(currPage, domSnapshot, finished) {
-    if (
-      !currPage ||
-      !currPage.url ||
-      !currPage.ts ||
-      currPage.url === "about:blank"
-    ) {
+    if (!currPage?.url || !currPage.ts || currPage.url === "about:blank") {
       return;
     }
 
@@ -1226,7 +1221,7 @@ class Recorder {
 
   async handlePaused(params, sessions) {
     let continued = false;
-    let reqresp = null;
+    let reqresp: TODOFixMe = null;
 
     let skip = false;
 
@@ -1247,8 +1242,7 @@ class Recorder {
         reqresp = await this.handleFetchResponse(params, sessions);
 
         try {
-          // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'never'.
-          if (reqresp && reqresp.payload) {
+          if (reqresp?.payload) {
             continued = await this.rewriteResponse(params, reqresp, sessions);
           }
         } catch (e) {
@@ -1275,24 +1269,18 @@ class Recorder {
 
     // if finished and matches current frameId, commit right away
     if (
-      reqresp &&
-      // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'never'.
-      reqresp.payload &&
-      // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'never'.
-      reqresp.payload.length &&
+      reqresp?.payload?.length &&
       // @ts-expect-error - TS2339 - Property 'frameId' does not exist on type 'Recorder'.
       params.frameId === this.frameId &&
-      // @ts-expect-error - TS2339 - Property 'requestId' does not exist on type 'never'.
       !isNaN(Number(reqresp.requestId))
     ) {
-      // @ts-expect-error - TS2339 - Property 'requestId' does not exist on type 'never'.
       this.removeReqResp(reqresp.requestId);
       this.fullCommit(reqresp, sessions);
     }
   }
 
   async rewriteResponse(params, reqresp, sessions) {
-    if (!reqresp || !reqresp.payload) {
+    if (!reqresp?.payload) {
       return false;
     }
 
@@ -1390,7 +1378,7 @@ class Recorder {
   async handleLoadingFinished(params, sessions) {
     const reqresp = this.removeReqResp(params.requestId);
 
-    if (!reqresp || !reqresp.url) {
+    if (!reqresp?.url) {
       //console.log("unknown request finished: " + params.requestId);
       return;
     }
@@ -1411,7 +1399,7 @@ class Recorder {
           "Network.getResponseBody"
         );
       }
-      if (!payload || !payload.length) {
+      if (!payload?.length) {
         return;
       }
       reqresp.payload = payload;

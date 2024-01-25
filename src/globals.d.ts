@@ -11,11 +11,11 @@ declare const __VERSION__: string;
 declare const __WEB3_STORAGE_TOKEN__: string;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const pdfjsLib: any;
+declare type TODOFixMe = any;
+
+declare const pdfjsLib: TODOFixMe;
 
 interface Window {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   archivewebpage?: import("./electron/electron-rec-preload").GlobalAPI;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare type TODOFixMe = any;

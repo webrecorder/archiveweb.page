@@ -414,7 +414,7 @@ class RequestResponseInfo {
       headers = new Headers(headersDict);
     } catch (e) {
       for (const key of Object.keys(headersDict)) {
-        if (key[0] === ":") {
+        if (key.startsWith(":")) {
           delete headersDict[key];
           continue;
         }

@@ -6,7 +6,6 @@ import { ensureDefaultColl } from "../utils";
 
 import { loader, getDB } from "replaywebpage/src/electron-preload";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { ipcRenderer, contextBridge } = require("electron");
 
 let downloadCallback;
@@ -65,14 +64,14 @@ ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
 });
 
 // ===========================================================================
-ipcRenderer.on("inc-sizes", async (event, totalSize, writtenSize, collId) => {
+ipcRenderer.on("inc-sizes", (event, totalSize, writtenSize, collId) => {
   if (totalSize > 0) {
     loader.updateSize(collId, totalSize, writtenSize);
   }
 });
 
 // ===========================================================================
-ipcRenderer.on("download-progress", async (event, progress) => {
+ipcRenderer.on("download-progress", (event, progress) => {
   if (downloadCallback) {
     downloadCallback(progress);
   }

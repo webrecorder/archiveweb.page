@@ -26,7 +26,7 @@ import {
   Web3StorageAPI,
 } from "auto-js-ipfs";
 import { getLocalOption, setLocalOption } from "../localstorage";
-import { BtrixOpts } from "../types";
+import { type BtrixOpts } from "../types";
 
 const VERSION = __AWP_VERSION__;
 
@@ -191,7 +191,7 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   onCollLoaded(event) {
-    if (this.loadInfo && this.loadInfo.importCollId) {
+    if (this.loadInfo?.importCollId) {
       if (navigator.serviceWorker.controller) {
         const msg = {
           msg_type: "reload",
@@ -203,7 +203,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
 
     if (this.embed) {
-      this.loadedCollId = event.detail.collInfo && event.detail.collInfo.coll;
+      this.loadedCollId = event.detail.collInfo?.coll;
     }
 
     super.onCollLoaded(event);
@@ -235,7 +235,7 @@ class ArchiveWebApp extends ReplayWebApp {
     // necessary for chrome 94> up due to new bug introduced
     //
     // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
-    if (this.embed || !self.chrome || !self.chrome.runtime) {
+    if (this.embed || !self.chrome?.runtime) {
       return;
     }
 
@@ -520,8 +520,7 @@ class ArchiveWebApp extends ReplayWebApp {
         <span>${text}&nbsp;</span>
         <div class="select is-small">
           <select @change="${this.onSelectColl}">
-            ${this.colls &&
-            this.colls.map(
+            ${this.colls?.map(
               (coll) =>
                 html` <option
                   value="${coll.id}"
@@ -1091,18 +1090,14 @@ class ArchiveWebApp extends ReplayWebApp {
       this.selCollId = await getLocalOption("defaultCollId");
     }
     // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
-    if (!this.selCollId && this.colls && this.colls.length) {
+    if (!this.selCollId && this.colls?.length) {
       // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'colls' does not exist on type 'ArchiveWebApp'.
       this.selCollId = this.colls[0].id;
     }
     // copy from localStorage to chrome.storage
     if (
       // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
-      self.chrome &&
-      // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
-      self.chrome.storage &&
-      // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
-      self.chrome.storage.local &&
+      self.chrome?.storage?.local &&
       self.localStorage
     ) {
       await setLocalOption(
@@ -1125,7 +1120,7 @@ class ArchiveWebApp extends ReplayWebApp {
     // @ts-expect-error - TS2339 - Property 'selCollId' does not exist on type 'ArchiveWebApp'.
     this.selCollId = detail.coll;
     //this.selCollTitle = event.detail.title;
-    if (!this.colls || !this.colls.length) {
+    if (!this.colls?.length) {
       this.colls = [
         {
           id: detail.coll,
@@ -1163,7 +1158,7 @@ class ArchiveWebApp extends ReplayWebApp {
 
     const previewCheckbox = this.renderRoot.querySelector("#preview");
     // @ts-expect-error - TS2339 - Property 'checked' does not exist on type 'Element'.
-    const isPreview = previewCheckbox && previewCheckbox.checked;
+    const isPreview = previewCheckbox?.checked;
 
     // @ts-expect-error - TS2551 - Property 'showStartRecord' does not exist on type 'ArchiveWebApp'. Did you mean 'onStartRecord'?
     this.showStartRecord = false;
@@ -1176,14 +1171,14 @@ class ArchiveWebApp extends ReplayWebApp {
     await setLocalOption("autorunBehaviors", autorun ? "1" : "0");
 
     // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
-    if (self.chrome && self.chrome.runtime) {
+    if (self.chrome?.runtime) {
       chrome.runtime.sendMessage({
         msg: "startNew",
         url,
         collId,
         autorun,
       });
-    } else if (window.archivewebpage && window.archivewebpage.record) {
+    } else if (window.archivewebpage?.record) {
       const startRec = !isPreview;
       window.archivewebpage.record({ url, collId, startRec, autorun });
     }
@@ -1224,7 +1219,7 @@ class ArchiveWebApp extends ReplayWebApp {
       // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const gatewayUrl = gatewayUrlText.value;
       // @ts-expect-error - TS2339 - Property 'checked' does not exist on type 'Element'.
-      const autoDetect = autodetectCheck && autodetectCheck.checked;
+      const autoDetect = autodetectCheck?.checked;
 
       this.ipfsOpts = {
         daemonUrl,
@@ -1252,7 +1247,7 @@ class ArchiveWebApp extends ReplayWebApp {
       // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
       const password = btrixPassword.value;
       // @ts-expect-error - TS2339 - Property 'value' does not exist on type 'Element'.
-      const orgName = (btrixOrgName && btrixOrgName.value) || "";
+      const orgName = btrixOrgName?.value || "";
 
       if (url && username && password) {
         const btrixOpts = { url, username, password, orgName };

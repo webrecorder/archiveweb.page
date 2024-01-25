@@ -11,7 +11,7 @@ import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync-alt.svg";
 import fasCheck from "@fortawesome/fontawesome-free/svgs/solid/check-circle.svg";
 import fasExternal from "@fortawesome/fontawesome-free/svgs/solid/external-link-alt.svg";
 import fasX from "@fortawesome/fontawesome-free/svgs/solid/times-circle.svg";
-import { BtrixOpts } from "../types";
+import { type BtrixOpts } from "../types";
 
 const VERSION = __AWP_VERSION__;
 
@@ -93,8 +93,7 @@ class BtrixUploader extends LitElement {
       } else if (
         // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'BtrixUploader'.
         this.status === "idle" &&
-        this.btrixOpts &&
-        this.btrixOpts.client &&
+        this.btrixOpts?.client &&
         json.uploadTime &&
         json.uploadId &&
         json.mtime <= json.uploadTime
@@ -563,7 +562,7 @@ export class BtrixClient {
   async getOrg(name = "") {
     const json = await this.fetchAPI("/api/users/me-with-orgs");
     const { orgs } = json;
-    if (!orgs || !orgs.length) {
+    if (!orgs?.length) {
       return null;
     }
     if (!name) {

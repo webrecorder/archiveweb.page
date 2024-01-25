@@ -429,7 +429,7 @@ class RecWindowUI extends LitElement {
     // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
     this.favIconUrl =
       // @ts-expect-error - TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'. | TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'. | TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'.
-      this.favIcons && this.favIcons.length ? this.favIcons.shift() : null;
+      this.favIcons?.length ? this.favIcons.shift() : null;
   }
 
   onGoBack() {

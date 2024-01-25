@@ -180,10 +180,10 @@ class RecPopup extends LitElement {
         this.behaviorState = message.behaviorState;
         // @ts-expect-error - TS2339 - Property 'behaviorMsg' does not exist on type 'RecPopup'.
         this.behaviorMsg =
-          (message.behaviorData && message.behaviorData.msg) || "Starting...";
+          (message.behaviorData?.msg) || "Starting...";
         // @ts-expect-error - TS2339 - Property 'behaviorResults' does not exist on type 'RecPopup'.
         this.behaviorResults =
-          message.behaviorData && message.behaviorData.state;
+          message.behaviorData?.state;
         // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'RecPopup'.
         this.autorun = message.autorun;
         if (message.pageUrl) {
@@ -465,7 +465,7 @@ class RecPopup extends LitElement {
           Archiving:&nbsp;</b
         >${
           // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'RecPopup'. | TS2339 - Property 'status' does not exist on type 'RecPopup'.
-          this.status && this.status.numPending
+          this.status?.numPending
             ? html`
                 <span class="status-pending"
                   >${
@@ -518,7 +518,7 @@ class RecPopup extends LitElement {
     // @ts-expect-error - TS2339 - Property 'canRecord' does not exist on type 'RecPopup'.
     if (!this.canRecord) {
       // @ts-expect-error - TS2339 - Property 'pageUrl' does not exist on type 'RecPopup'. | TS2339 - Property 'pageUrl' does not exist on type 'RecPopup'.
-      if (this.pageUrl && this.pageUrl.startsWith(this.extRoot)) {
+      if (this.pageUrl?.startsWith(this.extRoot)) {
         return html`
           <p class="is-size-7">
             This page is part of the extension. You can view existing archived
@@ -803,7 +803,7 @@ class RecPopup extends LitElement {
         }
         ${
           // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'RecPopup'. | TS2339 - Property 'status' does not exist on type 'RecPopup'.
-          this.status && this.status.sizeTotal
+          this.status?.sizeTotal
             ? html`
                 <div class="view-row underline">
                   <div class="session-head">Archived in this tab</div>

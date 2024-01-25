@@ -23,11 +23,11 @@ const REPLAY_URL = "https://replayweb.page/";
 //============================================================================
 class WrRecCollInfo extends ItemInfo {
   ipfsURL: string | null = null;
-  shareWait: boolean = false;
-  showShareMenu: boolean = false;
-  shareWarn: boolean = false;
-  shareProgressSize: number = 0;
-  shareProgressTotalSize: number = 0;
+  shareWait = false;
+  showShareMenu = false;
+  shareWarn = false;
+  shareProgressSize = 0;
+  shareProgressTotalSize = 0;
 
   items?: WrRecItem[];
   item: WrRecItem | null = null;
@@ -119,9 +119,7 @@ class WrRecCollInfo extends ItemInfo {
     );
 
     this.isUploadNeeded = Boolean(
-      this.item &&
-        this.item.uploadTime &&
-        this.item.mtime > this.item.uploadTime
+      this.item?.uploadTime && this.item.mtime > this.item.uploadTime
     );
   }
 
@@ -141,14 +139,12 @@ class WrRecCollInfo extends ItemInfo {
         this.item = { ...this.item, sourceUrl: "local://main.archive" };
       }
 
-      if (this.item.ipfsPins && this.item.ipfsPins.length) {
+      if (this.item.ipfsPins?.length) {
         this.ipfsURL = this.item.ipfsPins[this.item.ipfsPins.length - 1].url;
       }
 
       this.isUploadNeeded = Boolean(
-        this.item &&
-          this.item.uploadTime &&
-          this.item.mtime > this.item.uploadTime
+        this.item?.uploadTime && this.item.mtime > this.item.uploadTime
       );
     }
   }
@@ -281,9 +277,7 @@ class WrRecCollInfo extends ItemInfo {
               >
                 <div class="dropdown-content">
                   <div class="dropdown-item">
-                    <i class="is-size-7"
-                      >${(this.ipfsOpts && this.ipfsOpts.message) || ""}</i
-                    >
+                    <i class="is-size-7">${this.ipfsOpts?.message || ""}</i>
                   </div>
                   <hr class="dropdown-divider" />
                   <a @click="${this.onPin}" class="dropdown-item">
@@ -628,7 +622,7 @@ class WrRecCollInfo extends ItemInfo {
   }
 
   async doDelete() {
-    if (this.item!.ipfsPins && this.item!.ipfsPins.length) {
+    if (this.item!.ipfsPins?.length) {
       await this.ipfsRemove();
     }
 

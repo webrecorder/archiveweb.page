@@ -1,0 +1,43 @@
+name: Bug Report
+description: If something isn't working as expected and you're sure your issue is reproducible, please file this type of issue!
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  # Version number
+  - type: input
+    id: version
+    attributes:
+      label: ArchiveWeb.page Version
+      description: "This can be found on the app home page under \"About\""
+      placeholder: "v0.11.3"
+    validations:
+      required: true
+  # What did the user expect to happen? What was the actual behavior?
+  - type: textarea
+    attributes:
+      label: What did you expect to happen? What happened instead?
+      description: |
+        "I was trying to archive a page however..."
+
+        Please submit any screenshots/videos that can be used to understand how to reproduce the issue. You can attach images by clicking this area to highlight it and then dragging files into the browser window.
+        
+        If something wasn't captured in the way you expect please include a link to the archived item if possible.
+    validations:
+      required: true
+  # Step-by-step reproduction instructions
+  - type: textarea
+    attributes:
+      label: Step-by-step reproduction instructions
+      placeholder: |
+        1. Navigate to...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+  # Additional details
+  - type: textarea
+    attributes:
+      label: Additional details
+      description: Add any other relevant information here.
+    validations:
+      required: false

@@ -23,7 +23,7 @@
     "node-fetch": "2.6.7",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "git+https://github.com/webrecorder/replayweb.page.git#emma/publish-generated-types",
+    "replaywebpage": "git+https://github.com/webrecorder/replayweb.page.git#dev-2.0.0",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",

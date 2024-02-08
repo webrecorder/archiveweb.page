@@ -1,0 +1,16 @@
+# Allow issues to be created without a template
+blank_issues_enabled: true
+
+contact_links:
+  - name: Report a replay issue
+    about: Issues related to archived content not displaying properly should be reported in the ReplayWeb.page repo.
+    url: https://github.com/webrecorder/replayweb.page/issues/new?&labels=replay+bug%2Cbug&projects=&template=replay-bug.yml&title=[Replay+Bug]%3A+
+  - name: Report a security vulnerability
+    about: Please do not file an issue and instead email security@webrecorder.org. We will follow up with you there!
+    url: https://webrecorder.net/.well-known/security.txt
+  - name: Get help on our forum
+    url: https://forum.webrecorder.net/
+    about: Have a ("how do I...?") question? Not sure if your issue is reproducible? The best way to get help is on our community forum!
+  - name: Check out the docs
+    url: https://archiveweb.page/guide
+    about: Solutions to common questions may be available in the documentation!

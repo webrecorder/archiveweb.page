@@ -10,9 +10,8 @@ const { ipcRenderer, contextBridge } = require("electron");
 
 let downloadCallback;
 
-
 // ===========================================================================
-contextBridge.exposeInMainWorld("archivewebpage", {
+const globalAPI = {
   record: (opts) => {
     ipcRenderer.send("start-rec", opts);
   },
@@ -23,10 +22,11 @@ contextBridge.exposeInMainWorld("archivewebpage", {
 
   downloadCancel: (dlprogress) => {
     ipcRenderer.send("dlcancel:" + dlprogress.origFilename);
-  }
+  },
+} as const;
+export type GlobalAPI = typeof globalAPI;
 
-});
-
+contextBridge.exposeInMainWorld("archivewebpage", globalAPI);
 
 // ===========================================================================
 ipcRenderer.on("add-resource", async (event, data, collId) => {
@@ -55,7 +55,6 @@ ipcRenderer.on("add-resource", async (event, data, collId) => {
   }
 });
 
-
 // ===========================================================================
 ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
   const db = await getDB(collId);
@@ -64,25 +63,22 @@ ipcRenderer.on("add-page", async (event, pageInfo, collId) => {
   //console.log("add-page", pageInfo);
 });
 
-
 // ===========================================================================
-ipcRenderer.on("inc-sizes", async (event, totalSize, writtenSize, collId) => {
+ipcRenderer.on("inc-sizes", (event, totalSize, writtenSize, collId) => {
   if (totalSize > 0) {
     loader.updateSize(collId, totalSize, writtenSize);
   }
 });
 
-
 // ===========================================================================
-ipcRenderer.on("download-progress", async (event, progress) => {
+ipcRenderer.on("download-progress", (event, progress) => {
   if (downloadCallback) {
     downloadCallback(progress);
   }
 });
 
 // ===========================================================================
-async function main()
-{
+async function main() {
   await ensureDefaultColl(loader);
 }
 

@@ -6,11 +6,10 @@ import path from "path";
 import btoa from "btoa";
 global.btoa = btoa;
 
-
 // ===========================================================================
 const recorderApp = new ElectronRecorderApp({
   staticPath: path.join(__dirname, "./"),
-  profileName: process.env.AWP_PROFILE_NAME || "archivewebpage"
+  profileName: process.env.AWP_PROFILE_NAME || "archivewebpage",
 });
 
 recorderApp.init();

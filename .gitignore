@@ -4,5 +4,4 @@
 !examples/*.warc
 **/node_modules
 .DS_Store
-!dist/embed/*
-
+dist

@@ -1,0 +1,67 @@
+{
+  "cSpell.languageSettings": [
+    {
+      "languageId": "typescript",
+      "allowCompoundWords": true,
+      "dictionaries": ["typescript", "node", "html", "fonts", "css"]
+    },
+    {
+      "languageId": "javascript",
+      "allowCompoundWords": true,
+      "dictionaries": ["typescript", "node", "html", "fonts", "css"]
+    },
+    {
+      "languageId": "markdown",
+      "allowCompoundWords": true,
+      "dictionaries": ["typescript", "node", "html", "fonts", "css"]
+    }
+  ],
+  "cSpell.words": [
+    "authed",
+    "autoipfs",
+    "browsertrix",
+    "btrix",
+    "Bulma",
+    "canonicalization",
+    "cdxj",
+    "Collec",
+    "colls",
+    "consts",
+    "electronuserland",
+    "flexsearch",
+    "gapi",
+    "gauth",
+    "gdrive",
+    "iframes",
+    "indexeddb",
+    "inited",
+    "ipfs",
+    "ival",
+    "kiwix",
+    "ndjson",
+    "pmarsceill",
+    "popd",
+    "pushd",
+    "pywb",
+    "reauth",
+    "recalc",
+    "replaybase",
+    "replayweb.page",
+    "sesh",
+    "Strs",
+    "surt",
+    "svgs",
+    "swmanager",
+    "swonly",
+    "Unfullscreen",
+    "unrewriting",
+    "unsharing",
+    "wabac",
+    "WACZ",
+    "WARC",
+    "warcio",
+    "webrecorder",
+    "wrlogo"
+  ],
+  "cSpell.ignorePaths": ["node_modules", ".git", "*.lock", "package.json"]
+}

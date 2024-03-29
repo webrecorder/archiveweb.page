@@ -350,7 +350,7 @@ class BtrixUploader extends LitElement {
               class="has-text-success"
               .svg="${fasCheck}"
             ></fa-icon>
-            Archive already uploaded to Browsertrix Cloud.
+            Archived item already uploaded to Browsertrix.
             ${this.renderDeleteUploaded()}
           </p> `;
           // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
@@ -372,7 +372,7 @@ class BtrixUploader extends LitElement {
 
       case "deleted":
         return html`<p class="has-text-weight-bold has-text-primary">
-            Upload to Browsertrix Cloud has been deleted.
+            Upload to Browsertrix has been deleted.
           </p>
           <p>(Data is still saved locally in your browser)</p>`;
 

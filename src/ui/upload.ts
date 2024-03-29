@@ -172,7 +172,7 @@ class BtrixUploader extends LitElement {
           // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
           () => (this.coll = null)
         }"
-        title="Upload To Browsertrix Cloud"
+        title="Upload To Browsertrix"
       >
         <table class="is-size-6" style="margin-left: 3.0rem">
           <tr class="is-italic">
@@ -224,7 +224,7 @@ class BtrixUploader extends LitElement {
                       size="0.7em"
                       .svg="${fasExternal}"
                     ></fa-icon>
-                    View in Browsertrix Cloud</a
+                    View in Browsertrix</a
                   >
                 </td>
               </tr>`
@@ -354,7 +354,7 @@ class BtrixUploader extends LitElement {
               class="has-text-success"
               .svg="${fasCheck}"
             ></fa-icon>
-            Archive already uploaded to Browsertrix Cloud.
+            Archived item already uploaded to Browsertrix.
             ${this.renderDeleteUploaded()}
           </p> `;
           // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
@@ -376,7 +376,7 @@ class BtrixUploader extends LitElement {
 
       case "deleted":
         return html`<p class="has-text-weight-bold has-text-primary">
-            Upload to Browsertrix Cloud has been deleted.
+            Upload to Browsertrix has been deleted.
           </p>
           <p>(Data is still saved locally in your browser)</p>`;
 
@@ -401,7 +401,7 @@ class BtrixUploader extends LitElement {
       <span
         ><button
           class="button is-small"
-          title="Delete Upload from Browsertrix Cloud"
+          title="Delete upload from your Browsertrix org"
           type="button"
           @click="${this.onDeleteUpload}"
         >

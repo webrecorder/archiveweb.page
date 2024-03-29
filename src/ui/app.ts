@@ -922,7 +922,7 @@ class ArchiveWebApp extends ReplayWebApp {
               class="${this.settingsTab === "browsertrix" ? "is-active" : ""}"
             >
               <a @click=${() => (this.settingsTab = "browsertrix")}
-                >Browsertrix Cloud</a
+                >Browsertrix</a
               >
             </li>
           </ul>
@@ -978,12 +978,12 @@ class ArchiveWebApp extends ReplayWebApp {
             ? html`
                 <p class="is-size-6 mb-3">
                   Configure your credentials to upload archived items to
-                  Browsertrix Cloud.
+                  Browsertrix.
                 </p>
                 <fieldset>
                   <div class="field has-addons">
                     <p class="is-expanded">
-                      Browsertrix Cloud URL:
+                      Browsertrix URL:
                       <input
                         class="input is-small"
                         type="url"
@@ -1259,7 +1259,7 @@ class ArchiveWebApp extends ReplayWebApp {
           this.settingsError = "";
         } catch (e) {
           this.settingsError =
-            "Unable to log in to Browsertrix Cloud. Check your credentials.";
+            "Unable to log in to Browsertrix. Check your credentials.";
           return false;
         }
 

@@ -2323,15 +2323,15 @@
     stream-browserify "^3.0.0"
     warcio "^2.2.0"
 
-"@webrecorder/wabac@^2.16.13":
-  version "2.16.13"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.16.13.tgz#f47044f515255eadc891896bd89e02f3e1d15c5b"
-  integrity sha512-IUPhhUs2RCjdEA2QB9SGS2OaVe0U4I7KKj1/U/uSJ5ASt5LmhqmuXPkY9GKrEeW5SINad9EM0wHwVDoEbePGIw==
+"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.0":
+  version "2.18.0"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.18.0.tgz#6eafa51ffb53e785a9b7a36bd8c12cbf60f06cc2"
+  integrity sha512-tpZ7saCQMWcrbQrB7421ycfucKFFBRXg3OrTSPkk71FtGSQ8LFtmCPnpWWu/wJgWcnC7ka7CnIuaX3rW2A42oA==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.6.1"
+    "@webrecorder/wombat" "^3.7.3"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
@@ -2356,6 +2356,13 @@
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.6.1.tgz#55e23a2c0df28ad8e6d67b87fffd913a101f6982"
   integrity sha512-yJ5NBf/ERCBz07cFA4phIQCpj6U/28HWFk67V+yg3S3GSAAmlFP8dC9g1z+JO77PKuAe/qlrzO6CcS0VyUr5Ww==
+  dependencies:
+    warcio "^2.2.0"
+
+"@webrecorder/wombat@^3.7.3":
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.3.tgz#21e83b5947664873219021163ded9bb698f333f4"
+  integrity sha512-+zkXDxo1Xr8D9OwURk247fWZiJeix8xB+3rRoYX7fD3yyw6+hwCYSD3pp95ZTfD73ailXjr1WKy+Xz/1CFq3Iw==
   dependencies:
     warcio "^2.2.0"
 
@@ -7645,13 +7652,14 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-"replaywebpage@git+https://github.com/webrecorder/replayweb.page.git#dev-2.0.0":
-  version "2.0.0-beta"
-  resolved "git+https://github.com/webrecorder/replayweb.page.git#a63390f10c064bdf6b02ccbcdcb223b64ae6cf79"
+replaywebpage@^2.0.0-beta.2:
+  version "2.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.0.0-beta.2.tgz#edc08f2ea81622fdab655599c0379206e07c1086"
+  integrity sha512-k3/RskgIb7LVwnpaKd2qQrErgHOtv26x+cVWXo9BBqkvYTVQIdI+QoPs8imkst+Vi2xM9ZVhkmRYekMqK1+jHA==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "^2.8.0"
-    "@webrecorder/wabac" "^2.16.13"
+    "@webrecorder/wabac" "^2.17.3"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^5.3.0"
@@ -7668,6 +7676,7 @@ repeat-string@^1.6.1:
     register-service-worker "^1.7.2"
     split.js "^1.6.4"
     stream-browserify "^3.0.0"
+    tsconfig-paths-webpack-plugin "^4.1.0"
 
 require-directory@^2.1.1:
   version "2.1.1"

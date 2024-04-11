@@ -10,7 +10,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@webrecorder/awp-sw": "^0.4.3",
-    "@webrecorder/wabac": "^2.16.12",
+    "@webrecorder/wabac": "^2.18.0",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.5.2",
     "btoa": "^1.2.1",
@@ -23,12 +23,12 @@
     "node-fetch": "2.6.7",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "git+https://github.com/webrecorder/replayweb.page.git#dev-2.0.0",
+    "replaywebpage": "^2.0.0-beta.2",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
     "uuid": "^8.3.2",
-    "warcio": "^2.2.0"
+    "warcio": "^2.2.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.15.0",

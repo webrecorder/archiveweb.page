@@ -183,12 +183,12 @@ class RequestResponseInfo
 
     const reqUrl = this.url;
 
-    if (this.postData) {
+    if (this.method && this.method !== "GET") {
       const convData = {
         url: this.url,
         headers: reqHeaders.headers,
         method: this.method,
-        postData: this.postData,
+        postData: this.postData || "",
       };
       if (postToGetUrl(convData)) {
         //this.requestBody = convData.requestBody;

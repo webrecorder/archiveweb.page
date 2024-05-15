@@ -41,7 +41,7 @@ If you want to make changes to the extension, it should be installed in this way
 
 For development, it is recommended to use the dev build of the extension:
 
-1. Run ``yarn install`` and then ``yarn run build-dev`
+1. Run ``yarn install`` and then ``yarn run build-dev``
 
 2. Run ``yarn run start-ext`` -- this will ensure the `wr-ext` directory is rebuilt after any changes to the source.
 

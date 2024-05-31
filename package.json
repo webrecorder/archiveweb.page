@@ -10,7 +10,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@webrecorder/awp-sw": "^0.4.3",
-    "@webrecorder/wabac": "^2.18.0",
+    "@webrecorder/wabac": "^2.18.1",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.5.3",
     "btoa": "^1.2.1",

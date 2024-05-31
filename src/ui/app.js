@@ -29,6 +29,8 @@ const VERSION = __AWP_VERSION__;
 
 const DEFAULT_GATEWAY_URL = "https://w3s.link/ipfs/";
 
+const DEFAULT_BTRIX_URL = "https://app.browsertrix.com";
+
 
 //============================================================================
 class ArchiveWebApp extends ReplayWebApp
@@ -656,7 +658,7 @@ class ArchiveWebApp extends ReplayWebApp
             <a @click=${() => this.settingsTab = "ipfs"}>IPFS</a>
           </li>
           <li class="${this.settingsTab === "browsertrix" ? "is-active" : ""}">
-            <a @click=${() => this.settingsTab = "browsertrix"}>Browsertrix Cloud</a>
+            <a @click=${() => this.settingsTab = "browsertrix"}>Browsertrix</a>
           </li>
         </ul>
       </div>
@@ -688,14 +690,15 @@ class ArchiveWebApp extends ReplayWebApp
         </fieldset>` : ""}
 
         ${this.settingsTab === "browsertrix" ? html`
-        <p class="is-size-6 mb-3">Configure your credentials to upload archived items to Browsertrix Cloud.</p>
+        <p class="is-size-6 mb-3">Configure your credentials to upload archived items to Browsertrix.</p>
+        <p class="is-size-7 p-4 has-background-info">Don't have a Browsertrix account? Visit <a href="https://browsertrix.com/">https://browsertrix.com/</a> for more info.</p>
         <fieldset>
           <div class="field has-addons">
             <p class="is-expanded">
-              Browsertrix Cloud URL:
+              Browsertrix URL:
               <input class="input is-small" type="url"
-              name="btrixUrl" id="btrixUrl" value="${this.btrixOpts && this.btrixOpts.url}"
-              placeholder="https://...">
+              name="btrixUrl" id="btrixUrl" value="${this.btrixOpts && this.btrixOpts.url || DEFAULT_BTRIX_URL}"
+              placeholder="${DEFAULT_BTRIX_URL}">
             </p>
           </div>
           <div class="field has-addons">
@@ -891,7 +894,7 @@ class ArchiveWebApp extends ReplayWebApp
           client = await BtrixClient.login(btrixOpts);
           this.settingsError = "";
         } catch (e) {
-          this.settingsError = "Unable to log in to Browsertrix Cloud. Check your credentials.";
+          this.settingsError = "Unable to log in to Browsertrix. Check your credentials.";
           return false;
         }
 

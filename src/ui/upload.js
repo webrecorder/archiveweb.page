@@ -126,7 +126,7 @@ class BtrixUploader extends LitElement
     return html`
       <wr-modal
       @modal-closed="${() => this.coll = null}"
-      title="Upload To Browsertrix Cloud">
+      title="Upload To Browsertrix">
         <table class="is-size-6" style="margin-left: 3.0rem">
           <tr class="is-italic">
             <td class="has-text-right pr-4">Collection:</td>
@@ -151,7 +151,7 @@ class BtrixUploader extends LitElement
             <td class="has-text-right pr-4">Link:</td>
             <td><a href="${btrixUploadUrl}" target="_blank">
             <fa-icon aria-hidden="true" class="" size="0.7em" .svg="${fasExternal}"></fa-icon>
-            View in Browsertrix Cloud</a></td>
+            View in Browsertrix</a></td>
           </tr>` : ""}
         </table>
         <div class="is-flex is-flex-direction-column">
@@ -200,7 +200,7 @@ class BtrixUploader extends LitElement
       if (!this.isUploadNeeded) {
         return html`<p class="is-italic">
         <fa-icon aria-hidden="true" class="has-text-success" .svg="${fasCheck}"></fa-icon>
-        Archive already uploaded to Browsertrix Cloud.
+        Archive already uploaded to Browsertrix.
         ${this.renderDeleteUploaded()}
         </p>
         `;
@@ -216,7 +216,7 @@ class BtrixUploader extends LitElement
       }
 
     case "deleted":
-      return html`<p class="has-text-weight-bold has-text-primary">Upload to Browsertrix Cloud has been deleted.</p>
+      return html`<p class="has-text-weight-bold has-text-primary">Upload to Browsertrix has been deleted.</p>
       <p>(Data is still saved locally in your browser)</p>`;
 
     case "deleteFailed":
@@ -233,7 +233,7 @@ class BtrixUploader extends LitElement
 
   renderDeleteUploaded() {
     return html`
-    <span><button class="button is-small" title="Delete Upload from Browsertrix Cloud" type="button" @click="${this.onDeleteUpload}">
+    <span><button class="button is-small" title="Delete Upload from Browsertrix" type="button" @click="${this.onDeleteUpload}">
     <fa-icon aria-hidden="true" class="has-text-danger pr-2" .svg="${fasX}"></fa-icon>
     Delete
     </button></span>

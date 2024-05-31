@@ -1,0 +1,48 @@
+name: Feature / Change Request
+description: If new things should be added or something that is working as intended should be changed, please file this type of issue!
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  # Context
+  - type: textarea
+    attributes:
+      label: Context
+      description: Describe any prior information that we are taking into account to inform this future development.
+      placeholder: "Now that x is done we should do y to accomplish z."
+    validations:
+      required: true
+  # User story sentence
+  - type: textarea
+    attributes:
+      label: What change would you like to see?
+      description: Describe the solution you'd like. If relevant, include ways in which you've tried to solve the issue with the current version.
+      placeholder: "As a user, I want to be able to ____ so that I can ____"
+    validations:
+      required: true
+  # Requirements
+  - type: textarea
+    attributes:
+      label: Requirements
+      description: |
+        Intended primarily for use by Webrecorder team, leave blank if unknown.
+        
+        List the outcomes of the feature being implemented without design or implementation details.
+      placeholder: |
+        1. Item metadata should show links to the collections that the item belongs to.
+        2. Items can be added or removed from collections when editing an item.
+    validations:
+      required: false
+  # Todo
+  - type: textarea
+    attributes:
+      label: Todo
+      description: |
+        Intended primarily for use by Webrecorder team, leave blank if unknown.
+
+        Any other linked issues / tasks to complete to implement this feature.
+      placeholder: |
+        - [ ] Mockups: 
+        - [ ] Design: 
+        - [ ] UI: 
+    validations:
+      required: false

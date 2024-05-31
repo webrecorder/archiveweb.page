@@ -185,26 +185,26 @@ class BrowserRecorder extends Recorder {
 
     if (this.running) {
       if (this.behaviorState === BEHAVIOR_RUNNING) {
-        title = "Recording: Autopilot Running!";
+        title = "Archiving: Autopilot Running!";
         color = "#3298dc";
         text = " ";
 
       } else if (this.numPending === 0) {
-        title = "Recording: No URLs pending, can continue";
+        title = "Archiving: No URLs pending, can continue";
         color = "#64e986";
         text = " ";
 
       } else {
-        title = `Recording: ${this.numPending} URLs pending, please wait`;
+        title = `Archiving: ${this.numPending} URLs pending, please wait`;
         color = "#bb9f08";
         text = "" + this.numPending;
       }
     } else if (this.failureMsg) {
-      title = "Error: Can't Record this page";
+      title = "Error: Can't Archive this page";
       text = "X";
       color = "#F00";
     } else {
-      title = "Not Recording";
+      title = "Not Archiving";
       text = "";
       color = "#64e986";
     }

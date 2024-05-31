@@ -317,26 +317,26 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="message is-small">
           <div class="message-body">
             <div class="buttons">
-              <button class="button is-small no-pad-mobile" title="Create New..." @click="${() => this.showNew = "show"}">
+              <button class="button is-small no-pad-mobile" title="New Archiving Session" @click="${() => this.showNew = "show"}">
                 <span class="icon">
                   <fa-icon .svg=${fasPlus}></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">Create New...</span>
+                <span class="is-hidden-mobile">New Archiving Session</span>
               </button>
-              <button class="button is-small no-pad-mobile" title="Import Archive..." @click="${() => this.showImport = true}">
+              <button class="button is-small no-pad-mobile" title="Import File" @click="${() => this.showImport = true}">
                 <span class="icon">
                   <fa-icon .svg=${fasUpload}></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">Import Archive...</span>
+                <span class="is-hidden-mobile">Import File</span>
               </button>
-              <button class="button is-small no-pad-mobile" title="Start Recording..." ?disabled="${!this.colls}" @click="${this.onShowStart}">
+              <button class="button is-small no-pad-mobile" title="Start Archiving" ?disabled="${!this.colls}" @click="${this.onShowStart}">
                 <span class="icon">
                   <fa-icon size="1.0em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
                 </span>
-                <span class="is-hidden-mobile">Start Recording...</span>
+                <span class="is-hidden-mobile">Start Archiving</span>
               </button>
               <div class="rightbar">
-                <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to create web archives directly in your browser!</div>
+                <div class="infomsg is-hidden-mobile">The ArchiveWeb.page ${IS_APP ? "App" : "Extension"} allows you to archive webpages directly in your browser!</div>
                 <button class="button is-small" @click="${() => this.showSettings = true}">
                   <fa-icon .svg=${fasCog}></fa-icon>
                 </button>
@@ -348,7 +348,7 @@ class ArchiveWebApp extends ReplayWebApp
 
       <wr-rec-coll-index
        dateName="Date Created"
-       headerName="Current Web Archives"
+       headerName="Archived Items"
        .shareOpts=${{ipfsOpts: this.ipfsOpts, btrixOpts: this.btrixOpts}}
        @show-start=${this.onShowStart}
        @show-import=${this.onShowImport}
@@ -415,8 +415,8 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderStartModal() {
     return html`
-    <wr-modal @modal-closed="${() => this.showStartRecord = false}" title="Start Recording">
-      ${this.renderCollList("Archive To:")}
+    <wr-modal @modal-closed="${() => this.showStartRecord = false}" title="Start Archiving">
+      ${this.renderCollList("Save To:")}
       <div class="field">
         <label class="checkbox is-size-7">
         <input type="checkbox" ?checked="${this.autorun}" @change="${(e) => this.autorun = e.currentTarget.checked}">
@@ -429,7 +429,7 @@ class ArchiveWebApp extends ReplayWebApp
           <p class="control is-expanded">
             <input class="input" type="url" required
             name="url" id="url" value="${this.recordUrl}"
-            placeholder="Enter a URL to Start Recording">
+            placeholder="Enter a URL to Start Archiving">
           </p>
           <div class="control">
             <button type="submit" class="button is-hidden-mobile is-outlined is-link">
@@ -442,7 +442,7 @@ class ArchiveWebApp extends ReplayWebApp
         </div>
         ${IS_APP ? html`
         <label class="checkbox">
-          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without recording.)</span>
+          <input id="preview" type="checkbox"><span>&nbsp;Start in Preview Mode (without archiving.)</span>
         </label>` : ""}
       </form>
     </wr-modal>`;
@@ -450,14 +450,14 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderNewCollModal() {
     return html`
-    <wr-modal @modal-closed="${() => this.showNew = null}" title="Create New Archive">
+    <wr-modal @modal-closed="${() => this.showNew = null}" title="New Archiving Session">
       <form @submit="${this.onNewColl}" class="create-new">
         <div class="field has-addons">
           <p class="control is-expanded">
-            <input type="text" id="new-title" name="new-title" class="input" required placeholder="Enter the title for the new archive">
+            <input type="text" id="new-title" name="new-title" class="input" required placeholder="Give this archiving session a name">
           </p>
           <div class="control">
-            <button type="submit" class="button is-hidden-mobile is-primary ${this.showNew === "loading" ? "is-loading " : ""}" ?disabled="${this.showNew === "loading"}">Create New</button>
+            <button type="submit" class="button is-hidden-mobile is-primary ${this.showNew === "loading" ? "is-loading " : ""}" ?disabled="${this.showNew === "loading"}">Create</button>
           </div>
         </div>
       </form>
@@ -466,7 +466,7 @@ class ArchiveWebApp extends ReplayWebApp
 
   renderImportModal() {
     return html`
-    <wr-modal style="--modal-width: 740px" @modal-closed="${() => this.showImport = false}" title="Import an Existing Archive">
+    <wr-modal style="--modal-width: 740px" @modal-closed="${() => this.showImport = false}" title="Import File">
       <wr-chooser
         style="flex: auto"
         .newFullImport="${true}"
@@ -477,7 +477,7 @@ class ArchiveWebApp extends ReplayWebApp
         <div class="control">
           <label class="checkbox">
             <input type="checkbox" name="add-existing" .checked="${this.isImportExisting}" @change="${(e) => this.isImportExisting = e.currentTarget.checked}">
-            Add to an existing archive collection${this.isImportExisting ? ":" : ""}
+            Add to an existing archived item${this.isImportExisting ? ":" : ""}
           </label>
         </div>
         ${this.isImportExisting ? this.renderCollList() : ""}
@@ -596,10 +596,10 @@ class ArchiveWebApp extends ReplayWebApp
                     </div>
 
                     ${IS_APP ? html`
-                    <p>ArchiveWeb.page App is a standalone app for Mac, Windows and Linux that allows users to create web archives as they browse</p>
+                    <p>ArchiveWeb.page App is a standalone app for Mac, Windows and Linux that allows users to archive webpages as they browse</p>
 
                     ` : html`
-                    <p>ArchiveWeb.page allows users to create web archives directly in your browser!</p>`}
+                    <p>ArchiveWeb.page allows users to archive webpages directly in your browser!</p>`}
                   </div>
 
                   <p>See the <a href="https://archiveweb.page/guide" target="_blank">ArchiveWeb.page Guide</a> for more info on how to use this tool.</p>
@@ -611,13 +611,13 @@ class ArchiveWebApp extends ReplayWebApp
                   <p>ArchiveWeb.page is part of the <a href="https://webrecorder.net/" target="_blank">Webrecorder Project</a>.</p>
 
                   <h3>Privacy Policy</h3>
-                  <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, this archive data is stored directly in the browser.
-                  Users can downloaded this data as files to their harddrive. Users can also delete any and all archived data at any time.
+                  <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, storing captured data directly in the browser.
+                  Users can downloaded this data as files to their hard drive. Users can also delete any and all archived data at any time.
                   ArchiveWeb.page does not collect any usage or tracking data.</p>
 
                   <p class="is-size-7">ArchiveWeb.page includes an experimental sharing option for each archive collection. Users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
                   Once shared on this network, the data may become accessible to others.
-                  All archives are private and not shared by default, unless explicitly opted-in by the user. (A warning is displayed when sharing via IPFS.)</p>
+                  All archived items are private and not shared by default, unless explicitly opted-in by the user. (A warning is displayed when sharing via IPFS.)</p>
 
                   <h4>Disclaimer of Warranties</h4>
                   <p class="is-size-7">The application is provided "as is" without any guarantees.</p>
@@ -656,7 +656,7 @@ class ArchiveWebApp extends ReplayWebApp
       <form class="is-flex is-flex-direction-column is-size-7" @submit="${this.onSaveSettings}">
 
         ${this.settingsTab === "ipfs" ? html`
-        <p class="is-size-6 mb-3">Configure IPFS settings for sharing archives to IPFS.</p>
+        <p class="is-size-6 mb-3">Configure settings for sharing archived items to IPFS.</p>
         <fieldset>
           <div class="field">
             <input name="ipfsAutoDetect" id="ipfsAutoDetect" class="checkbox is-small" type="checkbox" ?checked="${this.ipfsOpts.autoDetect}"><span class="ml-1">Auto-Detect IPFS</span>
@@ -680,7 +680,7 @@ class ArchiveWebApp extends ReplayWebApp
         </fieldset>` : ""}
 
         ${this.settingsTab === "browsertrix" ? html`
-        <p class="is-size-6 mb-3">Configure your credentials to upload archives to Browsertrix Cloud.</p>
+        <p class="is-size-6 mb-3">Configure your credentials to upload archived items to Browsertrix Cloud.</p>
         <fieldset>
           <div class="field has-addons">
             <p class="is-expanded">

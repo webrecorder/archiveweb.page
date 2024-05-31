@@ -71,7 +71,7 @@ class AppRecPopup extends RecPopup
   }
 
   get notRecordingMessage() {
-    return "Not Recording this Window";
+    return "Not Archiving this Window";
   }
 
   getHomePage() {

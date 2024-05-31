@@ -147,7 +147,7 @@ class WrRecCollInfo extends CollInfo
     return html`
       <div class="columns">
         <div class="column is-2">
-          <p class="minihead">Title</p>
+          <p class="minihead">Name</p>
           <span class="subtitle has-text-weight-bold">
             ${detailed ? html`
             ${coll.title}
@@ -169,12 +169,12 @@ class WrRecCollInfo extends CollInfo
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
             </a>
-            <button @click="${this.onShowImport}" class="button is-small" title="Import Archive...">
+            <button @click="${this.onShowImport}" class="button is-small" title="Import File">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${fasUpload}"></fa-icon>
               </span>
             </button>
-            <button @click="${this.onShowStart}" class="button is-small" title="Start Recording...">
+            <button @click="${this.onShowStart}" class="button is-small" title="Start Archiving">
               <span class="icon">
                 <fa-icon aria-hidden="true" .svg="${wrRec}"></fa-icon>
               </span>
@@ -311,14 +311,14 @@ class WrRecCollInfo extends CollInfo
     <wr-modal bgClass="has-background-warning" @modal-closed="${() => this.shareWarn = false}" title="Start Sharing?">
       <div class="content is-size-7">
         <p>
-          Do you want to share the all the pages in the archive "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
+          Do you want to share all the content in "<i>${this.coll.title}</i>" via IPFS, a peer-to-peer
           distributed storage network?
         </p>
-        <p>Your archive will have a unique link which can be shared with others to load your archive
-        via ReplayWeb.page. All archived data is loaded on-demand when replayed. This feature is experimental and likely works best with smaller archives.</p>
-        <p>You can cancel sharing at anytime. 
+        <p>Your archiving session will have a unique link which can be shared with others to load and replay
+        on-demand in ReplayWeb.page. This feature is experimental and likely works best with smaller archives.</p>
+        <p>You can cancel sharing at any time.
         </p>
-        <p><b>Once shared, this data leaves your computer and could be read by others.</b></p>
+        <p><b>Once shared, this data leaves your computer and can be read by others.</b></p>
         <p>If you do not wish to share this data, click Cancel.</p>
       </div>
       <div class="content">

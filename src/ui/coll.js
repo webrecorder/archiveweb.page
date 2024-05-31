@@ -81,8 +81,8 @@ class WrRecColl extends Coll
     if (this.embed) {
       if (!isDropdown) {
         return html`
-        <span class="rec-button" title="Recording">
-          <span class="icon is-small" title="Recording">
+        <span class="rec-button" title="Archiving">
+          <span class="icon is-small" title="Archiving">
             <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
           </span>
           <span class="size-label">${prettyBytes(this.totalSize)}</span>
@@ -108,7 +108,7 @@ class WrRecColl extends Coll
     return html`
     <a href="#" role="button"
     class="${!isDropdown ? "button narrow is-borderless" : "dropdown-item is-hidden-tablet"}"
-      title="Start Recording" aria-label="Start Recording" aria-controls="record"
+      title="Start Archiving" aria-label="Start Archiving" aria-controls="record"
       @click="${this.onShowStart}" @keyup="${clickOnSpacebarPress}">
       <span class="icon is-small">
         <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>

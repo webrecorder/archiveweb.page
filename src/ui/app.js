@@ -63,7 +63,7 @@ class ArchiveWebApp extends ReplayWebApp
     try {
       const res = localStorage.getItem("btrixOpts");
       this.btrixOpts = JSON.parse(res);
-      BtrixClient.login(this.btrixOpts).then(client => this.btrixOpts.client = client);
+      this.doBtrixLogin();
     } catch (e) {
       this.btrixOpts = null;
     }
@@ -72,6 +72,14 @@ class ArchiveWebApp extends ReplayWebApp
 
     if (window.archivewebpage) {
       window.archivewebpage.setDownloadCallback((progress) => this.onDownloadProgress(progress));
+    }
+  }
+
+  async doBtrixLogin() {
+    try {
+      this.btrixOpts.client = await BtrixClient.login(this.btrixOpts);
+    } catch (e) {
+      this.btrixOpts = null;
     }
   }
 

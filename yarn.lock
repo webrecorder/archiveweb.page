@@ -755,7 +755,14 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.38.tgz#f8bb07c371ccb1903f3752872c89f44006132947"
   integrity sha512-5jY9RhV7c0Z4Jy09G+NIDTsCZ5G0L5n+Z+p+Y7t5VJHM30bgwzSjVtlcBxqAj+6L/swIlvtOSzr8rBk/aNyV2g==
 
-"@types/node@>=13.7.0", "@types/node@^20.9.0":
+"@types/node@>=13.7.0":
+  version "20.13.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.13.0.tgz#011a76bc1e71ae9a026dddcfd7039084f752c4b6"
+  integrity sha512-FM6AOb3khNkNIXPnHFDYaHerSv8uN22C91z098AnGccVu+Pcdhi+pNUFDi0iLmPIsVE0JBD0KVS7mzUYt4nRzQ==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@^20.9.0":
   version "20.12.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.12.7.tgz#04080362fa3dd6c5822061aa3124f5c152cff384"
   integrity sha512-wq0cICSkRLVaf3UGLMGItu/PtdY7oaXaI/RVU+xliKVOtRna3PRY57ZDfztpDL0n11vfymMUnXv8QwYCO7L1wg==
@@ -1013,23 +1020,49 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@webrecorder/awp-sw@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.4.3.tgz#d18503c7877182280b685657a34655a0878951be"
-  integrity sha512-erQWtLvrsEErfxsQb89DNwNVNxv/Y00TvpHzj06+pfNQqNMCg/lmTasMRhImDhUkg0WrAsLCOKK+c3NrEvmCiw==
+"@webrecorder/awp-sw@github:webrecorder/awp-sw#remove-ipfs":
+  version "0.4.4"
+  resolved "https://codeload.github.com/webrecorder/awp-sw/tar.gz/4a13bd0db8163d2d08fa9805c10b4443fb2c4228"
   dependencies:
-    "@ipld/car" "^5.1.1"
-    "@ipld/unixfs" "^2.1.1"
-    "@webrecorder/wabac" "^2.16.12"
+    "@webrecorder/wabac" "^2.18.1"
     auto-js-ipfs "^2.3.0"
     client-zip "^2.3.0"
     hash-wasm "^4.9.0"
     idb "^7.1.1"
     p-queue "^7.3.4"
     uuid "^9.0.0"
-    warcio "^2.2.0"
+    warcio "^2.2.1"
 
-"@webrecorder/wabac@^2.16.12", "@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1":
+"@webrecorder/wabac@2.17.3":
+  version "2.17.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.17.3.tgz#7e059aeef3eea68958793552dd1f96db9a19ce1e"
+  integrity sha512-D5CEMTP/+obOD6dh6ZIDNhY905AekzT12RMTrgL7Rq4RTB3mR6d1FKXDWh1MftPIvowlAGBBTu2C3KpFby+KZQ==
+  dependencies:
+    "@peculiar/asn1-ecc" "^2.3.4"
+    "@peculiar/asn1-schema" "^2.3.3"
+    "@peculiar/x509" "^1.9.2"
+    "@webrecorder/wombat" "^3.7.3"
+    acorn "^8.10.0"
+    auto-js-ipfs "^2.1.1"
+    base64-js "^1.5.1"
+    brotli "^1.3.3"
+    buffer "^6.0.3"
+    fast-xml-parser "^4.2.5"
+    hash-wasm "^4.9.0"
+    http-link-header "^1.1.0"
+    http-status-codes "^2.1.4"
+    idb "^7.1.1"
+    js-levenshtein "^1.1.6"
+    js-yaml "^4.1.0"
+    pako "^1.0.11"
+    parse5-html-rewriting-stream "^7.0.0"
+    parse5-sax-parser "^7.0.0"
+    path-parser "^6.1.0"
+    process "^0.11.10"
+    stream-browserify "^3.0.0"
+    warcio "^2.2.1"
+
+"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1":
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.18.1.tgz#9e65bc7388d7fedb5b82df8bb3b6a0729b8f8200"
   integrity sha512-DgX24jaE0ZpdZ06eVCLVaWLXpICmnaPeHpDbyURaGldWypmwDBhpj9n4yrGKyZBC1wLQP2ytrV0LgnvrZdDl1Q==
@@ -1838,9 +1871,9 @@ client-zip@^2.2.2:
   integrity sha512-Jh1Sz/iBTfYuLQv6yKzrrXofJy17Q7YRhBfh5HH/6i4Z+ACjTfmRJllWQKoe4eFWwXeUoOjEathqXfuGGX4jhg==
 
 client-zip@^2.3.0:
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/client-zip/-/client-zip-2.4.4.tgz#fcda10e26b9422ed9b22b4cd826a096831335066"
-  integrity sha512-Ixk40BUI7VvNDxW7SCze20GbCuC+gjP4tGkXUpo6/W96bOf96HSed6cOQVeUOIe74SJAG/dIrBr7AtR4xBVnsA==
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/client-zip/-/client-zip-2.4.5.tgz#c9b6190abca57b8b4d6dcfd21c3a1f4d4ab3bc68"
+  integrity sha512-4y4d5ZeTH/szIAMQeC8ju67pxtvj+3u20wMGwOFrZk+pegy3aSEA2JkwgC8XVDTXP/Iqn1gyqNQXmkyBp4KLEQ==
 
 cliui@^7.0.2:
   version "7.0.4"
@@ -3326,7 +3359,7 @@ http-errors@~1.6.2:
     setprototypeof "1.1.0"
     statuses ">= 1.4.0 < 2"
 
-http-link-header@^1.1.3:
+http-link-header@^1.1.0, http-link-header@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/http-link-header/-/http-link-header-1.1.3.tgz#b367b7a0ad1cf14027953f31aa1df40bb433da2a"
   integrity sha512-3cZ0SRL8fb9MUlU3mKM61FcQvPfXx2dBrZW3Vbg5CXa8jFlK8OaEpePenLe1oEXQduhz8b0QjsqfS59QP4AJDQ==
@@ -4421,11 +4454,6 @@ multicast-dns@^7.2.5:
     dns-packet "^5.2.2"
     thunky "^1.0.2"
 
-multiformats@^10.0.2:
-  version "10.0.2"
-  resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-10.0.2.tgz#e549ae833dac77edb534bece4adf1d1a214879f0"
-  integrity sha512-nJEHLFOYhO4L+aNApHhCnWqa31FyqAHv9Q77AhmwU3KsM2f1j7tuJpCk5ByZ33smzycNCpSG5klNIejIyfFx2A==
-
 multiformats@^11.0.1:
   version "11.0.2"
   resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-11.0.2.tgz#b14735efc42cd8581e73895e66bebb9752151b60"
@@ -4979,9 +5007,9 @@ promise-retry@^2.0.1:
     retry "^0.12.0"
 
 protobufjs@^7.1.2:
-  version "7.2.6"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.2.6.tgz#4a0ccd79eb292717aacf07530a07e0ed20278215"
-  integrity sha512-dgJaEDDL6x8ASUZ1YqWciTRrdOuYNzoOf27oHNfdyvKqHr5i0FV7FSLU+aIeFjyFgVxrpTOtQUi0BLLBymZaBw==
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.3.0.tgz#a32ec0422c039798c41a0700306a6e305b9cb32c"
+  integrity sha512-YWD03n3shzV9ImZRX3ccbjqLxj7NokGN0V/ESiBV5xWqrommYHYiihuIyavq03pWSGqlyvYUFmfoMKd+1rPA/g==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"

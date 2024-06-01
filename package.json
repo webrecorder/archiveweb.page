@@ -9,7 +9,7 @@
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "@webrecorder/awp-sw": "^0.4.3",
+    "@webrecorder/awp-sw": "github:webrecorder/awp-sw#remove-ipfs",
     "@webrecorder/wabac": "^2.18.1",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.5.3",
@@ -19,7 +19,6 @@
     "hash-wasm": "^4.9.0",
     "http-status-codes": "^2.1.4",
     "keyword-mark-element": "^0.1.2",
-    "multiformats": "^10.0.2",
     "node-fetch": "2.6.7",
     "pretty-bytes": "^5.6.0",
     "replaywebpage": "1.8.17",

@@ -141,6 +141,14 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
+  firstUpdated() {
+    this.initRoute();
+    
+    window.addEventListener("popstate", () => {
+      this.initRoute();
+    });
+  } 
+
   handleMessages() {
     // support upload
     window.addEventListener("message", async (event) => {

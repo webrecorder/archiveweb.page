@@ -141,7 +141,20 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
+  async checkDoubleSW() {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const reg of regs) {
+      if (reg.scope.endsWith("/replay/sw.js")) {
+        if (await reg.scope.unregister()) {
+          self.location.reload();
+        }
+      }
+    }
+  }
+
   firstUpdated() {
+    this.checkDoubleSW();
+
     this.initRoute();
     
     window.addEventListener("popstate", () => {

@@ -26,16 +26,16 @@ To develop ArchiveWeb.page, Node 12+ and Yarn are needed.
 
 The production version of the extension is published to the [Chrome Web Store](https://chrome.google.com/webstore/detail/webrecorder/fpeoodllldobpkbkabpblcfaogecpndd)
 
-For development, the extension can be installed from the `wr-ext` directory as an unpacked extension.
-If you want to make changes to the extension, it should be installed in this way. This will be a different version than the production version of the extension.
+For development, the extension can be built locally and loaded as an unpacked extension.
+If you want to make changes to the extension, it should be installed in this way.
 
-1. Clone this repo
+1. Clone this repo. Run `yarn install; yarn build-dev`. (You can also run `yarn build` to build the production version but it may be harder to debug).
 
-2. Open the Chrome Extensions page (chrome://extensions).
+3. Open the Chrome Extensions page (chrome://extensions).
 
-3. Choose 'Load Unpacked Extension' and point to the `./wr-ext` directory in your local copy of this repo.
+4. Choose 'Load Unpacked Extension' and point to the `./dist/ext` directory in your local copy of this repo.
 
-4. Click the extension icon to show the extension popup, start recording, etc...
+5. Click the extension icon to show the extension popup, start archiving, etc...
 
 ### Development Workflow
 
@@ -43,7 +43,7 @@ For development, it is recommended to use the dev build of the extension:
 
 1. Run ``yarn install`` and then ``yarn run build-dev``
 
-2. Run ``yarn run start-ext`` -- this will ensure the `wr-ext` directory is rebuilt after any changes to the source.
+2. Run ``yarn run start-ext`` -- this will ensure the `dist/ext` directory is rebuilt after any changes to the source.
 
 3. After making changes, the extension still needs to be reloaded in the browser. From the Chrome extensions page, click the reload button to load the latest version.
 

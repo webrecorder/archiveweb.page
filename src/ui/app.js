@@ -153,6 +153,12 @@ class ArchiveWebApp extends ReplayWebApp
   }
 
   firstUpdated() {
+    this.embed = this.pageParams.get("embed") || "";
+
+    if (this.embed) {
+      return super.firstUpdated();
+    }
+
     this.checkDoubleSW();
 
     this.initRoute();

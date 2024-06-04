@@ -108,7 +108,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
 
 
 // ===========================================================================
-function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}, flat = false} = {}) {
+function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}, replayDir = false} = {}, argv) {
   if (copy.length) {
     plugins.push(new CopyPlugin({patterns: copy}));
   }
@@ -121,20 +121,17 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
       "sw": "./src/sw/main.js",
       ...entry
     },
+    devtool: argv.mode === "production" ? undefined : "source-map",
     optimization,
     //resolve: {fallback},
     output: {
       path: outputPath,
       filename: (chunkData) => {
         const name = "[name].js";
-        const replayName = "./replay/" + name;
 
         switch (chunkData.chunk.name) {
-        case "ui":
-          return flat ? name : replayName;
-
         case "sw":
-          return replayName;
+          return replayDir ? `./replay/${name}` : name;
 
         default:
           return name;
@@ -199,12 +196,12 @@ const extensionWebConfig = (env, argv) => {
     "popup": "./src/popup.js"
   };
 
-  return sharedBuild(DIST_EXT, {plugins, copy, entry});
+  return sharedBuild(DIST_EXT, {plugins, copy, entry}, argv);
 };
 
 
 // ===========================================================================
-const electronWebConfig = (/*env, argv*/) => {
+const electronWebConfig = (env, argv) => {
   const entry = {
     "rec-window": "./src/electron/rec-window.js"
   };
@@ -215,11 +212,11 @@ const electronWebConfig = (/*env, argv*/) => {
     { from: "src/electron/rec-window.html", to: "" },
   ];
 
-  return sharedBuild(DIST_ELECTRON, {copy, entry});
+  return sharedBuild(DIST_ELECTRON, {copy, entry}, argv);
 };
 
 // ===========================================================================
-const embedWebConfig = (/*env, argv*/) => {
+const embedWebConfig = (env, argv) => {
   const copy = [
     { from: "src/embed.html", to: "./index.html" },
   ];
@@ -229,13 +226,15 @@ const embedWebConfig = (/*env, argv*/) => {
       compress: true,
       port: 10001,
       open: true,
-      static:  path.join(__dirname),
+      static: {
+        directory: DIST_EMBED,
+      }
     }
   };
 
-  const flat = true;
+  const replayDir = true;
 
-  return sharedBuild(DIST_EMBED, {copy, extra, flat});
+  return sharedBuild(DIST_EMBED, {copy, extra, replayDir}, argv);
 };
 
 

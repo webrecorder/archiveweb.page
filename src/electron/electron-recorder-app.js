@@ -92,7 +92,7 @@ class ElectronRecorderApp extends ElectronReplayApp
   }
 
   get mainWindowUrl() {
-    return "replay/index.html";
+    return "index.html";
   }
 
   createMainWindow(argv) {

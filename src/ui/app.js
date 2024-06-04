@@ -141,6 +141,33 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
+  async checkDoubleSW() {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const reg of regs) {
+      if (reg.active && reg.active.scriptURL.endsWith("/replay/sw.js")) {
+        if (await reg.unregister()) {
+          self.location.reload();
+        }
+      }
+    }
+  }
+
+  firstUpdated() {
+    this.embed = this.pageParams.get("embed") || "";
+
+    if (this.embed) {
+      return super.firstUpdated();
+    }
+
+    this.checkDoubleSW();
+
+    this.initRoute();
+    
+    window.addEventListener("popstate", () => {
+      this.initRoute();
+    });
+  } 
+
   handleMessages() {
     // support upload
     window.addEventListener("message", async (event) => {

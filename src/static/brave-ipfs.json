@@ -1,0 +1,68 @@
+[
+  {
+    "id": 10,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "http://localhost:5001" }
+      ]
+    },
+    "condition": { "urlFilter": "localhost:5001", "resourceTypes": ["xmlhttprequest"] }
+  },
+  {
+    "id": 1,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "http://localhost:45001" }
+      ]
+    },
+    "condition": { "urlFilter": "localhost:45001", "resourceTypes": ["xmlhttprequest"] }
+  },
+  {
+    "id": 2,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "http://localhost:45002" }
+      ]
+    },
+    "condition": { "urlFilter": "localhost:45002", "resourceTypes": ["xmlhttprequest"] }
+  },
+  {
+    "id": 3,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "http://localhost:45003" }
+      ]
+    },
+    "condition": { "urlFilter": "localhost:45003", "resourceTypes": ["xmlhttprequest"] }
+  },
+  {
+    "id": 4,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "http://localhost:45004" }
+      ]
+    },
+    "condition": { "urlFilter": "localhost:45004", "resourceTypes": ["xmlhttprequest"] }
+  },
+  {
+    "id": 5,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "http://localhost:45005" }
+      ]
+    },
+    "condition": { "urlFilter": "localhost:45005", "resourceTypes": ["xmlhttprequest"] }
+  }
+]

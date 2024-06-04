@@ -681,11 +681,11 @@ class ArchiveWebApp extends ReplayWebApp
     <wr-modal @modal-closed="${this.onCancelSettings}" title="Settings">
       <div class="tabs mb-3">
         <ul>
-          <li class="${this.settingsTab === "ipfs" ? "is-active" : ""}">
-            <a @click=${() => this.settingsTab = "ipfs"}>IPFS</a>
-          </li>
           <li class="${this.settingsTab === "browsertrix" ? "is-active" : ""}">
             <a @click=${() => this.settingsTab = "browsertrix"}>Browsertrix</a>
+          </li>
+          <li class="${this.settingsTab === "ipfs" ? "is-active" : ""}">
+            <a @click=${() => this.settingsTab = "ipfs"}>IPFS</a>
           </li>
         </ul>
       </div>
@@ -746,10 +746,10 @@ class ArchiveWebApp extends ReplayWebApp
           </div>
           <div class="field has-addons">
             <p class="is-expanded">
-              Organization Name (Optional)
+              Organization Name or Slug (Optional)
               <input class="input is-small" type="text"
               name="btrixOrgName" id="btrixOrgName" value="${this.btrixOpts && this.btrixOpts.orgName}"
-              placeholder="Organization (optional)">
+              placeholder="my-org">
             </p>
           </div>
         </fieldset>

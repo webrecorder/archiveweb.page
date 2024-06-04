@@ -25,6 +25,9 @@ jobs:
       - name: Yarn Lint
         run: yarn run lint
 
+      - name: Update Ruffle
+        run: yarn run update-ruffle
+
       - name: Yarn Build
         run: yarn run build
 

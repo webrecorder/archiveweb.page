@@ -353,7 +353,7 @@ export class BtrixClient
   }
 
   async getOrg(name="") {
-    const json = await this.fetchAPI("/api/users/me-with-orgs");
+    const json = await this.fetchAPI("/api/users/me");
     const { orgs } = json;
     if (!orgs || !orgs.length) {
       return null;
@@ -362,7 +362,7 @@ export class BtrixClient
       return orgs[0].id;
     }
     for (const org of orgs) {
-      if (org.name === name) {
+      if (org.slug === name || org.name === name) {
         return org.id;
       }
     }

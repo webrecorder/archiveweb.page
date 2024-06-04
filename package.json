@@ -56,7 +56,7 @@
     "build-dev": "webpack --mode development",
     "start-electron": "NODE_ENV=development electron ./dist/electron/electron.js",
     "start-ext": "NODE_ENV=development webpack --mode=development --watch",
-    "start-embed": "webpack serve --mode development",
+    "start-embed": "yarn run build-dev && cd dist/embed/ && http-server -p 10001",
     "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",

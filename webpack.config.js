@@ -108,7 +108,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
 
 
 // ===========================================================================
-function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}} = {}, argv) {
+function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {}, replayDir = false} = {}, argv) {
   if (copy.length) {
     plugins.push(new CopyPlugin({patterns: copy}));
   }
@@ -126,7 +126,17 @@ function sharedBuild(outputPath, {plugins = [], copy = [], entry = {}, extra = {
     //resolve: {fallback},
     output: {
       path: outputPath,
-      filename: "[name].js",
+      filename: (chunkData) => {
+        const name = "[name].js";
+
+        switch (chunkData.chunk.name) {
+        case "sw":
+          return replayDir ? `./replay/${name}` : name;
+
+        default:
+          return name;
+        }
+      },
       libraryTarget: "global",
       globalObject: "self"
     },
@@ -216,13 +226,15 @@ const embedWebConfig = (env, argv) => {
       compress: true,
       port: 10001,
       open: true,
-      static:  path.join(__dirname),
+      static: {
+        directory: DIST_EMBED,
+      }
     }
   };
 
-  const flat = true;
+  const replayDir = true;
 
-  return sharedBuild(DIST_EMBED, {copy, extra, flat}, argv);
+  return sharedBuild(DIST_EMBED, {copy, extra, replayDir}, argv);
 };
 
 

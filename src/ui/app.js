@@ -45,7 +45,7 @@ class ArchiveWebApp extends ReplayWebApp
 
     this.settingsError = "";
 
-    this.settingsTab = localStorage.getItem("settingsTab") || "ipfs";
+    this.settingsTab = localStorage.getItem("settingsTab") || "browsertrix";
 
     try {
       const res = localStorage.getItem("ipfsOpts");
@@ -718,7 +718,7 @@ class ArchiveWebApp extends ReplayWebApp
 
         ${this.settingsTab === "browsertrix" ? html`
         <p class="is-size-6 mb-3">Configure your credentials to upload archived items to Browsertrix.</p>
-        <p class="is-size-7 p-4 has-background-info">Don't have a Browsertrix account? Visit <a href="https://browsertrix.com/">https://browsertrix.com/</a> for more info.</p>
+        <p class="is-size-7 p-4 has-background-info">Don't have a Browsertrix account? Visit <a target="_blank" href="https://browsertrix.com/">https://browsertrix.com/</a> for more info.</p>
         <fieldset>
           <div class="field has-addons">
             <p class="is-expanded">

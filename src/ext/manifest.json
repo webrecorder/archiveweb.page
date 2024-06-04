@@ -2,7 +2,7 @@
   "name": "Webrecorder ArchiveWeb.page",
   "description": "Create high-fidelity web archives directly in your browser",
   "version": "$VERSION",
-  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "storage", "unlimitedStorage", "webRequest", "declarativeNetRequest"],
+  "permissions": ["debugger", "contextMenus", "tabs", "activeTab", "storage", "unlimitedStorage", "webRequest"],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "background": { 
     "service_worker": "bg.js"
@@ -17,13 +17,6 @@
     },
     "default_title": "Webrecorder ArchiveWeb.page",
     "default_popup": "popup.html"
-  },
-  "declarative_net_request": {
-    "rule_resources": [{
-      "id": "brave-ipfs",
-      "enabled": true,
-      "path": "brave-ipfs.json"
-    }]
   },
   "web_accessible_resources": [{
     "resources": [

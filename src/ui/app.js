@@ -144,8 +144,8 @@ class ArchiveWebApp extends ReplayWebApp
   async checkDoubleSW() {
     const regs = await navigator.serviceWorker.getRegistrations();
     for (const reg of regs) {
-      if (reg.scope.endsWith("/replay/sw.js")) {
-        if (await reg.scope.unregister()) {
+      if (reg.active && reg.active.scriptURL.endsWith("/replay/sw.js")) {
+        if (await reg.unregister()) {
           self.location.reload();
         }
       }

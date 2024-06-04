@@ -32,6 +32,9 @@ jobs:
             **/node_modules
           key: ${{ runner.os }}-${{ secrets.CACHE_VERSION }}-${{ hashFiles('**/yarn.lock') }}
 
+      - name: Update Ruffle
+        run: yarn run update-ruffle
+
       - name: Run Build
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}

@@ -57,11 +57,12 @@
     "start-electron": "NODE_ENV=development electron ./dist/electron/electron.js",
     "start-ext": "NODE_ENV=development webpack --mode=development --watch",
     "start-embed": "yarn run build-dev && cd dist/embed/ && http-server -p 10001",
+    "update-ruffle": "./src/static/ruffle/download-latest-ruffle.sh",
     "pack": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
-    "release": "yarn run build && electron-builder",
+    "release": "yarn run update-ruffle && yarn run build && electron-builder",
     "lint": "eslint ./src/ webpack.config.js"
   },
   "build": {

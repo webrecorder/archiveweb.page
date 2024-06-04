@@ -1,7 +1,7 @@
 #!/bin/bash
-CURR=$(dirname "${BASH_SOURCE[0]}")
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-RUFFLE_DIR=$CURR
+RUFFLE_DIR=$SCRIPT_DIR
 
 SELFHOST_URL=$(curl "https://api.github.com/repos/ruffle-rs/ruffle/releases" | jq -r '.[0].assets[] | select(.name | contains("selfhosted")) | .browser_download_url')
 

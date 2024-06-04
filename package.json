@@ -62,7 +62,7 @@
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
-    "release": "yarn run update-ruffle && yarn run build && electron-builder",
+    "release": "yarn run build && electron-builder",
     "lint": "eslint ./src/ webpack.config.js"
   },
   "build": {

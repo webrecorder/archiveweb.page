@@ -13,7 +13,7 @@
     "@webrecorder/awp-sw": "^0.4.4",
     "@webrecorder/wabac": "^2.18.1",
     "auto-js-ipfs": "^2.3.0",
-    "browsertrix-behaviors": "^0.5.3",
+    "browsertrix-behaviors": "^0.6.0",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
     "client-zip": "^2.2.2",
@@ -31,7 +31,7 @@
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
-    "electron": "^29.3.0",
+    "electron": "^30.0.9",
     "electron-builder": "^24.13.3",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.28.0",

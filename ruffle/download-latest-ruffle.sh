@@ -14,4 +14,7 @@ rm $RUFFLE_DIR/*.js $RUFFLE_DIR/*.wasm
 cd $RUFFLE_DIR
 unzip $RUFFLE_DIR/ruffle.zip *.js *.wasm
 
+echo "" >> $RUFFLE_DIR/ruffle.js
+echo "window.setImmediate=undefined;window.clearImmediate=undefined;" >> $RUFFLE_DIR/ruffle.js
+
 rm $RUFFLE_DIR/ruffle.zip

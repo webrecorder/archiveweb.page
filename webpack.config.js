@@ -189,6 +189,7 @@ const extensionWebConfig = (env, argv) => {
 
   const copy = [
     { from: "src/static/", to: "./" },
+    { from: "ruffle", to: "./ruffle/" },
   ];
 
   const entry = {
@@ -208,6 +209,7 @@ const electronWebConfig = (env, argv) => {
 
   const copy = [
     { from: "src/static/", to: "./" },
+    { from: "ruffle", to: "./ruffle/" },
     { from: "src/electron/rec-preload.js", to: "" },
     { from: "src/electron/rec-window.html", to: "" },
   ];

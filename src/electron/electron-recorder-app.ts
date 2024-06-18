@@ -163,7 +163,6 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
     for (const rec of this.recorders.values()) {
-      // @ts-expect-error - TS2345 - Argument of type 'any' is not assignable to parameter of type 'never'.
       promises.push(rec.shutdownPromise);
       //rec.detach();
       rec.recWindow.close();

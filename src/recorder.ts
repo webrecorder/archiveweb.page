@@ -1916,7 +1916,6 @@ class Recorder {
       });
 
       if (!promise) {
-        // @ts-expect-error - TS2322 - Type 'Promise<unknown>' is not assignable to type 'null'.
         promise = p;
       }
 
@@ -1972,7 +1971,6 @@ class Recorder {
             if (!SKIPPED_NODES.includes(name)) {
               const value = strings[nodeValues[i]].trim();
               if (value) {
-                // @ts-expect-error - TS2345 - Argument of type 'any' is not assignable to parameter of type 'never'.
                 accum.push(value);
               }
             }

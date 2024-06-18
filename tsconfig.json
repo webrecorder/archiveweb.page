@@ -7,7 +7,7 @@
     "allowJs": true,
     "strict": true,
     "checkJs": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "importHelpers": true,

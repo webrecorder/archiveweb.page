@@ -30,7 +30,7 @@ For development, the extension can be built locally and loaded as an unpacked ex
 
 1. Clone this repo. Run `yarn install; yarn build-dev`. (You can also run `yarn build` to build the production version but it may be harder to debug).
 
-3. Open the Chrome Extensions page (chrome://extensions).
+3. Open the Chrome Extensions page ([chrome://extensions](chrome://extensions)).
 
 4. Choose 'Load Unpacked Extension' and point to the `./dist/ext` directory in your local copy of this repo.
 

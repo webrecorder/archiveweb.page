@@ -12,9 +12,12 @@ const IS_AGREGORE = navigator.userAgent.includes("agregore-browser");
 // ===========================================================================
 class BrowserRecorder extends Recorder {
   constructor(
+    // @ts-expect-error - TS7006 - Parameter 'debuggee' implicitly has an 'any' type.
     debuggee,
     {
+      // @ts-expect-error - TS7031 - Binding element 'collId' implicitly has an 'any' type.
       collId,
+      // @ts-expect-error - TS7031 - Binding element 'collLoader' implicitly has an 'any' type.
       collLoader,
       waitForTabUpdate = false,
       openUrl = null,
@@ -97,10 +100,12 @@ class BrowserRecorder extends Recorder {
     };
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'path' implicitly has an 'any' type.
   getExternalInjectURL(path) {
     return chrome.runtime.getURL(path);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'collId' implicitly has an 'any' type.
   setCollId(collId) {
     // @ts-expect-error - TS2339 - Property 'collId' does not exist on type 'BrowserRecorder'. | TS2339 - Property 'db' does not exist on type 'BrowserRecorder'.
     if (collId !== this.collId || !this.db) {
@@ -298,6 +303,7 @@ class BrowserRecorder extends Recorder {
     });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'data' implicitly has an 'any' type.
   async _doAddResource(data) {
     //console.log(`Commit ${url} @ ${ts}, cookie: ${cookie}, sw: ${reqresp.fromServiceWorker}`);
     let writtenSize = 0;
@@ -331,6 +337,7 @@ class BrowserRecorder extends Recorder {
     return writtenSize;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'pageInfo' implicitly has an 'any' type.
   _doAddPage(pageInfo) {
     if (!pageInfo.url) {
       console.warn("Empty Page, Skipping");
@@ -343,12 +350,15 @@ class BrowserRecorder extends Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'totalSize' implicitly has an 'any' type. | TS7006 - Parameter 'writtenSize' implicitly has an 'any' type.
   _doIncSizes(totalSize, writtenSize) {
     // @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'BrowserRecorder'. | TS2339 - Property 'collId' does not exist on type 'BrowserRecorder'.
     this.collLoader.updateSize(this.collId, totalSize, writtenSize);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type. | TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'promise' implicitly has an 'any' type.
   _doSendCommand(method, params, promise) {
+    // @ts-expect-error - TS7034 - Variable 'prr' implicitly has type 'any' in some locations where its type cannot be determined.
     let prr;
     const p = new Promise((resolve, reject) => {
       prr = { resolve, reject, method };
@@ -358,10 +368,13 @@ class BrowserRecorder extends Recorder {
       promise = p;
     }
 
+    // @ts-expect-error - TS7006 - Parameter 'res' implicitly has an 'any' type.
     const callback = (res) => {
       if (res) {
+        // @ts-expect-error - TS7005 - Variable 'prr' implicitly has an 'any' type.
         prr.resolve(res);
       } else {
+        // @ts-expect-error - TS7005 - Variable 'prr' implicitly has an 'any' type.
         prr.reject(
           chrome.runtime.lastError ? chrome.runtime.lastError.message : ""
         );
@@ -377,6 +390,7 @@ class BrowserRecorder extends Recorder {
     return promise;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type. | TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessionId' implicitly has an 'any' type.
   _doSendCommandFlat(method, params, sessionId) {
     if (DEBUG) {
       console.log("SEND " + JSON.stringify({ command: method, params }));
@@ -395,6 +409,7 @@ class BrowserRecorder extends Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   handleWindowOpen(url, sessions) {
     super.handleWindowOpen(url, sessions);
     // @ts-expect-error - TS2339 - Property 'openWinMap' does not exist on type 'BrowserRecorder'. | TS2339 - Property 'collId' does not exist on type 'BrowserRecorder'.

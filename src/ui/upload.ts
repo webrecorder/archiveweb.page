@@ -41,6 +41,7 @@ class BtrixUploader extends LitElement {
     return wrapCss(css``);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'changedProps' implicitly has an 'any' type.
   updated(changedProps) {
     if (changedProps.has("uploadColl")) {
       // @ts-expect-error - TS2339 - Property 'uploadColl' does not exist on type 'BtrixUploader'.
@@ -510,6 +511,7 @@ export class BtrixClient {
   url: string | URL | undefined;
   auth: TODOFixMe;
   defaultOrg: null;
+  // @ts-expect-error - TS7031 - Binding element 'url' implicitly has an 'any' type. | TS7031 - Binding element 'username' implicitly has an 'any' type. | TS7031 - Binding element 'password' implicitly has an 'any' type. | TS7031 - Binding element 'orgName' implicitly has an 'any' type.
   static async login({ url, username, password, orgName }) {
     const loginUrl = url + "/api/auth/jwt/login";
 
@@ -533,15 +535,18 @@ export class BtrixClient {
     return client;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type. | TS7006 - Parameter 'auth' implicitly has an 'any' type.
   constructor(url, auth) {
     this.url = url;
     this.auth = auth;
     this.defaultOrg = null;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'endpoint' implicitly has an 'any' type.
   async fetchAPI(endpoint, method = "GET", body = null) {
     const headers = { Authorization: this.auth };
     if (method !== "GET") {
+      // @ts-expect-error - TS7053 - Element implicitly has an 'any' type because expression of type '"Content-Type"' can't be used to index type '{ Authorization: any; }'.
       headers["Content-Type"] = "application/json";
     }
     try {
@@ -576,6 +581,7 @@ export class BtrixClient {
     return orgs[0].id;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'uploadId' implicitly has an 'any' type.
   async getRemoteUpload(uploadId, orgId = null) {
     const org = this.defaultOrg || orgId;
     const res = await this.fetchAPI(`/api/orgs/${org}/uploads/${uploadId}`);
@@ -585,6 +591,7 @@ export class BtrixClient {
     return res;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'uploadId' implicitly has an 'any' type.
   async deleteUpload(uploadId, orgId = null) {
     const org = this.defaultOrg || orgId;
     const deleteStr = JSON.stringify({ crawl_ids: [uploadId] });

@@ -27,6 +27,7 @@ class RecordEmbed extends Embed {
     const baseUrl = new URL(window.location);
     baseUrl.hash = "";
 
+    // @ts-expect-error - TS2339 - Property 'logo' does not exist on type 'RecordEmbed'.
     this.logo = awpLogo;
 
     // @ts-expect-error - TS2339 - Property 'customConfig' does not exist on type 'RecordEmbed'.
@@ -58,6 +59,7 @@ class RecordEmbed extends Embed {
     };
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'changedProperties' implicitly has an 'any' type.
   updated(changedProperties) {
     if (changedProperties.has("proxyPrefix")) {
       // @ts-expect-error - TS2339 - Property 'customConfig' does not exist on type 'RecordEmbed'. | TS2339 - Property 'proxyPrefix' does not exist on type 'RecordEmbed'.
@@ -72,6 +74,7 @@ class RecordEmbed extends Embed {
     super.updated(changedProperties);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   handleMessage(event) {
     if (
       // @ts-expect-error - TS2551 - Property 'downloaded' does not exist on type 'RecordEmbed'. Did you mean 'doDownload'?

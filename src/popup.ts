@@ -31,6 +31,7 @@ import {
 } from "./consts";
 
 const allCss = unsafeCSS(bulma);
+// @ts-expect-error - TS7006 - Parameter 'custom' implicitly has an 'any' type.
 function wrapCss(custom) {
   return [allCss, custom];
 }
@@ -131,6 +132,7 @@ class RecPopup extends LitElement {
     // @ts-expect-error - TS2339 - Property 'port' does not exist on type 'RecPopup'.
     this.port = chrome.runtime.connect({ name: "popup-port" });
 
+    // @ts-expect-error - TS7006 - Parameter 'tabs' implicitly has an 'any' type.
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs.length) {
         // @ts-expect-error - TS2339 - Property 'tabId' does not exist on type 'RecPopup'.
@@ -154,11 +156,13 @@ class RecPopup extends LitElement {
     });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   sendMessage(message) {
     // @ts-expect-error - TS2339 - Property 'port' does not exist on type 'RecPopup'.
     this.port.postMessage(message);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   async onMessage(message) {
     switch (message.type) {
       case "status":
@@ -179,11 +183,9 @@ class RecPopup extends LitElement {
         // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'RecPopup'.
         this.behaviorState = message.behaviorState;
         // @ts-expect-error - TS2339 - Property 'behaviorMsg' does not exist on type 'RecPopup'.
-        this.behaviorMsg =
-          (message.behaviorData?.msg) || "Starting...";
+        this.behaviorMsg = message.behaviorData?.msg || "Starting...";
         // @ts-expect-error - TS2339 - Property 'behaviorResults' does not exist on type 'RecPopup'.
-        this.behaviorResults =
-          message.behaviorData?.state;
+        this.behaviorResults = message.behaviorData?.state;
         // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'RecPopup'.
         this.autorun = message.autorun;
         if (message.pageUrl) {
@@ -236,6 +238,7 @@ class RecPopup extends LitElement {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'match' implicitly has an 'any' type.
   findTitleFor(match) {
     if (!match) {
       return "";
@@ -251,6 +254,7 @@ class RecPopup extends LitElement {
     return "";
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'changedProperties' implicitly has an 'any' type.
   updated(changedProperties) {
     if (
       // @ts-expect-error - TS2339 - Property 'pageUrl' does not exist on type 'RecPopup'.
@@ -603,6 +607,7 @@ class RecPopup extends LitElement {
                     ${
                       // @ts-expect-error - TS2339 - Property 'collections' does not exist on type 'RecPopup'.
                       this.collections.map(
+                        // @ts-expect-error - TS7006 - Parameter 'coll' implicitly has an 'any' type.
                         (coll) => html`
                           <a
                             @click=${this.onSelectColl}
@@ -952,6 +957,7 @@ class RecPopup extends LitElement {
     this.waitingForStop = true;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onToggleAutoRun(event) {
     // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'RecPopup'.
     this.autorun = event.currentTarget.checked;
@@ -959,6 +965,7 @@ class RecPopup extends LitElement {
     await setLocalOption("autorunBehaviors", this.autorun ? "1" : "0");
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onSelectColl(event) {
     // @ts-expect-error - TS2339 - Property 'collId' does not exist on type 'RecPopup'.
     this.collId = event.currentTarget.getAttribute("data-id");
@@ -977,6 +984,7 @@ class RecPopup extends LitElement {
     this.sendMessage({ type: "toggleBehaviors" });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onShowDrop(event) {
     // @ts-expect-error - TS2339 - Property 'collDrop' does not exist on type 'RecPopup'.
     this.collDrop = "show";

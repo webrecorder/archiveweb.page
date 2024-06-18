@@ -1066,8 +1066,7 @@ class ArchiveWebApp extends ReplayWebApp {
                         type="url"
                         name="btrixUrl"
                         id="btrixUrl"
-                        value="${(this.btrixOpts && this.btrixOpts.url) ||
-                        DEFAULT_BTRIX_URL}"
+                        value="${this.btrixOpts?.url || DEFAULT_BTRIX_URL}"
                         placeholder="${DEFAULT_BTRIX_URL}"
                       />
                     </p>
@@ -1106,7 +1105,7 @@ class ArchiveWebApp extends ReplayWebApp {
                         type="text"
                         name="btrixOrgName"
                         id="btrixOrgName"
-                        value="${this.btrixOpts && this.btrixOpts.orgName}"
+                        value="${this.btrixOpts?.orgName}"
                         placeholder="my-org"
                       />
                     </p>
@@ -1189,7 +1188,7 @@ class ArchiveWebApp extends ReplayWebApp {
                           type="url"
                           name="btrixUrl"
                           id="btrixUrl"
-                          value="${this.btrixOpts && this.btrixOpts.url}"
+                          value="${this.btrixOpts?.url}"
                           placeholder="https://..."
                         />
                       </p>
@@ -1202,7 +1201,7 @@ class ArchiveWebApp extends ReplayWebApp {
                           type="text"
                           name="btrixUsername"
                           id="btrixUsername"
-                          value="${this.btrixOpts && this.btrixOpts.username}"
+                          value="${this.btrixOpts?.username}"
                           placeholder="Username"
                         />
                       </p>
@@ -1215,7 +1214,7 @@ class ArchiveWebApp extends ReplayWebApp {
                           type="password"
                           name="btrixPassword"
                           id="btrixPassword"
-                          value="${this.btrixOpts && this.btrixOpts.password}"
+                          value="${this.btrixOpts?.password}"
                           placeholder="Password"
                         />
                       </p>
@@ -1228,7 +1227,7 @@ class ArchiveWebApp extends ReplayWebApp {
                           type="text"
                           name="btrixOrgName"
                           id="btrixOrgName"
-                          value="${this.btrixOpts && this.btrixOpts.orgName}"
+                          value="${this.btrixOpts?.orgName}"
                           placeholder="Organization (optional)"
                         />
                       </p>
@@ -1335,7 +1334,7 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
-  async onShowStart(event) {
+  onShowStart(event) {
     this._setCurrColl(event);
     // @ts-expect-error - TS2339 - Property 'recordUrl' does not exist on type 'ArchiveWebApp'.
     this.recordUrl = event.detail.url || "https://example.com/";
@@ -1489,7 +1488,7 @@ class ArchiveWebApp extends ReplayWebApp {
     return false;
   }
 
-  async onCancelSettings() {
+  onCancelSettings() {
     // @ts-expect-error - TS2339 - Property 'settingsError' does not exist on type 'ArchiveWebApp'.
     this.settingsError = null;
     // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.

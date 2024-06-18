@@ -347,41 +347,6 @@ class BtrixUploader extends LitElement {
           </p>
           <p>(Data is still saved locally in your browser)</p>`;
 
-      case "idle":
-        // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
-        if (!this.isUploadNeeded) {
-          return html`<p class="is-italic">
-            <fa-icon
-              aria-hidden="true"
-              class="has-text-success"
-              .svg="${fasCheck}"
-            ></fa-icon>
-            Archived item already uploaded to Browsertrix.
-            ${this.renderDeleteUploaded()}
-          </p> `;
-          // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
-        } else if (this.uploadId) {
-          return html`<p class="has-text-weight-bold has-text-warning-dark">
-            <fa-icon
-              aria-hidden="true"
-              class="has-text-warning-dark"
-              .svg="${fasSync}"
-            ></fa-icon>
-            Archive updated since last upload. Click "Upload" below to upload
-            latest. ${this.renderDeleteUploaded()}
-          </p> `;
-        } else {
-          return html`<p class="has-text-weight-bold has-text-primary">
-            Archive not yet uploaded. Click "Upload" below to start.
-          </p>`;
-        }
-
-      case "deleted":
-        return html`<p class="has-text-weight-bold has-text-primary">
-            Upload to Browsertrix has been deleted.
-          </p>
-          <p>(Data is still saved locally in your browser)</p>`;
-
       case "deleteFailed":
         return html`<p class="has-text-weight-bold has-text-danger">
             Sorry, deleting upload has failed, or, the Browsertrix credentials

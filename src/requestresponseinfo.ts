@@ -256,9 +256,7 @@ class RequestResponseInfo {
     const respHeaders = this.getResponseHeadersDict(payload.length);
     const reqHeaders = this.getRequestHeadersDict();
 
-    // @ts-expect-error - TS2531 - Object is possibly 'null'.
     const mime = (respHeaders.headers.get(CONTENT_TYPE) || "").split(";")[0];
-    // @ts-expect-error - TS2531 - Object is possibly 'null'.
     const cookie = reqHeaders.headers.get("cookie");
 
     if (cookie) {
@@ -277,7 +275,6 @@ class RequestResponseInfo {
         method: this.method,
         postData: this.postData || "",
       };
-      // @ts-expect-error - TS2345 - Argument of type '{ url: any; headers: Headers | null; method: any; postData: any; }' is not assignable to parameter of type 'Request'.
       if (postToGetUrl(convData)) {
         //this.requestBody = convData.requestBody;
         // truncate to avoid extra long URLs
@@ -419,7 +416,6 @@ class RequestResponseInfo {
     }
 
     try {
-      // @ts-expect-error - TS2322 - Type 'Headers' is not assignable to type 'null'.
       headers = new Headers(headersDict);
     } catch (e) {
       for (const key of Object.keys(headersDict)) {
@@ -438,11 +434,9 @@ class RequestResponseInfo {
         headersDict[key] = headersDict[key].replace(/\n/g, ", ");
       }
       try {
-        // @ts-expect-error - TS2322 - Type 'Headers' is not assignable to type 'null'.
         headers = new Headers(headersDict);
       } catch (e) {
         console.warn(e);
-        // @ts-expect-error - TS2322 - Type 'Headers' is not assignable to type 'null'.
         headers = new Headers();
       }
     }
@@ -461,9 +455,7 @@ class RequestResponseInfo {
 
     // @ts-expect-error - TS2554 - Expected 1 arguments, but got 0.
     const { headers } = this.getResponseHeadersDict();
-    // @ts-expect-error - TS2531 - Object is possibly 'null'.
     const contentType = headers.get(CONTENT_TYPE);
-    // @ts-expect-error - TS2531 - Object is possibly 'null'.
     const contentLength = headers.get(CONTENT_LENGTH);
 
     if (Number(contentLength) !== length) {

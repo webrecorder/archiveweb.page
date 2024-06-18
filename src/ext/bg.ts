@@ -70,11 +70,9 @@ function popupHandler(port) {
     switch (message.type) {
       case "startUpdates":
         tabId = message.tabId;
-        // @ts-expect-error - TS2538 - Type 'null' cannot be used as an index type.
         if (self.recorders[tabId]) {
-          // @ts-expect-error - TS2538 - Type 'null' cannot be used as an index type.
+          // @ts-expect-error - TS2339 - Property 'port' does not exist on type 'BrowserRecorder'.
           self.recorders[tabId].port = port;
-          // @ts-expect-error - TS2538 - Type 'null' cannot be used as an index type.
           self.recorders[tabId].doUpdateStatus();
         }
         port.postMessage(await listAllMsg(collLoader));
@@ -141,7 +139,6 @@ chrome.tabs.onCreated.addListener((tab) => {
   // @ts-expect-error - TS7005 - Variable 'newRecUrl' implicitly has an 'any' type.
   if (newRecUrl && tab.pendingUrl === "about:blank") {
     start = true;
-    // @ts-expect-error - TS7005 - Variable 'newRecUrl' implicitly has an 'any' type.
     openUrl = newRecUrl;
     // @ts-expect-error - TS7005 - Variable 'newRecCollId' implicitly has an 'any' type. | TS7005 - Variable 'defaultCollId' implicitly has an 'any' type.
     collId = newRecCollId || defaultCollId;
@@ -261,7 +258,6 @@ async function startRecorder(tabId, opts) {
       await self.recorders[tabId].attach();
     } catch (e) {
       console.warn(e);
-      // @ts-expect-error - TS2322 - Type 'unknown' is not assignable to type 'null'.
       err = e;
     }
     return err;
@@ -317,7 +313,6 @@ chrome.runtime.onMessage.addListener(
         newRecUrl = message.url;
         newRecCollId = message.collId;
         autorun = message.autorun;
-        // @ts-expect-error - TS2322 - Type 'unknown' is not assignable to type 'null'.
         defaultCollId = await getLocalOption("defaultCollId");
         chrome.tabs.create({ url: "about:blank" });
         break;

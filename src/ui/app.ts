@@ -1,4 +1,4 @@
-import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/src/misc";
+import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/misc";
 
 // replaywebpage imports
 import { ReplayWebApp, Embed, Loader } from "replaywebpage";

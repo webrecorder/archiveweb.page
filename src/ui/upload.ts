@@ -1,10 +1,4 @@
-import {
-  html,
-  css,
-  wrapCss,
-  apiPrefix,
-  LitElement,
-} from "replaywebpage/src/misc";
+import { html, css, wrapCss, apiPrefix, LitElement } from "replaywebpage/misc";
 import prettyBytes from "pretty-bytes";
 
 import fasSync from "@fortawesome/fontawesome-free/svgs/solid/sync-alt.svg";

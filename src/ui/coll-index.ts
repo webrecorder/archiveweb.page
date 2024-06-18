@@ -2,7 +2,7 @@ import { ItemIndex } from "replaywebpage";
 import type { PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 
-import { html } from "replaywebpage/src/misc";
+import { html } from "replaywebpage/misc";
 
 import prettyBytes from "pretty-bytes";
 import { type WrRecCollInfo } from "./coll-info";

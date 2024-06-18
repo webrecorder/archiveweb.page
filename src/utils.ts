@@ -1,7 +1,9 @@
+// @ts-expect-error - TS7016 - Could not find a declaration file for module '@webrecorder/wabac/src/utils'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/@webrecorder/wabac/src/utils.js' implicitly has an 'any' type.
 import { getCollData } from "@webrecorder/wabac/src/utils";
 import { getLocalOption, setLocalOption } from "./localstorage";
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'collLoader' implicitly has an 'any' type.
 export async function ensureDefaultColl(collLoader) {
   let colls = await collLoader.listAll();
 
@@ -28,29 +30,32 @@ export async function ensureDefaultColl(collLoader) {
 }
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'collLoader' implicitly has an 'any' type.
 export async function listAllMsg(collLoader, { defaultCollId = null } = {}) {
   let colls = await ensureDefaultColl(collLoader);
 
+  // @ts-expect-error - TS7006 - Parameter 'x' implicitly has an 'any' type.
   colls = colls.map((x) => getCollData(x));
 
   // sort same way as the UI collections index
   const sortKey = await getLocalOption("index:sortKey");
   const sortDesc = (await getLocalOption("index:sortDesc")) === "1";
 
+  // @ts-expect-error - TS7006 - Parameter 'first' implicitly has an 'any' type. | TS7006 - Parameter 'second' implicitly has an 'any' type.
   colls.sort((first, second) => {
-// @ts-expect-error - TS2538 - Type 'unknown' cannot be used as an index type. | TS2538 - Type 'unknown' cannot be used as an index type.
+    // @ts-expect-error - TS2538 - Type 'unknown' cannot be used as an index type. | TS2538 - Type 'unknown' cannot be used as an index type.
     if (first[sortKey] === second[sortKey]) {
       return 0;
     }
 
-// @ts-expect-error - TS2538 - Type 'unknown' cannot be used as an index type. | TS2538 - Type 'unknown' cannot be used as an index type.
+    // @ts-expect-error - TS2538 - Type 'unknown' cannot be used as an index type. | TS2538 - Type 'unknown' cannot be used as an index type.
     return sortDesc == first[sortKey] < second[sortKey] ? 1 : -1;
   });
 
   const msg = { type: "collections" };
-// @ts-expect-error - TS2339 - Property 'collId' does not exist on type '{ type: string; }'.
+  // @ts-expect-error - TS2339 - Property 'collId' does not exist on type '{ type: string; }'.
   msg.collId = defaultCollId || (await getLocalOption("defaultCollId"));
-// @ts-expect-error - TS2339 - Property 'collections' does not exist on type '{ type: string; }'.
+  // @ts-expect-error - TS2339 - Property 'collections' does not exist on type '{ type: string; }'.
   msg.collections = colls.map((coll) => ({
     id: coll.id,
     title: coll.title || coll.filename,

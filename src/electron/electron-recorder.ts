@@ -4,6 +4,7 @@ import { Recorder } from "../recorder";
 
 import path from "path";
 import fs from "fs";
+// @ts-expect-error - TS7016 - Could not find a declaration file for module 'mime-types'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/mime-types/index.js' implicitly has an 'any' type.
 import mime from "mime-types";
 
 const DEBUG = false;
@@ -13,13 +14,21 @@ const PROXY_URL = "https://proxy.archiveweb.page/";
 // ===========================================================================
 class ElectronRecorder extends Recorder {
   constructor({
+    // @ts-expect-error - TS7031 - Binding element 'recWC' implicitly has an 'any' type.
     recWC,
+    // @ts-expect-error - TS7031 - Binding element 'appWC' implicitly has an 'any' type.
     appWC,
+    // @ts-expect-error - TS7031 - Binding element 'collId' implicitly has an 'any' type.
     collId,
+    // @ts-expect-error - TS7031 - Binding element 'staticPrefix' implicitly has an 'any' type.
     staticPrefix,
+    // @ts-expect-error - TS7031 - Binding element 'recWindow' implicitly has an 'any' type.
     recWindow,
+    // @ts-expect-error - TS7031 - Binding element 'popup' implicitly has an 'any' type.
     popup,
+    // @ts-expect-error - TS7031 - Binding element 'autorun' implicitly has an 'any' type.
     autorun,
+    // @ts-expect-error - TS7031 - Binding element 'userAgent' implicitly has an 'any' type.
     userAgent,
   }) {
     super();
@@ -111,11 +120,13 @@ class ElectronRecorder extends Recorder {
     this._shutdownResolve();
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'path' implicitly has an 'any' type.
   getExternalInjectURL(path) {
     return PROXY_URL + path;
   }
 
   // Electron seems to not always pass through Page.frameNavigated events, so handle via 'did-navigate' instead
+  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
   didNavigateInitPage(url) {
     // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'ElectronRecorder'.
     if (!this.running || url === "about:blank") {
@@ -144,6 +155,7 @@ class ElectronRecorder extends Recorder {
     return false;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type. | TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async processMessage(method, params, sessions) {
     if (await super.processMessage(method, params, sessions)) {
       return true;
@@ -162,6 +174,7 @@ class ElectronRecorder extends Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async handlePaused(params, sessions) {
     if (!params.request.url.startsWith(PROXY_URL)) {
       return await super.handlePaused(params, sessions);
@@ -271,6 +284,7 @@ class ElectronRecorder extends Recorder {
     return this.favicons?.length ? this.favicons[0] : null;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'data' implicitly has an 'any' type.
   async _doAddResource(data) {
     // if (data.url.startsWith(PROXY_URL)) {
     //   return 0;
@@ -289,11 +303,13 @@ class ElectronRecorder extends Recorder {
     this.appWC.send("add-page", this.pageInfo, this.collId);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'totalSize' implicitly has an 'any' type. | TS7006 - Parameter 'writtenSize' implicitly has an 'any' type.
   _doIncSizes(totalSize, writtenSize) {
     // @ts-expect-error - TS2339 - Property 'appWC' does not exist on type 'ElectronRecorder'. | TS2339 - Property 'collId' does not exist on type 'ElectronRecorder'.
     this.appWC.send("inc-sizes", totalSize, writtenSize, this.collId);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type. | TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'promise' implicitly has an 'any' type.
   _doSendCommand(method, params, promise) {
     if (DEBUG) {
       console.log(" => ", method, params);
@@ -307,6 +323,7 @@ class ElectronRecorder extends Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type. | TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessionId' implicitly has an 'any' type.
   _doSendCommandFlat(method, params, sessionId) {
     try {
       // @ts-expect-error - TS2339 - Property 'debugger' does not exist on type 'ElectronRecorder'.

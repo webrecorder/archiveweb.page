@@ -4,7 +4,7 @@ import { SWReplay } from "@webrecorder/wabac/src/swmain";
 // @ts-expect-error - TS2307 - Cannot find module '@webrecorder/awp-sw' or its corresponding type declarations.
 import { ExtAPI, RecordingCollections } from "@webrecorder/awp-sw";
 
-import REC_INDEX_HTML from "../static/index.html";
+import REC_INDEX_HTML from "@/static/index.html";
 import RWP_INDEX_HTML from "replaywebpage/index.html";
 
 // @ts-expect-error - TS7016 - Could not find a declaration file for module '@webrecorder/wabac/src/loaders'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/@webrecorder/wabac/src/loaders.js' implicitly has an 'any' type.

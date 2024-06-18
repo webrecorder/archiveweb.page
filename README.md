@@ -4,32 +4,29 @@
     </div>
 </h1>
 
-ArchiveWeb.page is a JavaScript based system for high-fidelity web archiving directly in the browser.
-The system can be used as a Chrome/Chromium based browser extension and also as an Electron app.
+ArchiveWeb.page is a JavaScript based application for interactive, high-fidelity web archiving that runs directly in the browser. The system can be used as a Chrome/Chromium based browser extension and also as a standalone Electron app.
 
-The system creates, stores and replays high-fidelity web archives stored directly in the browser (via IndexedDB).
+The system creates, stores, and replays high-fidelity web archives stored directly in the browser's storage (via IndexedDB).
 
-For more detailed info on how to use the extension (and the app when it is available), see the: [ArchiveWeb.page User Guide](https://archiveweb.page/guide)
+For more detailed info on how to use the extension and standalone app, see the [ArchiveWeb.page User Guide](https://archiveweb.page/guide).
 
-The initial app release is available on the [Releases page](https://github.com/webrecorder/archiveweb.page/releases)
+The browser extension is available on the [Chrome Web Store](https://chrome.google.com/webstore/detail/webrecorder/fpeoodllldobpkbkabpblcfaogecpndd)
 
-### Architecture
+Downloads for the desktop are are available on the [Releases page](https://github.com/webrecorder/archiveweb.page/releases)
+
+## Architecture
 
 The extension makes use of the Chrome debugging protocol to capture and save network traffic, and extends the [ReplayWeb.page](https://github.com/webrecorder/replayweb.page) UI and the [wabac.js](https://github.com/ikreymer/wabac.js) service worker system for replay and storage.
 
-The codebase for the extension and Electron app is shared, but they can be deployed in different ways.
+The codebase for the extension and Electron app is shared, but they can both be deployed in different ways.
 
+## Building for Development
 
-### Requirements Building
+To develop ArchiveWeb.page, install Node 12+ and Yarn.
 
-To develop ArchiveWeb.page, Node 12+ and Yarn are needed.
+### Install the Development Extension
 
-## Using the Extension
-
-The production version of the extension is published to the [Chrome Web Store](https://chrome.google.com/webstore/detail/webrecorder/fpeoodllldobpkbkabpblcfaogecpndd)
-
-For development, the extension can be built locally and loaded as an unpacked extension.
-If you want to make changes to the extension, it should be installed in this way.
+For development, the extension can be built locally and loaded as an unpacked extension. If you want to make changes to the extension, do the following:
 
 1. Clone this repo. Run `yarn install; yarn build-dev`. (You can also run `yarn build` to build the production version but it may be harder to debug).
 
@@ -39,7 +36,7 @@ If you want to make changes to the extension, it should be installed in this way
 
 5. Click the extension icon to show the extension popup, start archiving, etc...
 
-### Development Workflow
+### Development Workflow (Extension)
 
 For development, it is recommended to use the dev build of the extension:
 
@@ -51,10 +48,7 @@ For development, it is recommended to use the dev build of the extension:
 
 4. Click the extension icon to show the extension popup, start recording, etc... The dev build of the extension will be grey to differntiate from the production version.
 
-
-## Using the Electron App (in beta)
-
-The Electron app version is in beta and the latest release can be downloaded from the [Releases page](https://github.com/webrecorder/archiveweb.page/releases)
+### Using the Electron App
 
 To run the Electron app development build:
 
@@ -65,10 +59,8 @@ To run the Electron app development build:
 3. Run ``yarn run start-electron`` to start the app.
 
 The Electron App version will open recording in a new window. It is is designed to support Flash, better support for IPFS sharing.
-However, it is still in development and may not work yet until the initial release is out.
 
-
-### Development workflow
+### Development workflow (Electron App)
 
 After making changes, rerun ``yarn run build-dev`` and ``yarn run start-electron`` to load the app.
 

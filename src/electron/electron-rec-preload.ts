@@ -78,6 +78,7 @@ ipcRenderer.on("inc-sizes", (event, totalSize, writtenSize, collId) => {
 ipcRenderer.on("download-progress", (event, progress) => {
   // @ts-expect-error - TS7005 - Variable 'downloadCallback' implicitly has an 'any' type.
   if (downloadCallback) {
+// @ts-expect-error - TS7005 - Variable 'downloadCallback' implicitly has an 'any' type.
     downloadCallback(progress);
   }
 });

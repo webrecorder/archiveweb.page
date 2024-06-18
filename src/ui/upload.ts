@@ -169,7 +169,10 @@ class BtrixUploader extends LitElement {
 
     return html`
       <wr-modal
-        @modal-closed="${() => (this.coll = null)}"
+        @modal-closed="${
+          // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
+          () => (this.coll = null)
+        }"
         title="Upload To Browsertrix"
       >
         <table class="is-size-6" style="margin-left: 3.0rem">
@@ -310,6 +313,7 @@ class BtrixUploader extends LitElement {
         </p>`;
 
       case "idle":
+        // @ts-expect-error - TS2339 - Property 'isUploadNeeded' does not exist on type 'BtrixUploader'.
         if (!this.isUploadNeeded) {
           return html`<p class="is-italic">
             <fa-icon
@@ -320,6 +324,7 @@ class BtrixUploader extends LitElement {
             Archive already uploaded to Browsertrix.
             ${this.renderDeleteUploaded()}
           </p> `;
+          // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
         } else if (this.uploadId) {
           return html`<p class="has-text-weight-bold has-text-warning-dark">
             <fa-icon
@@ -594,6 +599,7 @@ export class BtrixClient {
     const res = await this.fetchAPI(
       `/api/orgs/${org}/uploads/delete`,
       "POST",
+      // @ts-expect-error - TS2345 - Argument of type 'string' is not assignable to parameter of type 'null | undefined'.
       deleteStr
     );
     if (!res.deleted) {

@@ -139,7 +139,9 @@ class RecPopup extends LitElement {
         this.tabId = tabs[0].id;
         // @ts-expect-error - TS2339 - Property 'pageUrl' does not exist on type 'RecPopup'.
         this.pageUrl = tabs[0].url;
+        // @ts-expect-error - TS2339 - Property 'tabId' does not exist on type 'RecPopup'. | TS7006 - Parameter 'result' implicitly has an 'any' type.
         chrome.action.getTitle({ tabId: this.tabId }, (result) => {
+          // @ts-expect-error - TS2339 - Property 'recording' does not exist on type 'RecPopup'.
           this.recording = result.indexOf("Recording:") >= 0;
         });
 
@@ -269,6 +271,7 @@ class RecPopup extends LitElement {
       params.set("url", this.pageUrl);
       params.set(
         "ts",
+        // @ts-expect-error - TS2339 - Property 'pageTs' does not exist on type 'RecPopup'.
         new Date(this.pageTs).toISOString().replace(/[-:TZ.]/g, "")
       );
       params.set("view", "pages");
@@ -579,34 +582,47 @@ class RecPopup extends LitElement {
               </span>
             </button>
           </div>
-          ${!this.recording
-            ? html` <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  ${this.allowCreate
-                    ? html` <a
-                          @click="${() => (this.collDrop = "create")}"
-                          class="dropdown-item"
-                        >
-                          <span class="icon is-small">
-                            <wr-icon .src="${fasPlus}"></wr-icon> </span
-                          >New Archiving Session
-                        </a>
-                        <hr class="dropdown-divider" />`
-                    : ""}
-                  ${this.collections.map(
-                    (coll) => html`
-                      <a
-                        @click=${this.onSelectColl}
-                        data-title="${coll.title}"
-                        data-id="${coll.id}"
-                        class="dropdown-item"
-                        >${coll.title}</a
-                      >
-                    `
-                  )}
-                </div>
-              </div>`
-            : html``}
+          ${
+            // @ts-expect-error - TS2339 - Property 'recording' does not exist on type 'RecPopup'.
+            !this.recording
+              ? html` <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    ${
+                      // @ts-expect-error - TS2339 - Property 'allowCreate' does not exist on type 'RecPopup'.
+                      this.allowCreate
+                        ? html` <a
+                              @click="${
+                                // @ts-expect-error - TS2339 - Property 'collDrop' does not exist on type 'RecPopup'.
+                                () => (this.collDrop = "create")
+                              }"
+                              class="dropdown-item"
+                            >
+                              <span class="icon is-small">
+                                <wr-icon .src="${fasPlus}"></wr-icon> </span
+                              >New Archiving Session
+                            </a>
+                            <hr class="dropdown-divider" />`
+                        : ""
+                    }
+                    ${
+                      // @ts-expect-error - TS2339 - Property 'collections' does not exist on type 'RecPopup'.
+                      this.collections.map(
+                        // @ts-expect-error - TS7006 - Parameter 'coll' implicitly has an 'any' type.
+                        (coll) => html`
+                          <a
+                            @click=${this.onSelectColl}
+                            data-title="${coll.title}"
+                            data-id="${coll.id}"
+                            class="dropdown-item"
+                            >${coll.title}</a
+                          >
+                        `
+                      )
+                    }
+                  </div>
+                </div>`
+              : html``
+          }
         </div>
       </div>
     `;
@@ -850,21 +866,29 @@ class RecPopup extends LitElement {
                       </th>
                     </tr>
 
-                    ${this.behaviorResults &&
-                    this.behaviorState !== BEHAVIOR_WAIT_LOAD &&
-                    this.behaviorState !== BEHAVIOR_READY_START
-                      ? html` <tr class="status-sep">
-                            <td></td>
-                            <td></td>
-                          </tr>
-                          ${Object.entries(this.behaviorResults).map(
-                            ([name, value]) =>
-                              html` <tr>
-                                <td>${name}</td>
-                                <th>${value}</th>
-                              </tr>`
-                          )}`
-                      : ""}
+                    ${
+                      // @ts-expect-error - TS2339 - Property 'behaviorResults' does not exist on type 'RecPopup'.
+                      this.behaviorResults &&
+                      // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'RecPopup'.
+                      this.behaviorState !== BEHAVIOR_WAIT_LOAD &&
+                      // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'RecPopup'.
+                      this.behaviorState !== BEHAVIOR_READY_START
+                        ? html` <tr class="status-sep">
+                              <td></td>
+                              <td></td>
+                            </tr>
+                            ${
+                              // @ts-expect-error - TS2339 - Property 'behaviorResults' does not exist on type 'RecPopup'.
+                              Object.entries(this.behaviorResults).map(
+                                ([name, value]) =>
+                                  html` <tr>
+                                    <td>${name}</td>
+                                    <th>${value}</th>
+                                  </tr>`
+                              )
+                            }`
+                        : ""
+                    }
                   </table>
                 </div>
               `

@@ -268,6 +268,7 @@ class RequestResponseInfo {
     // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
     const reqUrl = this.url;
 
+    // @ts-expect-error - TS2339 - Property 'method' does not exist on type 'RequestResponseInfo'. | TS2339 - Property 'method' does not exist on type 'RequestResponseInfo'.
     if (this.method && this.method !== "GET") {
       const convData = {
         // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
@@ -275,6 +276,7 @@ class RequestResponseInfo {
         headers: reqHeaders.headers,
         // @ts-expect-error - TS2339 - Property 'method' does not exist on type 'RequestResponseInfo'.
         method: this.method,
+        // @ts-expect-error - TS2339 - Property 'postData' does not exist on type 'RequestResponseInfo'.
         postData: this.postData || "",
       };
       if (postToGetUrl(convData)) {

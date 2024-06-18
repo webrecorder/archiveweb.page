@@ -212,7 +212,7 @@ const extensionWebConfig = (env, argv) => {
   ];
 
   const copy = [
-    { from: "src/static/", to: "./" },
+    { from: "static", to: "./" },
     { from: "ruffle", to: "./ruffle/" },
   ];
 

@@ -102,6 +102,7 @@ class ArchiveWebApp extends ReplayWebApp {
 
   async doBtrixLogin() {
     try {
+      // @ts-expect-error - TS2531 - Object is possibly 'null'. | TS2345 - Argument of type 'BtrixOpts | null' is not assignable to parameter of type '{ url: any; username: any; password: any; orgName: any; }'.
       this.btrixOpts.client = await BtrixClient.login(this.btrixOpts);
     } catch (e) {
       this.btrixOpts = null;
@@ -654,7 +655,10 @@ class ArchiveWebApp extends ReplayWebApp {
 
   renderNewCollModal() {
     return html` <wr-modal
-      @modal-closed="${() => (this.showNew = null)}"
+      @modal-closed="${
+        // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
+        () => (this.showNew = null)
+      }"
       title="New Archiving Session"
     >
       <form @submit="${this.onNewColl}" class="create-new">
@@ -672,11 +676,14 @@ class ArchiveWebApp extends ReplayWebApp {
           <div class="control">
             <button
               type="submit"
-              class="button is-hidden-mobile is-primary ${this.showNew ===
-              "loading"
-                ? "is-loading "
-                : ""}"
-              ?disabled="${this.showNew === "loading"}"
+              class="button is-hidden-mobile is-primary ${
+                // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
+                this.showNew === "loading" ? "is-loading " : ""
+              }"
+              ?disabled="${
+                // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
+                this.showNew === "loading"
+              }"
             >
               Create
             </button>
@@ -705,11 +712,22 @@ class ArchiveWebApp extends ReplayWebApp {
             <input
               type="checkbox"
               name="add-existing"
-              .checked="${this.isImportExisting}"
-              @change="${(e) =>
-                (this.isImportExisting = e.currentTarget.checked)}"
+              .checked="${
+                // @ts-expect-error - TS2339 - Property 'isImportExisting' does not exist on type 'ArchiveWebApp'.
+                this.isImportExisting
+              }"
+              @change="${
+                // @ts-expect-error - TS7006 - Parameter 'e' implicitly has an 'any' type.
+                (e) =>
+                  // @ts-expect-error - TS2339 - Property 'isImportExisting' does not exist on type 'ArchiveWebApp'.
+                  (this.isImportExisting = e.currentTarget.checked)
+              }"
             />
-            Add to an existing archived item${this.isImportExisting ? ":" : ""}
+            Add to an existing archived
+            item${
+              // @ts-expect-error - TS2339 - Property 'isImportExisting' does not exist on type 'ArchiveWebApp'.
+              this.isImportExisting ? ":" : ""
+            }
           </label>
         </div>
         ${
@@ -722,7 +740,10 @@ class ArchiveWebApp extends ReplayWebApp {
 
   renderIPFSShareFailedModal() {
     return html` <wr-modal
-      @modal-closed="${() => (this.showIpfsShareFailed = false)}"
+      @modal-closed="${
+        // @ts-expect-error - TS2339 - Property 'showIpfsShareFailed' does not exist on type 'ArchiveWebApp'.
+        () => (this.showIpfsShareFailed = false)
+      }"
       title="IPFS Connection Failed"
     >
       <div>

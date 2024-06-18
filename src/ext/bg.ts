@@ -167,6 +167,7 @@ chrome.tabs.onCreated.addListener((tab) => {
     startRecorder(
       tab.id,
       { waitForTabUpdate, collId, openUrl, autorun },
+      // @ts-expect-error - TS2554 - Expected 2 arguments, but got 3.
       openUrl
     );
   }

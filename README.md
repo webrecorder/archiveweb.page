@@ -10,9 +10,9 @@ The system creates, stores, and replays high-fidelity web archives stored direct
 
 For more detailed info on how to use the extension and standalone app, see the [ArchiveWeb.page User Guide](https://archiveweb.page/guide).
 
-The browser extension is available on the [Chrome Web Store](https://chrome.google.com/webstore/detail/webrecorder/fpeoodllldobpkbkabpblcfaogecpndd)
+The browser extension is available on the [Chrome Web Store](https://chrome.google.com/webstore/detail/webrecorder/fpeoodllldobpkbkabpblcfaogecpndd).
 
-Downloads for the desktop are are available on the [Releases page](https://github.com/webrecorder/archiveweb.page/releases)
+Downloads for the desktop are are available on the [GitHub Releases page](https://github.com/webrecorder/archiveweb.page/releases).
 
 ## Architecture
 

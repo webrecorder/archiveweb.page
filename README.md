@@ -1,6 +1,8 @@
-# ArchiveWeb.page Interactive Archiving Extension and Desktop App
-
-<p align="center"><img src="/assets/awp-logo.svg" width="96" height="96"></p>
+<h1>
+    <div align="center">
+        <img alt="ArchiveWebpage" src="src/assets/brand/archivewebpage-lockup-color-dynamic.svg" width="90%">
+    </div>
+</h1>
 
 ArchiveWeb.page is a JavaScript based system for high-fidelity web archiving directly in the browser.
 The system can be used as a Chrome/Chromium based browser extension and also as an Electron app.
@@ -77,4 +79,3 @@ To create a platform-specific binary, run:
 ``yarn run pack``
 
 The standalone app will then be available in the `./dist/` directory.
-

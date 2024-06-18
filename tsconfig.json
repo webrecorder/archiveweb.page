@@ -3,7 +3,7 @@
     "outDir": "./dist/",
     "module": "esnext",
     "target": "es6",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "allowJs": true,
     "strict": true,
     "checkJs": true,

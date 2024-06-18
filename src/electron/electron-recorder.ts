@@ -285,7 +285,7 @@ class ElectronRecorder extends Recorder {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'data' implicitly has an 'any' type.
-  async _doAddResource(data) {
+  _doAddResource(data) {
     // if (data.url.startsWith(PROXY_URL)) {
     //   return 0;
     // }

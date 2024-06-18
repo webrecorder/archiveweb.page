@@ -446,7 +446,7 @@ class WrRecCollInfo extends ItemInfo {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
-  async onShowShareMenu(event) {
+  onShowShareMenu(event) {
     event.preventDefault();
     event.stopPropagation();
     this.showShareMenu = !this.showShareMenu;

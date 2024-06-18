@@ -108,7 +108,7 @@ class RecordEmbed extends Embed {
 }
 
 // ===========================================================================
-async function main() {
+function main() {
   customElements.define("record-web-page", RecordEmbed);
 }
 

@@ -458,7 +458,7 @@ class Recorder {
     }
   }
 
-  async toggleBehaviors() {
+  toggleBehaviors() {
     // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'Recorder'.
     switch (this.behaviorState) {
       case BEHAVIOR_WAIT_LOAD:
@@ -1078,7 +1078,7 @@ class Recorder {
     return true;
   }
 
-  async initFirstPage() {
+  initFirstPage() {
     // Disable debugger intercept due to occasional crashes on some pages
     // Enable unload pause only on first full page that is being recorded
     //await this.send("Debugger.enable");
@@ -1650,7 +1650,7 @@ class Recorder {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'request' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
-  async doAsyncFetch(request, sessions) {
+  doAsyncFetch(request, sessions) {
     if (!request || !this.isValidUrl(request.url)) {
       return;
     }

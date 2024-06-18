@@ -205,7 +205,7 @@ class BrowserRecorder extends Recorder {
       if (!this.isAttached) {
         await new Promise((resolve, reject) => {
           // @ts-expect-error - TS2339 - Property 'debuggee' does not exist on type 'BrowserRecorder'.
-          chrome.debugger.attach(this.debuggee, "1.3", async () => {
+          chrome.debugger.attach(this.debuggee, "1.3", () => {
             if (chrome.runtime.lastError) {
               reject(chrome.runtime.lastError.message);
             }

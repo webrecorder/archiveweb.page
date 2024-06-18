@@ -109,7 +109,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
   createMainWindow(argv) {
     const theWindow = super.createMainWindow(argv);
 
-    theWindow.on("close", async (event) => {
+    theWindow.on("close", (event) => {
       // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
       if (this.recorders.size) {
         event.preventDefault();

@@ -128,12 +128,20 @@ const electronPreloadConfig = (/*env, argv*/) => {
  * @param {import('copy-webpack-plugin').CopyPlugin['Configuration']['patterns']} [param1.copy=[]]
  * @param {import('webpack').Configuration['entry']} [param1.entry={}]
  * @param {Partial<import('webpack').Configuration>} [param1.extra={}]
+ * @param {Partial<import('webpack').Configuration['target']>} [param1.target={}]
  * @param {boolean} [param1.flat=false]
  * @returns {import('webpack').Configuration}
  */
 function sharedBuild(
   outputPath,
-  { plugins = [], copy = [], entry = {}, extra = {}, replayDir = false } = {},
+  {
+    plugins = [],
+    copy = [],
+    entry = {},
+    extra = {},
+    replayDir = false,
+    target = "web",
+  } = {},
   argv
 ) {
   if (copy.length) {
@@ -142,7 +150,7 @@ function sharedBuild(
 
   return {
     mode: "production",
-    target: "web",
+    target,
     entry: {
       ui: "./src/ui/app.ts",
       sw: "./src/sw/main.ts",
@@ -150,7 +158,6 @@ function sharedBuild(
     },
     devtool: argv.mode === "production" ? undefined : "source-map",
     optimization,
-    //resolve: {fallback},
     output: {
       path: outputPath,
       filename: (chunkData) => {
@@ -228,16 +235,18 @@ const extensionWebConfig = (env, argv) => {
 const electronWebConfig = (env, argv) => {
   const entry = {
     "rec-window": "./src/electron/rec-window.ts",
+    "rec-preload": "./src/electron/rec-preload.ts",
   };
 
   const copy = [
-    { from: "src/static/", to: "./" },
+    { from: "static/", to: "./" },
     { from: "ruffle", to: "./ruffle/" },
-    { from: "src/electron/rec-preload.js", to: "" },
     { from: "src/electron/rec-window.html", to: "" },
   ];
 
-  return sharedBuild(DIST_ELECTRON, { copy, entry }, argv);
+  const target = "electron-main";
+
+  return sharedBuild(DIST_ELECTRON, { copy, entry, target }, argv);
 };
 
 // ===========================================================================

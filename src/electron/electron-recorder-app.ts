@@ -16,6 +16,7 @@ app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
 
 // ===========================================================================
 class ElectronRecorderApp extends ElectronReplayApp {
+  // @ts-expect-error - TS7006 - Parameter 'opts' implicitly has an 'any' type.
   constructor(opts) {
     super(opts);
 
@@ -123,6 +124,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
     return "index.html";
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'argv' implicitly has an 'any' type.
   createMainWindow(argv) {
     const theWindow = super.createMainWindow(argv);
 
@@ -130,6 +132,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
       // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
       if (this.recorders.size) {
         event.preventDefault();
+        // @ts-expect-error - TS2339 - Property 'returnValue' does not exist on type '{ preventDefault: () => void; readonly defaultPrevented: boolean; }'.
         event.returnValue = false;
         this.handleClose(theWindow);
         return false;
@@ -139,6 +142,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
     return theWindow;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'theWindow' implicitly has an 'any' type.
   async handleClose(theWindow) {
     const res = await dialog.showMessageBox(theWindow, {
       type: "question",
@@ -201,11 +205,17 @@ class ElectronRecorderApp extends ElectronReplayApp {
   }
 
   async initRecorder(
+    // @ts-expect-error - TS7006 - Parameter 'recWindow' implicitly has an 'any' type.
     recWindow,
+    // @ts-expect-error - TS7006 - Parameter 'recWebContents' implicitly has an 'any' type.
     recWebContents,
+    // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
     url,
+    // @ts-expect-error - TS7006 - Parameter 'collId' implicitly has an 'any' type.
     collId,
+    // @ts-expect-error - TS7006 - Parameter 'startRec' implicitly has an 'any' type.
     startRec,
+    // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
     autorun,
     popupView = null
   ) {
@@ -224,6 +234,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
       userAgent: this.userAgent,
     });
 
+    // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
     recWindow.on("close", (event) => {
       console.log("closing...");
       event.preventDefault();
@@ -238,6 +249,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
         popupView.webContents
       : recWindow.webContents;
 
+    // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type. | TS7006 - Parameter 'url' implicitly has an 'any' type.
     newWinContents.on("new-window", (event, url) => {
       event.preventDefault();
       if (url.startsWith(STATIC_PREFIX)) {
@@ -268,12 +280,19 @@ class ElectronRecorderApp extends ElectronReplayApp {
     recWebContents.on(
       "new-window",
       (
+        // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
         event,
+        // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
         url,
+        // @ts-expect-error - TS7006 - Parameter 'frameName' implicitly has an 'any' type.
         frameName,
+        // @ts-expect-error - TS7006 - Parameter 'disposition' implicitly has an 'any' type.
         disposition,
+        // @ts-expect-error - TS7006 - Parameter 'options' implicitly has an 'any' type.
         options,
+        // @ts-expect-error - TS7006 - Parameter 'additionalFeatures' implicitly has an 'any' type.
         additionalFeatures,
+        // @ts-expect-error - TS7006 - Parameter 'referrer' implicitly has an 'any' type.
         referrer
       ) => {
         event.preventDefault();

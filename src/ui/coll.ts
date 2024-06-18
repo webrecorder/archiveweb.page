@@ -58,6 +58,7 @@ class WrRecColl extends Item {
     `;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'changedProperties' implicitly has an 'any' type.
   updated(changedProperties) {
     if (changedProperties.has("embed")) {
       // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'WrRecColl'. | TS2551 - Property '_sizeUpdater' does not exist on type 'WrRecColl'. Did you mean 'runSizeUpdater'?

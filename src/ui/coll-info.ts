@@ -123,6 +123,7 @@ class WrRecCollInfo extends ItemInfo {
     );
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'changedProps' implicitly has an 'any' type.
   updated(changedProps) {
     if (changedProps.has("shareOpts") && this.shareOpts) {
       const { ipfsOpts, btrixOpts } = this.shareOpts;
@@ -237,7 +238,12 @@ class WrRecCollInfo extends ItemInfo {
           ? html` <div class="column is-3">
               <p class="minihead">Imported From</p>
               ${coll.loadUrl}
-              <a @click="${(e) => this.onCopy(e, coll.loadUrl)}" class="copy"
+              <a
+                @click="${
+                  // @ts-expect-error - TS7006 - Parameter 'e' implicitly has an 'any' type.
+                  (e) => this.onCopy(e, coll.loadUrl)
+                }"
+                class="copy"
                 ><fa-icon .svg="${fasCopy}"></fa-icon
               ></a>
             </div>`
@@ -439,6 +445,7 @@ class WrRecCollInfo extends ItemInfo {
     );
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onShowShareMenu(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -457,6 +464,7 @@ class WrRecCollInfo extends ItemInfo {
     );
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   toggleShareWarn(event) {
     localStorage.setItem(
       "nosharewarn",
@@ -531,6 +539,7 @@ class WrRecCollInfo extends ItemInfo {
       (resolve, reject) => (pc = { resolve, reject })
     );
 
+    // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
     const listener = (event) => {
       const { data } = event;
 

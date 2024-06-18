@@ -369,6 +369,7 @@ class RecWindowUI extends LitElement {
     `;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onSendMsg(event) {
     const msg = event.detail;
 
@@ -381,12 +382,14 @@ class RecWindowUI extends LitElement {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onFaviconUpdated(event) {
     // @ts-expect-error - TS2339 - Property 'favIcons' does not exist on type 'RecWindowUI'.
     this.favIcons = event.favicons;
     this.tryNextIcon();
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onWillNavigate(event) {
     // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
     this.url = event.url;
@@ -397,6 +400,7 @@ class RecWindowUI extends LitElement {
     this.canGoForward = event.currentTarget.canGoForward();
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onDidNavigate(event) {
     // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
     this.url = event.url;
@@ -409,6 +413,7 @@ class RecWindowUI extends LitElement {
     this.isLoading = false;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onDidNavigateInPage(event) {
     // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
     this.url = event.url;
@@ -458,6 +463,7 @@ class RecWindowUI extends LitElement {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onSubmit(event) {
     event.preventDefault();
     const input = this.renderRoot.querySelector("input");
@@ -473,6 +479,7 @@ class RecWindowUI extends LitElement {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onKeyDown(event) {
     if (event.key === "Esc" || event.key === "Escape") {
       event.preventDefault();
@@ -481,6 +488,7 @@ class RecWindowUI extends LitElement {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onLostFocus(event) {
     if (!event.currentTarget.value) {
       // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.

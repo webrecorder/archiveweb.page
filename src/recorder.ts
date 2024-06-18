@@ -1,12 +1,15 @@
 import { RequestResponseInfo } from "./requestresponseinfo";
 
+// @ts-expect-error - Missing types
 import { getCustomRewriter } from "@webrecorder/wabac/src/rewrite";
 import {
   rewriteDASH,
   rewriteHLS,
+  // @ts-expect-error - Missing types
 } from "@webrecorder/wabac/src/rewrite/rewriteVideo";
 import { Buffer } from "buffer";
 
+// @ts-expect-error - Missing types
 import behaviors from "browsertrix-behaviors/dist/behaviors.js";
 import extractPDF from "@/static/extractPDF.js";
 
@@ -30,6 +33,7 @@ const IFRAME_INJECT_URL = "__awp_iframe_inject__";
 const BEHAVIOR_LOG_FUNC = "__bx_log";
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'time' implicitly has an 'any' type.
 function sleep(time) {
   // @ts-expect-error - TS2794 - Expected 1 arguments, but got 0. Did you forget to include 'void' in your type argument to 'Promise'?
   return new Promise((resolve) => setTimeout(() => resolve(), time));
@@ -129,11 +133,13 @@ class Recorder {
     };
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
   setAutoRunBehavior(autorun) {
     // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'Recorder'.
     this.autorun = autorun;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'path' implicitly has an 'any' type.
   addExternalInject(path) {
     return `
     (function () {
@@ -403,6 +409,7 @@ class Recorder {
   async _doInjectTopFrame() {
     await this.newDocEval(MAIN_INJECT_URL, this.getInjectScript());
 
+    // @ts-expect-error - TS7031 - Binding element 'data' implicitly has an 'any' type. | TS7031 - Binding element 'type' implicitly has an 'any' type.
     await this.exposeFunction(BEHAVIOR_LOG_FUNC, ({ data, type }) => {
       switch (type) {
         case "info":
@@ -415,12 +422,14 @@ class Recorder {
     });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'name' implicitly has an 'any' type. | TS7006 - Parameter 'source' implicitly has an 'any' type.
   async newDocEval(name, source) {
     source += "\n\n//# sourceURL=" + name;
     // @ts-expect-error - TS2345 - Argument of type '{ source: any; }' is not assignable to parameter of type 'null | undefined'.
     await this.send("Page.addScriptToEvaluateOnNewDocument", { source });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'name' implicitly has an 'any' type. | TS7006 - Parameter 'expression' implicitly has an 'any' type.
   pageEval(name, expression, sessions = []) {
     expression += "\n\n//# sourceURL=" + name;
     return this.send(
@@ -439,6 +448,7 @@ class Recorder {
     );
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async _doInjectIframe(sessions) {
     try {
       //console.log("inject to: " + sessions[0]);
@@ -487,6 +497,7 @@ class Recorder {
     this.updateStatus();
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'name' implicitly has an 'any' type. | TS7006 - Parameter 'func' implicitly has an 'any' type.
   async exposeFunction(name, func, sessions = []) {
     // @ts-expect-error - TS2339 - Property '_bindings' does not exist on type 'Recorder'.
     this._bindings[name] = func;
@@ -538,6 +549,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async sessionInit(sessions) {
     try {
       await this.send("Network.enable", null, sessions);
@@ -623,6 +635,7 @@ class Recorder {
     );
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'requestId' implicitly has an 'any' type.
   pendingReqResp(requestId, reuseOnly = false) {
     // @ts-expect-error - TS2551 - Property 'pendingRequests' does not exist on type 'Recorder'. Did you mean 'pendingReqResp'?
     if (!this.pendingRequests[requestId]) {
@@ -640,6 +653,7 @@ class Recorder {
     return this.pendingRequests[requestId];
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'requestId' implicitly has an 'any' type.
   removeReqResp(requestId) {
     // @ts-expect-error - TS2551 - Property 'pendingRequests' does not exist on type 'Recorder'. Did you mean 'pendingReqResp'?
     const reqresp = this.pendingRequests[requestId];
@@ -648,6 +662,7 @@ class Recorder {
     return reqresp;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type. | TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async processMessage(method, params, sessions) {
     switch (method) {
       case "Target.attachedToTarget":
@@ -845,6 +860,7 @@ class Recorder {
     return true;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   handleWindowOpen(url, sessions) {
     // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
     const headers = { Referer: this.pageInfo.url };
@@ -915,6 +931,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   async unpauseAndFinish(params) {
     let domSnapshot = null;
 
@@ -949,6 +966,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'currPage' implicitly has an 'any' type. | TS7006 - Parameter 'domSnapshot' implicitly has an 'any' type. | TS7006 - Parameter 'finished' implicitly has an 'any' type.
   commitPage(currPage, domSnapshot, finished) {
     if (!currPage?.url || !currPage.ts || currPage.url === "about:blank") {
       return;
@@ -972,6 +990,7 @@ class Recorder {
     return res;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'data' implicitly has an 'any' type. | TS7006 - Parameter 'pageInfo' implicitly has an 'any' type.
   async commitResource(data, pageInfo) {
     const payloadSize = data.payload.length;
     // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
@@ -997,6 +1016,7 @@ class Recorder {
     this._cacheSessionNew += writtenSize;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   receiveMessageFromTarget(params, sessions) {
     const nestedParams = JSON.parse(params.message);
 
@@ -1029,6 +1049,7 @@ class Recorder {
     );
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   initPage(params, sessions) {
     if (params.frame.parentId) {
       return false;
@@ -1067,6 +1088,7 @@ class Recorder {
     this.firstPageStarted = true;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type. | TS7006 - Parameter 'mime' implicitly has an 'any' type.
   _initNewPage(url, mime) {
     // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
     this.pageInfo = {
@@ -1104,6 +1126,7 @@ class Recorder {
     this.behaviorState = BEHAVIOR_WAIT_LOAD;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'favIconUrl' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   loadFavIcon(favIconUrl, sessions) {
     // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'. | TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
     if (favIconUrl && this.pageInfo && this.pageInfo.favIconUrl != favIconUrl) {
@@ -1114,6 +1137,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async updatePage(sessions) {
     //console.log("updatePage", this.pageInfo);
 
@@ -1171,6 +1195,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async updateHistory(sessions) {
     if (sessions.length) {
       return;
@@ -1189,6 +1214,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type. | TS7006 - Parameter 'headers' implicitly has an 'any' type. | TS7006 - Parameter 'resourceType' implicitly has an 'any' type.
   shouldSkip(method, headers, resourceType) {
     if (headers && !method) {
       method = headers[":method"];
@@ -1219,6 +1245,7 @@ class Recorder {
     return false;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async handlePaused(params, sessions) {
     let continued = false;
     let reqresp: TODOFixMe = null;
@@ -1279,6 +1306,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'reqresp' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async rewriteResponse(params, reqresp, sessions) {
     if (!reqresp?.payload) {
       return false;
@@ -1357,6 +1385,7 @@ class Recorder {
     return false;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'headers' implicitly has an 'any' type.
   _getContentType(headers) {
     for (const header of headers) {
       if (header.name.toLowerCase() === "content-type") {
@@ -1367,14 +1396,17 @@ class Recorder {
     return null;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'status' implicitly has an 'any' type.
   noResponseForStatus(status) {
     return !status || status === 204 || (status >= 300 && status < 400);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
   isValidUrl(url) {
     return url && (url.startsWith("https:") || url.startsWith("http:"));
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async handleLoadingFinished(params, sessions) {
     const reqresp = this.removeReqResp(params.requestId);
 
@@ -1408,6 +1440,7 @@ class Recorder {
     this.fullCommit(reqresp, sessions);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'reqresp' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async fullCommit(reqresp, sessions) {
     //const requestId = reqresp.requestId;
 
@@ -1474,6 +1507,7 @@ class Recorder {
     //delete this._fetchPending[requestId];
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
   async getStorage(url) {
     // check if recording storage is allowed
     // @ts-expect-error - TS2339 - Property 'recordStorage' does not exist on type 'Recorder'.
@@ -1498,6 +1532,7 @@ class Recorder {
     return JSON.stringify({ local: local.entries, session: session.entries });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   async handleRequestWillBeSent(params) {
     if (
       this.shouldSkip(
@@ -1535,6 +1570,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async handleFetchResponse(params, sessions) {
     if (!params.networkId) {
       //console.warn(`No networkId for ${params.request.url} ${params.resourceType}`);
@@ -1565,6 +1601,7 @@ class Recorder {
     return reqresp;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   parseMediaEventsAdded(params, sessions) {
     // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
     if (!this.pageInfo.id) {
@@ -1580,6 +1617,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'request' implicitly has an 'any' type. | TS7006 - Parameter 'resp' implicitly has an 'any' type.
   async attemptFetchRedirect(request, resp) {
     if (request.redirectOnly && resp.type === "opaqueredirect") {
       const abort = new AbortController();
@@ -1601,6 +1639,7 @@ class Recorder {
     return null;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'request' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async doAsyncFetchInBrowser(request, sessions) {
     // @ts-expect-error - TS2339 - Property '_fetchUrls' does not exist on type 'Recorder'.
     this._fetchUrls.add(request.url);
@@ -1613,6 +1652,7 @@ class Recorder {
     //console.log("Async Fetch Result: " + JSON.stringify(result));
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'request' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   async doAsyncFetch(request, sessions) {
     if (!request || !this.isValidUrl(request.url)) {
       return;
@@ -1743,12 +1783,14 @@ class Recorder {
       // @ts-expect-error - TS2339 - Property '_fetchUrls' does not exist on type 'Recorder'.
       this._fetchUrls.delete(request.url);
     } finally {
+      // @ts-expect-error - TS2722 - Cannot invoke an object which is possibly 'undefined'.
       doneResolve();
       // @ts-expect-error - TS2339 - Property '_fetchPending' does not exist on type 'Recorder'.
       this._fetchPending.delete(fetchId);
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'reqresp' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type. | TS7006 - Parameter 'method' implicitly has an 'any' type.
   async fetchPayloads(params, reqresp, sessions, method) {
     let payload;
 
@@ -1850,6 +1892,7 @@ class Recorder {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'method' implicitly has an 'any' type.
   send(method, params = null, sessions = []) {
     let promise = null;
 
@@ -1892,6 +1935,7 @@ class Recorder {
     return this._doSendCommand(method, params, promise);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'result' implicitly has an 'any' type.
   parseTextFromDOMSnapshot(result) {
     const TEXT_NODE = 3;
     const ELEMENT_NODE = 1;

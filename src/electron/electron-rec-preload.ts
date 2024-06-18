@@ -8,18 +8,22 @@ import { loader, getDB } from "replaywebpage/src/electron-preload";
 
 const { ipcRenderer, contextBridge } = require("electron");
 
+// @ts-expect-error - TS7034 - Variable 'downloadCallback' implicitly has type 'any' in some locations where its type cannot be determined.
 let downloadCallback;
 
 // ===========================================================================
 const globalAPI = {
+  // @ts-expect-error - TS7006 - Parameter 'opts' implicitly has an 'any' type.
   record: (opts) => {
     ipcRenderer.send("start-rec", opts);
   },
 
+  // @ts-expect-error - TS7006 - Parameter 'callback' implicitly has an 'any' type.
   setDownloadCallback: (callback) => {
     downloadCallback = callback;
   },
 
+  // @ts-expect-error - TS7006 - Parameter 'dlprogress' implicitly has an 'any' type.
   downloadCancel: (dlprogress) => {
     ipcRenderer.send("dlcancel:" + dlprogress.origFilename);
   },
@@ -72,6 +76,7 @@ ipcRenderer.on("inc-sizes", (event, totalSize, writtenSize, collId) => {
 
 // ===========================================================================
 ipcRenderer.on("download-progress", (event, progress) => {
+  // @ts-expect-error - TS7005 - Variable 'downloadCallback' implicitly has an 'any' type.
   if (downloadCallback) {
     downloadCallback(progress);
   }

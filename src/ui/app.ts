@@ -26,6 +26,7 @@ import {
   create as createAutoIpfs,
   DaemonAPI,
   Web3StorageAPI,
+  // @ts-expect-error - TS7016 - Could not find a declaration file for module 'auto-js-ipfs'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/auto-js-ipfs/index.js' implicitly has an 'any' type.
 } from "auto-js-ipfs";
 import { getLocalOption, setLocalOption } from "../localstorage";
 import { type BtrixOpts } from "../types";
@@ -94,6 +95,7 @@ class ArchiveWebApp extends ReplayWebApp {
     );
 
     if (window.archivewebpage) {
+      // @ts-expect-error - TS7006 - Parameter 'progress' implicitly has an 'any' type.
       window.archivewebpage.setDownloadCallback((progress) =>
         this.onDownloadProgress(progress)
       );
@@ -224,6 +226,7 @@ class ArchiveWebApp extends ReplayWebApp {
     });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onStartLoad(event) {
     if (this.embed) {
       return;
@@ -240,6 +243,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onCollLoaded(event) {
     if (this.loadInfo?.importCollId) {
       if (navigator.serviceWorker.controller) {
@@ -267,6 +271,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'sourceUrl' implicitly has an 'any' type.
   getLoadInfo(sourceUrl) {
     this.disableCSP();
 
@@ -296,6 +301,7 @@ class ArchiveWebApp extends ReplayWebApp {
 
     console.log("attempt to disable CSP to ensure replay works");
     const tabId = await new Promise((resolve) => {
+      // @ts-expect-error - TS7006 - Parameter 'msg' implicitly has an 'any' type.
       chrome.tabs.getCurrent((msg) => resolve(msg.id));
     });
 
@@ -399,10 +405,13 @@ class ArchiveWebApp extends ReplayWebApp {
 
       <a
         href="?about"
-        @click="${(e) => {
-          e.preventDefault();
-          this.showAbout = true;
-        }}"
+        @click="${
+          // @ts-expect-error - TS7006 - Parameter 'e' implicitly has an 'any' type.
+          (e) => {
+            e.preventDefault();
+            this.showAbout = true;
+          }
+        }"
         class="navbar-item is-size-6"
         >About
       </a></a
@@ -602,7 +611,10 @@ class ArchiveWebApp extends ReplayWebApp {
           <input
             type="checkbox"
             ?checked="${this.autorun}"
-            @change="${(e) => (this.autorun = e.currentTarget.checked)}"
+            @change="${
+              // @ts-expect-error - TS7006 - Parameter 'e' implicitly has an 'any' type.
+              (e) => (this.autorun = e.currentTarget.checked)
+            }"
           />
           Start With Autopilot
         </label>
@@ -832,6 +844,7 @@ class ArchiveWebApp extends ReplayWebApp {
     </wr-modal>`;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'progress' implicitly has an 'any' type.
   onDownloadProgress(progress) {
     if (progress.filename) {
       // @ts-expect-error - TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'?
@@ -1221,6 +1234,7 @@ class ArchiveWebApp extends ReplayWebApp {
     `;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onNewColl(event) {
     // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
     this.showNew = "loading";
@@ -1242,6 +1256,7 @@ class ArchiveWebApp extends ReplayWebApp {
     this.showNew = null;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onSelectColl(event) {
     //this.selCollId = event.currentTarget.getAttribute("data-id");
     //this.selCollTitle = event.currentTarget.getAttribute("data-title");
@@ -1278,6 +1293,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   _setCurrColl(event) {
     if (!(event instanceof CustomEvent)) {
       this.setDefaultColl();
@@ -1297,6 +1313,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onShowStart(event) {
     this._setCurrColl(event);
     // @ts-expect-error - TS2339 - Property 'recordUrl' does not exist on type 'ArchiveWebApp'.
@@ -1305,6 +1322,7 @@ class ArchiveWebApp extends ReplayWebApp {
     this.showStartRecord = true;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onShowImport(event) {
     this._setCurrColl(event);
     this.showImport = true;
@@ -1312,12 +1330,14 @@ class ArchiveWebApp extends ReplayWebApp {
     this.isImportExisting = true;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onCollsLoaded(event) {
     this.colls = event.detail.colls;
     //this.selCollId = this.colls && this.colls.length ? this.colls[0].id: null;
     this.setDefaultColl();
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onStartRecord(event) {
     event.preventDefault();
     // @ts-expect-error - TS2339 - Property 'renderRoot' does not exist on type 'ArchiveWebApp'.
@@ -1352,6 +1372,7 @@ class ArchiveWebApp extends ReplayWebApp {
     return false;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onTitle(event) {
     super.onTitle(event);
 
@@ -1372,6 +1393,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   async onSaveSettings(event) {
     event.preventDefault();
 

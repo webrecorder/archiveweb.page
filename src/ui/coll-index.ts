@@ -95,6 +95,7 @@ class WrRecCollIndex extends ItemIndex {
     </wr-modal>`;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onIpfsShare(event) {
     if (event.detail.pending) {
       this.ipfsSharePending++;
@@ -103,6 +104,7 @@ class WrRecCollIndex extends ItemIndex {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
   onDeleteColl(event) {
     event.preventDefault();
     event.stopPropagation();

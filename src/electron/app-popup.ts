@@ -1,6 +1,7 @@
 //import { ipcRenderer } from "electron";
 import { RecPopup } from "../popup";
 
+// @ts-expect-error - TS7016 - Could not find a declaration file for module '@webrecorder/wabac/src/loaders'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/@webrecorder/wabac/src/loaders.js' implicitly has an 'any' type.
 import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 import { listAllMsg } from "../utils";
 import { setLocalOption } from "../localstorage";
@@ -39,6 +40,7 @@ class AppRecPopup extends RecPopup {
     });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'changedProperties' implicitly has an 'any' type.
   updated(changedProperties) {
     super.updated(changedProperties);
 
@@ -54,6 +56,7 @@ class AppRecPopup extends RecPopup {
     // });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   sendMessage(message) {
     if (message.type === "newColl") {
       this.makeNewColl(message);
@@ -64,6 +67,7 @@ class AppRecPopup extends RecPopup {
     this.dispatchEvent(new CustomEvent("send-msg", { detail: message }));
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   async makeNewColl(message) {
     // @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
     const newColl = await this.collLoader.initNewColl({ title: message.title });

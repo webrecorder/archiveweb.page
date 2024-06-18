@@ -1,6 +1,8 @@
 "use strict";
 
+// @ts-expect-error - Missing types
 import { getCustomRewriter } from "@webrecorder/wabac/src/rewrite";
+// @ts-expect-error - Missing types
 import { getStatusText } from "@webrecorder/wabac/src/utils";
 
 import { postToGetUrl } from "warcio";
@@ -19,6 +21,7 @@ const encoder = new TextEncoder();
 
 // ===========================================================================
 class RequestResponseInfo {
+  // @ts-expect-error - TS7006 - Parameter 'requestId' implicitly has an 'any' type.
   constructor(requestId) {
     // @ts-expect-error - TS2339 - Property '_created' does not exist on type 'RequestResponseInfo'.
     this._created = new Date();
@@ -76,6 +79,7 @@ class RequestResponseInfo {
     this.extraOpts = {};
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   fillRequest(params) {
     // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
     this.url = params.request.url;
@@ -99,6 +103,7 @@ class RequestResponseInfo {
     //this.loaderId = params.loaderId;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   fillFetchRequestPaused(params) {
     this.fillRequest(params);
 
@@ -116,6 +121,7 @@ class RequestResponseInfo {
     this.resourceType = params.resourceType;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   fillResponseRedirect(params) {
     this._fillResponse(params.redirectResponse);
   }
@@ -135,6 +141,7 @@ class RequestResponseInfo {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   fillResponseReceived(params) {
     const response = params.response;
 
@@ -157,6 +164,7 @@ class RequestResponseInfo {
     this._fillResponse(response);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'response' implicitly has an 'any' type.
   _fillResponse(response) {
     // @ts-expect-error - TS2339 - Property 'status' does not exist on type 'RequestResponseInfo'.
     this.status = response.status;
@@ -198,6 +206,7 @@ class RequestResponseInfo {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   fillResponseReceivedExtraInfo(params) {
     // @ts-expect-error - TS2339 - Property 'responseHeaders' does not exist on type 'RequestResponseInfo'.
     this.responseHeaders = params.headers;
@@ -207,6 +216,7 @@ class RequestResponseInfo {
     }
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'payload' implicitly has an 'any' type. | TS7006 - Parameter 'pageInfo' implicitly has an 'any' type.
   toDBRecord(payload, pageInfo) {
     // don't save 304 (todo: turn into 'revisit' style entry?)
     // extra check for 206, should already be skipped
@@ -331,6 +341,7 @@ class RequestResponseInfo {
     return data;
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'record' implicitly has an 'any' type.
   fillFromDBRecord(record) {
     // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
     this.url = record.url;
@@ -376,6 +387,7 @@ class RequestResponseInfo {
     return this._getHeadersDict(this.requestHeaders, null);
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'length' implicitly has an 'any' type.
   getResponseHeadersDict(length) {
     return this._getHeadersDict(
       // @ts-expect-error - TS2339 - Property 'responseHeaders' does not exist on type 'RequestResponseInfo'.
@@ -386,6 +398,7 @@ class RequestResponseInfo {
     );
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'headersDict' implicitly has an 'any' type. | TS7006 - Parameter 'headersList' implicitly has an 'any' type. | TS7006 - Parameter 'actualContentLength' implicitly has an 'any' type.
   _getHeadersDict(headersDict, headersList, actualContentLength) {
     if (!headersDict && headersList) {
       headersDict = {};

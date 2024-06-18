@@ -1,5 +1,6 @@
 import { BrowserRecorder } from "./browser-recorder";
 
+// @ts-expect-error - TS7016 - Could not find a declaration file for module '@webrecorder/wabac/src/loaders'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/@webrecorder/wabac/src/loaders.js' implicitly has an 'any' type.
 import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
 
 import { listAllMsg } from "../utils";
@@ -14,9 +15,12 @@ import {
 self.recorders = {};
 self.newRecId = null;
 
+// @ts-expect-error - TS7034 - Variable 'newRecUrl' implicitly has type 'any' in some locations where its type cannot be determined.
 let newRecUrl = null;
+// @ts-expect-error - TS7034 - Variable 'newRecCollId' implicitly has type 'any' in some locations where its type cannot be determined.
 let newRecCollId = null;
 
+// @ts-expect-error - TS7034 - Variable 'defaultCollId' implicitly has type 'any' in some locations where its type cannot be determined.
 let defaultCollId = null;
 let autorun = false;
 
@@ -43,6 +47,7 @@ function main() {
   });
 }
 
+// @ts-expect-error - TS7006 - Parameter 'port' implicitly has an 'any' type.
 chrome.runtime.onConnect.addListener((port) => {
   switch (port.name) {
     case "popup-port":
@@ -51,13 +56,16 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 });
 
+// @ts-expect-error - TS7006 - Parameter 'port' implicitly has an 'any' type.
 function popupHandler(port) {
   if (!port.sender || port.sender.url !== chrome.runtime.getURL("popup.html")) {
     return;
   }
 
+  // @ts-expect-error - TS7034 - Variable 'tabId' implicitly has type 'any' in some locations where its type cannot be determined.
   let tabId = null;
 
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   port.onMessage.addListener(async (message) => {
     switch (message.type) {
       case "startUpdates":
@@ -80,10 +88,12 @@ function popupHandler(port) {
       }
 
       case "stopRecording":
+        // @ts-expect-error - TS7005 - Variable 'tabId' implicitly has an 'any' type.
         stopRecorder(tabId);
         break;
 
       case "toggleBehaviors":
+        // @ts-expect-error - TS7005 - Variable 'tabId' implicitly has an 'any' type.
         toggleBehaviors(tabId);
         break;
 
@@ -107,6 +117,7 @@ function popupHandler(port) {
 }
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tab' implicitly has an 'any' type. | TS7006 - Parameter 'reason' implicitly has an 'any' type.
 chrome.debugger.onDetach.addListener((tab, reason) => {
   // target closed, delete recorder as this tab will not be used again
   if (reason === "target_closed") {
@@ -115,6 +126,7 @@ chrome.debugger.onDetach.addListener((tab, reason) => {
 });
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tab' implicitly has an 'any' type.
 chrome.tabs.onCreated.addListener((tab) => {
   if (!tab.id) {
     return;
@@ -126,15 +138,19 @@ chrome.tabs.onCreated.addListener((tab) => {
   let collId = null;
 
   // start recording from extension in new tab use case
+  // @ts-expect-error - TS7005 - Variable 'newRecUrl' implicitly has an 'any' type.
   if (newRecUrl && tab.pendingUrl === "about:blank") {
     start = true;
+    // @ts-expect-error - TS7005 - Variable 'newRecUrl' implicitly has an 'any' type.
     openUrl = newRecUrl;
+    // @ts-expect-error - TS7005 - Variable 'newRecCollId' implicitly has an 'any' type. | TS7005 - Variable 'defaultCollId' implicitly has an 'any' type.
     collId = newRecCollId || defaultCollId;
     newRecUrl = null;
     newRecCollId = null;
   } else if (
     tab.openerTabId &&
     (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
+    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
     self.recorders[tab.openerTabId]?.running
   ) {
     // @ts-expect-error - TS2339 - Property 'collId' does not exist on type 'BrowserRecorder'.
@@ -160,6 +176,7 @@ chrome.tabs.onCreated.addListener((tab) => {
 });
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type. | TS7006 - Parameter 'changeInfo' implicitly has an 'any' type.
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (tabId && self.recorders[tabId]) {
     const recorder = self.recorders[tabId];
@@ -195,12 +212,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 });
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
 chrome.tabs.onRemoved.addListener((tabId) => {
   delete self.recorders[tabId];
   removeLocalOption(`${tabId}-collId`);
 });
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'info' implicitly has an 'any' type. | TS7006 - Parameter 'tab' implicitly has an 'any' type.
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   switch (info.menuItemId) {
     case "view-rec":
@@ -221,6 +240,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type. | TS7006 - Parameter 'opts' implicitly has an 'any' type.
 async function startRecorder(tabId, opts) {
   if (!self.recorders[tabId]) {
     opts.collLoader = collLoader;
@@ -249,6 +269,7 @@ async function startRecorder(tabId, opts) {
 }
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
 function stopRecorder(tabId) {
   if (self.recorders[tabId]) {
     self.recorders[tabId].detach();
@@ -259,6 +280,7 @@ function stopRecorder(tabId) {
 }
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
 function toggleBehaviors(tabId) {
   if (self.recorders[tabId]) {
     self.recorders[tabId].toggleBehaviors();
@@ -269,12 +291,14 @@ function toggleBehaviors(tabId) {
 }
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
 function isRecording(tabId) {
   // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
   return self.recorders[tabId]?.running;
 }
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
 function isValidUrl(url) {
   return (
     url &&
@@ -286,6 +310,7 @@ function isValidUrl(url) {
 
 // ===========================================================================
 chrome.runtime.onMessage.addListener(
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   async (message /*sender, sendResponse*/) => {
     switch (message.msg) {
       case "startNew":
@@ -305,6 +330,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 // ===========================================================================
+// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
 async function disableCSPForTab(tabId) {
   if (disabledCSPTabs.has(tabId)) {
     return;
@@ -322,6 +348,7 @@ async function disableCSPForTab(tabId) {
       { tabId },
       "Page.setBypassCSP",
       { enabled: true },
+      // @ts-expect-error - TS7006 - Parameter 'resp' implicitly has an 'any' type.
       (resp) => resolve(resp)
     );
   });

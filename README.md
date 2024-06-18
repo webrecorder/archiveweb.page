@@ -64,7 +64,7 @@ The Electron App version will open recording in a new window. It is is designed 
 
 After making changes, rerun ``yarn run build-dev`` and ``yarn run start-electron`` to load the app.
 
-### Standalone Build
+## Standalone Build
 
 To create a platform-specific binary, run:
 

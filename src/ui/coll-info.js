@@ -163,7 +163,7 @@ class WrRecCollInfo extends CollInfo
         <div class="column is-2">
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
-            <a href="${apiPrefix}/c/${this.coll.id}/dl?format=wacz&pages=all" class="button is-small" title="Download">
+            <a href="${apiPrefix}/c/${this.coll.id}/dl?format=wacz&pages=all" class="button is-small" title="Download WACZ">
               <span class="icon is-small">
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>

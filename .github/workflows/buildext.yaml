@@ -16,8 +16,8 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
-          cache: 'yarn'
+          node-version: "18.x"
+          cache: "yarn"
 
       - name: Yarn Install
         run: yarn install --frozen-lockfile

@@ -12,7 +12,7 @@ import fasCheck from "@fortawesome/fontawesome-free/svgs/solid/check.svg";
 import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 import fasCaretDown from "@fortawesome/fontawesome-free/svgs/solid/caret-down.svg";
 
-import wrRec from "../assets/recLogo.svg";
+import wrRec from "./assets/icons/recLogo.svg";
 
 import prettyBytes from "pretty-bytes";
 

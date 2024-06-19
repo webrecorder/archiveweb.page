@@ -5,7 +5,7 @@ import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
 import prettyBytes from "pretty-bytes";
 
 import { Coll } from "replaywebpage";
-import wrRec from "../../assets/recLogo.svg";
+import wrRec from "../assets/icons/recLogo.svg";
 
 
 //============================================================================

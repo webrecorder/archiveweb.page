@@ -14,7 +14,7 @@ import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
 import fasCloudArrowUp from "@fortawesome/fontawesome-free/svgs/solid/cloud-upload-alt.svg";
 
 import { CollInfo } from "replaywebpage";
-import wrRec from "../../assets/recLogo.svg";
+import wrRec from "../assets/icons/recLogo.svg";
 
 const REPLAY_URL = "https://replayweb.page/";
 

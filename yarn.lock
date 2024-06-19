@@ -1402,7 +1402,7 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.5.tgz#4fc56c15c580b9adb7dc3c333a134e540b44bfb1"
   integrity sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==
 
-"@lit-labs/ssr-dom-shim@^1.0.0", "@lit-labs/ssr-dom-shim@^1.1.0", "@lit-labs/ssr-dom-shim@^1.2.0":
+"@lit-labs/ssr-dom-shim@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@lit-labs/ssr-dom-shim/-/ssr-dom-shim-1.2.0.tgz#353ce4a76c83fadec272ea5674ede767650762fd"
   integrity sha512-yWJKmpGE6lUURKAaIltoPIE/wrbY3TEkqQt+X0m+7fQNnAv0keydnYvbiJFP1PnMhizmIWRWOG5KLhYyc/xl+g==
@@ -1412,14 +1412,7 @@
   resolved "https://registry.yarnpkg.com/@lit/react/-/react-1.0.5.tgz#9c53a8d719f91ef7edca0bdd68f5589ea579ffc1"
   integrity sha512-RSHhrcuSMa4vzhqiTenzXvtQ6QDq3hSPsnHHO3jaPmmvVFeoNNm4DHoQ0zLdKAUvY3wP3tTENSUf7xpyVfrDEA==
 
-"@lit/reactive-element@^1.3.0", "@lit/reactive-element@^1.6.0":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@lit/reactive-element/-/reactive-element-1.6.3.tgz#25b4eece2592132845d303e091bad9b04cdcfe03"
-  integrity sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==
-  dependencies:
-    "@lit-labs/ssr-dom-shim" "^1.0.0"
-
-"@lit/reactive-element@^2.0.4":
+"@lit/reactive-element@^2.0.0", "@lit/reactive-element@^2.0.4":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@lit/reactive-element/-/reactive-element-2.0.4.tgz#8f2ed950a848016383894a26180ff06c56ae001b"
   integrity sha512-GFn91inaUa2oHLak8awSIigYz0cU0Payr1rcFsrkf5OJ5eSPxElyZfKh0f2p9FsTiZWXQdWGJeXZICEfXXYSXQ==
@@ -1684,7 +1677,7 @@
   resolved "https://registry.yarnpkg.com/@shoelace-style/localize/-/localize-3.1.2.tgz#2c63f16d8aa80842dbe5127845c76ed53f6a5e8e"
   integrity sha512-Hf45HeO+vdQblabpyZOTxJ4ZeZsmIUYXXPmoYrrR4OJ5OKxL+bhMz5mK8JXgl7HsoEowfz7+e248UGi861de9Q==
 
-"@shoelace-style/shoelace@^2.8.0":
+"@shoelace-style/shoelace@~2.15.1":
   version "2.15.1"
   resolved "https://registry.yarnpkg.com/@shoelace-style/shoelace/-/shoelace-2.15.1.tgz#2fa6bd8e493801f5b5b4744fab0fa108bbc01934"
   integrity sha512-3ecUw8gRwOtcZQ8kWWkjk4FTfObYQ/XIl3aRhxprESoOYV1cYhloYPsmQY38UoL3+pwJiZb5+LzX0l3u3Zl0GA==
@@ -2259,7 +2252,7 @@
     uuid "^9.0.0"
     warcio "^2.2.1"
 
-"@webrecorder/wabac@^2.18.1", "@webrecorder/wabac@^2.18.3":
+"@webrecorder/wabac@^2.18.1":
   version "2.18.3"
   resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.18.3.tgz#eda195452a9964e8216fb0676d5da6cc69239dae"
   integrity sha512-qmNLXky9QHpljt0EyEmcO6L2qFGG63mZbMYKso0MZZLFY3NeUf/ANafq9pWWm1Bw10+zoV6KRtHUin8gropccA==
@@ -2268,6 +2261,35 @@
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
     "@webrecorder/wombat" "^3.7.6"
+    acorn "^8.10.0"
+    auto-js-ipfs "^2.1.1"
+    base64-js "^1.5.1"
+    brotli "^1.3.3"
+    buffer "^6.0.3"
+    fast-xml-parser "^4.2.5"
+    hash-wasm "^4.9.0"
+    http-link-header "^1.1.3"
+    http-status-codes "^2.1.4"
+    idb "^7.1.1"
+    js-levenshtein "^1.1.6"
+    js-yaml "^4.1.0"
+    pako "^1.0.11"
+    parse5-html-rewriting-stream "^7.0.0"
+    parse5-sax-parser "^7.0.0"
+    path-parser "^6.1.0"
+    process "^0.11.10"
+    stream-browserify "^3.0.0"
+    warcio "^2.2.1"
+
+"@webrecorder/wabac@^2.18.4":
+  version "2.18.4"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.18.4.tgz#de26c61f95b7f8f0440dd8fe9e95e1ae976915a2"
+  integrity sha512-Yvd+0nHwru5gBbjsHTXpUxpf74WU/+Js1q4yDpgPPJKtEjPvMXsRkcWgwsZ+WzyA0OCgEOirS/iKx7Y3vYNz6g==
+  dependencies:
+    "@peculiar/asn1-ecc" "^2.3.4"
+    "@peculiar/asn1-schema" "^2.3.3"
+    "@peculiar/x509" "^1.9.2"
+    "@webrecorder/wombat" "^3.7.7"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
@@ -2328,6 +2350,13 @@
   version "3.7.6"
   resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.6.tgz#e52a1bcfccd0150517989bc4310a03730a1f74e7"
   integrity sha512-SA34StdLc+D60Aa8bZ2I+8PLjody1B/j9DmZ2zyXg/EZuPLSG4ec6XvMzq8QYuoGvD+hkjAf0YlUGxmI/viIcw==
+  dependencies:
+    warcio "^2.2.0"
+
+"@webrecorder/wombat@^3.7.7":
+  version "3.7.7"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.7.tgz#8659876c8ab93d0ce184dd6eb64c923f5662d290"
+  integrity sha512-3KgkhTNFTRnYuLOTiVWOFjMX5hGtJJTgscgqBLgXuIjKD7F0YJIVjZ3JLYVR15LiOz8flu4FZY3wtSf71hcNaA==
   dependencies:
     warcio "^2.2.0"
 
@@ -5494,16 +5523,7 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-lit-element@^3.3.0:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-3.3.3.tgz#10bc19702b96ef5416cf7a70177255bfb17b3209"
-  integrity sha512-XbeRxmTHubXENkV4h8RIPyr8lXc+Ff28rkcQzw3G6up2xg5E8Zu1IgOWIwBLEQsu3cOVFqdYwiVi0hv0SlpqUA==
-  dependencies:
-    "@lit-labs/ssr-dom-shim" "^1.1.0"
-    "@lit/reactive-element" "^1.3.0"
-    lit-html "^2.8.0"
-
-lit-element@^4.0.4:
+lit-element@^4.0.0, lit-element@^4.0.4:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-4.0.6.tgz#b9f5b5d68f30636be1314ec76c9a73a6405f04dc"
   integrity sha512-U4sdJ3CSQip7sLGZ/uJskO5hGiqtlpxndsLr6mt3IQIjheg93UKYeGQjWMRql1s/cXNOaRrCzC2FQwjIwSUqkg==
@@ -5512,28 +5532,21 @@ lit-element@^4.0.4:
     "@lit/reactive-element" "^2.0.4"
     lit-html "^3.1.2"
 
-lit-html@^2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-2.8.0.tgz#96456a4bb4ee717b9a7d2f94562a16509d39bffa"
-  integrity sha512-o9t+MQM3P4y7M7yNzqAyjp7z+mQGa4NS4CxiyLqFPyFWyc4O+nodLrkrxSaCTrla6M5YOLaT3RpbbqjszB5g3Q==
-  dependencies:
-    "@types/trusted-types" "^2.0.2"
-
-lit-html@^3.1.2:
+lit-html@^3.1.0, lit-html@^3.1.2:
   version "3.1.4"
   resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-3.1.4.tgz#30ad4f11467a61e2f08856de170e343184e9034e"
   integrity sha512-yKKO2uVv7zYFHlWMfZmqc+4hkmSbFp8jgjdZY9vvR9jr4J8fH6FUMXhr+ljfELgmjpvlF7Z1SJ5n5/Jeqtc9YA==
   dependencies:
     "@types/trusted-types" "^2.0.2"
 
-lit@^2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/lit/-/lit-2.8.0.tgz#4d838ae03059bf9cafa06e5c61d8acc0081e974e"
-  integrity sha512-4Sc3OFX9QHOJaHbmTMk28SYgVxLN3ePDjg7hofEft2zWlehFL3LiAuapWc4U/kYwMYJSh2hTCPZ6/LIC7ii0MA==
+lit@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-3.1.1.tgz#49340c8875019a777cc83904f75a2bf7764617dc"
+  integrity sha512-hF1y4K58+Gqrz+aAPS0DNBwPqPrg6P04DuWK52eMkt/SM9Qe9keWLcFgRcEKOLuDlRZlDsDbNL37Vr7ew1VCuw==
   dependencies:
-    "@lit/reactive-element" "^1.6.0"
-    lit-element "^3.3.0"
-    lit-html "^2.8.0"
+    "@lit/reactive-element" "^2.0.0"
+    lit-element "^4.0.0"
+    lit-html "^3.1.0"
 
 lit@^3.0.0:
   version "3.1.4"
@@ -6825,21 +6838,21 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-replaywebpage@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.0.1.tgz#8bd6bda31176a462d17f51d395f63aa77ed5923c"
-  integrity sha512-HslF98Aep5lKS2VS0Bcaq4ZzFQRSDy0pwteIbj/X/6xUQnbBrITgPUVk5QtnNCueRVX6Vb9nzvvW2L39Pz1lTg==
+replaywebpage@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.0.2.tgz#7d320659e84ba073fb34fb18c6492bed53d8f466"
+  integrity sha512-OiCasvD8TRi/jlpipuQt/oCWO/xmN3mQy1XSwscSd1YZyW0qyDHuy1v5Up+l0Mc2ztH3v2gNF2CVE0H/Bjz7SA==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
-    "@shoelace-style/shoelace" "^2.8.0"
-    "@webrecorder/wabac" "^2.18.3"
+    "@shoelace-style/shoelace" "~2.15.1"
+    "@webrecorder/wabac" "^2.18.4"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^5.3.0"
     fetch-ndjson "^1.1.6"
     flexsearch "^0.7.31"
     keyword-mark-element "^0.2.0"
-    lit "^2.8.0"
+    lit "3.1.1"
     marked "^4.0.10"
     mime-types "^2.1.32"
     minimist "^1.2.5"

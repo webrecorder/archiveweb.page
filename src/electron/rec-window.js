@@ -8,7 +8,7 @@ import fasLeft from "@fortawesome/fontawesome-free/svgs/solid/arrow-left.svg";
 import fasRight from "@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg";
 //import fasMenuV from '@fortawesome/fontawesome-free/svgs/solid/ellipsis-v.svg';
 
-import wrLogo from "../../assets/wr-logo.svg";
+import awpLogo from "../assets/brand/archivewebpage-icon-color.svg";
 
 import "./app-popup";
 import { BEHAVIOR_RUNNING } from "../consts";
@@ -198,7 +198,7 @@ class RecWindowUI extends LitElement
         </form>
         <a id="wr-button" role="button" class="button is-borderless" @click="${this.onTogglePopup}">
           <span class="icon is-small">
-            <fa-icon id="wrlogo" size="1.8em" .svg="${wrLogo}" aria-hidden="true"></fa-icon>
+            <fa-icon id="wrlogo" size="1.8em" .svg="${awpLogo}" aria-hidden="true"></fa-icon>
             ${this.recording ? html`
               ${this.autorun ? html`<span class="overlay overlay-auto"></span>` :
     !this.numPending ? html`

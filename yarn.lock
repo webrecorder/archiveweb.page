@@ -984,15 +984,15 @@
     uuid "^9.0.0"
     warcio "^2.2.1"
 
-"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1", "@webrecorder/wabac@^2.18.3":
-  version "2.18.3"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.18.3.tgz#eda195452a9964e8216fb0676d5da6cc69239dae"
-  integrity sha512-qmNLXky9QHpljt0EyEmcO6L2qFGG63mZbMYKso0MZZLFY3NeUf/ANafq9pWWm1Bw10+zoV6KRtHUin8gropccA==
+"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1", "@webrecorder/wabac@^2.19.1":
+  version "2.19.1"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.1.tgz#ce0d609f9e90c708af99945e1fa338be0ba2b5f9"
+  integrity sha512-m8Fi70OkhzkicbcbN5TrrBpj5D/EZKzVp5905kGPoC2F2zLqxUDMzx1FOHt2sTO/1b9NMvBmw9Pk1JQyYEm6rA==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.7.6"
+    "@webrecorder/wombat" "^3.7.8"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
@@ -1013,10 +1013,10 @@
     stream-browserify "^3.0.0"
     warcio "^2.2.1"
 
-"@webrecorder/wombat@^3.7.6":
-  version "3.7.6"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.6.tgz#e52a1bcfccd0150517989bc4310a03730a1f74e7"
-  integrity sha512-SA34StdLc+D60Aa8bZ2I+8PLjody1B/j9DmZ2zyXg/EZuPLSG4ec6XvMzq8QYuoGvD+hkjAf0YlUGxmI/viIcw==
+"@webrecorder/wombat@^3.7.8":
+  version "3.7.8"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.8.tgz#a414278b6fbd99bc02a97e384f0373307e60d9fa"
+  integrity sha512-BmEHrvGLHPQtECmCK9Oz7G3p2StsyaFOlNmAMDSNK/GjqPH+UWZOqDryBkWryTh+pFZXKblqyotLtvR4YxVyeQ==
   dependencies:
     warcio "^2.2.0"
 

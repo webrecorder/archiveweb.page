@@ -1,6 +1,6 @@
 import { RequestResponseInfo } from "./requestresponseinfo.js";
 
-import { baseRules as baseDSRules } from "@webrecorder/wabac/src/rewrite";
+import { baseRules as baseDSRules, htmlRules as htmlDSRules } from "@webrecorder/wabac/src/rewrite";
 import { rewriteDASH, rewriteHLS } from "@webrecorder/wabac/src/rewrite/rewriteVideo";
 import { Buffer } from "buffer";
 
@@ -988,6 +988,8 @@ class Recorder {
     let newString = null;
     let string = null;
 
+    const { url, extraOpts } = reqresp;
+
     const ct = this._getContentType(params.responseHeaders);
 
     switch (ct) {
@@ -1007,13 +1009,13 @@ class Recorder {
     case "text/javascript":
     case "application/javascript":
     case "application/x-javascript": {
-      const rw = baseDSRules.getRewriter(params.request.url);
+      const rules = ct === "text/html" ? htmlDSRules : baseDSRules;
+      const rw = rules.getRewriter(url);
 
-      if (rw !== baseDSRules.defaultRewriter) {
-        string = payload.toString("utf-8");
-        newString = rw.rewrite(string, {live: true, save: reqresp.extraOpts});
+      if (rw !== rules.defaultRewriter) {
+        string = payload.toString();
+        newString = rw.rewrite(string, {live: true, save: extraOpts});
       }
-      break;
     }
     }
 

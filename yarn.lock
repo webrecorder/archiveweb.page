@@ -984,10 +984,10 @@
     uuid "^9.0.0"
     warcio "^2.2.1"
 
-"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1", "@webrecorder/wabac@^2.19.2":
-  version "2.19.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.2.tgz#2591980e7e14275d6b885f850ecff2b82e898669"
-  integrity sha512-rj048+Ri0Q1Q7MSPu5w/y7utR5MgCxaJaUtfy257GSZbaHs0RBsKW8RJMunEZPUL5ANC/THBdUMEV7dvlJBC6A==
+"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1", "@webrecorder/wabac@^2.19.3":
+  version "2.19.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.3.tgz#400a19150f0291ee7d6284192d4d4811286d954a"
+  integrity sha512-RAmbTVwptmxHqNIkS6EhyKwXWGNgSLmiPGrEDwTdiO9eUclZqlXoa+sJM8fx9C9mdIBkZLle6bb8Ow19bH0XrA==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"

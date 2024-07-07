@@ -8,10 +8,10 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-11, ubuntu-latest]
+        os: [macos-12, ubuntu-latest]
         platform: [windows, linux]
         exclude:
-          - os: macos-11
+          - os: macos-12
             platform: windows
 
     steps:

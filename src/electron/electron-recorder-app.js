@@ -39,6 +39,25 @@ class ElectronRecorderApp extends ElectronReplayApp
       this.createRecordWindow(opts);
     });
 
+    sesh.webRequest.onHeadersReceived((details, callback) => {
+      const { url, responseHeaders, method } = details;
+
+      // Allow access to Browsertrix APIs
+      if (url.indexOf("/api") >= 0) {
+        let { statusLine } = details;
+
+        if (method === "OPTIONS") {
+          statusLine = "HTTP/1.1 200 OK";
+          responseHeaders["Access-Control-Allow-Headers"] = "Authorization, Content-Type";
+          responseHeaders["Access-Control-Allow-Methods"] = "GET, PUT, POST";
+        }
+        responseHeaders["Access-Control-Allow-Origin"] = "*";
+        callback({responseHeaders, statusLine});
+      } else {
+        callback({responseHeaders});
+      }
+    });
+
     sesh.on("will-download", (event, item, webContents) => {
       const origFilename = item.getFilename();
 

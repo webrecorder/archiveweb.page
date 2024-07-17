@@ -1108,6 +1108,11 @@ class Recorder {
     try {
       const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
 
+      // top-level URL is a non-GET request
+      if (data && data.requestUrl && data.requestUrl === this.pageInfo.url && !sessions.length) {
+        this.pageInfo.url = data.url;
+      }
+
       // top-level page resource
       if (data && !sessions.length && reqresp.url === this.pageInfo.url) {
         this.pageInfo.ts = reqresp.ts;

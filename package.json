@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.12.4",
+  "version": "0.12.5",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -11,7 +11,7 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.1",
     "@webrecorder/awp-sw": "^0.4.4",
-    "@webrecorder/wabac": "^2.19.3",
+    "@webrecorder/wabac": "^2.19.4",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.6.0",
     "btoa": "^1.2.1",

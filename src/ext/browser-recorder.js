@@ -186,27 +186,27 @@ class BrowserRecorder extends Recorder {
     if (this.running) {
       if (this.behaviorState === BEHAVIOR_RUNNING) {
         title = "Archiving: Autopilot Running!";
-        color = "#3298dc";
-        text = " ";
+        color = "#0891B2";
+        text = "";
 
       } else if (this.numPending === 0) {
         title = "Archiving: No URLs pending, can continue";
-        color = "#64e986";
-        text = " ";
+        color = "#4D7C0F";
+        text = "✓";
 
       } else {
         title = `Archiving: ${this.numPending} URLs pending, please wait`;
-        color = "#bb9f08";
+        color = "#C5A802";
         text = "" + this.numPending;
       }
     } else if (this.failureMsg) {
       title = "Error: Can't Archive this page";
       text = "X";
-      color = "#F00";
+      color = "#D30808";
     } else {
       title = "Not Archiving";
       text = "";
-      color = "#64e986";
+      color = "#4D7C0F";
     }
 
     chrome.action.setTitle({title, tabId});

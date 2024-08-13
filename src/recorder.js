@@ -1,6 +1,6 @@
 import { RequestResponseInfo } from "./requestresponseinfo.js";
 
-import { baseRules as baseDSRules, htmlRules as htmlDSRules } from "@webrecorder/wabac/src/rewrite";
+import { getCustomRewriter } from "@webrecorder/wabac/src/rewrite";
 import { rewriteDASH, rewriteHLS } from "@webrecorder/wabac/src/rewrite/rewriteVideo";
 import { Buffer } from "buffer";
 
@@ -1009,10 +1009,9 @@ class Recorder {
     case "text/javascript":
     case "application/javascript":
     case "application/x-javascript": {
-      const rules = ct === "text/html" ? htmlDSRules : baseDSRules;
-      const rw = rules.getRewriter(url);
+      const rw = getCustomRewriter(url, ct === "text/html");
 
-      if (rw !== rules.defaultRewriter) {
+      if (rw) {
         string = payload.toString();
         newString = rw.rewrite(string, {live: true, save: extraOpts});
       }

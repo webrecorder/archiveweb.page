@@ -1415,10 +1415,12 @@ browserslist@^4.21.10:
     node-releases "^2.0.14"
     update-browserslist-db "^1.0.13"
 
-browsertrix-behaviors@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.6.0.tgz#e16345e4b414b18e6441548d517d01b4316f744e"
-  integrity sha512-BdfEPHmDjhEIFrn80UKnwGT6HRgnmq2shNybu8BEfAHJQsqZdvP/VVKWvNGnWML1jjUKiwtvtkdFhtHedFQkzA==
+browsertrix-behaviors@^0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.6.4.tgz#33fe9a433108f2faac3a03af91aff940433e5b87"
+  integrity sha512-xaiO/VqqeSd5FnAkIKQINxC/q3Med33Lqw3LGxD4NBtkcMSh1Anz/+830QHVlQbp08nIPUXYV96hDrx1Uv0PmQ==
+  dependencies:
+    query-selector-shadow-dom "^1.0.1"
 
 btoa@^1.2.1:
   version "1.2.1"
@@ -4610,6 +4612,11 @@ qs@6.11.0:
   integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==
   dependencies:
     side-channel "^1.0.4"
+
+query-selector-shadow-dom@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/query-selector-shadow-dom/-/query-selector-shadow-dom-1.0.1.tgz#1c7b0058eff4881ac44f45d8f84ede32e9a2f349"
+  integrity sha512-lT5yCqEBgfoMYpf3F2xQRK7zEr1rhIIZuceDK6+xRkJQ4NMbHTwXqk4NkwDwQMNqXgG9r9fyHnzwNVs6zV5KRw==
 
 queue-microtask@^1.2.2:
   version "1.2.3"

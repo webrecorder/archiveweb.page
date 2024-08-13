@@ -1,5 +1,6 @@
 "use strict";
 
+import { getCustomRewriter } from "@webrecorder/wabac/src/rewrite";
 import { getStatusText } from "@webrecorder/wabac/src/utils";
 
 import { postToGetUrl } from "warcio";
@@ -191,20 +192,23 @@ class RequestResponseInfo
         postData: this.postData || "",
       };
       if (postToGetUrl(convData)) {
-        //this.requestBody = convData.requestBody;
-        // truncate to avoid extra long URLs
-        try {
-          const url = new URL(convData.url);
-          for (const [key, value] of url.searchParams.entries()) {
-            if (value && value.length > MAX_ARG_LEN) {
-              url.searchParams.set(key, value.slice(0, MAX_ARG_LEN));
+        // if URL for custom rewriting, keep as is, otherwise truncate to avoid extra long URLs
+        if (getCustomRewriter(this.url, mime === "text/html")) {
+          this.url = convData.url;
+        } else {
+          try {
+            const url = new URL(convData.url);
+            for (const [key, value] of url.searchParams.entries()) {
+              if (value && value.length > MAX_ARG_LEN) {
+                url.searchParams.set(key, value.slice(0, MAX_ARG_LEN));
+              }
             }
+            convData.url = url.href;
+          } catch (e) {
+            //ignore
           }
-          convData.url = url.href;
-        } catch (e) {
-          //ignore
+          this.url = convData.url.slice(0, MAX_URL_LENGTH);
         }
-        this.url = convData.url.slice(0, MAX_URL_LENGTH);
       }
     }
 

@@ -48,15 +48,15 @@ class ElectronRecorderApp extends ElectronReplayApp {
       const { url, responseHeaders, method } = details;
 
       // Allow access to Browsertrix APIs
-      if (url.indexOf("/api") >= 0) {
+      if (url.indexOf("/api") >= 0 && responseHeaders) {
         let { statusLine } = details;
 
         if (method === "OPTIONS") {
           statusLine = "HTTP/1.1 200 OK";
-          responseHeaders["Access-Control-Allow-Headers"] = "Authorization, Content-Type";
-          responseHeaders["Access-Control-Allow-Methods"] = "GET, PUT, POST";
+          responseHeaders["Access-Control-Allow-Headers"] = ["Authorization, Content-Type"];
+          responseHeaders["Access-Control-Allow-Methods"] = ["GET, PUT, POST"];
         }
-        responseHeaders["Access-Control-Allow-Origin"] = "*";
+        responseHeaders["Access-Control-Allow-Origin"] = ["*"];
         callback({responseHeaders, statusLine});
       } else {
         callback({responseHeaders});

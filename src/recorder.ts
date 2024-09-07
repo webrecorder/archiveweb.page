@@ -1,12 +1,7 @@
 import { RequestResponseInfo } from "./requestresponseinfo";
 
-// @ts-expect-error - Missing types
-import { getCustomRewriter } from "@webrecorder/wabac/src/rewrite";
-import {
-  rewriteDASH,
-  rewriteHLS,
-  // @ts-expect-error - Missing types
-} from "@webrecorder/wabac/src/rewrite/rewriteVideo";
+import { getCustomRewriter, rewriteDASH, rewriteHLS } from "@webrecorder/wabac";
+
 import { Buffer } from "buffer";
 
 // @ts-expect-error - Missing types
@@ -1457,7 +1452,9 @@ class Recorder {
       const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
 
       // top-level URL is a non-GET request
-      if (data && data.requestUrl && data.requestUrl === this.pageInfo.url && !sessions.length) {
+      // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
+      if (data?.requestUrl && data.requestUrl === this.pageInfo.url && !sessions.length) {
+        // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
         this.pageInfo.url = data.url;
       }
 

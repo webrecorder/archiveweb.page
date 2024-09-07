@@ -1,9 +1,4 @@
-"use strict";
-
-// @ts-expect-error - Missing types
-import { getCustomRewriter } from "@webrecorder/wabac/src/rewrite";
-// @ts-expect-error - Missing types
-import { getStatusText } from "@webrecorder/wabac/src/utils";
+import { getCustomRewriter, getStatusText } from "@webrecorder/wabac";
 
 import { postToGetUrl } from "warcio";
 
@@ -281,7 +276,9 @@ class RequestResponseInfo {
       };
       if (postToGetUrl(convData)) {
         // if URL for custom rewriting, keep as is, otherwise truncate to avoid extra long URLs
+        // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
         if (getCustomRewriter(this.url, mime === "text/html")) {
+          // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
           this.url = convData.url;
         } else {
           try {
@@ -295,6 +292,7 @@ class RequestResponseInfo {
           } catch (e) {
             //ignore
           }
+          // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
           this.url = convData.url.slice(0, MAX_URL_LENGTH);
         }
       }

@@ -1,8 +1,7 @@
 //import { ipcRenderer } from "electron";
 import { RecPopup } from "../popup";
 
-// @ts-expect-error - TS7016 - Could not find a declaration file for module '@webrecorder/wabac/src/loaders'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/@webrecorder/wabac/src/loaders.js' implicitly has an 'any' type.
-import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
+import { CollectionLoader } from "@webrecorder/wabac/swlib";
 import { listAllMsg } from "../utils";
 import { setLocalOption } from "../localstorage";
 

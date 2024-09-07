@@ -1,5 +1,4 @@
-// @ts-expect-error - TS7016 - Could not find a declaration file for module '@webrecorder/wabac/src/utils'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/@webrecorder/wabac/src/utils.js' implicitly has an 'any' type.
-import { getCollData } from "@webrecorder/wabac/src/utils";
+import { rewriteHLS as getCollData } from "@webrecorder/wabac";
 import { getLocalOption, setLocalOption } from "./localstorage";
 
 // ===========================================================================

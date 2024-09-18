@@ -2270,43 +2270,14 @@
     warcio "^2.2.1"
 
 "@webrecorder/wabac@^2.18.1":
-  version "2.18.3"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.18.3.tgz#eda195452a9964e8216fb0676d5da6cc69239dae"
-  integrity sha512-qmNLXky9QHpljt0EyEmcO6L2qFGG63mZbMYKso0MZZLFY3NeUf/ANafq9pWWm1Bw10+zoV6KRtHUin8gropccA==
+  version "2.19.8"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.8.tgz#302ade200953a1c76f0b355983ae4081428fb933"
+  integrity sha512-WjyfsGK8JWKeeDsGrOIT8ZLjMcOOAN93OMnRLO214jSV18SHEOY4JRvXzFOLF+OWYC5kJIMjl05gurTLq18jOA==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.7.6"
-    acorn "^8.10.0"
-    auto-js-ipfs "^2.1.1"
-    base64-js "^1.5.1"
-    brotli "^1.3.3"
-    buffer "^6.0.3"
-    fast-xml-parser "^4.2.5"
-    hash-wasm "^4.9.0"
-    http-link-header "^1.1.3"
-    http-status-codes "^2.1.4"
-    idb "^7.1.1"
-    js-levenshtein "^1.1.6"
-    js-yaml "^4.1.0"
-    pako "^1.0.11"
-    parse5-html-rewriting-stream "^7.0.0"
-    parse5-sax-parser "^7.0.0"
-    path-parser "^6.1.0"
-    process "^0.11.10"
-    stream-browserify "^3.0.0"
-    warcio "^2.2.1"
-
-"@webrecorder/wabac@^2.19.7":
-  version "2.19.7"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.7.tgz#3afe48f79752bcd189cffd5d5e6a8dbe4f394053"
-  integrity sha512-X9UFxWCww1KWDnAaEjg7vpg6SznBov5a88FPxbOvo5yCT/UkJcQHaa0qo1L52l46sIAUnSbsYz1ur9yMd6ygVA==
-  dependencies:
-    "@peculiar/asn1-ecc" "^2.3.4"
-    "@peculiar/asn1-schema" "^2.3.3"
-    "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.7.14"
+    "@webrecorder/wombat" "^3.8.0"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
@@ -2325,12 +2296,11 @@
     path-parser "^6.1.0"
     process "^0.11.10"
     stream-browserify "^3.0.0"
-    warcio "^2.2.1"
+    warcio "^2.3.0"
 
-"@webrecorder/wabac@^2.20.0-beta.1":
+"@webrecorder/wabac@^2.20.0-beta.1", "@webrecorder/wabac@github:webrecorder/wabac.js#ts-5":
   version "2.20.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.0-beta.1.tgz#334f68772dd4e9b0fcab14a7295e0eaf88208fc6"
-  integrity sha512-+KW4Q8Ki4ZsQaxTkoj5QPpmb4ABR18Ey9WT1PLTaiOyfRcI4W3u0g7LHEQ9vPUp8zV2q5KtC2Yt10C04L/xAcQ==
+  resolved "https://codeload.github.com/webrecorder/wabac.js/tar.gz/932fa89e36c2d5062d844e644aebd5a071d90e63"
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
@@ -2357,21 +2327,7 @@
     stream-browserify "^3.0.0"
     warcio "^2.3.1"
 
-"@webrecorder/wombat@^3.7.14":
-  version "3.7.14"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.14.tgz#3779e4cadb256755bbbfd2960805965ec4daacd8"
-  integrity sha512-sDNH+c8WstQrK91y8kIPJh1XAC2WXLU5rC8wztANzK1mVzA7v6XB5gk3Yp7OIAn4bn1XuGRVjubhKhmxVVZ9kg==
-  dependencies:
-    warcio "^2.2.0"
-
-"@webrecorder/wombat@^3.7.6":
-  version "3.7.6"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.6.tgz#e52a1bcfccd0150517989bc4310a03730a1f74e7"
-  integrity sha512-SA34StdLc+D60Aa8bZ2I+8PLjody1B/j9DmZ2zyXg/EZuPLSG4ec6XvMzq8QYuoGvD+hkjAf0YlUGxmI/viIcw==
-  dependencies:
-    warcio "^2.2.0"
-
-"@webrecorder/wombat@^3.8.1":
+"@webrecorder/wombat@^3.8.0", "@webrecorder/wombat@^3.8.1":
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.1.tgz#d1030aa80da3826691b2c9355d895545e6b02fa3"
   integrity sha512-A9Ed7OMHNjigruXoNAVdLuMzmsCIwh2GQUoZvGbGceV381Ka6Tx5FyeEe9vDoJD/hPGDeGdxbyCOB2/2t8NV9w==
@@ -4303,13 +4259,6 @@ fast-uri@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-2.3.0.tgz#bdae493942483d299e7285dcb4627767d42e2793"
   integrity sha512-eel5UKGn369gGEWOqBShmFJWfq/xSJvsgDzgLYC845GneayWvXBf0lJCBn5qTABfewy1ZDPoaR5OZCP+kssfuw==
-
-fast-xml-parser@^4.2.5:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.5.0.tgz#2882b7d01a6825dfdf909638f2de0256351def37"
-  integrity sha512-/PlTQCI96+fZMAOLMZK4CWG1ItCbfZ/0jx7UIJFChPNrx7tcEgerUgWbeieCM9MfHInUDyK8DWYZ+YrywDJuTg==
-  dependencies:
-    strnum "^1.0.5"
 
 fast-xml-parser@^4.4.1:
   version "4.4.1"
@@ -6855,14 +6804,13 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-replaywebpage@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.1.4.tgz#825486eb87386cfe1f0ff1f2c89af8d228a4d420"
-  integrity sha512-1JlJCxGOCqbNhi/WdNpl0fqrteNxyq31QXy4Y7pCWoJIPjmgnHXRubOEDjhwYascZOkOom6fJqopzf8TDvueJg==
+"replaywebpage@github:webrecorder/replayweb.page#wabac-ts-work":
+  version "2.1.5"
+  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/2c46fe4c0e7eb6143c9e00cfbb3b8e20477f8562"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "~2.15.1"
-    "@webrecorder/wabac" "^2.19.7"
+    "@webrecorder/wabac" "^2.20.0-beta.1"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^6.3.2"
@@ -8221,7 +8169,7 @@ verror@^1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-warcio@^2.2.0, warcio@^2.2.1:
+warcio@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/warcio/-/warcio-2.2.1.tgz#3619728fde716291c9b364744c276362a94bacec"
   integrity sha512-KPLoz3aFtdTjexG+QQaubMyuLiNANzvcadGMyNKdpcmhl0k6lBHQQVpxZw3Hx9+4pbyqDXyiF4cr/h2tS8kvcw==
@@ -8233,7 +8181,7 @@ warcio@^2.2.0, warcio@^2.2.1:
     uuid-random "^1.3.2"
     yargs "^17.6.2"
 
-warcio@^2.3.1:
+warcio@^2.3.0, warcio@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/warcio/-/warcio-2.3.1.tgz#8ac9de897de1a556161168f2a3938b60929908ca"
   integrity sha512-PjcWqzXfs6HdWfHi1V/i8MoMmV5M0Csg3rOa2mqCJ1dmCJXswVfQ0VXbEVumwavNIW2oFFj6LJoCHHeL4Ls/zw==

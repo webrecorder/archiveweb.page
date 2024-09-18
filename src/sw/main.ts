@@ -1,6 +1,5 @@
 import { SWReplay, WorkerLoader } from "@webrecorder/wabac/swlib";
 
-// @ts-expect-error - TS2307 - Cannot find module '@webrecorder/awp-sw' or its corresponding type declarations.
 import { ExtAPI, RecordingCollections } from "@webrecorder/awp-sw";
 
 import REC_INDEX_HTML from "@/static/index.html";

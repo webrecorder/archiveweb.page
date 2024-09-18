@@ -396,14 +396,14 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   renderNavEnd() {
-    return html` <a
+    return html`<a
       href="https://archiveweb.page/guide"
       target="_blank"
       class="navbar-item is-size-6"
-    >
-      <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon
-      ><span>&nbsp;User Guide</span>
-
+      >
+        <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon
+        ><span>&nbsp;User Guide</span>
+      </a>
       <a
         href="?about"
         @click="${
@@ -415,8 +415,7 @@ class ArchiveWebApp extends ReplayWebApp {
         }"
         class="navbar-item is-size-6"
         >About
-      </a></a
-    >`;
+      </a>`;
   }
 
   renderNavBrand() {

@@ -1,4 +1,4 @@
-import { rewriteHLS as getCollData } from "@webrecorder/wabac";
+import { getCollData } from "@webrecorder/wabac";
 import { getLocalOption, setLocalOption } from "./localstorage";
 
 // ===========================================================================

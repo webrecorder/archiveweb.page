@@ -157,7 +157,7 @@ function sharedBuild(
       ...entry,
     },
     devtool: argv.mode === "production" ? undefined : "source-map",
-    optimization,
+    optimization: argv.mode === "production" ? optimization : undefined,
     output: {
       path: outputPath,
       filename: (chunkData) => {

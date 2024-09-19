@@ -67,7 +67,7 @@ class ElectronRecorder extends Recorder {
     // @ts-expect-error - TS2339 - Property 'shutdownPromise' does not exist on type 'ElectronRecorder'.
     this.shutdownPromise = new Promise(
       // @ts-expect-error - TS2339 - Property '_shutdownResolve' does not exist on type 'ElectronRecorder'.
-      (resolve) => (this._shutdownResolve = resolve)
+      (resolve) => (this._shutdownResolve = resolve),
     );
 
     // @ts-expect-error - TS2339 - Property 'recWC' does not exist on type 'ElectronRecorder'.
@@ -231,7 +231,7 @@ class ElectronRecorder extends Recorder {
           responseHeaders: responseHeaders,
           body: base64Str,
         },
-        sessions
+        sessions,
       );
     } catch (e) {
       console.warn(e);

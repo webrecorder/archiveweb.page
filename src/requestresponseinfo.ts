@@ -367,7 +367,7 @@ class RequestResponseInfo {
       // @ts-expect-error - TS2339 - Property 'responseHeaders' does not exist on type 'RequestResponseInfo'.
       headers += `${header}: ${this.responseHeaders[header].replace(
         /\n/g,
-        ", "
+        ", ",
       )}\r\n`;
     }
     headers += "\r\n";
@@ -391,7 +391,7 @@ class RequestResponseInfo {
       this.responseHeaders,
       // @ts-expect-error - TS2339 - Property 'responseHeadersList' does not exist on type 'RequestResponseInfo'.
       this.responseHeadersList,
-      length
+      length,
     );
   }
 

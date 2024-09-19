@@ -11,7 +11,7 @@ import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
 import prettyBytes from "pretty-bytes";
 
 import { Item } from "replaywebpage";
-import wrRec from "../assets/icons/recLogo.svg"
+import wrRec from "../assets/icons/recLogo.svg";
 
 //============================================================================
 class WrRecColl extends Item {
@@ -188,7 +188,7 @@ class WrRecColl extends Item {
     const title = this.collInfo.title;
     const url = this.tabData.url;
     this.dispatchEvent(
-      new CustomEvent("show-start", { detail: { coll, title, url } })
+      new CustomEvent("show-start", { detail: { coll, title, url } }),
     );
   }
 }

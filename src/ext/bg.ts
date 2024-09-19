@@ -167,7 +167,7 @@ chrome.tabs.onCreated.addListener((tab) => {
       tab.id,
       { waitForTabUpdate, collId, openUrl, autorun },
       // @ts-expect-error - TS2554 - Expected 2 arguments, but got 3.
-      openUrl
+      openUrl,
     );
   }
 });
@@ -321,7 +321,7 @@ chrome.runtime.onMessage.addListener(
         disableCSPForTab(message.tabId);
         break;
     }
-  }
+  },
 );
 
 // ===========================================================================
@@ -344,7 +344,7 @@ async function disableCSPForTab(tabId) {
       "Page.setBypassCSP",
       { enabled: true },
       // @ts-expect-error - TS7006 - Parameter 'resp' implicitly has an 'any' type.
-      (resp) => resolve(resp)
+      (resp) => resolve(resp),
     );
   });
 

@@ -142,7 +142,7 @@ function sharedBuild(
     replayDir = false,
     target = "web",
   } = {},
-  argv
+  argv,
 ) {
   if (copy.length) {
     plugins.push(new CopyPlugin({ patterns: copy }));

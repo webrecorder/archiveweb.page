@@ -92,13 +92,13 @@ class ArchiveWebApp extends ReplayWebApp {
     }
 
     getLocalOption("autorunBehaviors").then(
-      (res) => (this.autorun = res === "1")
+      (res) => (this.autorun = res === "1"),
     );
 
     if (window.archivewebpage) {
       // @ts-expect-error - TS7006 - Parameter 'progress' implicitly has an 'any' type.
       window.archivewebpage.setDownloadCallback((progress) =>
-        this.onDownloadProgress(progress)
+        this.onDownloadProgress(progress),
       );
     }
   }
@@ -180,12 +180,16 @@ class ArchiveWebApp extends ReplayWebApp {
 
     // For App: If no SW, register here
     if (IS_APP && !regs.length) {
-      this.swmanager = new SWManager({ name: this.swName, appName: this.appName });
+      this.swmanager = new SWManager({
+        name: this.swName,
+        appName: this.appName,
+      });
       this.swmanager
         .register()
         .catch(
           () =>
-            (this.swErrorMsg = this.swmanager?.renderErrorReport(this.mainLogo) || ""),
+            (this.swErrorMsg =
+              this.swmanager?.renderErrorReport(this.mainLogo) || ""),
         );
     }
   }
@@ -216,7 +220,7 @@ class ArchiveWebApp extends ReplayWebApp {
         event.data.msg_type === "downloadToBlob"
       ) {
         const download = await fetch(
-          `${apiPrefix}/c/${this.loadedCollId}/dl?format=wacz&pages=all`
+          `${apiPrefix}/c/${this.loadedCollId}/dl?format=wacz&pages=all`,
         );
         const blob = await download.blob();
         event.source?.postMessage({
@@ -399,9 +403,9 @@ class ArchiveWebApp extends ReplayWebApp {
 
   renderNavEnd() {
     return html`<a
-      href="https://archiveweb.page/guide"
-      target="_blank"
-      class="navbar-item is-size-6"
+        href="https://archiveweb.page/guide"
+        target="_blank"
+        class="navbar-item is-size-6"
       >
         <fa-icon .svg="${fasHelp}" aria-hidden="true"></fa-icon
         ><span>&nbsp;User Guide</span>
@@ -421,8 +425,7 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   renderNavBrand() {
-    return html`
-      <fa-icon
+    return html` <fa-icon
       .svg="${awpBrandLockupColor}"
       size=""
       width="9.5rem"
@@ -591,7 +594,7 @@ class ArchiveWebApp extends ReplayWebApp {
                   }"
                 >
                   ${coll.title || coll.loadUrl}
-                </option>`
+                </option>`,
             )}
           </select>
         </div>
@@ -1305,11 +1308,11 @@ class ArchiveWebApp extends ReplayWebApp {
     ) {
       await setLocalOption(
         "index:sortKey",
-        localStorage.getItem("index:sortKey")
+        localStorage.getItem("index:sortKey"),
       );
       await setLocalOption(
         "index:sortDesc",
-        localStorage.getItem("index:sortDesc")
+        localStorage.getItem("index:sortDesc"),
       );
     }
   }

@@ -24,7 +24,7 @@ class BrowserRecorder extends Recorder {
       port = null,
       openWinMap = null,
       autorun = false,
-    }
+    },
   ) {
     super();
 
@@ -129,7 +129,7 @@ class BrowserRecorder extends Recorder {
 
     if (numOtherRecorders > 0) {
       console.log(
-        `closing session, not detaching, ${numOtherRecorders} other recording tab(s) left`
+        `closing session, not detaching, ${numOtherRecorders} other recording tab(s) left`,
       );
       return this.sessionClose([]);
     } else {
@@ -376,7 +376,7 @@ class BrowserRecorder extends Recorder {
       } else {
         // @ts-expect-error - TS7005 - Variable 'prr' implicitly has an 'any' type.
         prr.reject(
-          chrome.runtime.lastError ? chrome.runtime.lastError.message : ""
+          chrome.runtime.lastError ? chrome.runtime.lastError.message : "",
         );
       }
     };
@@ -402,7 +402,7 @@ class BrowserRecorder extends Recorder {
         this.debuggee,
         method,
         params,
-        sessionId
+        sessionId,
       );
     } catch (e) {
       console.warn(e);

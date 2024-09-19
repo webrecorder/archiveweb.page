@@ -114,11 +114,11 @@ class WrRecCollInfo extends ItemInfo {
   firstUpdated() {
     this.renderRoot.addEventListener(
       "click",
-      () => (this.showShareMenu = false)
+      () => (this.showShareMenu = false),
     );
 
     this.isUploadNeeded = Boolean(
-      this.item?.uploadTime && this.item.mtime > this.item.uploadTime
+      this.item?.uploadTime && this.item.mtime > this.item.uploadTime,
     );
   }
 
@@ -144,7 +144,7 @@ class WrRecCollInfo extends ItemInfo {
       }
 
       this.isUploadNeeded = Boolean(
-        this.item?.uploadTime && this.item.mtime > this.item.uploadTime
+        this.item?.uploadTime && this.item.mtime > this.item.uploadTime,
       );
     }
   }
@@ -181,7 +181,11 @@ class WrRecCollInfo extends ItemInfo {
         <div class="column is-2">
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
-            <a href="${apiPrefix}/c/${this.item?.id}/dl?format=wacz&pages=all" class="button is-small" title="Download WACZ">
+            <a
+              href="${apiPrefix}/c/${this.item?.id}/dl?format=wacz&pages=all"
+              class="button is-small"
+              title="Download WACZ"
+            >
               <span class="icon is-small">
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
@@ -435,7 +439,7 @@ class WrRecCollInfo extends ItemInfo {
         bubbles: true,
         composed: true,
         detail: { coll, title },
-      })
+      }),
     );
   }
 
@@ -454,7 +458,7 @@ class WrRecCollInfo extends ItemInfo {
         bubbles: true,
         composed: true,
         detail: { coll, title },
-      })
+      }),
     );
   }
 
@@ -462,7 +466,7 @@ class WrRecCollInfo extends ItemInfo {
   toggleShareWarn(event) {
     localStorage.setItem(
       "nosharewarn",
-      event.currentTarget.checked ? "1" : "0"
+      event.currentTarget.checked ? "1" : "0",
     );
   }
 
@@ -488,7 +492,7 @@ class WrRecCollInfo extends ItemInfo {
     } catch (e) {
       console.log("ipfs share failed");
       this.dispatchEvent(
-        new CustomEvent("ipfs-share-failed", { bubbles: true, composed: true })
+        new CustomEvent("ipfs-share-failed", { bubbles: true, composed: true }),
       );
     }
 
@@ -503,7 +507,7 @@ class WrRecCollInfo extends ItemInfo {
       this.ipfsURL = null;
     } else {
       this.dispatchEvent(
-        new CustomEvent("ipfs-share-failed", { bubbles: true, composed: true })
+        new CustomEvent("ipfs-share-failed", { bubbles: true, composed: true }),
       );
     }
     this.shareWait = false;
@@ -511,7 +515,7 @@ class WrRecCollInfo extends ItemInfo {
 
   ipfsAdd() {
     this.dispatchEvent(
-      new CustomEvent("ipfs-share", { detail: { pending: true } })
+      new CustomEvent("ipfs-share", { detail: { pending: true } }),
     );
 
     //let id = 0;
@@ -523,14 +527,14 @@ class WrRecCollInfo extends ItemInfo {
             }
           | PromiseLike<{
               ipfsURL: string;
-            }>
+            }>,
       ) => void;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       reject: (reason?: any) => void;
     };
 
     const p = new Promise<{ ipfsURL: string }>(
-      (resolve, reject) => (pc = { resolve, reject })
+      (resolve, reject) => (pc = { resolve, reject }),
     );
 
     // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
@@ -556,7 +560,7 @@ class WrRecCollInfo extends ItemInfo {
             pc.reject();
           }
           this.dispatchEvent(
-            new CustomEvent("ipfs-share", { detail: { pending: false } })
+            new CustomEvent("ipfs-share", { detail: { pending: false } }),
           );
 
           navigator.serviceWorker.removeEventListener("message", listener);
@@ -620,7 +624,7 @@ class WrRecCollInfo extends ItemInfo {
   onUpload() {
     const detail = { coll: this.item, isUploadNeeded: this.isUploadNeeded };
     this.dispatchEvent(
-      new CustomEvent("do-upload", { bubbles: true, composed: true, detail })
+      new CustomEvent("do-upload", { bubbles: true, composed: true, detail }),
     );
   }
 

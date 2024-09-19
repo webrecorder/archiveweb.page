@@ -272,7 +272,7 @@ class RecPopup extends LitElement {
       params.set(
         "ts",
         // @ts-expect-error - TS2339 - Property 'pageTs' does not exist on type 'RecPopup'.
-        new Date(this.pageTs).toISOString().replace(/[-:TZ.]/g, "")
+        new Date(this.pageTs).toISOString().replace(/[-:TZ.]/g, ""),
       );
       params.set("view", "pages");
 
@@ -616,7 +616,7 @@ class RecPopup extends LitElement {
                             class="dropdown-item"
                             >${coll.title}</a
                           >
-                        `
+                        `,
                       )
                     }
                   </div>
@@ -884,7 +884,7 @@ class RecPopup extends LitElement {
                                   html` <tr>
                                     <td>${name}</td>
                                     <th>${value}</th>
-                                  </tr>`
+                                  </tr>`,
                               )
                             }`
                         : ""

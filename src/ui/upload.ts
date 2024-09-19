@@ -154,7 +154,7 @@ class BtrixUploader extends LitElement {
         btrixUploadUrl = new URL(
           // @ts-expect-error - TS2339 - Property 'uploadId' does not exist on type 'BtrixUploader'.
           `/orgs/${client.defaultOrg}/artifacts/upload/${this.uploadId}`,
-          client.url
+          client.url,
         ).href;
       }
     } catch (e) {
@@ -394,7 +394,7 @@ class BtrixUploader extends LitElement {
     const now = new Date().toLocaleString();
     urlObj.searchParams.set(
       "notes",
-      `Uploaded by ArchiveWeb.page ${VERSION} at ${now}`
+      `Uploaded by ArchiveWeb.page ${VERSION} at ${now}`,
     );
 
     const url = urlObj.href;
@@ -415,7 +415,7 @@ class BtrixUploader extends LitElement {
     const resp = await fetch(
       // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'BtrixUploader'.
       `${apiPrefix}/c/${this.coll.id}/upload?format=wacz&pages=all`,
-      { method, body }
+      { method, body },
     );
 
     const json = await resp.json();
@@ -559,7 +559,7 @@ export class BtrixClient {
       `/api/orgs/${org}/uploads/delete`,
       "POST",
       // @ts-expect-error - TS2345 - Argument of type 'string' is not assignable to parameter of type 'null | undefined'.
-      deleteStr
+      deleteStr,
     );
     if (!res.deleted) {
       throw new Error("delete_failed");

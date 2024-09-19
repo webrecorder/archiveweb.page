@@ -52,7 +52,7 @@ class WrRecCollIndex extends ItemIndex {
       this.dispatchEvent(
         new CustomEvent("colls-updated", {
           detail: { colls: this.sortedItems },
-        })
+        }),
       );
     }
   }
@@ -127,7 +127,7 @@ class WrRecCollIndex extends ItemIndex {
     this.requestUpdate();
 
     const info = this.renderRoot.querySelector<WrRecCollInfo>(
-      `wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`
+      `wr-rec-coll-info[data-coll="${this.deleteConfirm.id}"]`,
     );
 
     if (info) {

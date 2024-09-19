@@ -439,7 +439,7 @@ class Recorder {
         awaitPromise: true,
         //returnByValue: true,
       },
-      sessions
+      sessions,
     );
   }
 
@@ -463,7 +463,7 @@ class Recorder {
       case BEHAVIOR_READY_START:
         this.pageEval(
           "__awp_behavior_run__",
-          "self.__bx_behaviors.run();"
+          "self.__bx_behaviors.run();",
           // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'Recorder'.
         ).then(() => (this.behaviorState = BEHAVIOR_DONE));
         // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'Recorder'.
@@ -473,7 +473,7 @@ class Recorder {
       case BEHAVIOR_RUNNING:
         this.pageEval(
           "__awp_behavior_unpause__",
-          "self.__bx_behaviors.pause();"
+          "self.__bx_behaviors.pause();",
         );
         // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'Recorder'.
         this.behaviorState = BEHAVIOR_PAUSED;
@@ -482,7 +482,7 @@ class Recorder {
       case BEHAVIOR_PAUSED:
         this.pageEval(
           "__awp_behavior_unpause__",
-          "self.__bx_behaviors.unpause();"
+          "self.__bx_behaviors.unpause();",
         );
         // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'Recorder'.
         this.behaviorState = BEHAVIOR_RUNNING;
@@ -507,7 +507,7 @@ class Recorder {
     // @ts-expect-error - TS2551 - Property '_loaded' does not exist on type 'Recorder'. Did you mean 'loaded'?
     this._loaded = new Promise(
       // @ts-expect-error - TS2339 - Property '_loadedDoneResolve' does not exist on type 'Recorder'.
-      (resolve) => (this._loadedDoneResolve = resolve)
+      (resolve) => (this._loadedDoneResolve = resolve),
     );
     // @ts-expect-error - TS2551 - Property '_loaded' does not exist on type 'Recorder'. Did you mean 'loaded'?
     return this._loaded;
@@ -536,7 +536,7 @@ class Recorder {
   async initPixRatio() {
     const { result } = await this.pageEval(
       "__awp_get_pix_ratio",
-      "window.devicePixelRatio"
+      "window.devicePixelRatio",
     );
     if (result && result.type === "number") {
       // @ts-expect-error - TS2339 - Property 'pixelRatio' does not exist on type 'Recorder'.
@@ -554,7 +554,7 @@ class Recorder {
           "Fetch.enable",
           // @ts-expect-error - TS2345 - Argument of type '{ patterns: { urlPattern: string; requestStage: string; }[]; }' is not assignable to parameter of type 'null | undefined'.
           { patterns: [{ urlPattern: "*", requestStage: "Response" }] },
-          sessions
+          sessions,
         );
       } catch (e) {
         console.log("No Fetch Available", e);
@@ -575,7 +575,7 @@ class Recorder {
           // @ts-expect-error - TS2339 - Property 'flatMode' does not exist on type 'Recorder'.
           flatten: this.flatMode,
         },
-        sessions
+        sessions,
       );
 
       // disable cache for now?
@@ -583,13 +583,13 @@ class Recorder {
         "Network.setCacheDisabled",
         // @ts-expect-error - TS2345 - Argument of type '{ cacheDisabled: boolean; }' is not assignable to parameter of type 'null | undefined'.
         { cacheDisabled: true },
-        sessions
+        sessions,
       );
       await this.send(
         "Network.setBypassServiceWorker",
         // @ts-expect-error - TS2345 - Argument of type '{ bypass: boolean; }' is not assignable to parameter of type 'null | undefined'.
         { bypass: true },
-        sessions
+        sessions,
       );
       // another option: clear cache, but don't disable
       await this.send("Network.clearBrowserCache", null, sessions);
@@ -626,7 +626,7 @@ class Recorder {
       "Network.setBypassServiceWorker",
       // @ts-expect-error - TS2345 - Argument of type '{ bypass: boolean; }' is not assignable to parameter of type 'null | undefined'.
       { bypass: false },
-      sessions
+      sessions,
     );
   }
 
@@ -686,7 +686,7 @@ class Recorder {
                 " " +
                 params.targetInfo.url +
                 " " +
-                params.sessionId
+                params.sessionId,
             );
 
             if (type === "page" || type === "iframe") {
@@ -699,7 +699,7 @@ class Recorder {
                 " " +
                 params.targetInfo.url +
                 " " +
-                params.sessionId
+                params.sessionId,
             );
 
             // @ts-expect-error - TS2339 - Property 'flatMode' does not exist on type 'Recorder'.
@@ -710,7 +710,7 @@ class Recorder {
               "Runtime.runIfWaitingForDebugger",
               // @ts-expect-error - TS2345 - Argument of type '{ sessionId: any; targetId?: undefined; } | { targetId: any; sessionId?: undefined; }' is not assignable to parameter of type 'null | undefined'.
               params2,
-              sessions
+              sessions,
             );
           }
         } catch (e) {
@@ -719,7 +719,7 @@ class Recorder {
             "Error attaching target: " +
               params.targetInfo.type +
               " " +
-              params.targetInfo.url
+              params.targetInfo.url,
           );
         }
         break;
@@ -767,7 +767,7 @@ class Recorder {
             this.fullCommit(reqresp, sessions);
           } else {
             console.log(
-              `Loading Failed for: ${reqresp.url} ${params.errorText}`
+              `Loading Failed for: ${reqresp.url} ${params.errorText}`,
             );
           }
         }
@@ -885,7 +885,7 @@ class Recorder {
         // @ts-expect-error - TS2339 - Property 'getExternalInjectURL' does not exist on type 'Recorder'.
         this.getExternalInjectURL("")
       }");
-      `
+      `,
       );
 
       if (res.result) {
@@ -1251,7 +1251,7 @@ class Recorder {
       this.shouldSkip(
         params.request.method,
         params.request.headers,
-        params.resourceType
+        params.resourceType,
       )
     ) {
       skip = true;
@@ -1282,7 +1282,7 @@ class Recorder {
           "Fetch.continueResponse",
           // @ts-expect-error - TS2345 - Argument of type '{ requestId: any; }' is not assignable to parameter of type 'null | undefined'.
           { requestId: params.requestId },
-          sessions
+          sessions,
         );
       } catch (e) {
         console.warn("Continue failed for: " + params.request.url, e);
@@ -1324,12 +1324,12 @@ class Recorder {
       case "application/x-mpegURL":
       case "application/vnd.apple.mpegurl":
         string = payload.toString("utf-8");
-        newString = rewriteHLS(string, {save: reqresp.extraOpts});
+        newString = rewriteHLS(string, { save: reqresp.extraOpts });
         break;
 
       case "application/dash+xml":
         string = payload.toString("utf-8");
-        newString = rewriteDASH(string, {save: reqresp.extraOpts});
+        newString = rewriteDASH(string, { save: reqresp.extraOpts });
         break;
 
       case "text/html":
@@ -1341,7 +1341,7 @@ class Recorder {
 
         if (rw) {
           string = payload.toString();
-          newString = rw.rewrite(string, {live: true, save: extraOpts});
+          newString = rw.rewrite(string, { live: true, save: extraOpts });
         }
       }
     }
@@ -1369,7 +1369,7 @@ class Recorder {
           responseHeaders: params.responseHeaders,
           body: base64Str,
         },
-        sessions
+        sessions,
       );
       //console.log("Replace succeeded? for: " + params.request.url);
       return true;
@@ -1423,7 +1423,7 @@ class Recorder {
           params,
           reqresp,
           sessions,
-          "Network.getResponseBody"
+          "Network.getResponseBody",
         );
       }
       if (!payload?.length) {
@@ -1453,7 +1453,11 @@ class Recorder {
 
       // top-level URL is a non-GET request
       // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
-      if (data?.requestUrl && data.requestUrl === this.pageInfo.url && !sessions.length) {
+      if (
+        data?.requestUrl &&
+        data.requestUrl === this.pageInfo.url &&
+        !sessions.length
+      ) {
         // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
         this.pageInfo.url = data.url;
       }
@@ -1535,7 +1539,7 @@ class Recorder {
       this.shouldSkip(
         params.request.method,
         params.request.headers,
-        params.type
+        params.type,
       )
     ) {
       this.removeReqResp(params.requestId);
@@ -1588,7 +1592,7 @@ class Recorder {
       params,
       reqresp,
       sessions,
-      "Fetch.getResponseBody"
+      "Fetch.getResponseBody",
     );
 
     if (reqresp.status === 206) {
@@ -1629,7 +1633,7 @@ class Recorder {
     }
 
     console.warn(
-      `async fetch error ${resp.status}, opaque due to redirect, retrying in browser`
+      `async fetch error ${resp.status}, opaque due to redirect, retrying in browser`,
     );
     // @ts-expect-error - TS2554 - Expected 2 arguments, but got 3.
     await this.doAsyncFetchInBrowser(request, request.sessions, true);
@@ -1727,13 +1731,13 @@ class Recorder {
         }
       } else if (resp.status >= 400) {
         console.warn(
-          `async fetch error ${resp.status}, retrying without headers`
+          `async fetch error ${resp.status}, retrying without headers`,
         );
         // @ts-expect-error - TS2339 - Property 'defaultFetchOpts' does not exist on type 'Recorder'.
         resp = await fetch(request.url, this.defaultFetchOpts);
         if (resp.status >= 400) {
           console.warn(
-            `async fetch returned: ${resp.status}, trying in-browser fetch`
+            `async fetch returned: ${resp.status}, trying in-browser fetch`,
           );
           // @ts-expect-error - TS2554 - Expected 2 arguments, but got 3.
           await this.doAsyncFetchInBrowser(request, request.sessions, true);
@@ -1772,7 +1776,7 @@ class Recorder {
         }
       } else {
         console.warn(
-          "No Data Committed for: " + request.url + " Status: " + resp.status
+          "No Data Committed for: " + request.url + " Status: " + resp.status,
         );
       }
     } catch (e) {
@@ -1804,7 +1808,7 @@ class Recorder {
           method,
           // @ts-expect-error - TS2345 - Argument of type '{ requestId: any; }' is not assignable to parameter of type 'null | undefined'.
           { requestId: params.requestId },
-          sessions
+          sessions,
         );
 
         if (payload.base64Encoded) {
@@ -1821,7 +1825,7 @@ class Recorder {
             " " +
             reqresp.requestId +
             " " +
-            method
+            method,
         );
         console.warn(e);
         return null;
@@ -1838,7 +1842,7 @@ class Recorder {
           "Network.getRequestPostData",
           // @ts-expect-error - TS2345 - Argument of type '{ requestId: any; }' is not assignable to parameter of type 'null | undefined'.
           { requestId: reqresp.requestId },
-          sessions
+          sessions,
         );
         reqresp.postData = Buffer.from(postRes.postData, "utf-8");
       } catch (e) {
@@ -1899,7 +1903,7 @@ class Recorder {
       return this._doSendCommandFlat(
         method,
         params,
-        sessions[sessions.length - 1]
+        sessions[sessions.length - 1],
       );
     }
 

@@ -76,7 +76,8 @@
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
     "release": "yarn run build && electron-builder",
-    "lint": "eslint ./src/ webpack.config.js"
+    "lint": "eslint ./src/ webpack.config.js",
+    "format": "prettier --write ./"
   },
   "build": {
     "afterSign": "build/notarize.js",

@@ -53,13 +53,15 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
         if (method === "OPTIONS") {
           statusLine = "HTTP/1.1 200 OK";
-          responseHeaders["Access-Control-Allow-Headers"] = ["Authorization, Content-Type"];
+          responseHeaders["Access-Control-Allow-Headers"] = [
+            "Authorization, Content-Type",
+          ];
           responseHeaders["Access-Control-Allow-Methods"] = ["GET, PUT, POST"];
         }
         responseHeaders["Access-Control-Allow-Origin"] = ["*"];
-        callback({responseHeaders, statusLine});
+        callback({ responseHeaders, statusLine });
       } else {
-        callback({responseHeaders});
+        callback({ responseHeaders });
       }
     });
 
@@ -69,12 +71,12 @@ class ElectronRecorderApp extends ElectronReplayApp {
       console.log(`will-download: ${origFilename}`);
 
       item.setSavePath(
-        unusedFilenameSync(path.join(app.getPath("downloads"), origFilename))
+        unusedFilenameSync(path.join(app.getPath("downloads"), origFilename)),
       );
 
       ipcMain.on("dlcancel:" + origFilename, () => {
         console.log(
-          `Canceled download for ${origFilename} to ${item.getSavePath()}`
+          `Canceled download for ${origFilename} to ${item.getSavePath()}`,
         );
         item.cancel();
       });
@@ -216,7 +218,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
     startRec,
     // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
     autorun,
-    popupView = null
+    popupView = null,
   ) {
     const id = recWebContents.id;
 
@@ -292,7 +294,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
         // @ts-expect-error - TS7006 - Parameter 'additionalFeatures' implicitly has an 'any' type.
         additionalFeatures,
         // @ts-expect-error - TS7006 - Parameter 'referrer' implicitly has an 'any' type.
-        referrer
+        referrer,
       ) => {
         event.preventDefault();
         event.newGuest = this.createRecordWindow({ url, collId, startRec });
@@ -303,9 +305,9 @@ class ElectronRecorderApp extends ElectronReplayApp {
           disposition,
           options,
           additionalFeatures,
-          referrer
+          referrer,
         );
-      }
+      },
     );
 
     recWebContents.on("destroyed", () => {

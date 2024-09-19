@@ -167,15 +167,15 @@ class RecWindowUI extends LitElement {
       }
 
       .overlay-idle {
-        background-color: #4D7C0F;
+        background-color: #4d7c0f;
       }
 
       .overlay-waiting {
-        background-color: #C5A802;
+        background-color: #c5a802;
       }
 
       .overlay-auto {
-        background-color: #0891B2;
+        background-color: #0891b2;
       }
     `);
   }

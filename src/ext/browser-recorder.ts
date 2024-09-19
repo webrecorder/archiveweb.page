@@ -257,17 +257,17 @@ class BrowserRecorder extends Recorder {
       // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'BrowserRecorder'.
       if (this.behaviorState === BEHAVIOR_RUNNING) {
         title = "Archiving: Autopilot Running!";
-        color = "#3298dc";
-        text = " ";
+        color = "#0891b2";
+        text = "";
         // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'BrowserRecorder'.
       } else if (this.numPending === 0) {
         title = "Archiving: No URLs pending, can continue";
-        color = "#64e986";
-        text = " ";
+        color = "#4d7c0f";
+        text = "✓";
       } else {
         // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'BrowserRecorder'.
         title = `Archiving: ${this.numPending} URLs pending, please wait`;
-        color = "#bb9f08";
+        color = "#c5a802";
         // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'BrowserRecorder'.
         text = "" + this.numPending;
       }
@@ -275,11 +275,11 @@ class BrowserRecorder extends Recorder {
     } else if (this.failureMsg) {
       title = "Error: Can't Archive this page";
       text = "X";
-      color = "#F00";
+      color = "#d30808";
     } else {
       title = "Not Archiving";
       text = "";
-      color = "#64e986";
+      color = "#4d7c0f";
     }
 
     chrome.action.setTitle({ title, tabId });

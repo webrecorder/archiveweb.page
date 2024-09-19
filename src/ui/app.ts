@@ -18,8 +18,9 @@ import "./recordembed";
 
 import { BtrixClient } from "./upload";
 
-import wrRec from "../../assets/recLogo.svg";
-import wrLogo from "../../assets/awp-logo.svg";
+import wrRec from "../assets/icons/recLogo.svg";
+import awpLogo from "../assets/brand/archivewebpage-icon-color.svg";
+import awpBrandLockupColor from "../assets/brand/archivewebpage-lockup-color.svg";
 import prettyBytes from "pretty-bytes";
 
 import {
@@ -391,8 +392,9 @@ class ArchiveWebApp extends ReplayWebApp {
     `);
   }
 
+  // HACK: returns the logo requested by ReplayWeb.page's nav as nothing now that the new logo includes both graphics and text. Probably best to refactor this behavior.
   get mainLogo() {
-    return wrLogo;
+    return "";
   }
 
   renderNavEnd() {
@@ -419,14 +421,14 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   renderNavBrand() {
-    return html` <span
-      id="home"
-      class="logo-text has-text-weight-bold is-size-6 has-allcaps wide-only"
-    >
-      <span class="" style="color: #8878c3">archive</span>
-      <span class="has-text-link">web.page</span>
-      <span class="is-sr-only">Home</span>
-    </span>`;
+    return html`
+      <fa-icon
+      .svg="${awpBrandLockupColor}"
+      size=""
+      width="9.5rem"
+      height="1.25rem"
+      aria-hidden="true"
+    ></fa-icon>`;
   }
 
   renderHomeIndex() {
@@ -919,7 +921,7 @@ class ArchiveWebApp extends ReplayWebApp {
                 <div class="content">
                   <div class="is-flex">
                     <div class="has-text-centered" style="width: 220px">
-                      <fa-icon class="logo" size="48px" .svg="${wrLogo}"></fa-icon>
+                      <fa-icon class="logo" size="48px" .svg="${awpLogo}"></fa-icon>
                       <div style="font-size: smaller; margin-bottom: 1em">${this.getDeployType()} v${VERSION}</div>
                     </div>
 

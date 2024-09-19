@@ -1,6 +1,6 @@
 import { Embed } from "replaywebpage";
 
-import awpLogo from "../../assets/awp-logo.svg";
+import awpLogo from "../assets/brand/archivewebpage-icon-color.svg";
 
 // ===========================================================================
 Embed.setDefaultReplayFile("replay.html");

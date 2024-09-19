@@ -14,7 +14,7 @@ import fasLeft from "@fortawesome/fontawesome-free/svgs/solid/arrow-left.svg";
 import fasRight from "@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg";
 //import fasMenuV from '@fortawesome/fontawesome-free/svgs/solid/ellipsis-v.svg';
 
-import wrLogo from "../../assets/wr-logo.svg";
+import awpLogo from "../assets/brand/archivewebpage-icon-color.svg";
 
 import "./app-popup";
 import { BEHAVIOR_RUNNING } from "../consts";
@@ -159,23 +159,23 @@ class RecWindowUI extends LitElement {
         bottom: 0px;
         right: 0px;
         margin-right: -4px;
-        margin-bottom: -4px;
-        border: 1px solid black;
-        border-radius: 3px;
+        margin-bottom: -3px;
+        border: 2px solid white;
+        border-radius: 4px;
         font-size: 9px;
         color: white;
       }
 
       .overlay-idle {
-        background-color: #64e986;
+        background-color: #4D7C0F;
       }
 
       .overlay-waiting {
-        background-color: #bb9f08;
+        background-color: #C5A802;
       }
 
       .overlay-auto {
-        background-color: #3298dc;
+        background-color: #0891B2;
       }
     `);
   }
@@ -301,7 +301,7 @@ class RecWindowUI extends LitElement {
               <fa-icon
                 id="wrlogo"
                 size="1.8em"
-                .svg="${wrLogo}"
+                .svg="${awpLogo}"
                 aria-hidden="true"
               ></fa-icon>
               ${
@@ -312,7 +312,7 @@ class RecWindowUI extends LitElement {
                       ? html`<span class="overlay overlay-auto"></span>`
                       : // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
                         !this.numPending
-                        ? html` <span class="overlay overlay-idle"></span>`
+                        ? html` <span class="overlay overlay-idle">✓</span>`
                         : html`
                             <span class="overlay overlay-waiting"
                               >${

@@ -2270,14 +2270,14 @@
     warcio "^2.2.1"
 
 "@webrecorder/wabac@^2.18.1":
-  version "2.19.8"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.8.tgz#302ade200953a1c76f0b355983ae4081428fb933"
-  integrity sha512-WjyfsGK8JWKeeDsGrOIT8ZLjMcOOAN93OMnRLO214jSV18SHEOY4JRvXzFOLF+OWYC5kJIMjl05gurTLq18jOA==
+  version "2.19.9"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.9.tgz#21d357077bc2a85419e7a6002c81a4bc4fec2514"
+  integrity sha512-lyvbKVrdUZMUGxwKg5ZFQnyjGUSqZSGOF3NFG9rXLA+Ni0YcQjZCMexGSmqCwY+BksyrVJISCMs3xQ2WQAekgw==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.8.0"
+    "@webrecorder/wombat" "^3.8.2"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
@@ -2327,10 +2327,17 @@
     stream-browserify "^3.0.0"
     warcio "^2.3.1"
 
-"@webrecorder/wombat@^3.8.0", "@webrecorder/wombat@^3.8.1":
+"@webrecorder/wombat@^3.8.1":
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.1.tgz#d1030aa80da3826691b2c9355d895545e6b02fa3"
   integrity sha512-A9Ed7OMHNjigruXoNAVdLuMzmsCIwh2GQUoZvGbGceV381Ka6Tx5FyeEe9vDoJD/hPGDeGdxbyCOB2/2t8NV9w==
+  dependencies:
+    warcio "^2.3.1"
+
+"@webrecorder/wombat@^3.8.2":
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.2.tgz#e46e18719834d633175eec52ce753a4dc4e48e27"
+  integrity sha512-uUZr9V4UYpVOpM64Tm27ND/hMjDbT37+/qyNaNV6loqDuVzBVQh5w7SfTEy0Bbjj1MYyNZP244mOtWtotTpUEA==
   dependencies:
     warcio "^2.3.1"
 
@@ -7930,20 +7937,10 @@ tslib@^1.10.0, tslib@^1.9.3:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.3.tgz#0438f810ad7a9edcde7a241c3d80db693c8cbfe0"
-  integrity sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==
-
-tslib@^2.0.1, tslib@^2.6.0, tslib@^2.6.1, tslib@^2.6.2:
+tslib@^2.0.0, tslib@^2.0.1, tslib@^2.4.0, tslib@^2.6.0, tslib@^2.6.1, tslib@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
-
-tslib@^2.4.0:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
-  integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
 
 tsyringe@^4.8.0:
   version "4.8.0"

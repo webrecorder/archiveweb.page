@@ -1,8 +1,6 @@
-import { ItemIndex } from "replaywebpage";
+import { ItemIndex, html } from "replaywebpage";
 import type { PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
-
-import { html } from "replaywebpage/misc";
 
 import prettyBytes from "pretty-bytes";
 import { type WrRecCollInfo } from "./coll-info";

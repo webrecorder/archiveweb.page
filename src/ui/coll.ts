@@ -4,7 +4,7 @@ import {
   wrapCss,
   clickOnSpacebarPress,
   apiPrefix,
-} from "replaywebpage/misc";
+} from "replaywebpage";
 
 import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
 

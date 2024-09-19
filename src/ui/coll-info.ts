@@ -1,4 +1,4 @@
-import { html, css, wrapCss, apiPrefix } from "replaywebpage/misc";
+import { html, css, wrapCss, apiPrefix } from "replaywebpage";
 
 import prettyBytes from "pretty-bytes";
 
@@ -182,7 +182,8 @@ class WrRecCollInfo extends ItemInfo {
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
             <a
-              href="${apiPrefix}/c/${this.item?.id}/dl?format=wacz&pages=all"
+              href="${apiPrefix}/c/${this.item
+                ?.id}/dl?format=wacz&amp;pages=all"
               class="button is-small"
               title="Download WACZ"
             >

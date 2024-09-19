@@ -1452,9 +1452,9 @@ class Recorder {
       const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
 
       // top-level URL is a non-GET request
-      // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
       if (
         data?.requestUrl &&
+        // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
         data.requestUrl === this.pageInfo.url &&
         !sessions.length
       ) {

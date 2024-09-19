@@ -11,11 +11,10 @@ import fasCaretUp from "@fortawesome/fontawesome-free/svgs/solid/caret-up.svg";
 import fasShare from "@fortawesome/fontawesome-free/svgs/solid/share.svg";
 import fasReshare from "@fortawesome/fontawesome-free/svgs/solid/retweet.svg";
 import fasX from "@fortawesome/fontawesome-free/svgs/solid/times.svg";
-
-import btrixCloud from "../../assets/btrix-cloud.svg";
+import fasCloudArrowUp from "@fortawesome/fontawesome-free/svgs/solid/cloud-upload-alt.svg";
 
 import { CollInfo } from "replaywebpage";
-import wrRec from "../../assets/recLogo.svg";
+import wrRec from "../assets/icons/recLogo.svg";
 
 const REPLAY_URL = "https://replayweb.page/";
 
@@ -164,7 +163,7 @@ class WrRecCollInfo extends CollInfo
         <div class="column is-2">
           <p class="minihead">Actions</p>
           <div class="button-row is-flex">
-            <a href="${apiPrefix}/c/${this.coll.id}/dl?format=wacz&pages=all" class="button is-small" title="Download">
+            <a href="${apiPrefix}/c/${this.coll.id}/dl?format=wacz&pages=all" class="button is-small" title="Download WACZ">
               <span class="icon is-small">
                 <fa-icon aria-hidden="true" .svg="${fasDownload}"></fa-icon>
               </span>
@@ -289,7 +288,7 @@ class WrRecCollInfo extends CollInfo
 
     return html`
     <div class="is-flex is-flex-direction-column">
-      <button @click="${this.onUpload}" class="button is-small" title="Upload to Cloud">
+      <button @click="${this.onUpload}" class="button is-small" title="Upload to Browsertrix">
         <span class="icon">
         ${uploadTime && uploadId ?
     !this.isUploadNeeded ? html`
@@ -298,7 +297,7 @@ class WrRecCollInfo extends CollInfo
           <fa-icon aria-hidden="true" class="has-text-warning-dark" .svg="${fasSync}"></fa-icon>
           `
     : html`
-          <fa-icon aria-hidden="true" size="2.2em" .svg="${btrixCloud}"></fa-icon>
+          <fa-icon aria-hidden="true" size="1.5em" .svg="${fasCloudArrowUp}"></fa-icon>
           `}
         </span>
       </button>

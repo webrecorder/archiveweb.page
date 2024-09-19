@@ -278,9 +278,9 @@
   integrity sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==
 
 "@lit-labs/ssr-dom-shim@^1.0.0", "@lit-labs/ssr-dom-shim@^1.1.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@lit-labs/ssr-dom-shim/-/ssr-dom-shim-1.2.0.tgz#353ce4a76c83fadec272ea5674ede767650762fd"
-  integrity sha512-yWJKmpGE6lUURKAaIltoPIE/wrbY3TEkqQt+X0m+7fQNnAv0keydnYvbiJFP1PnMhizmIWRWOG5KLhYyc/xl+g==
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@lit-labs/ssr-dom-shim/-/ssr-dom-shim-1.2.1.tgz#2f3a8f1d688935c704dbc89132394a41029acbb8"
+  integrity sha512-wx4aBmgeGvFmOKucFKY+8VFJSYZxs9poN3SDNQFF6lT6NrQUnHiPB2PWz2sc4ieEcAaYYzN+1uWahEeTq2aRIQ==
 
 "@lit/reactive-element@^1.3.0", "@lit/reactive-element@^1.6.0":
   version "1.6.3"
@@ -737,6 +737,11 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
 
+"@types/pako@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@types/pako/-/pako-1.0.7.tgz#aa0e4af9855d81153a29ff84cc44cce25298eda9"
+  integrity sha512-YBtzT2ztNF6R/9+UXj2wTGFnC9NklAnASt3sC0h2m1bbH7G6FyBIkt4AN8ThZpNfxUo1b2iMVO0UawiJymEt8A==
+
 "@types/plist@^3.0.1":
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/@types/plist/-/plist-3.0.5.tgz#9a0c49c0f9886c8c8696a7904dd703f6284036e0"
@@ -800,6 +805,13 @@
   version "0.3.36"
   resolved "https://registry.yarnpkg.com/@types/sockjs/-/sockjs-0.3.36.tgz#ce322cf07bcc119d4cbf7f88954f3a3bd0f67535"
   integrity sha512-MK9V6NzAS1+Ud7JV9lJLFqW85VbC9dq3LmwZCuBe4wBDgKC0Kj/jd8Xl+nSviU+Qc3+m7umHHyHg//2KSa0a0Q==
+  dependencies:
+    "@types/node" "*"
+
+"@types/stream-buffers@^3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@types/stream-buffers/-/stream-buffers-3.0.7.tgz#0b719fa1bd2ca2cc0908205a440e5e569e1aa21e"
+  integrity sha512-azOCy05sXVXrO+qklf0c/B07H/oHaIuDDAiHPVwlk3A9Ek+ksHyTeMajLZl3r76FxpPpxem//4Te61G1iW3Giw==
   dependencies:
     "@types/node" "*"
 
@@ -984,21 +996,21 @@
     uuid "^9.0.0"
     warcio "^2.2.1"
 
-"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1", "@webrecorder/wabac@^2.19.2":
-  version "2.19.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.2.tgz#2591980e7e14275d6b885f850ecff2b82e898669"
-  integrity sha512-rj048+Ri0Q1Q7MSPu5w/y7utR5MgCxaJaUtfy257GSZbaHs0RBsKW8RJMunEZPUL5ANC/THBdUMEV7dvlJBC6A==
+"@webrecorder/wabac@^2.17.3", "@webrecorder/wabac@^2.18.1", "@webrecorder/wabac@^2.19.9":
+  version "2.19.9"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.19.9.tgz#21d357077bc2a85419e7a6002c81a4bc4fec2514"
+  integrity sha512-lyvbKVrdUZMUGxwKg5ZFQnyjGUSqZSGOF3NFG9rXLA+Ni0YcQjZCMexGSmqCwY+BksyrVJISCMs3xQ2WQAekgw==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
-    "@webrecorder/wombat" "^3.7.10"
+    "@webrecorder/wombat" "^3.8.2"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
     brotli "^1.3.3"
     buffer "^6.0.3"
-    fast-xml-parser "^4.2.5"
+    fast-xml-parser "^4.4.1"
     hash-wasm "^4.9.0"
     http-link-header "^1.1.3"
     http-status-codes "^2.1.4"
@@ -1011,14 +1023,14 @@
     path-parser "^6.1.0"
     process "^0.11.10"
     stream-browserify "^3.0.0"
-    warcio "^2.2.1"
+    warcio "^2.3.0"
 
-"@webrecorder/wombat@^3.7.10":
-  version "3.7.10"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.7.10.tgz#c6d3f69b52f170a3166b4124b94b301d47064cde"
-  integrity sha512-UUXQAbDk0UfTGng7O2gbF3dzJDklMD1SqmLkGI4CxqqlUzvqvIxNrmkyI5cPPha9fOlDybtsUqQ5JFtXzhVE5w==
+"@webrecorder/wombat@^3.8.2":
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.2.tgz#e46e18719834d633175eec52ce753a4dc4e48e27"
+  integrity sha512-uUZr9V4UYpVOpM64Tm27ND/hMjDbT37+/qyNaNV6loqDuVzBVQh5w7SfTEy0Bbjj1MYyNZP244mOtWtotTpUEA==
   dependencies:
-    warcio "^2.2.0"
+    warcio "^2.3.1"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
@@ -1415,10 +1427,12 @@ browserslist@^4.21.10:
     node-releases "^2.0.14"
     update-browserslist-db "^1.0.13"
 
-browsertrix-behaviors@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.6.0.tgz#e16345e4b414b18e6441548d517d01b4316f744e"
-  integrity sha512-BdfEPHmDjhEIFrn80UKnwGT6HRgnmq2shNybu8BEfAHJQsqZdvP/VVKWvNGnWML1jjUKiwtvtkdFhtHedFQkzA==
+browsertrix-behaviors@^0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.6.4.tgz#33fe9a433108f2faac3a03af91aff940433e5b87"
+  integrity sha512-xaiO/VqqeSd5FnAkIKQINxC/q3Med33Lqw3LGxD4NBtkcMSh1Anz/+830QHVlQbp08nIPUXYV96hDrx1Uv0PmQ==
+  dependencies:
+    query-selector-shadow-dom "^1.0.1"
 
 btoa@^1.2.1:
   version "1.2.1"
@@ -2537,10 +2551,10 @@ fast-uri@^2.3.0:
   resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-2.3.0.tgz#bdae493942483d299e7285dcb4627767d42e2793"
   integrity sha512-eel5UKGn369gGEWOqBShmFJWfq/xSJvsgDzgLYC845GneayWvXBf0lJCBn5qTABfewy1ZDPoaR5OZCP+kssfuw==
 
-fast-xml-parser@^4.2.5:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.4.0.tgz#341cc98de71e9ba9e651a67f41f1752d1441a501"
-  integrity sha512-kLY3jFlwIYwBNDojclKsNAC12sfD6NwW74QB2CoNGPvtVxjliYehVunB3HYyNi+n4Tt1dAcgwYvmKF/Z18flqg==
+fast-xml-parser@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.4.1.tgz#86dbf3f18edf8739326447bcaac31b4ae7f6514f"
+  integrity sha512-xkjOecfnKGkSsOwtZ5Pz7Us/T6mrbPQrq0nh+aCO5V9nk5NLWmasAHumTKjiPJPWANe+kAZ84Jc8ooJkzZ88Sw==
   dependencies:
     strnum "^1.0.5"
 
@@ -4611,6 +4625,11 @@ qs@6.11.0:
   dependencies:
     side-channel "^1.0.4"
 
+query-selector-shadow-dom@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/query-selector-shadow-dom/-/query-selector-shadow-dom-1.0.1.tgz#1c7b0058eff4881ac44f45d8f84ede32e9a2f349"
+  integrity sha512-lT5yCqEBgfoMYpf3F2xQRK7zEr1rhIIZuceDK6+xRkJQ4NMbHTwXqk4NkwDwQMNqXgG9r9fyHnzwNVs6zV5KRw==
+
 queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
@@ -5610,10 +5629,15 @@ tslib@^1.10.0, tslib@^1.9.3:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.1.0, tslib@^2.4.0, tslib@^2.6.1, tslib@^2.6.2:
+tslib@^2.0.0, tslib@^2.4.0, tslib@^2.6.1, tslib@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
+
+tslib@^2.1.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
+  integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
 
 tsyringe@^4.8.0:
   version "4.8.0"
@@ -5819,11 +5843,25 @@ verror@^1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-warcio@^2.2.0, warcio@^2.2.1:
+warcio@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/warcio/-/warcio-2.2.1.tgz#3619728fde716291c9b364744c276362a94bacec"
   integrity sha512-KPLoz3aFtdTjexG+QQaubMyuLiNANzvcadGMyNKdpcmhl0k6lBHQQVpxZw3Hx9+4pbyqDXyiF4cr/h2tS8kvcw==
   dependencies:
+    base32-encode "^2.0.0"
+    hash-wasm "^4.9.0"
+    pako "^1.0.11"
+    tempy "^3.1.0"
+    uuid-random "^1.3.2"
+    yargs "^17.6.2"
+
+warcio@^2.3.0, warcio@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/warcio/-/warcio-2.3.1.tgz#8ac9de897de1a556161168f2a3938b60929908ca"
+  integrity sha512-PjcWqzXfs6HdWfHi1V/i8MoMmV5M0Csg3rOa2mqCJ1dmCJXswVfQ0VXbEVumwavNIW2oFFj6LJoCHHeL4Ls/zw==
+  dependencies:
+    "@types/pako" "^1.0.7"
+    "@types/stream-buffers" "^3.0.7"
     base32-encode "^2.0.0"
     hash-wasm "^4.9.0"
     pako "^1.0.11"

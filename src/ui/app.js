@@ -3,6 +3,8 @@ import { html, css, wrapCss, IS_APP, apiPrefix } from "replaywebpage/src/misc";
 // replaywebpage imports
 import { ReplayWebApp, Embed, Loader } from "replaywebpage";
 
+import { SWManager } from "replaywebpage/src/swmanager";
+
 import fasHelp from "@fortawesome/fontawesome-free/svgs/solid/question-circle.svg";
 import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
 
@@ -142,14 +144,26 @@ class ArchiveWebApp extends ReplayWebApp
     }
   }
 
-  async checkDoubleSW() {
+  async checkSW() {
     const regs = await navigator.serviceWorker.getRegistrations();
+    // Remove double SW
     for (const reg of regs) {
       if (reg.active && reg.active.scriptURL.endsWith("/replay/sw.js")) {
         if (await reg.unregister()) {
           self.location.reload();
         }
       }
+    }
+
+    // For App: If no SW, register here
+    if (IS_APP && !regs.length) {
+      this.swmanager = new SWManager({ name: this.swName, appName: this.appName });
+      this.swmanager
+        .register()
+        .catch(
+          () =>
+            (this.swErrorMsg = this.swmanager.renderErrorReport(this.mainLogo)),
+        );
     }
   }
 
@@ -160,7 +174,7 @@ class ArchiveWebApp extends ReplayWebApp
       return super.firstUpdated();
     }
 
-    this.checkDoubleSW();
+    this.checkSW();
 
     this.initRoute();
     

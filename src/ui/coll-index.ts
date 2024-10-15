@@ -7,7 +7,7 @@ import { type WrRecCollInfo } from "./coll-info";
 import { type WrRecItem } from "../types";
 
 //============================================================================
-class WrRecCollIndex extends ItemIndex {
+export class WrRecCollIndex extends ItemIndex {
   @property({ type: Object })
   deleteConfirm: WrRecItem | null = null;
   ipfsSharePending = 0;

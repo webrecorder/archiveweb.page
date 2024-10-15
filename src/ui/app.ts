@@ -31,6 +31,7 @@ import {
 } from "auto-js-ipfs";
 import { getLocalOption, setLocalOption } from "../localstorage";
 import { type BtrixOpts } from "../types";
+import { WrRecCollIndex } from "./coll-index";
 
 const VERSION = __AWP_VERSION__;
 
@@ -180,8 +181,11 @@ class ArchiveWebApp extends ReplayWebApp {
 
     // For App: If no SW, register here
     if (IS_APP && !regs.length) {
+      const qp = new URLSearchParams();
+      qp.set("injectScripts", "ruffle/ruffle.js");
+
       this.swmanager = new SWManager({
-        name: this.swName,
+        name: this.swName + "?" + qp.toString(),
         appName: this.appName,
       });
       this.swmanager
@@ -277,8 +281,7 @@ class ArchiveWebApp extends ReplayWebApp {
     }
   }
 
-  // @ts-expect-error - TS7006 - Parameter 'sourceUrl' implicitly has an 'any' type.
-  getLoadInfo(sourceUrl) {
+  getLoadInfo(sourceUrl: string) {
     this.disableCSP();
 
     if (this.loadInfo) {
@@ -551,9 +554,9 @@ class ArchiveWebApp extends ReplayWebApp {
   renderColl() {
     return html` <wr-rec-coll
       .editable="${true}"
-      .clearable="${Boolean(this.embed)}"
+      .clearable="${false}"
       .browsable="${!this.embed}"
-      .loadInfo="${this.getLoadInfo(this.sourceUrl)}"
+      .loadInfo="${this.getLoadInfo(this.sourceUrl || "")}"
       .appLogo="${this.mainLogo}"
       .autoUpdateInterval=${
         // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'ArchiveWebApp'. | TS2551 - Property 'showDownloadProgress' does not exist on type 'ArchiveWebApp'. Did you mean 'onDownloadProgress'?
@@ -1271,10 +1274,9 @@ class ArchiveWebApp extends ReplayWebApp {
     const resp = await fetch(`${apiPrefix}/c/create`, { method, body });
     await resp.json();
 
-    const index = this.renderRoot.querySelector("wr-rec-coll-index");
+    const index = this.renderRoot.querySelector("wr-rec-coll-index") as WrRecCollIndex;
     if (index) {
-      // @ts-expect-error - TS2339 - Property 'loadColls' does not exist on type 'Element'.
-      index.loadColls();
+      index.loadItems();
     }
     // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
     this.showNew = null;

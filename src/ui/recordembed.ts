@@ -1,12 +1,33 @@
-import { Embed } from "replaywebpage";
+import { type PropertyValues } from "lit";
+import { property } from "lit/decorators.js";
+import { Embed, apiPrefix } from "replaywebpage";
 
-import awpLogo from "../assets/brand/archivewebpage-icon-color.svg";
+//import awpLogo from "../assets/brand/archivewebpage-icon-color.svg";
 
 // ===========================================================================
 Embed.setDefaultReplayFile("replay.html");
 
+type AWPFinishEvent = {
+  type: "awp-finish";
+  downloadUrl: string;
+}
+
+type LiveProxyURLErrorEvent = {
+  type: "live-proxy-url-error";
+  url: string;
+  status: number;
+}
+
 // ===========================================================================
-class RecordEmbed extends Embed {
+export class RecordEmbed extends Embed {
+  @property({ type: String })
+  proxyPrefix = "https://wabac-cors-proxy.webrecorder.workers.dev/proxy/";
+
+  @property({ type: String })
+  archivePrefix = "";
+
+  source: string;
+
   constructor() {
     super();
 
@@ -16,37 +37,23 @@ class RecordEmbed extends Embed {
     this.appName = "Embedded ArchiveWeb.page";
     this.embed = "default";
     this.noWebWorker = true;
+    
+    this.coll = this.randomId();
 
-    // @ts-expect-error - TS2339 - Property 'proxyPrefix' does not exist on type 'RecordEmbed'.
-    this.proxyPrefix =
-      "https://wabac-cors-proxy.webrecorder.workers.dev/proxy/";
-    // @ts-expect-error - TS2339 - Property 'archivePrefix' does not exist on type 'RecordEmbed'.
-    this.archivePrefix = "";
-
-    // @ts-expect-error - TS2345 - Argument of type 'Location' is not assignable to parameter of type 'string | URL'.
-    const baseUrl = new URL(window.location);
+    const baseUrl = new URL(window.location.href);
     baseUrl.hash = "";
 
-    // @ts-expect-error - TS2339 - Property 'logo' does not exist on type 'RecordEmbed'.
-    this.logo = awpLogo;
-
-    // @ts-expect-error - TS2339 - Property 'customConfig' does not exist on type 'RecordEmbed'.
     this.customConfig = {
-      // @ts-expect-error - TS2339 - Property 'proxyPrefix' does not exist on type 'RecordEmbed'.
       prefix: this.proxyPrefix,
       isLive: false,
-      // @ts-expect-error - TS2339 - Property 'archivePrefix' does not exist on type 'RecordEmbed'.
       archivePrefix: this.archivePrefix,
       baseUrl: baseUrl.href,
       baseUrlHashReplay: false,
       recording: true,
       noPostToGet: true,
+      messageOnProxyErrors: true,
     };
 
-    // @ts-expect-error - TS2551 - Property 'downloaded' does not exist on type 'RecordEmbed'. Did you mean 'doDownload'?
-    this.downloaded = null;
-
-    // @ts-expect-error - TS2339 - Property 'source' does not exist on type 'RecordEmbed'. | TS2339 - Property 'proxyPrefix' does not exist on type 'RecordEmbed'.
     this.source = "proxy://" + this.proxyPrefix;
   }
 
@@ -59,59 +66,64 @@ class RecordEmbed extends Embed {
     };
   }
 
-  // @ts-expect-error - TS7006 - Parameter 'changedProperties' implicitly has an 'any' type.
-  updated(changedProperties) {
-    if (changedProperties.has("proxyPrefix")) {
-      // @ts-expect-error - TS2339 - Property 'customConfig' does not exist on type 'RecordEmbed'. | TS2339 - Property 'proxyPrefix' does not exist on type 'RecordEmbed'.
+  randomId() {
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
+  }
+
+  firstUpdated(): void {
+    window.addEventListener("beforeunload", () => {
+      this.deleteColl();
+    });
+    super.firstUpdated();
+  }
+
+  async deleteColl() {
+    if (this.coll) {
+      await fetch(`w/api/c/${this.coll}`, { method: "DELETE" });
+    }
+  }
+
+  updated(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has("proxyPrefix") && this.customConfig) {
       this.customConfig.proxyPrefix = this.proxyPrefix;
     }
-    if (changedProperties.has("archivePrefix")) {
-      // @ts-expect-error - TS2339 - Property 'customConfig' does not exist on type 'RecordEmbed'. | TS2339 - Property 'archivePrefix' does not exist on type 'RecordEmbed'.
+    if (changedProperties.has("archivePrefix") && this.customConfig) {
       this.customConfig.archivePrefix = this.archivePrefix;
-      // @ts-expect-error - TS2339 - Property 'customConfig' does not exist on type 'RecordEmbed'. | TS2339 - Property 'archivePrefix' does not exist on type 'RecordEmbed'.
       this.customConfig.isLive = !this.archivePrefix;
     }
     super.updated(changedProperties);
   }
 
-  // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
-  handleMessage(event) {
-    if (
-      // @ts-expect-error - TS2551 - Property 'downloaded' does not exist on type 'RecordEmbed'. Did you mean 'doDownload'?
-      this.downloaded &&
-      typeof event.data === "object" &&
-      event.data.msg_type === "downloadedBlob"
-    ) {
-      // @ts-expect-error - TS2551 - Property 'downloaded' does not exist on type 'RecordEmbed'. Did you mean 'doDownload'?
-      this.downloaded(event.data.url);
-      // @ts-expect-error - TS2551 - Property 'downloaded' does not exist on type 'RecordEmbed'. Did you mean 'doDownload'?
-      this.downloaded = null;
-    }
+  getDownloadUrl() {
+    return `${apiPrefix}/c/${this.coll}/dl?format=wacz&pages=all`;
   }
 
-  doDownload() {
+  handleMessage(event: MessageEvent) {
     const iframe = this.renderRoot.querySelector("iframe");
-    if (!iframe) {
-      return;
+
+    if (iframe && event.source === iframe.contentWindow) {
+      switch (event.data.type) {
+        case "awp-finish":
+          this.dispatchEvent(new CustomEvent<AWPFinishEvent>("awp-finish", {detail: event.data}));
+          break;
+
+        case "live-proxy-url-error":
+          this.dispatchEvent(new CustomEvent<LiveProxyURLErrorEvent>("live-proxy-url-error", {detail: event.data}));
+          break;
+
+        default:
+          return super.handleMessage(event);
+      }
     }
-
-    const p = new Promise((resolve) => {
-      // @ts-expect-error - TS2551 - Property 'downloaded' does not exist on type 'RecordEmbed'. Did you mean 'doDownload'?
-      this.downloaded = resolve;
-    });
-
-    // @ts-expect-error - TS2531 - Object is possibly 'null'.
-    iframe.contentWindow.postMessage({ msg_type: "downloadToBlob" });
-
-    return p;
   }
 }
 
 // ===========================================================================
 function main() {
-  customElements.define("record-web-page", RecordEmbed);
+  customElements.define("archive-web-page", RecordEmbed);
 }
 
 main();
-
-export { RecordEmbed };

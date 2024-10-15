@@ -5,17 +5,21 @@ import { ExtAPI, RecordingCollections } from "@webrecorder/awp-sw";
 import REC_INDEX_HTML from "@/static/index.html";
 import RWP_INDEX_HTML from "replaywebpage/index.html";
 
-// @ts-expect-error - TS2339 - Property 'registration' does not exist on type 'Window & typeof globalThis'.
+declare let self: ServiceWorkerGlobalScope;
+
 if (self.registration) {
-  const defaultConfig = {
-    injectScripts: ["/ruffle/ruffle.js"],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const defaultConfig : Record<string, any> = {
     baseUrlSourcePrefix: "/replay/index.html",
     convertPostToGet: false,
   };
 
+  if (self.location.origin.startsWith("chrome-extension://")) {
+    defaultConfig["injectScripts"] = ["/ruffle/ruffle.js"];
+  }
+
   const staticData = new Map();
 
-  // @ts-expect-error - TS2339 - Property 'registration' does not exist on type 'Window & typeof globalThis'.
   const prefix = self.registration.scope;
 
   // for backwards compatibility to support <replay-web-page> tag
@@ -33,8 +37,7 @@ if (self.registration) {
   const ApiClass = ExtAPI;
   const CollectionsClass = RecordingCollections;
 
-  // @ts-expect-error - TS2339 - Property 'sw' does not exist on type 'Window & typeof globalThis'.
-  self.sw = new SWReplay({
+  (self as any).sw = new SWReplay({
     ApiClass,
     staticData,
     defaultConfig,

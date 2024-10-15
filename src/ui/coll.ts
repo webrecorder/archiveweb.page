@@ -6,31 +6,30 @@ import {
   apiPrefix,
 } from "replaywebpage";
 
-import fasDownload from "@fortawesome/fontawesome-free/svgs/solid/download.svg";
+import { type PropertyValues } from "lit";
+import { property, state } from "lit/decorators.js";
 
 import prettyBytes from "pretty-bytes";
 
 import { Item } from "replaywebpage";
+
 import wrRec from "../assets/icons/recLogo.svg";
 
 //============================================================================
 class WrRecColl extends Item {
-  constructor() {
-    super();
-    // @ts-expect-error - TS2551 - Property '_sizeUpdater' does not exist on type 'WrRecColl'. Did you mean 'runSizeUpdater'?
-    this._sizeUpdater = null;
-    // @ts-expect-error - TS2339 - Property 'totalSize' does not exist on type 'WrRecColl'.
-    this.totalSize = 0;
-  }
+  @property({ type: String })
+  sourceUrl: string | null = null;
 
-  static get properties() {
-    return {
-      ...Item.properties,
+  @property({ type: Object })
+  shareOpts: Record<string, string> = {};
 
-      totalSize: { type: Number },
-      shareOpts: { type: Object },
-    };
-  }
+  @property({ type: Boolean })
+  showFinish = true;
+
+  @state()
+  totalSize = 0;
+
+  _sizeUpdater: Promise<void> | null = null;
 
   static get styles() {
     return wrapCss(WrRecColl.compStyles);
@@ -47,6 +46,7 @@ class WrRecColl extends Item {
         border-radius: 16px;
         padding: 0 0.5em;
         min-width: max-content;
+        margin-left: 0.5mm;
       }
 
       .size-label {
@@ -54,124 +54,114 @@ class WrRecColl extends Item {
         font-weight: bold;
       }
 
+      .dot {
+        height: 8px;
+        width: 8px;
+        background-color: #16a34a;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
       ${Item.compStyles}
     `;
   }
 
-  // @ts-expect-error - TS7006 - Parameter 'changedProperties' implicitly has an 'any' type.
-  updated(changedProperties) {
-    if (changedProperties.has("embed")) {
-      // @ts-expect-error - TS2339 - Property 'embed' does not exist on type 'WrRecColl'. | TS2551 - Property '_sizeUpdater' does not exist on type 'WrRecColl'. Did you mean 'runSizeUpdater'?
-      if (this.embed && !this._sizeUpdater) {
-        // @ts-expect-error - TS2551 - Property '_sizeUpdater' does not exist on type 'WrRecColl'. Did you mean 'runSizeUpdater'?
-        this._sizeUpdater = this.runSizeUpdater();
-      }
+  updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+
+    if (
+      (changedProperties.has("embed") ||
+      (changedProperties.has("item") || 
+      changedProperties.has("loadInfo")) &&
+        this.loadInfo &&
+        this.embed &&
+        this.item &&
+        !this._sizeUpdater)
+    ) {
+      this._sizeUpdater = this.runSizeUpdater();
     }
 
-    super.updated(changedProperties);
+    if (changedProperties.has("favIconUrl") && this.favIconUrl) {
+      navigator.serviceWorker.controller?.postMessage({
+        msg_type: "update-favicon",
+        id: this.item,
+        url: this.tabData.url,
+        favIconUrl: this.favIconUrl.split("mp_/")[1]
+      })
+    }
   }
 
   async runSizeUpdater() {
     try {
       while (this.embed) {
-        // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecColl'.
-        if (this.coll) {
-          // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecColl'.
-          const resp = await fetch(`${apiPrefix}/c/${this.coll}`);
+        if (this.item) {
+          const resp = await fetch(`${apiPrefix}/c/${this.item}`);
           const json = await resp.json();
-          // @ts-expect-error - TS2339 - Property 'totalSize' does not exist on type 'WrRecColl'.
           this.totalSize = json.size || 0;
         }
         await new Promise((resolve) => setTimeout(resolve, 3000));
       }
     } finally {
-      // @ts-expect-error - TS2551 - Property '_sizeUpdater' does not exist on type 'WrRecColl'. Did you mean 'runSizeUpdater'?
       this._sizeUpdater = null;
     }
   }
 
-  renderExtraToolbar(isDropdown = false) {
+  protected renderToolbarLeft(isDropdown = false) {
+    const leftBar = super.renderToolbarLeft();
+
     if (this.embed) {
-      if (!isDropdown) {
-        return html`
-          <span class="rec-button" title="Archiving">
-            <span class="icon is-small" title="Archiving">
-              <fa-icon
-                size="1.2em"
-                aria-hidden="true"
-                .svg="${wrRec}"
-              ></fa-icon>
-            </span>
-            <span class="size-label"
-              >${
-                // @ts-expect-error - TS2339 - Property 'totalSize' does not exist on type 'WrRecColl'.
-                prettyBytes(this.totalSize)
-              }</span
-            >
-          </span>
-        `;
-      } else {
-        return html`
-          <a
-            href="${apiPrefix}/c/${
-              // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecColl'.
-              this.coll
-            }/dl?format=wacz&amp;pages=all"
-            role="button"
-            class="dropdown-item"
-            @keyup="${clickOnSpacebarPress}"
-          >
-            <span class="icon is-small">
-              <fa-icon
-                size="1.0em"
-                class="has-text-grey"
-                aria-hidden="true"
-                .svg="${fasDownload}"
-              ></fa-icon>
-            </span>
-            <span>Download Archive</span>
-          </a>
-          <hr class="dropdown-divider" />
-        `;
-      }
+      return leftBar;
     }
 
-    if (isDropdown) {
-      return "";
+    return html`${leftBar}<a
+        href="#"
+        role="button"
+        class="${!isDropdown
+          ? "button narrow is-borderless"
+          : "dropdown-item is-hidden-tablet"}"
+        title="Start Archiving"
+        aria-label="Start Archiving"
+        aria-controls="record"
+        @click="${this.onShowStart}"
+        @keyup="${clickOnSpacebarPress}"
+      >
+        <span class="icon is-small">
+          <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+        </span>
+      </a>`;
+  }
+
+  protected renderToolbarRight() {
+    const rightBar = super.renderToolbarRight();
+
+    if (!this.embed) {
+      return rightBar;
     }
 
-    return html` <a
-      href="#"
-      role="button"
-      class="${!isDropdown
-        ? "button narrow is-borderless"
-        : "dropdown-item is-hidden-tablet"}"
-      title="Start Archiving"
-      aria-label="Start Archiving"
-      aria-controls="record"
-      @click="${this.onShowStart}"
-      @keyup="${clickOnSpacebarPress}"
-    >
-      <span class="icon is-small">
-        <fa-icon size="1.2em" aria-hidden="true" .svg="${wrRec}"></fa-icon>
+    return html`
+      <span class="rec-button" title="Archiving">
+        <span class="dot"></span>
+        <span class="size-label">${prettyBytes(this.totalSize)}</span>
       </span>
-    </a>`;
+      ${this.showFinish
+        ? html` <button class="button is-primary" @click="${this.onEmbedFinish}" type="button">Finish</button>`
+        : html`
+            <a class="button is-primary" role="button"
+              download="my-archive.wacz"
+              href="${this.downloadUrl}"
+              target="_blank"
+              >Download</a
+            >
+          `}
+    `;
   }
 
   renderCollInfo() {
-    // @ts-expect-error - TS2339 - Property 'collInfo' does not exist on type 'WrRecColl'.
-    console.log(this.collInfo);
     return html` <div class="info-bg">
       <wr-rec-coll-info
         class="is-list"
-        .item="${
-          // @ts-expect-error - TS2339 - Property 'collInfo' does not exist on type 'WrRecColl'.
-          this.collInfo
-        }"
-        .shareOpts=${
-          // @ts-expect-error - TS2339 - Property 'shareOpts' does not exist on type 'WrRecColl'.
-          this.shareOpts
-        }
+        .item="${this.itemInfo as any}"
+        .shareOpts=${this.shareOpts}
         ?detailed="${true}"
       ></wr-rec-coll-info>
     </div>`;
@@ -182,14 +172,45 @@ class WrRecColl extends Item {
       return;
     }
 
-    // @ts-expect-error - TS2339 - Property 'coll' does not exist on type 'WrRecColl'.
-    const coll = this.coll;
-    // @ts-expect-error - TS2339 - Property 'collInfo' does not exist on type 'WrRecColl'.
-    const title = this.collInfo.title;
+    const coll = this.item;
+    const title = this.itemInfo?.title || "";
     const url = this.tabData.url;
     this.dispatchEvent(
       new CustomEvent("show-start", { detail: { coll, title, url } }),
     );
+  }
+
+  onEmbedFinish() {
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ msg_type: "toggle-record", id: this.item, isRecording: false });
+    }
+    if (window.parent !== window) {
+      window.parent.postMessage({type: "awp-finish", downloadUrl: this.downloadUrl});
+    }
+  }
+
+  onHashChange() {
+    super.onHashChange();
+
+    if (!this.embed) {
+      return;
+    }
+
+    const url = this.tabData.url || "";
+    if (!url.startsWith("https://") && !url.startsWith("http://")) {
+      this.tabData.url = "https://" + url;
+    }
+  }
+
+  navigateTo(value: string) {
+    if (this.embed && !value.startsWith("https://") && !value.startsWith("http://")) {
+      value = "https://" + value;
+    }
+    super.navigateTo(value);
+  }
+
+  get downloadUrl() {
+    return new URL(`${apiPrefix}/c/${this.item}/dl?format=wacz&pages=all`, window.location.href).href;
   }
 }
 

@@ -123,7 +123,7 @@ class WrRecCollInfo extends ItemInfo {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'changedProps' implicitly has an 'any' type.
-  updated(changedProps) {
+  updated(changedProps: Property) {
     if (changedProps.has("shareOpts") && this.shareOpts) {
       const { ipfsOpts, btrixOpts } = this.shareOpts;
       this.ipfsOpts = ipfsOpts;

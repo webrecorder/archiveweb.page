@@ -68,6 +68,7 @@ const optimization = {
 const resolve = {
   extensions: [".ts", ".js"],
   plugins: [new TsconfigPathsPlugin()],
+  fallback: {"path": false, "fs": false}
 };
 
 // ===========================================================================
@@ -244,9 +245,9 @@ const electronWebConfig = (env, argv) => {
     { from: "src/electron/rec-window.html", to: "" },
   ];
 
-  const target = "electron-main";
+  const target = "web";
 
-  return sharedBuild(DIST_ELECTRON, { copy, entry, target }, argv);
+  return sharedBuild(DIST_ELECTRON, { copy, entry }, argv);
 };
 
 // ===========================================================================

@@ -8,6 +8,9 @@
     "strict": true,
     "checkJs": true,
     "noImplicitAny": true,
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "./dist/lib/types",
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "importHelpers": true,
@@ -31,7 +34,8 @@
       }
     ],
     "skipLibCheck": true,
-    "paths": { "@/*": ["./*"] }
+    "paths": { "@/*": ["./*"] },
+    "lib": ["dom", "dom.iterable", "webworker", "esnext", "webworker.iterable"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.js"]
 }

@@ -2263,14 +2263,14 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@webrecorder/awp-sw@^0.5.0-beta.2":
-  version "0.5.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.5.0-beta.2.tgz#8e1aa04f2ea75babbeae4b71a1b94c9c56f02299"
-  integrity sha512-Fp/k4bjbou5HninHe8nFNFVTw7fXj8uzRrnNAQlBP6ORql8/wkUZ0+OQXvHrX/DTrxD4HC5YAy1ILV1r5UXbXg==
+"@webrecorder/awp-sw@^0.5.0-beta.4":
+  version "0.5.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.5.0-beta.4.tgz#2c033af0d75a647b2089c5f3542dc0ab547d123f"
+  integrity sha512-VFZiOiOj4pgxHXS34A2fjMhECQnUuXQXF2515wL4CtMPrJNB1QCxcYPifnMcMQNbEb2al7UfmiX8/iajg4HLrg==
   dependencies:
     "@ipld/car" "^5.3.2"
     "@ipld/unixfs" "^3.0.0"
-    "@webrecorder/wabac" "^2.20.0-beta.2"
+    "@webrecorder/wabac" "^2.20.0-beta.4"
     auto-js-ipfs "^2.3.0"
     client-zip "^2.3.0"
     hash-wasm "^4.9.0"
@@ -2279,10 +2279,10 @@
     uuid "^9.0.0"
     warcio "^2.3.1"
 
-"@webrecorder/wabac@^2.20.0-beta.2":
-  version "2.20.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.0-beta.2.tgz#532b6457cb970039812e3b1470134725d7e72ca5"
-  integrity sha512-ENVlZOvnFpQO/iMDQX9IZzXrStqlKbDrXe5Tl1aEq0Diun+HI7RKZPF3jJjYEZr0GCON4yY8FNEZhodJCI7dGA==
+"@webrecorder/wabac@^2.20.0-beta.4":
+  version "2.20.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.0-beta.4.tgz#c60fcd00f449cca52ce1a0bef305a06922c9e3e8"
+  integrity sha512-enHYcZoqs7cOu2tdTqVeB/zB27uL4wmCMzvF55bJqdB8d5zgPpY+/fpRA3eLxGrPc0nFYAjsI/aNaa62FH7WKQ==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
@@ -3703,10 +3703,10 @@ electron-updater@^6.3.2:
     semver "^7.6.3"
     tiny-typed-emitter "^2.1.0"
 
-electron@^30.0.9:
-  version "30.0.9"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-30.0.9.tgz#b11400e4642a4b635e79244ba365f1d401ee60b5"
-  integrity sha512-ArxgdGHVu3o5uaP+Tqj8cJDvU03R6vrGrOqiMs7JXLnvQHMqXJIIxmFKQAIdJW8VoT3ac3hD21tA7cPO10RLow==
+electron@^32.2.0:
+  version "32.2.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-32.2.0.tgz#40b17864be5f88c89f71045ac6f61b5d4a9c1919"
+  integrity sha512-Xy82QBQrEiQysoxsv6lnhHAcWNNe6vV6QqH3OPFXhEj/T9oAsBHEhZuuYHINSSsUE7zRSj+J9sNwJYOjisT0Vw==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^20.9.0"
@@ -6786,13 +6786,14 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-"replaywebpage@github:webrecorder/replayweb.page#wabac-ts-work":
-  version "2.1.6"
-  resolved "https://codeload.github.com/webrecorder/replayweb.page/tar.gz/a6e9f2848e76fd8ba03928ba4e9631115e59ec1f"
+replaywebpage@^2.2.0-beta.4:
+  version "2.2.0-beta.4"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.2.0-beta.4.tgz#b01cd911ad3c3755637acaea37a9c0ba62cc5204"
+  integrity sha512-588xkIL2eu3eNWkQ4FymK3FeZ6um1wp3c05BKFvoUDuB7JmU2vpB3DFjsUKvMd6jeVG0ZVG+a4YH546iflas5A==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "~2.15.1"
-    "@webrecorder/wabac" "^2.20.0-beta.2"
+    "@webrecorder/wabac" "^2.20.0-beta.4"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^6.3.2"

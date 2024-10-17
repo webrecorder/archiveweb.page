@@ -1,4 +1,3 @@
-import { type PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 import { Embed, apiPrefix } from "replaywebpage";
 
@@ -77,6 +76,12 @@ export class RecordEmbed extends Embed {
     window.addEventListener("beforeunload", () => {
       this.deleteColl();
     });
+
+    this.customConfig!.archivePrefix = this.archivePrefix;
+    this.customConfig!.isLive = !this.archivePrefix;
+    this.customConfig!.prefix = this.proxyPrefix;
+    this.source = "proxy://" + this.proxyPrefix;
+
     super.firstUpdated();
   }
 
@@ -84,17 +89,6 @@ export class RecordEmbed extends Embed {
     if (this.coll) {
       await fetch(`w/api/c/${this.coll}`, { method: "DELETE" });
     }
-  }
-
-  updated(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has("proxyPrefix") && this.customConfig) {
-      this.customConfig.proxyPrefix = this.proxyPrefix;
-    }
-    if (changedProperties.has("archivePrefix") && this.customConfig) {
-      this.customConfig.archivePrefix = this.archivePrefix;
-      this.customConfig.isLive = !this.archivePrefix;
-    }
-    super.updated(changedProperties);
   }
 
   getDownloadUrl() {

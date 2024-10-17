@@ -86,6 +86,8 @@ class RecWindowUI extends LitElement {
       :host {
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       webview {
@@ -333,6 +335,7 @@ class RecWindowUI extends LitElement {
 
   renderWebView() {
     return html` <webview
+      allowpopups=""
       partition="persist:wr"
       @did-start-loading="${
         // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.

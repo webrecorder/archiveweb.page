@@ -68,7 +68,6 @@ const optimization = {
 const resolve = {
   extensions: [".ts", ".js"],
   plugins: [new TsconfigPathsPlugin()],
-  fallback: {"path": false, "fs": false}
 };
 
 // ===========================================================================
@@ -109,6 +108,7 @@ const electronPreloadConfig = (/*env, argv*/) => {
     mode: "production",
     entry: {
       preload: "./src/electron/electron-rec-preload.ts",
+      "rec-preload": "./src/electron/rec-preload.ts",
     },
     optimization,
     output: {
@@ -236,7 +236,6 @@ const extensionWebConfig = (env, argv) => {
 const electronWebConfig = (env, argv) => {
   const entry = {
     "rec-window": "./src/electron/rec-window.ts",
-    "rec-preload": "./src/electron/rec-preload.ts",
   };
 
   const copy = [
@@ -244,8 +243,6 @@ const electronWebConfig = (env, argv) => {
     { from: "ruffle", to: "./ruffle/" },
     { from: "src/electron/rec-window.html", to: "" },
   ];
-
-  const target = "web";
 
   return sharedBuild(DIST_ELECTRON, { copy, entry }, argv);
 };

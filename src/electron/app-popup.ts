@@ -4,23 +4,14 @@ import { RecPopup } from "../popup";
 import { CollectionLoader } from "@webrecorder/wabac/swlib";
 import { listAllMsg } from "../utils";
 import { setLocalOption } from "../localstorage";
+import { type PropertyValues } from "lit";
 
 // ===========================================================================
 class AppRecPopup extends RecPopup {
-  constructor() {
-    super();
-
-    // @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
-    this.collLoader = new CollectionLoader();
-
-    //this.tabId = 0;//window.location.hash && Number(window.location.hash.slice(1));
-
-    // @ts-expect-error - TS2339 - Property 'allowCreate' does not exist on type 'AppRecPopup'.
-    this.allowCreate = false;
-
-    // @ts-expect-error - TS2339 - Property 'msg' does not exist on type 'AppRecPopup'.
-    this.msg = null;
-  }
+  collLoader = new CollectionLoader();
+  allowCreated = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  msg: any = null;
 
   static get properties() {
     return {
@@ -29,22 +20,18 @@ class AppRecPopup extends RecPopup {
     };
   }
 
-  // @ts-expect-error - TS2416 - Property 'firstUpdated' in type 'AppRecPopup' is not assignable to the same property in base type 'RecPopup'.
-  firstUpdated() {
-    super.firstUpdated();
-
-    // @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
+  firstUpdated() : Promise<void> {
     listAllMsg(this.collLoader).then((msg) => {
       this.onMessage(msg);
     });
+
+    return super.firstUpdated()
   }
 
-  // @ts-expect-error - TS7006 - Parameter 'changedProperties' implicitly has an 'any' type.
-  updated(changedProperties) {
+  updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has("msg")) {
-      // @ts-expect-error - TS2339 - Property 'msg' does not exist on type 'AppRecPopup'.
+    if (changedProperties.has("msg") && this.msg) {
       this.onMessage(this.msg);
     }
   }
@@ -68,12 +55,10 @@ class AppRecPopup extends RecPopup {
 
   // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   async makeNewColl(message) {
-    // @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
     const newColl = await this.collLoader.initNewColl({ title: message.title });
 
     await setLocalOption("defaultCollId", newColl.name);
 
-    // @ts-expect-error - TS2339 - Property 'collLoader' does not exist on type 'AppRecPopup'.
     const respMsg = await listAllMsg(this.collLoader);
 
     this.onMessage(respMsg);

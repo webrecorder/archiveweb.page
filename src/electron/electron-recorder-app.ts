@@ -1,6 +1,6 @@
 /*eslint-env node */
 
-import { app, session, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, session, BrowserWindow, ipcMain, dialog, type HandlerDetails, WebContents, WindowOpenHandlerResponse } from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
 import {
@@ -176,14 +176,11 @@ class ElectronRecorderApp extends ElectronReplayApp {
   }
 
   createRecordWindow({
-    // @ts-expect-error - TS2525 - Initializer provides no value for this binding element and the binding element has no default value.
-    url,
+    url = "",
     collId = "",
     startRec = true,
     autorun = false,
   } = {}) {
-    console.log("start rec window: " + url);
-
     const recWindow = new BrowserWindow({
       width: this.screenSize.width,
       height: this.screenSize.height,
@@ -218,7 +215,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
     startRec,
     // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
     autorun,
-    popupView = null,
+    //popupView = null,
   ) {
     const id = recWebContents.id;
 
@@ -229,7 +226,7 @@ class ElectronRecorderApp extends ElectronReplayApp {
       recWindow,
       collId,
       autorun,
-      popup: popupView,
+      popup: null,
       staticPrefix: this.staticContentPath,
       // @ts-expect-error - TS2339 - Property 'userAgent' does not exist on type 'ElectronRecorderApp'.
       userAgent: this.userAgent,
@@ -245,20 +242,17 @@ class ElectronRecorderApp extends ElectronReplayApp {
       });
     });
 
-    const newWinContents = popupView
-      ? // @ts-expect-error - TS2339 - Property 'webContents' does not exist on type 'never'.
-        popupView.webContents
-      : recWindow.webContents;
+    const newWinContents = recWindow.webContents;
 
-    // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type. | TS7006 - Parameter 'url' implicitly has an 'any' type.
-    newWinContents.on("new-window", (event, url) => {
-      event.preventDefault();
+    newWinContents.setWindowOpenHandler((details: HandlerDetails) => {
+      const { url } = details;
       if (url.startsWith(STATIC_PREFIX)) {
-        // @ts-expect-error - TS2531 - Object is possibly 'null'.
-        this.mainWindow.loadURL(url);
-        // @ts-expect-error - TS2531 - Object is possibly 'null'.
-        this.mainWindow.show();
+        this.mainWindow!.loadURL(url);
+        this.mainWindow!.show();
+        return { action: 'deny' };
       }
+
+      return { action: 'allow' };
     });
 
     ipcMain.on("popup-msg-" + id, async (event, msg) => {
@@ -278,37 +272,17 @@ class ElectronRecorderApp extends ElectronReplayApp {
       }
     });
 
-    recWebContents.on(
-      "new-window",
-      (
-        // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
-        event,
-        // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
-        url,
-        // @ts-expect-error - TS7006 - Parameter 'frameName' implicitly has an 'any' type.
-        frameName,
-        // @ts-expect-error - TS7006 - Parameter 'disposition' implicitly has an 'any' type.
-        disposition,
-        // @ts-expect-error - TS7006 - Parameter 'options' implicitly has an 'any' type.
-        options,
-        // @ts-expect-error - TS7006 - Parameter 'additionalFeatures' implicitly has an 'any' type.
-        additionalFeatures,
-        // @ts-expect-error - TS7006 - Parameter 'referrer' implicitly has an 'any' type.
-        referrer,
-      ) => {
-        event.preventDefault();
-        event.newGuest = this.createRecordWindow({ url, collId, startRec });
-        console.log(
-          "new-window",
-          url,
-          frameName,
-          disposition,
-          options,
-          additionalFeatures,
-          referrer,
-        );
-      },
-    );
+    recWebContents.setWindowOpenHandler((details: HandlerDetails) : WindowOpenHandlerResponse => {
+      const { url } = details;
+      return {
+        action: "allow",
+        outlivesOpener: true,
+        createWindow: () => {
+          const win = this.createRecordWindow({ url, collId, startRec });
+          return win.webContents;
+        }
+      }
+    });
 
     recWebContents.on("destroyed", () => {
       // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.

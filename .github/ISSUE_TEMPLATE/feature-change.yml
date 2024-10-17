@@ -25,7 +25,7 @@ body:
       label: Requirements
       description: |
         Intended primarily for use by Webrecorder team, leave blank if unknown.
-        
+
         List the outcomes of the feature being implemented without design or implementation details.
       placeholder: |
         1. Item metadata should show links to the collections that the item belongs to.
@@ -43,6 +43,6 @@ body:
       placeholder: |
         - [ ] Mockups: 
         - [ ] Design: 
-        - [ ] UI: 
+        - [ ] UI:
     validations:
       required: false

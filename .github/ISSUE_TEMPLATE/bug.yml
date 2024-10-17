@@ -8,7 +8,7 @@ body:
     id: version
     attributes:
       label: ArchiveWeb.page Version
-      description: "This can be found on the app home page under \"About\""
+      description: 'This can be found on the app home page under "About"'
       placeholder: "v0.11.3"
     validations:
       required: true
@@ -20,7 +20,7 @@ body:
         "I was trying to archive a page however..."
 
         Please submit any screenshots/videos that can be used to understand how to reproduce the issue. You can attach images by clicking this area to highlight it and then dragging files into the browser window.
-        
+
         If something wasn't captured in the way you expect please include a link to the archived item if possible.
     validations:
       required: true

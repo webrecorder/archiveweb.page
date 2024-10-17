@@ -1,25 +1,17 @@
 //import { ipcRenderer } from "electron";
 import { RecPopup } from "../popup";
 
-import { CollectionLoader } from "@webrecorder/wabac/src/loaders";
+import { CollectionLoader } from "@webrecorder/wabac/swlib";
 import { listAllMsg } from "../utils";
 import { setLocalOption } from "../localstorage";
-
+import { type PropertyValues } from "lit";
 
 // ===========================================================================
-class AppRecPopup extends RecPopup
-{
-  constructor() {
-    super();
-
-    this.collLoader = new CollectionLoader();
-
-    //this.tabId = 0;//window.location.hash && Number(window.location.hash.slice(1));
-
-    this.allowCreate = false;
-
-    this.msg = null;
-  }
+class AppRecPopup extends RecPopup {
+  collLoader = new CollectionLoader();
+  allowCreated = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  msg: any = null;
 
   static get properties() {
     return {
@@ -28,18 +20,18 @@ class AppRecPopup extends RecPopup
     };
   }
 
-  firstUpdated() {
-    super.firstUpdated();
-
+  firstUpdated(): Promise<void> {
     listAllMsg(this.collLoader).then((msg) => {
       this.onMessage(msg);
     });
+
+    return super.firstUpdated();
   }
 
-  updated(changedProperties) {
+  updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has("msg")) {
+    if (changedProperties.has("msg") && this.msg) {
       this.onMessage(this.msg);
     }
   }
@@ -50,6 +42,7 @@ class AppRecPopup extends RecPopup
     // });
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   sendMessage(message) {
     if (message.type === "newColl") {
       this.makeNewColl(message);
@@ -57,11 +50,12 @@ class AppRecPopup extends RecPopup
     }
 
     //ipcRenderer.send("popup-msg-" + this.tabId, message);
-    this.dispatchEvent(new CustomEvent("send-msg", {detail: message}));
+    this.dispatchEvent(new CustomEvent("send-msg", { detail: message }));
   }
 
+  // @ts-expect-error - TS7006 - Parameter 'message' implicitly has an 'any' type.
   async makeNewColl(message) {
-    const newColl = await this.collLoader.initNewColl({title: message.title});
+    const newColl = await this.collLoader.initNewColl({ title: message.title });
 
     await setLocalOption("defaultCollId", newColl.name);
 

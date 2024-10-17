@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.12.8",
+  "version": "0.13.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": "https://github.com/webrecorder/archiveweb.page",
@@ -10,8 +10,8 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.1",
-    "@webrecorder/awp-sw": "^0.4.4",
-    "@webrecorder/wabac": "^2.19.9",
+    "@webrecorder/awp-sw": "^0.5.0",
+    "@webrecorder/wabac": "^2.20.0",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.6.4",
     "btoa": "^1.2.1",
@@ -21,35 +21,44 @@
     "http-status-codes": "^2.1.4",
     "keyword-mark-element": "^0.1.2",
     "node-fetch": "2.6.7",
+    "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "1.8.17",
+    "replaywebpage": "^2.2.0",
     "stream-browserify": "^3.0.0",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
     "uuid": "^8.3.2",
     "warcio": "^2.3.1"
   },
-  "resolutions": {
-    "@webrecorder/wabac": "^2.19.9",
-    "replaywebpage": "1.8.17"
-  },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
-    "electron": "^30.0.9",
+    "electron": "^32.2.0",
     "electron-builder": "^24.13.3",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.28.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-lit": "^1.11.0",
+    "eslint-plugin-prettier": "^5.1.0",
+    "eslint-plugin-wc": "^2.0.4",
     "generate-json-webpack-plugin": "^2.0.0",
     "mini-css-extract-plugin": "^2.3.0",
-    "node-sass": "^8.0.0",
+    "prettier": "^3.1.1",
     "raw-loader": "^4.0.2",
+    "sass": "^1.77.6",
     "sass-loader": "^12.1.0",
     "svg-inline-loader": "^0.8.2",
     "terser-webpack-plugin": "^5.2.4",
     "to-string-loader": "^1.1.6",
+    "ts-loader": "^9.5.1",
+    "ts-migrate": "^0.1.35",
+    "typescript": "^5.3.3",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-dev-server": "^5.0.4",
+    "webpack-extension-reloader": "^1.1.4"
   },
   "files": [
     "src/",
@@ -67,7 +76,8 @@
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
     "release": "yarn run build && electron-builder",
-    "lint": "eslint ./src/ webpack.config.js"
+    "lint": "eslint ./src/ webpack.config.js",
+    "format": "prettier --write ./"
   },
   "build": {
     "afterSign": "build/notarize.js",

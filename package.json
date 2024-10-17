@@ -21,7 +21,7 @@
     "http-status-codes": "^2.1.4",
     "keyword-mark-element": "^0.1.2",
     "node-fetch": "2.6.7",
-    "pdfjs-dist": "2.2.228",
+    "pdfjs-dist": "4.2.67",
     "pretty-bytes": "^5.6.0",
     "replaywebpage": "^2.2.0",
     "stream-browserify": "^3.0.0",

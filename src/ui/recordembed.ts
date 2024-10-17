@@ -9,13 +9,13 @@ Embed.setDefaultReplayFile("replay.html");
 type AWPFinishEvent = {
   type: "awp-finish";
   downloadUrl: string;
-}
+};
 
 type LiveProxyURLErrorEvent = {
   type: "live-proxy-url-error";
   url: string;
   status: number;
-}
+};
 
 // ===========================================================================
 export class RecordEmbed extends Embed {
@@ -36,7 +36,7 @@ export class RecordEmbed extends Embed {
     this.appName = "Embedded ArchiveWeb.page";
     this.embed = "default";
     this.noWebWorker = true;
-    
+
     this.coll = this.randomId();
 
     const baseUrl = new URL(window.location.href);
@@ -101,11 +101,19 @@ export class RecordEmbed extends Embed {
     if (iframe && event.source === iframe.contentWindow) {
       switch (event.data.type) {
         case "awp-finish":
-          this.dispatchEvent(new CustomEvent<AWPFinishEvent>("awp-finish", {detail: event.data}));
+          this.dispatchEvent(
+            new CustomEvent<AWPFinishEvent>("awp-finish", {
+              detail: event.data,
+            }),
+          );
           break;
 
         case "live-proxy-url-error":
-          this.dispatchEvent(new CustomEvent<LiveProxyURLErrorEvent>("live-proxy-url-error", {detail: event.data}));
+          this.dispatchEvent(
+            new CustomEvent<LiveProxyURLErrorEvent>("live-proxy-url-error", {
+              detail: event.data,
+            }),
+          );
           break;
 
         default:

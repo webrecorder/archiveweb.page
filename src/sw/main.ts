@@ -9,7 +9,7 @@ declare let self: ServiceWorkerGlobalScope;
 
 if (self.registration) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const defaultConfig : Record<string, any> = {
+  const defaultConfig: Record<string, any> = {
     baseUrlSourcePrefix: "/replay/index.html",
     convertPostToGet: false,
   };
@@ -37,6 +37,7 @@ if (self.registration) {
   const ApiClass = ExtAPI;
   const CollectionsClass = RecordingCollections;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (self as any).sw = new SWReplay({
     ApiClass,
     staticData,

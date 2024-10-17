@@ -13,8 +13,8 @@ import fasCog from "@fortawesome/fontawesome-free/svgs/solid/cog.svg";
 
 import "./coll";
 import "./coll-info";
-import "./coll-index";
 import "./recordembed";
+import "./coll-index";
 
 import { BtrixClient } from "./upload";
 
@@ -31,7 +31,6 @@ import {
 } from "auto-js-ipfs";
 import { getLocalOption, setLocalOption } from "../localstorage";
 import { type BtrixOpts } from "../types";
-import { WrRecCollIndex } from "./coll-index";
 
 const VERSION = __AWP_VERSION__;
 
@@ -281,7 +280,8 @@ class ArchiveWebApp extends ReplayWebApp {
     }
   }
 
-  getLoadInfo(sourceUrl: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getLoadInfo(sourceUrl: string): any {
     this.disableCSP();
 
     if (this.loadInfo) {
@@ -1274,9 +1274,10 @@ class ArchiveWebApp extends ReplayWebApp {
     const resp = await fetch(`${apiPrefix}/c/create`, { method, body });
     await resp.json();
 
-    const index = this.renderRoot.querySelector("wr-rec-coll-index") as WrRecCollIndex;
+    const index = this.renderRoot.querySelector("wr-rec-coll-index")!;
     if (index) {
-      index.loadItems();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (index as any).loadItems();
     }
     // @ts-expect-error - TS2339 - Property 'showNew' does not exist on type 'ArchiveWebApp'.
     this.showNew = null;

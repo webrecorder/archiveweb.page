@@ -1,6 +1,14 @@
 /*eslint-env node */
 
-import { app, session, BrowserWindow, ipcMain, dialog, type HandlerDetails, WebContents, WindowOpenHandlerResponse } from "electron";
+import {
+  app,
+  session,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  type HandlerDetails,
+  type WindowOpenHandlerResponse,
+} from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
 import {
@@ -249,10 +257,10 @@ class ElectronRecorderApp extends ElectronReplayApp {
       if (url.startsWith(STATIC_PREFIX)) {
         this.mainWindow!.loadURL(url);
         this.mainWindow!.show();
-        return { action: 'deny' };
+        return { action: "deny" };
       }
 
-      return { action: 'allow' };
+      return { action: "allow" };
     });
 
     ipcMain.on("popup-msg-" + id, async (event, msg) => {
@@ -272,17 +280,19 @@ class ElectronRecorderApp extends ElectronReplayApp {
       }
     });
 
-    recWebContents.setWindowOpenHandler((details: HandlerDetails) : WindowOpenHandlerResponse => {
-      const { url } = details;
-      return {
-        action: "allow",
-        outlivesOpener: true,
-        createWindow: () => {
-          const win = this.createRecordWindow({ url, collId, startRec });
-          return win.webContents;
-        }
-      }
-    });
+    recWebContents.setWindowOpenHandler(
+      (details: HandlerDetails): WindowOpenHandlerResponse => {
+        const { url } = details;
+        return {
+          action: "allow",
+          outlivesOpener: true,
+          createWindow: () => {
+            const win = this.createRecordWindow({ url, collId, startRec });
+            return win.webContents;
+          },
+        };
+      },
+    );
 
     recWebContents.on("destroyed", () => {
       // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.

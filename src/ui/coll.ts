@@ -70,9 +70,8 @@ class WrRecColl extends Item {
     super.updated(changedProperties);
 
     if (
-      (changedProperties.has("embed") ||
-      (changedProperties.has("item") || 
-      changedProperties.has("loadInfo")) &&
+      changedProperties.has("embed") ||
+      ((changedProperties.has("item") || changedProperties.has("loadInfo")) &&
         this.loadInfo &&
         this.embed &&
         this.item &&
@@ -86,8 +85,8 @@ class WrRecColl extends Item {
         msg_type: "update-favicon",
         id: this.item,
         url: this.tabData.url,
-        favIconUrl: this.favIconUrl.split("mp_/")[1]
-      })
+        favIconUrl: this.favIconUrl.split("mp_/")[1],
+      });
     }
   }
 
@@ -144,9 +143,17 @@ class WrRecColl extends Item {
         <span class="size-label">${prettyBytes(this.totalSize)}</span>
       </span>
       ${this.showFinish
-        ? html` <button class="button is-primary" @click="${this.onEmbedFinish}" type="button">Finish</button>`
+        ? html` <button
+            class="button is-primary"
+            @click="${this.onEmbedFinish}"
+            type="button"
+          >
+            Finish
+          </button>`
         : html`
-            <a class="button is-primary" role="button"
+            <a
+              class="button is-primary"
+              role="button"
               download="my-archive.wacz"
               href="${this.downloadUrl}"
               target="_blank"
@@ -157,10 +164,12 @@ class WrRecColl extends Item {
   }
 
   renderCollInfo() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const itemInfo = this.itemInfo as any;
     return html` <div class="info-bg">
       <wr-rec-coll-info
         class="is-list"
-        .item="${this.itemInfo as any}"
+        .item="${itemInfo}"
         .shareOpts=${this.shareOpts}
         ?detailed="${true}"
       ></wr-rec-coll-info>
@@ -182,10 +191,17 @@ class WrRecColl extends Item {
 
   onEmbedFinish() {
     if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({ msg_type: "toggle-record", id: this.item, isRecording: false });
+      navigator.serviceWorker.controller.postMessage({
+        msg_type: "toggle-record",
+        id: this.item,
+        isRecording: false,
+      });
     }
     if (window.parent !== window) {
-      window.parent.postMessage({type: "awp-finish", downloadUrl: this.downloadUrl});
+      window.parent.postMessage({
+        type: "awp-finish",
+        downloadUrl: this.downloadUrl,
+      });
     }
   }
 
@@ -203,14 +219,21 @@ class WrRecColl extends Item {
   }
 
   navigateTo(value: string) {
-    if (this.embed && !value.startsWith("https://") && !value.startsWith("http://")) {
+    if (
+      this.embed &&
+      !value.startsWith("https://") &&
+      !value.startsWith("http://")
+    ) {
       value = "https://" + value;
     }
     super.navigateTo(value);
   }
 
   get downloadUrl() {
-    return new URL(`${apiPrefix}/c/${this.item}/dl?format=wacz&pages=all`, window.location.href).href;
+    return new URL(
+      `${apiPrefix}/c/${this.item}/dl?format=wacz&pages=all`,
+      window.location.href,
+    ).href;
   }
 }
 

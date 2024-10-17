@@ -1,10 +1,11 @@
 import { ItemIndex, html } from "replaywebpage";
-import type { PropertyValues } from "lit";
 import { property } from "lit/decorators.js";
 
 import prettyBytes from "pretty-bytes";
 import { type WrRecCollInfo } from "./coll-info";
 import { type WrRecItem } from "../types";
+
+import type { PropertyValues } from "lit";
 
 //============================================================================
 export class WrRecCollIndex extends ItemIndex {

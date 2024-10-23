@@ -988,25 +988,27 @@ class ArchiveWebApp extends ReplayWebApp {
 
   renderSettingsModal() {
     return html`
-    <wr-modal @modal-closed="${this.onCancelSettings}" title="Settings">
-      <div class="tabs mb-3">
-        <ul>
-          <li class="${this.settingsTab === "browsertrix" ? "is-active" : ""}">
-            <a @click=${() =>
-              (this.settingsTab = "browsertrix")}>Browsertrix</a>
-          </li>
-          <li class="${this.settingsTab === "ipfs" ? "is-active" : ""}">
-            <a @click=${() => (this.settingsTab = "ipfs")}>IPFS</a>
-          </li>
-        </ul>
-      </div>
+      <wr-modal @modal-closed="${this.onCancelSettings}" title="Settings">
+        <div class="tabs mb-3">
+          <ul>
+            <li
+              class="${this.settingsTab === "browsertrix" ? "is-active" : ""}"
+            >
+              <a @click=${() => (this.settingsTab = "browsertrix")}
+                >Browsertrix</a
+              >
+            </li>
+            <li class="${this.settingsTab === "ipfs" ? "is-active" : ""}">
+              <a @click=${() => (this.settingsTab = "ipfs")}>IPFS</a>
+            </li>
+          </ul>
+        </div>
 
-      <form class="is-flex is-flex-direction-column is-size-7" @submit="${
-        this.onSaveSettings
-      }">
-
-        ${
-          this.settingsTab === "ipfs"
+        <form
+          class="is-flex is-flex-direction-column is-size-7"
+          @submit="${this.onSaveSettings}"
+        >
+          ${this.settingsTab === "ipfs"
             ? html` <p class="is-size-6 mb-3">
                   Configure settings for sharing archived items to IPFS.
                 </p>
@@ -1047,11 +1049,8 @@ class ArchiveWebApp extends ReplayWebApp {
                     </p>
                   </div>
                 </fieldset>`
-            : ""
-        }
-
-        ${
-          this.settingsTab === "browsertrix"
+            : ""}
+          ${this.settingsTab === "browsertrix"
             ? html`
                 <p class="is-size-6 mb-3">
                   Configure your credentials to upload archived items to
@@ -1119,130 +1118,7 @@ class ArchiveWebApp extends ReplayWebApp {
                   </div>
                 </fieldset>
               `
-            : ""
-        }
-        <div class="has-text-centered has-text-danger">${
-          this.settingsError
-        }</div>
-        <div class="has-text-centered mt-4">
-          <button class="button is-primary" type="submit">Save</button>
-          <button class="button" type="button" @click="${
-            this.onCancelSettings
-          }">Cancel</button>
-        </div>
-
-        <form
-          class="is-flex is-flex-direction-column is-size-7"
-          @submit="${this.onSaveSettings}"
-        >
-          ${
-            this.settingsTab === "ipfs"
-              ? html` <p class="is-size-6 mb-3">
-                    Configure settings for sharing archived items to IPFS.
-                  </p>
-                  <fieldset>
-                    <div class="field">
-                      <input
-                        name="ipfsAutoDetect"
-                        id="ipfsAutoDetect"
-                        class="checkbox is-small"
-                        type="checkbox"
-                        ?checked="${this.ipfsOpts.autoDetect}"
-                      /><span class="ml-1">Auto-Detect IPFS</span>
-                    </div>
-                    <div class="field has-addons">
-                      <p class="is-expanded">
-                        IPFS Daemon URL (leave blank to auto-detect IPFS):
-                        <input
-                          class="input is-small"
-                          type="url"
-                          name="ipfsDaemonUrl"
-                          id="ipfsDaemonUrl"
-                          value="${this.ipfsOpts.daemonUrl}"
-                          placeholder="Set IPFS Daemon URL or set blank to auto-detect IPFS"
-                        />
-                      </p>
-                    </div>
-                    <div class="field has-addons">
-                      <p class="is-expanded">
-                        IPFS Gateway URL:
-                        <input
-                          class="input is-small"
-                          type="url"
-                          name="ipfsGatewayUrl"
-                          id="ipfsGatewayUrl"
-                          value="${this.ipfsOpts.gatewayUrl}"
-                          placeholder="${DEFAULT_GATEWAY_URL}"
-                        />
-                      </p>
-                    </div>
-                  </fieldset>`
-              : ""
-          }
-          ${
-            this.settingsTab === "browsertrix"
-              ? html`
-                  <p class="is-size-6 mb-3">
-                    Configure your credentials to upload archived items to
-                    Browsertrix Cloud.
-                  </p>
-                  <fieldset>
-                    <div class="field has-addons">
-                      <p class="is-expanded">
-                        Browsertrix Cloud URL:
-                        <input
-                          class="input is-small"
-                          type="url"
-                          name="btrixUrl"
-                          id="btrixUrl"
-                          value="${this.btrixOpts?.url || ""}"
-                          placeholder="https://..."
-                        />
-                      </p>
-                    </div>
-                    <div class="field has-addons">
-                      <p class="is-expanded">
-                        Username
-                        <input
-                          class="input is-small"
-                          type="text"
-                          name="btrixUsername"
-                          id="btrixUsername"
-                          value="${this.btrixOpts?.username || ""}"
-                          placeholder="Username"
-                        />
-                      </p>
-                    </div>
-                    <div class="field has-addons">
-                      <p class="is-expanded">
-                        Password
-                        <input
-                          class="input is-small"
-                          type="password"
-                          name="btrixPassword"
-                          id="btrixPassword"
-                          value="${this.btrixOpts?.password || ""}"
-                          placeholder="Password"
-                        />
-                      </p>
-                    </div>
-                    <div class="field has-addons">
-                      <p class="is-expanded">
-                        Organization Name (Optional)
-                        <input
-                          class="input is-small"
-                          type="text"
-                          name="btrixOrgName"
-                          id="btrixOrgName"
-                          value="${this.btrixOpts?.orgName || ""}"
-                          placeholder="Organization (optional)"
-                        />
-                      </p>
-                    </div>
-                  </fieldset>
-                `
-              : ""
-          }
+            : ""}
           <div class="has-text-centered has-text-danger">
             ${this.settingsError}
           </div>

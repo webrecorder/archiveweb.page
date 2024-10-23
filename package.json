@@ -1,10 +1,13 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
-  "repository": "https://github.com/webrecorder/archiveweb.page",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webrecorder/archiveweb.page.git"
+  },
   "author": "Webrecorder Software",
   "license": "AGPL-3.0-or-later",
   "dependencies": {

@@ -18,56 +18,85 @@ Downloads for the desktop are are available on the [GitHub Releases page](https:
 
 The extension makes use of the Chrome debugging protocol to capture and save network traffic, and extends the [ReplayWeb.page](https://github.com/webrecorder/replayweb.page) UI and the [wabac.js](https://github.com/webrecorder/wabac.js) service worker system for replay and storage.
 
-The codebase for the extension and Electron app is shared, but they can both be deployed in different ways.
+## Development
 
-## Building for Development
+The Chromium extension and Electron app is built from the same source code for ease of development.
 
-To develop ArchiveWeb.page, install Node 12+ and Yarn.
+### Prerequisites
 
-### Install the Development Extension
+- Node >=12
+- Yarn Classic (v1)
 
-For development, the extension can be built locally and loaded as an unpacked extension. If you want to make changes to the extension, do the following:
+### Installation
 
-1. Clone this repo. Run `yarn install; yarn build-dev`. (You can also run `yarn build` to build the production version but it may be harder to debug).
+To build the extension or Electron app locally for development, do the following:
 
-2. Open the Chrome Extensions page ([chrome://extensions](chrome://extensions)).
+1. Clone this repo:
+    ```sh
+    git clone https://github.com/webrecorder/archiveweb.page.git
+    ```
+2. Change the working directory:
+    ```sh
+    cd archiveweb.page
+    ```
+3. Install dependencies:
+    ```sh
+    yarn install
+    ```
+4. Make development build:
+    ```sh
+    yarn build-dev
+    ```
 
-3. Choose 'Load Unpacked Extension' and point to the `./dist/ext` directory in your local copy of this repo.
+The development build can now be used to develop the extension or Electron app.
 
-4. Click the extension icon to show the extension popup, start archiving, etc...
+### Developing the Chromium extension
 
-### Development Workflow (Extension)
+To install the extension locally, load the development build as an unpacked extension:
 
-For development, it is recommended to use the dev build of the extension:
+1. Open the Chrome Extensions page ([chrome://extensions](chrome://extensions)).
 
-1. Run `yarn install` and then `yarn run build-dev`
+2. Choose 'Load Unpacked Extension' and point to the `./dist/ext` directory in your local copy of this repo.
 
-2. Run `yarn run start-ext` -- this will ensure the `dist/ext` directory is rebuilt after any changes to the source.
+3. Click the extension icon to show the extension popup, start archiving, etc...
 
-3. After making changes, the extension still needs to be reloaded in the browser. From the Chrome extensions page, click the reload button to load the latest version.
+#### Update extension on code changes
 
-4. Click the extension icon to show the extension popup, start recording, etc... The dev build of the extension will be grey to differntiate from the production version.
+To watch source code files and recompile the development build on change, run:
 
-### Using the Electron App
+```sh
+yarn run start-ext
+```
 
-To run the Electron app development build:
+Now, saving changes to source will automatically rebuild the `dist/ext` directory.
 
-1. Clone this repo.
+After making changes, the extension still needs to be reloaded in the browser.
 
-2. Run `yarn install` and then `yarn run build-dev`
+1. From the Chrome extensions page, click the reload button to load the latest version.
 
-3. Run `yarn run start-electron` to start the app.
+2. Click the extension icon to show the extension popup, start recording, etc... The dev build of the extension will be grey to differntiate from the production version.
 
-The Electron App version will open recording in a new window. It is is designed to support Flash, better support for IPFS sharing.
+### Developing the Electron app
 
-### Development workflow (Electron App)
+To start the Electron app using development build:
+```sh
+yarn run start-electron
+```
 
-After making changes, rerun `yarn run build-dev` and `yarn run start-electron` to load the app.
+The Electron app will open recording in a new window. It is is designed to support Flash, better support for IPFS sharing.
+
+#### Update app on change
+
+Currently, the dev workflow for the Electron app does not support automatically rebuilding on file changes.
+
+After making changes, rerun `yarn run build-dev` and `yarn run start-electron` to view your changes in the app.
 
 ## Standalone Build
 
 To create a platform-specific binary, run:
 
-`yarn run pack`
+```sh
+yarn run pack
+```
 
 The standalone app will then be available in the `./dist/` directory.

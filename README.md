@@ -20,7 +20,7 @@ The extension makes use of the Chrome debugging protocol to capture and save net
 
 ## Development
 
-The Chromium extension and Electron app is built from the same source code for ease of development.
+The Chromium extension and Electron app are built from the same source code for ease of development.
 
 ### Prerequisites
 

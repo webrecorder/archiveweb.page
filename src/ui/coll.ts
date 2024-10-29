@@ -6,6 +6,9 @@ import {
   apiPrefix,
 } from "replaywebpage";
 
+import fasFullscreen from "@fortawesome/fontawesome-free/svgs/solid/desktop.svg";
+import fasUnfullscreen from "@fortawesome/fontawesome-free/svgs/solid/compress-arrows-alt.svg";
+
 import { type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
 
@@ -42,11 +45,10 @@ class WrRecColl extends Item {
         flex-direction: row;
         margin: 0 1px;
         align-items: center;
-        border: 1px darkgrey solid;
-        border-radius: 16px;
         padding: 0 0.5em;
         min-width: max-content;
-        margin-left: 0.5mm;
+        margin-left: 1em;
+        height: 40px;
       }
 
       .size-label {
@@ -138,6 +140,26 @@ class WrRecColl extends Item {
     }
 
     return html`
+      <a
+        href="#"
+        role="button"
+        class="button is-borderless"
+        style="margin-top: 2px"
+        id="fullscreen"
+        @click="${this.onFullscreenToggle}"
+        @keyup="${clickOnSpacebarPress}"
+        title="${this.isFullscreen ? "Exit Full Screen" : "Full Screen"}"
+        aria-label="${this.isFullscreen ? "Exit Fullscreen" : "Fullscreen"}"
+      >
+        <span class="icon is-small">
+          <fa-icon
+            size="1.0em"
+            class="has-text-grey"
+            aria-hidden="true"
+            .svg="${this.isFullscreen ? fasUnfullscreen : fasFullscreen}"
+          ></fa-icon>
+        </span>
+      </a>
       <span class="rec-button" title="Archiving">
         <span class="dot"></span>
         <span class="size-label">${prettyBytes(this.totalSize)}</span>

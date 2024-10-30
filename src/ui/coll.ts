@@ -51,6 +51,17 @@ class WrRecColl extends Item {
         height: 40px;
       }
 
+      .button.is-primary-new {
+        background-color: #4d7c0f;
+        border-color: rgba(0, 0, 0, 0);
+        color: rgb(255, 255, 255);
+        border-radius: 6px;
+      }
+
+      .button.is-primary-new:hover {
+        background-color: #3a5f09;
+      }
+
       .size-label {
         margin-left: 0.5em;
         font-weight: bold;
@@ -166,7 +177,7 @@ class WrRecColl extends Item {
       </span>
       ${this.showFinish
         ? html` <button
-            class="button is-primary"
+            class="button is-primary-new"
             @click="${this.onEmbedFinish}"
             type="button"
           >
@@ -174,7 +185,7 @@ class WrRecColl extends Item {
           </button>`
         : html`
             <a
-              class="button is-primary"
+              class="button is-primary-new"
               role="button"
               download="my-archive.wacz"
               href="${this.downloadUrl}"

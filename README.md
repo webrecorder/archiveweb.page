@@ -74,7 +74,7 @@ After making changes, the extension still needs to be reloaded in the browser.
 
 1. From the Chrome extensions page, click the reload button to load the latest version.
 
-2. Click the extension icon to show the extension popup, start recording, etc... The dev build of the extension will be grey to differntiate from the production version.
+2. Click the extension icon to show the extension popup, start recording, etc... The dev build of the extension will be a different color from the production version.
 
 ### Developing the Electron app
 

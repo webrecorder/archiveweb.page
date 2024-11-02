@@ -63,6 +63,9 @@
     "webpack-dev-server": "^5.0.4",
     "webpack-extension-reloader": "^1.1.4"
   },
+  "resolutions": {
+    "@webrecorder/wabac": "^2.20.1"
+  },
   "files": [
     "src/",
     "dist/embed/"

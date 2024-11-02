@@ -75,6 +75,17 @@ class WrRecColl extends Item {
         display: inline-block;
       }
 
+      @media screen and (max-width: 768px) {
+        div.has-addons {
+          flex-wrap: wrap;
+          justify-content: flex-end;
+        }
+
+        div.has-addons form {
+          display: contents;
+        }
+      }
+
       ${Item.compStyles}
     `;
   }
@@ -151,48 +162,50 @@ class WrRecColl extends Item {
     }
 
     return html`
-      <a
-        href="#"
-        role="button"
-        class="button is-borderless"
-        style="margin-top: 2px"
-        id="fullscreen"
-        @click="${this.onFullscreenToggle}"
-        @keyup="${clickOnSpacebarPress}"
-        title="${this.isFullscreen ? "Exit Full Screen" : "Full Screen"}"
-        aria-label="${this.isFullscreen ? "Exit Fullscreen" : "Fullscreen"}"
-      >
-        <span class="icon is-small">
-          <fa-icon
-            size="1.0em"
-            class="has-text-grey"
-            aria-hidden="true"
-            .svg="${this.isFullscreen ? fasUnfullscreen : fasFullscreen}"
-          ></fa-icon>
+      <div class="is-flex is-flex-direction-row">
+        <a
+          href="#"
+          role="button"
+          class="button is-borderless"
+          style="margin-top: 2px"
+          id="fullscreen"
+          @click="${this.onFullscreenToggle}"
+          @keyup="${clickOnSpacebarPress}"
+          title="${this.isFullscreen ? "Exit Full Screen" : "Full Screen"}"
+          aria-label="${this.isFullscreen ? "Exit Fullscreen" : "Fullscreen"}"
+        >
+          <span class="icon is-small">
+            <fa-icon
+              size="1.0em"
+              class="has-text-grey"
+              aria-hidden="true"
+              .svg="${this.isFullscreen ? fasUnfullscreen : fasFullscreen}"
+            ></fa-icon>
+          </span>
+        </a>
+        <span class="rec-button" title="Archiving">
+          <span class="dot"></span>
+          <span class="size-label">${prettyBytes(this.totalSize)}</span>
         </span>
-      </a>
-      <span class="rec-button" title="Archiving">
-        <span class="dot"></span>
-        <span class="size-label">${prettyBytes(this.totalSize)}</span>
-      </span>
-      ${this.showFinish
-        ? html` <button
-            class="button is-primary-new"
-            @click="${this.onEmbedFinish}"
-            type="button"
-          >
-            Finish
-          </button>`
-        : html`
-            <a
+        ${this.showFinish
+          ? html` <button
               class="button is-primary-new"
-              role="button"
-              download="my-archive.wacz"
-              href="${this.downloadUrl}"
-              target="_blank"
-              >Download</a
+              @click="${this.onEmbedFinish}"
+              type="button"
             >
-          `}
+              Finish
+            </button>`
+          : html`
+              <a
+                class="button is-primary-new"
+                role="button"
+                download="my-archive.wacz"
+                href="${this.downloadUrl}"
+                target="_blank"
+                >Download</a
+              >
+            `}
+      </div>
     `;
   }
 

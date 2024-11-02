@@ -32,21 +32,21 @@ The Chromium extension and Electron app are built from the same source code for 
 To build the extension or Electron app locally for development, do the following:
 
 1. Clone this repo:
-    ```sh
-    git clone https://github.com/webrecorder/archiveweb.page.git
-    ```
+   ```sh
+   git clone https://github.com/webrecorder/archiveweb.page.git
+   ```
 2. Change the working directory:
-    ```sh
-    cd archiveweb.page
-    ```
+   ```sh
+   cd archiveweb.page
+   ```
 3. Install dependencies:
-    ```sh
-    yarn install
-    ```
+   ```sh
+   yarn install
+   ```
 4. Make development build:
-    ```sh
-    yarn build-dev
-    ```
+   ```sh
+   yarn build-dev
+   ```
 
 The development build can now be used to develop the extension or Electron app.
 
@@ -79,6 +79,7 @@ After making changes, the extension still needs to be reloaded in the browser.
 ### Developing the Electron app
 
 To start the Electron app using development build:
+
 ```sh
 yarn run start-electron
 ```

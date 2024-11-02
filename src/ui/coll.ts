@@ -78,11 +78,15 @@ class WrRecColl extends Item {
       @media screen and (max-width: 768px) {
         div.has-addons {
           flex-wrap: wrap;
-          justify-content: flex-end;
         }
 
         div.has-addons form {
           display: contents;
+        }
+
+        .rec-controls {
+          width: 100%;
+          justify-content: space-between !important;
         }
       }
 
@@ -162,7 +166,7 @@ class WrRecColl extends Item {
     }
 
     return html`
-      <div class="is-flex is-flex-direction-row">
+      <div class="is-flex is-flex-direction-row rec-controls">
         <a
           href="#"
           role="button"

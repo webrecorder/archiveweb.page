@@ -1,7 +1,6 @@
 "use strict";
 
 import { BEHAVIOR_RUNNING } from "../consts";
-import { getLocalOption } from "../localstorage";
 import { Recorder } from "../recorder";
 
 // ===========================================================================
@@ -53,10 +52,8 @@ class BrowserRecorder extends Recorder {
     // @ts-expect-error - TS2339 - Property 'port' does not exist on type 'BrowserRecorder'.
     this.port = port;
 
-    // @ts-expect-error - TS2339 - Property 'recordStorage' does not exist on type 'BrowserRecorder'.
-    this.recordStorage = false;
-    // @ts-expect-error - TS2339 - Property 'recordStorage' does not exist on type 'BrowserRecorder'.
-    getLocalOption("recordStorage").then((res) => (this.recordStorage = !!res));
+    // this.recordStorage = true;
+    //getLocalOption("recordStorage").then((res) => (this.recordStorage = !!res));
 
     // @ts-expect-error - TS2551 - Property '_onDetached' does not exist on type 'BrowserRecorder'. Did you mean '_doDetach'?
     this._onDetached = (tab, reason) => {

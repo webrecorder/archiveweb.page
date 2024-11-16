@@ -2284,16 +2284,16 @@
     uuid "^9.0.0"
     warcio "^2.3.1"
 
-"@webrecorder/wabac@^2.20.0", "@webrecorder/wabac@^2.20.1":
-  version "2.20.1"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.1.tgz#58e397e2ef1c33de1bb37aa4f51fc7f3eec8a1f7"
-  integrity sha512-RX+U6m7aVgvsAfLb9FuLY/PcHCNL5dc1FPaD0GnUiFgswSSe5v4MjIhqJNOnbrJYEcbib81AJfxNuvOyXAJDJQ==
+"@webrecorder/wabac@^2.20.0", "@webrecorder/wabac@^2.20.3":
+  version "2.20.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.3.tgz#4e3faa476477b64ba2c2315f57d38372d0acf4c0"
+  integrity sha512-bik2YbIJwox5LctL3QwZ1pvG89ORR31do3mFHTF1l4zcvjqeLoqCHIImEsgl9uH7KYq27UxeG4y25Jo3PxA5qQ==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
     "@types/js-levenshtein" "^1.1.3"
-    "@webrecorder/wombat" "^3.8.3"
+    "@webrecorder/wombat" "^3.8.6"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
@@ -2312,14 +2312,14 @@
     path-parser "^6.1.0"
     process "^0.11.10"
     stream-browserify "^3.0.0"
-    warcio "^2.3.1"
+    warcio "^2.4.0"
 
-"@webrecorder/wombat@^3.8.3":
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.3.tgz#c5a077225d1a70def9fbbbfcd50fa4465d236546"
-  integrity sha512-dqgoxigB3OdX5JeB3yxJrUNwFwUBlYC+LmGrLEgGeP259MFzXQLD2pmfuqGt5ygWvIv56SrAMV4sUceux07X2A==
+"@webrecorder/wombat@^3.8.6":
+  version "3.8.6"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.6.tgz#3aa99d9519f6263434a9e0b963f6ef86d3e0494a"
+  integrity sha512-+IxV0bkoc6QdHYzwejsPFPC31dRjaxa6zGuR9F08aFb4Ooeekf9AK16ZIYweizs/wm7nvTG5E12ZwW0LUUzX8w==
   dependencies:
-    warcio "^2.3.1"
+    warcio "^2.4.0"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
@@ -6798,14 +6798,14 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-replaywebpage@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.2.1.tgz#3a468238d4ccb3ec04693bdc355e416fcaa6cedd"
-  integrity sha512-mh5fXIVB51+ADCWzfhiiSrhyNrkAgnUwBOVKUvGhC6tkrsoPa5TOI5yZNCmeey4RcJmcC0gYFKkoDQVsluHZUQ==
+replaywebpage@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.2.2.tgz#91fb8d5afd28db1c0e65fc61c214aa2a37b273df"
+  integrity sha512-gsgRP8JFYIRE5BIyV7IMH9S86iV1CbKWxJPOVnWyA6rZtEy6LcCgd8NFjLZQZotfF2p29jaF0ZWL5OFqrx1K+A==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "~2.15.1"
-    "@webrecorder/wabac" "^2.20.1"
+    "@webrecorder/wabac" "^2.20.3"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^6.3.2"
@@ -8168,6 +8168,20 @@ warcio@^2.3.1:
     uuid-random "^1.3.2"
     yargs "^17.6.2"
 
+warcio@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/warcio/-/warcio-2.4.0.tgz#13bae2837f1bbf5cf7585f75857e6311d30557bd"
+  integrity sha512-EfxXCgsnZ35CGf2j99QBMyB6EI98KEQ6YmeER+8Lnv/4KFJ3thT76PiX37HfZVbPJS21JihA0Eddjk9QBQRlPg==
+  dependencies:
+    "@types/pako" "^1.0.7"
+    "@types/stream-buffers" "^3.0.7"
+    base32-encode "^2.0.0"
+    hash-wasm "^4.9.0"
+    pako "^1.0.11"
+    tempy "^3.1.0"
+    uuid-random "^1.3.2"
+    yargs "^17.7.2"
+
 watchpack@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-2.4.1.tgz#29308f2cac150fa8e4c92f90e0ec954a9fed7fff"
@@ -8517,6 +8531,19 @@ yargs@^17.6.2:
   version "17.6.2"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.6.2.tgz#2e23f2944e976339a1ee00f18c77fedee8332541"
   integrity sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==
+  dependencies:
+    cliui "^8.0.1"
+    escalade "^3.1.1"
+    get-caller-file "^2.0.5"
+    require-directory "^2.1.1"
+    string-width "^4.2.3"
+    y18n "^5.0.5"
+    yargs-parser "^21.1.1"
+
+yargs@^17.7.2:
+  version "17.7.2"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.2.tgz#991df39aca675a192b816e1e0363f9d75d2aa269"
+  integrity sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==
   dependencies:
     cliui "^8.0.1"
     escalade "^3.1.1"

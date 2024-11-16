@@ -36,6 +36,8 @@ function sleep(time) {
 
 // ===========================================================================
 class Recorder {
+  recordStorage = true;
+
   constructor() {
     // @ts-expect-error - TS2339 - Property 'flatMode' does not exist on type 'Recorder'.
     this.flatMode = false;
@@ -1488,7 +1490,7 @@ class Recorder {
           data.extraOpts.pixelRatio = this.pixelRatio;
 
           // handle storage
-          const storage = await this.getStorage(reqresp.url);
+          const storage = await this.getStorage(sessions);
 
           if (storage) {
             data.extraOpts.storage = storage;
@@ -1508,30 +1510,80 @@ class Recorder {
     //delete this._fetchPending[requestId];
   }
 
-  // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
-  async getStorage(url) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getStorage(sessions: any) {
     // check if recording storage is allowed
-    // @ts-expect-error - TS2339 - Property 'recordStorage' does not exist on type 'Recorder'.
     if (!this.recordStorage) {
       return null;
     }
 
-    const securityOrigin = new URL(url).origin;
-    const storageId = { securityOrigin, isLocalStorage: true };
+    const extractStorage = () => {
+      const local: [string, string][] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        const value = localStorage.getItem(key);
+        if (!value) continue;
+        local.push([key, value]);
+      }
+      const session: [string, string][] = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (!key) continue;
+        const value = sessionStorage.getItem(key);
+        if (!value) continue;
+        session.push([key, value]);
+      }
+      return JSON.stringify({ local, session });
+    };
 
-    // @ts-expect-error - TS2345 - Argument of type '{ storageId: { securityOrigin: string; isLocalStorage: boolean; }; }' is not assignable to parameter of type 'null | undefined'.
-    const local = await this.send("DOMStorage.getDOMStorageItems", {
-      storageId,
-    });
-    storageId.isLocalStorage = false;
+    const { result } = await this.pageEval(
+      "__awp_extract_storage",
+      `(${extractStorage.toString()})();`,
+      sessions,
+    );
 
-    // @ts-expect-error - TS2345 - Argument of type '{ storageId: { securityOrigin: string; isLocalStorage: boolean; }; }' is not assignable to parameter of type 'null | undefined'.
-    const session = await this.send("DOMStorage.getDOMStorageItems", {
-      storageId,
-    });
+    if (result && result.type === "string") {
+      return result.value;
+    } else {
+      return null;
+    }
 
-    return JSON.stringify({ local: local.entries, session: session.entries });
+    // const securityOrigin = new URL(url).origin;
+    // const storageId = {securityOrigin, isLocalStorage: true};
+
+    // const local = await this.send("DOMStorage.getDOMStorageItems", {storageId}, sessions);
+    // storageId.isLocalStorage = false;
+
+    // const session = await this.send("DOMStorage.getDOMStorageItems", {storageId}, sessions);
+
+    //return JSON.stringify({local: local.entries, session: session.entries});
   }
+
+  // // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
+  // async getStorage(url) {
+  //   // check if recording storage is allowed
+  //   // @ts-expect-error - TS2339 - Property 'recordStorage' does not exist on type 'Recorder'.
+  //   if (!this.recordStorage) {
+  //     return null;
+  //   }
+
+  //   const securityOrigin = new URL(url).origin;
+  //   const storageId = { securityOrigin, isLocalStorage: true };
+
+  //   // @ts-expect-error - TS2345 - Argument of type '{ storageId: { securityOrigin: string; isLocalStorage: boolean; }; }' is not assignable to parameter of type 'null | undefined'.
+  //   const local = await this.send("DOMStorage.getDOMStorageItems", {
+  //     storageId,
+  //   });
+  //   storageId.isLocalStorage = false;
+
+  //   // @ts-expect-error - TS2345 - Argument of type '{ storageId: { securityOrigin: string; isLocalStorage: boolean; }; }' is not assignable to parameter of type 'null | undefined'.
+  //   const session = await this.send("DOMStorage.getDOMStorageItems", {
+  //     storageId,
+  //   });
+
+  //   return JSON.stringify({ local: local.entries, session: session.entries });
+  // }
 
   // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type.
   async handleRequestWillBeSent(params) {

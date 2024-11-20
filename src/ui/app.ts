@@ -1039,8 +1039,8 @@ class ArchiveWebApp extends ReplayWebApp {
                   <p class="is-size-7 mt-1">
                     Archiving cookies may expose private information that is
                     <em>normally only shared with the site</em>. When enabled,
-                    users should exercise caution about sharing these web
-                    archives publicly.
+                    users should exercise caution about sharing these archived
+                    items publicly.
                   </p>
                 </div>
                 <div class="field is-size-6 mt-4">

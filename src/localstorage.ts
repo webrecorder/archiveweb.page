@@ -19,11 +19,10 @@ export function setLocalOption(name, value) {
 }
 
 // ===========================================================================
-// @ts-expect-error - TS7006 - Parameter 'name' implicitly has an 'any' type.
-export function getLocalOption(name) {
+export function getLocalOption(name: string) : Promise<string | null> {
   // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
   if (self.chrome?.storage) {
-    return new Promise((resolve) => {
+    return new Promise<string>((resolve) => {
       // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
       self.chrome.storage.local.get(name, (res) => {
         resolve(res[name]);
@@ -35,7 +34,7 @@ export function getLocalOption(name) {
     return Promise.resolve(localStorage.getItem(name));
   }
 
-  return Promise.reject();
+  return Promise.reject(null);
 }
 
 // ===========================================================================

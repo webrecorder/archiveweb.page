@@ -1,6 +1,11 @@
 import { RequestResponseInfo } from "./requestresponseinfo";
 
-import { getCustomRewriter, rewriteDASH, rewriteHLS } from "@webrecorder/wabac";
+import {
+  getCustomRewriter,
+  rewriteDASH,
+  rewriteHLS,
+  removeRangeAsQuery,
+} from "@webrecorder/wabac";
 
 import { Buffer } from "buffer";
 
@@ -15,6 +20,7 @@ import {
   BEHAVIOR_PAUSED,
   BEHAVIOR_DONE,
 } from "./consts";
+import { getLocalOption } from "./localstorage";
 
 // @ts-expect-error - TS2554 - Expected 0 arguments, but got 1.
 const encoder = new TextEncoder("utf-8");
@@ -34,9 +40,26 @@ function sleep(time) {
   return new Promise((resolve) => setTimeout(() => resolve(), time));
 }
 
+type FetchEntry = {
+  url: string;
+  headers?: Headers;
+  rangeReplaced?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sessions?: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pageInfo?: any;
+
+  rangeRemoved?: boolean;
+  doRangeCheck?: boolean;
+  redirectOnly?: boolean;
+};
+
 // ===========================================================================
 class Recorder {
-  recordStorage = true;
+  archiveStorage = false;
+  archiveCookies = false;
+
+  _fetchQueue: FetchEntry[] = [];
 
   constructor() {
     // @ts-expect-error - TS2339 - Property 'flatMode' does not exist on type 'Recorder'.
@@ -79,8 +102,7 @@ class Recorder {
 
     // @ts-expect-error - TS2339 - Property '_fetchPending' does not exist on type 'Recorder'.
     this._fetchPending = new Map();
-    // @ts-expect-error - TS2339 - Property '_fetchQueue' does not exist on type 'Recorder'.
-    this._fetchQueue = [];
+
     // @ts-expect-error - TS2339 - Property '_fetchUrls' does not exist on type 'Recorder'.
     this._fetchUrls = new Set();
 
@@ -128,6 +150,13 @@ class Recorder {
     this.defaultFetchOpts = {
       redirect: "manual",
     };
+
+    this.initOpts();
+  }
+
+  async initOpts() {
+    this.archiveCookies = (await getLocalOption("archiveCookies") === "1");
+    this.archiveStorage = (await getLocalOption("archiveStorage") === "1");
   }
 
   // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
@@ -860,7 +889,7 @@ class Recorder {
   // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
   handleWindowOpen(url, sessions) {
     // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
-    const headers = { Referer: this.pageInfo.url };
+    const headers = new Headers({ Referer: this.pageInfo.url });
     this.doAsyncFetch({ url, headers, redirectOnly: true }, sessions);
   }
 
@@ -1450,8 +1479,12 @@ class Recorder {
     //this._fetchPending.set(requestId, pending);
 
     try {
-      // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
-      const data = reqresp.toDBRecord(reqresp.payload, this.pageInfo);
+      const data = reqresp.toDBRecord(
+        reqresp.payload,
+        // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
+        this.pageInfo,
+        this.archiveCookies,
+      );
 
       // top-level URL is a non-GET request
       if (
@@ -1513,7 +1546,7 @@ class Recorder {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getStorage(sessions: any) {
     // check if recording storage is allowed
-    if (!this.recordStorage) {
+    if (!this.archiveStorage) {
       return null;
     }
 
@@ -1576,7 +1609,7 @@ class Recorder {
 
       reqresp.fillResponseRedirect(params);
       // @ts-expect-error - TS2339 - Property 'pageInfo' does not exist on type 'Recorder'.
-      data = reqresp.toDBRecord(null, this.pageInfo);
+      data = reqresp.toDBRecord(null, this.pageInfo, this.archiveCookies);
     }
 
     reqresp.fillRequest(params);
@@ -1629,14 +1662,14 @@ class Recorder {
     for (const { value } of params.events) {
       if (value.indexOf('"kLoad"') > 0) {
         const { url } = JSON.parse(value);
-        this.doAsyncFetch({ url }, sessions);
+        this.doAsyncFetch({ url, doRangeCheck: true }, sessions);
         break;
       }
     }
   }
 
   // @ts-expect-error - TS7006 - Parameter 'request' implicitly has an 'any' type. | TS7006 - Parameter 'resp' implicitly has an 'any' type.
-  async attemptFetchRedirect(request, resp) {
+  async attemptFetchRedirect(request: FetchEntry, resp) {
     if (request.redirectOnly && resp.type === "opaqueredirect") {
       const abort = new AbortController();
       // @ts-expect-error - TS2345 - Argument of type '{ abort: AbortController; }' is not assignable to parameter of type 'RequestInit'.
@@ -1671,9 +1704,17 @@ class Recorder {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'request' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
-  doAsyncFetch(request, sessions) {
+  doAsyncFetch(request: FetchEntry, sessions) {
     if (!request || !this.isValidUrl(request.url)) {
       return;
+    }
+
+    if (request.doRangeCheck) {
+      const url = removeRangeAsQuery(request.url);
+      if (url) {
+        request.url = url;
+        request.rangeRemoved = true;
+      }
     }
 
     // @ts-expect-error - TS2339 - Property '_fetchUrls' does not exist on type 'Recorder'.
@@ -1686,7 +1727,6 @@ class Recorder {
     request.pageInfo = this.pageInfo;
     request.sessions = sessions;
 
-    // @ts-expect-error - TS2339 - Property '_fetchQueue' does not exist on type 'Recorder'.
     this._fetchQueue.push(request);
 
     this.doBackgroundFetch();
@@ -1694,7 +1734,6 @@ class Recorder {
 
   async doBackgroundFetch() {
     if (
-      // @ts-expect-error - TS2339 - Property '_fetchQueue' does not exist on type 'Recorder'.
       !this._fetchQueue.length ||
       // @ts-expect-error - TS2339 - Property '_fetchPending' does not exist on type 'Recorder'.
       this._fetchPending.size >= MAX_CONCURRENT_FETCH ||
@@ -1704,8 +1743,10 @@ class Recorder {
       return;
     }
 
-    // @ts-expect-error - TS2339 - Property '_fetchQueue' does not exist on type 'Recorder'.
     const request = this._fetchQueue.shift();
+    if (!request) {
+      return;
+    }
 
     // @ts-expect-error - TS2339 - Property '_fetchUrls' does not exist on type 'Recorder'.
     if (this._fetchUrls.has(request.url)) {
@@ -1732,11 +1773,9 @@ class Recorder {
       // @ts-expect-error - TS2339 - Property 'defaultFetchOpts' does not exist on type 'Recorder'.
       const opts = { ...this.defaultFetchOpts };
 
-      if (request.getRequestHeadersDict) {
-        opts.headers = request.getRequestHeadersDict().headers;
-        opts.headers.delete("range");
-      } else if (request.headers) {
+      if (request.headers) {
         opts.headers = request.headers;
+        opts.headers.delete("range");
       }
 
       let resp = await fetch(request.url, opts);
@@ -1779,8 +1818,12 @@ class Recorder {
       // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'RequestResponseInfo'.
       reqresp.payload = new Uint8Array(payload);
 
-      // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'RequestResponseInfo'.
-      const data = reqresp.toDBRecord(reqresp.payload, request.pageInfo);
+      const data = reqresp.toDBRecord(
+        // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'RequestResponseInfo'.
+        reqresp.payload,
+        request.pageInfo,
+        this.archiveCookies,
+      );
 
       if (data) {
         await this.commitResource(data, request.pageInfo);
@@ -1813,9 +1856,36 @@ class Recorder {
     let payload;
 
     if (reqresp.status === 206) {
-      sleep(500).then(() => this.doAsyncFetch(reqresp, sessions));
+      sleep(500).then(() =>
+        this.doAsyncFetch(
+          {
+            url: reqresp.url,
+            headers: reqresp.getRequestHeadersDict().headers,
+          },
+          sessions,
+        ),
+      );
       reqresp.payload = null;
       return null;
+    } else {
+      const changedUrl = removeRangeAsQuery(reqresp.url);
+
+      if (changedUrl) {
+        reqresp.url = changedUrl;
+        this.removeReqResp(reqresp.requestId);
+        sleep(500).then(() =>
+          this.doAsyncFetch(
+            {
+              url: changedUrl,
+              headers: reqresp.getRequestHeadersDict().headers,
+              rangeRemoved: true,
+            },
+            sessions,
+          ),
+        );
+        reqresp.payload = null;
+        return null;
+      }
     }
 
     if (!this.noResponseForStatus(reqresp.status)) {
@@ -1888,9 +1958,13 @@ class Recorder {
       if (reqresp.payload) {
         // @ts-expect-error - TS2571 - Object is of type 'unknown'.
         console.log(`Committing Finished ${id} - ${reqresp.url}`);
-
         // @ts-expect-error - TS2571 - Object is of type 'unknown'. | TS2571 - Object is of type 'unknown'.
-        const data = reqresp.toDBRecord(reqresp.payload, pageInfo);
+        const data = reqresp.toDBRecord(
+          // @ts-expect-error - TS2571 - Object is of type 'unknown'. | TS2571 - Object is of type 'unknown'.
+          reqresp.payload,
+          pageInfo,
+          this.archiveCookies,
+        );
 
         if (data) {
           // @ts-expect-error - TS2554 - Expected 2 arguments, but got 1.

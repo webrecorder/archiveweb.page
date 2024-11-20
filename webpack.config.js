@@ -157,7 +157,7 @@ function sharedBuild(
       sw: "./src/sw/main.ts",
       ...entry,
     },
-    devtool: argv.mode === "production" ? undefined : "source-map",
+    devtool: argv.mode === "production" ? undefined : "inline-source-map",
     optimization: argv.mode === "production" ? optimization : undefined,
     output: {
       path: outputPath,

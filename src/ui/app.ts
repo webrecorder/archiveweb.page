@@ -109,10 +109,13 @@ class ArchiveWebApp extends ReplayWebApp {
     this.autorun = (await getLocalOption("autorunBehaviors") === "1");
 
     const archiveCookies = await getLocalOption("archiveCookies");
+
     // default to true if unset to match existing behavior
     if (archiveCookies === null) {
       await setLocalOption("archiveCookies", "1");
       this.archiveCookies = true;
+    } else {
+      this.archiveCookies = archiveCookies === "1";
     }
 
     this.archiveStorage = await getLocalOption("archiveStorage") === "1";

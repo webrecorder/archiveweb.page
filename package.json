@@ -13,7 +13,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.1",
-    "@webrecorder/awp-sw": "^0.5.1",
+    "@webrecorder/awp-sw": "^0.5.2",
     "@webrecorder/wabac": "^2.20.5",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.6.4",

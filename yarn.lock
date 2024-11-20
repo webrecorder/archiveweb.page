@@ -2303,14 +2303,14 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@webrecorder/awp-sw@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.5.1.tgz#3894e5a2ee797225917bfc38c44348b0780b8fe8"
-  integrity sha512-hyGmlt+cZur7ig6AtAFLLTtWdXAmIE77C7Hitlo2+6krYagW71UaSA6O2W0ErweY7SlNcmqZOrxMSkYbSf6f1Q==
+"@webrecorder/awp-sw@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.5.2.tgz#3ed0b9f1de816a5d1f426c96ef3440527b35c982"
+  integrity sha512-q82K8P4Z0NRoOgDBB0reutLllUyh+H69RB1KM09GFN0wWDlZ1qmB8wXgM14MFilmWrQOEQEu9Muu7mhDT+FWsA==
   dependencies:
     "@ipld/car" "^5.3.2"
     "@ipld/unixfs" "^3.0.0"
-    "@webrecorder/wabac" "^2.20.4"
+    "@webrecorder/wabac" "^2.20.5"
     auto-js-ipfs "^2.3.0"
     client-zip "^2.3.0"
     hash-wasm "^4.9.0"
@@ -2319,7 +2319,7 @@
     uuid "^9.0.0"
     warcio "^2.3.1"
 
-"@webrecorder/wabac@^2.20.3", "@webrecorder/wabac@^2.20.4", "@webrecorder/wabac@^2.20.5":
+"@webrecorder/wabac@^2.20.3", "@webrecorder/wabac@^2.20.5":
   version "2.20.5"
   resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.5.tgz#bac841e278a318663dbb5935d5241cd043b40a82"
   integrity sha512-2TfVJM0a319W+qWj/qocnYgF6lDaaeTotcPn6ZRqIUq70r8TXi8ZzIqpjYAxqGNkxCRapq/7Yo1/gDVIjVpD3Q==

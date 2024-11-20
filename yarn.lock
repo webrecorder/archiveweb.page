@@ -2319,10 +2319,10 @@
     uuid "^9.0.0"
     warcio "^2.3.1"
 
-"@webrecorder/wabac@^2.20.3", "@webrecorder/wabac@^2.20.4":
-  version "2.20.4"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.4.tgz#aacc3038e92992fb58039107fe57dfdb41893542"
-  integrity sha512-OK9nMI03rDL+KEn5iT1TUKuz7AdjzeS3F0/5KTOWHp+QCN3ZvjABRLZYxa9LIGiEWKbVEvoG/oriFZntR3/VWw==
+"@webrecorder/wabac@^2.20.3", "@webrecorder/wabac@^2.20.4", "@webrecorder/wabac@^2.20.5":
+  version "2.20.5"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.5.tgz#bac841e278a318663dbb5935d5241cd043b40a82"
+  integrity sha512-2TfVJM0a319W+qWj/qocnYgF6lDaaeTotcPn6ZRqIUq70r8TXi8ZzIqpjYAxqGNkxCRapq/7Yo1/gDVIjVpD3Q==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"

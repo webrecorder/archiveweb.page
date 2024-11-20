@@ -55,6 +55,10 @@ class ArchiveWebApp extends ReplayWebApp {
   btrixOpts: BtrixOpts | null;
   loadedCollId?: string | null;
   showImport?: boolean;
+
+  archiveCookies: boolean | null = null;
+  archiveStorage: boolean | null = null;
+
   constructor() {
     super();
 
@@ -91,20 +95,27 @@ class ArchiveWebApp extends ReplayWebApp {
       this.btrixOpts = null;
     }
 
-    if (!self.localStorage.getItem("archiveCookies")) {
-      self.localStorage.setItem("archiveCookies", "1");
-    }
-
-    getLocalOption("autorunBehaviors").then(
-      (res) => (this.autorun = res === "1"),
-    );
-
     if (window.archivewebpage) {
       // @ts-expect-error - TS7006 - Parameter 'progress' implicitly has an 'any' type.
       window.archivewebpage.setDownloadCallback((progress) =>
         this.onDownloadProgress(progress),
       );
     }
+
+    void this.initOpts();
+  }
+
+  async initOpts() {
+    this.autorun = (await getLocalOption("autorunBehaviors") === "1");
+
+    const archiveCookies = await getLocalOption("archiveCookies");
+    // default to true if unset to match existing behavior
+    if (archiveCookies === null) {
+      await setLocalOption("archiveCookies", "1");
+      this.archiveCookies = true;
+    }
+
+    this.archiveStorage = await getLocalOption("archiveStorage") === "1";
   }
 
   async doBtrixLogin() {
@@ -991,12 +1002,6 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   renderSettingsModal() {
-    let archiveCookies = false,
-      archiveStorage = false;
-    if (this.settingsTab === "prefs") {
-      archiveCookies = self.localStorage.getItem("archiveCookies") === "1";
-      archiveStorage = self.localStorage.getItem("archiveStorage") === "1";
-    }
     return html`
       <wr-modal @modal-closed="${this.onCancelSettings}" title="Settings">
         <div class="tabs mb-3">
@@ -1034,7 +1039,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     id="archiveCookies"
                     class="checkbox"
                     type="checkbox"
-                    ?checked="${archiveCookies}"
+                    ?checked="${this.archiveCookies}"
                   /><span class="ml-1">Archive cookies</span>
                   <p class="is-size-7 mt-1">
                     Archiving cookies may expose private information that is
@@ -1049,7 +1054,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     id="archiveStorage"
                     class="checkbox"
                     type="checkbox"
-                    ?checked="${archiveStorage}"
+                    ?checked="${this.archiveStorage}"
                   /><span class="ml-1">Archive local storage</span>
                   <p class="is-size-7 mt-1">
                     Archiving local storage will archive information that is
@@ -1426,16 +1431,18 @@ class ArchiveWebApp extends ReplayWebApp {
     const archiveStorage = this.renderRoot.querySelector("#archiveStorage");
 
     if (archiveCookies) {
+      this.archiveCookies = (archiveCookies as HTMLInputElement).checked;
       await setLocalOption(
         "archiveCookies",
-        (archiveCookies as HTMLInputElement).checked ? "1" : "0",
+        this.archiveCookies ? "1" : "0",
       );
     }
 
     if (archiveStorage) {
+      this.archiveStorage = (archiveStorage as HTMLInputElement).checked;
       await setLocalOption(
         "archiveStorage",
-        (archiveStorage as HTMLInputElement).checked ? "1" : "0",
+        this.archiveStorage ? "1" : "0",
       );
     }
 

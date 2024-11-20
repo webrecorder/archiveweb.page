@@ -1818,10 +1818,6 @@ class Recorder {
       // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'RequestResponseInfo'.
       reqresp.payload = new Uint8Array(payload);
 
-      if (request.rangeRemoved) {
-        reqresp.extraOpts["rangeRemoved"] = "1";
-      }
-
       const data = reqresp.toDBRecord(
         // @ts-expect-error - TS2339 - Property 'payload' does not exist on type 'RequestResponseInfo'.
         reqresp.payload,

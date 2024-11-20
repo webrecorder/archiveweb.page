@@ -13,8 +13,8 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.1",
-    "@webrecorder/awp-sw": "^0.5.0",
-    "@webrecorder/wabac": "^2.20.3",
+    "@webrecorder/awp-sw": "^0.5.1",
+    "@webrecorder/wabac": "^2.20.4",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.6.4",
     "btoa": "^1.2.1",
@@ -31,7 +31,7 @@
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
     "uuid": "^8.3.2",
-    "warcio": "^2.3.1"
+    "warcio": "^2.4.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.15.0",
@@ -64,7 +64,7 @@
     "webpack-extension-reloader": "^1.1.4"
   },
   "resolutions": {
-    "@webrecorder/wabac": "^2.20.3"
+    "@webrecorder/wabac": "^2.20.4"
   },
   "files": [
     "src/",

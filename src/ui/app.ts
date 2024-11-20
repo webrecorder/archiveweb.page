@@ -1426,14 +1426,14 @@ class ArchiveWebApp extends ReplayWebApp {
     const archiveStorage = this.renderRoot.querySelector("#archiveStorage");
 
     if (archiveCookies) {
-      self.localStorage.setItem(
+      await setLocalOption(
         "archiveCookies",
         (archiveCookies as HTMLInputElement).checked ? "1" : "0",
       );
     }
 
     if (archiveStorage) {
-      self.localStorage.setItem(
+      await setLocalOption(
         "archiveStorage",
         (archiveStorage as HTMLInputElement).checked ? "1" : "0",
       );

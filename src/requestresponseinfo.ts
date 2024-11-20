@@ -16,6 +16,8 @@ const encoder = new TextEncoder();
 
 // ===========================================================================
 class RequestResponseInfo {
+  extraOpts: Record<string, string>;
+
   // @ts-expect-error - TS7006 - Parameter 'requestId' implicitly has an 'any' type.
   constructor(requestId) {
     // @ts-expect-error - TS2339 - Property '_created' does not exist on type 'RequestResponseInfo'.
@@ -70,7 +72,6 @@ class RequestResponseInfo {
     // @ts-expect-error - TS2339 - Property 'resourceType' does not exist on type 'RequestResponseInfo'.
     this.resourceType = null;
 
-    // @ts-expect-error - TS2339 - Property 'extraOpts' does not exist on type 'RequestResponseInfo'.
     this.extraOpts = {};
   }
 
@@ -212,7 +213,7 @@ class RequestResponseInfo {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'payload' implicitly has an 'any' type. | TS7006 - Parameter 'pageInfo' implicitly has an 'any' type.
-  toDBRecord(payload, pageInfo) {
+  toDBRecord(payload, pageInfo, allowCookies) {
     // don't save 304 (todo: turn into 'revisit' style entry?)
     // extra check for 206, should already be skipped
     if (
@@ -257,7 +258,11 @@ class RequestResponseInfo {
     const cookie = reqHeaders.headers.get("cookie");
 
     if (cookie) {
-      respHeaders.headersDict["x-wabac-preset-cookie"] = cookie;
+      if (allowCookies) {
+        respHeaders.headersDict["x-wabac-preset-cookie"] = cookie;
+      } else {
+        reqHeaders.headers.delete("cookie");
+      }
     }
 
     // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RequestResponseInfo'.
@@ -312,7 +317,6 @@ class RequestResponseInfo {
       mime,
       respHeaders: respHeaders.headersDict,
       reqHeaders: reqHeaders.headersDict,
-      // @ts-expect-error - TS2339 - Property 'extraOpts' does not exist on type 'RequestResponseInfo'.
       extraOpts: this.extraOpts,
     };
 

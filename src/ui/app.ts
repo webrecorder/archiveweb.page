@@ -1002,7 +1002,9 @@ class ArchiveWebApp extends ReplayWebApp {
         <div class="tabs mb-3">
           <ul>
             <li class="${this.settingsTab === "prefs" ? "is-active" : ""}">
-              <a @click=${() => (this.settingsTab = "prefs")}>Preferences</a>
+              <a @click=${() => (this.settingsTab = "prefs")}
+                >Archiving Privacy</a
+              >
             </li>
             <li
               class="${this.settingsTab === "browsertrix" ? "is-active" : ""}"
@@ -1024,7 +1026,7 @@ class ArchiveWebApp extends ReplayWebApp {
           ${this.settingsTab === "prefs"
             ? html` <fieldset>
                 <div class="is-size-6">
-                  Below settings control if certain private data is archived.
+                  Control archiving of sensitive browser data.
                 </div>
                 <div class="field is-size-6 mt-4">
                   <input
@@ -1033,10 +1035,10 @@ class ArchiveWebApp extends ReplayWebApp {
                     class="checkbox"
                     type="checkbox"
                     ?checked="${archiveCookies}"
-                  /><span class="ml-1"><b>Archive Cookies</b></span>
-                  <p class="is-size-7">
-                    Archiving Cookies may expose private information that is
-                    <i>normally only shared with the site</i>. When enabled,
+                  /><span class="ml-1">Archive cookies</span>
+                  <p class="is-size-7 mt-1">
+                    Archiving cookies may expose private information that is
+                    <em>normally only shared with the site</em>. When enabled,
                     users should exercise caution about sharing these web
                     archives publicly.
                   </p>
@@ -1048,14 +1050,20 @@ class ArchiveWebApp extends ReplayWebApp {
                     class="checkbox"
                     type="checkbox"
                     ?checked="${archiveStorage}"
-                  /><span class="ml-1"><b>Archive Local Storage</b></span>
-                  <p class="is-size-7">
-                    Archiving Local Storage will archive information that is
-                    generally <i>always private.</i> When enabled, archives
-                    created with this setting should be kept private. Sharing of
-                    paywalled content with this setting *could* result in
-                    compromise of logged in credentials. Archives created with
-                    this settings should generally be kept private.
+                  /><span class="ml-1">Archive local storage</span>
+                  <p class="is-size-7 mt-1">
+                    Archiving local storage will archive information that is
+                    generally <em>always private.</em> Archiving local storage
+                    may be required for certain paywalled sites but should be
+                    avoided where possible.
+                  </p>
+                  <p class="is-size-7 mt-1">
+                    <strong
+                      >Sharing content created with this setting enabled may
+                      compromise your login credentials.</strong
+                    >
+                    <br />Archived items created with this settings should
+                    generally be kept private!
                   </p>
                 </div>
               </fieldset>`

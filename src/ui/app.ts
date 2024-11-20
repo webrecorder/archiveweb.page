@@ -65,7 +65,7 @@ class ArchiveWebApp extends ReplayWebApp {
 
     this.settingsError = "";
 
-    this.settingsTab = localStorage.getItem("settingsTab") || "browsertrix";
+    this.settingsTab = localStorage.getItem("settingsTab") || "prefs";
 
     try {
       const res = localStorage.getItem("ipfsOpts");
@@ -89,6 +89,10 @@ class ArchiveWebApp extends ReplayWebApp {
       this.doBtrixLogin();
     } catch (e) {
       this.btrixOpts = null;
+    }
+
+    if (!self.localStorage.getItem("archiveCookies")) {
+      self.localStorage.setItem("archiveCookies", "1");
     }
 
     getLocalOption("autorunBehaviors").then(
@@ -987,10 +991,19 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   renderSettingsModal() {
+    let archiveCookies = false,
+      archiveStorage = false;
+    if (this.settingsTab === "prefs") {
+      archiveCookies = self.localStorage.getItem("archiveCookies") === "1";
+      archiveStorage = self.localStorage.getItem("archiveStorage") === "1";
+    }
     return html`
       <wr-modal @modal-closed="${this.onCancelSettings}" title="Settings">
         <div class="tabs mb-3">
           <ul>
+            <li class="${this.settingsTab === "prefs" ? "is-active" : ""}">
+              <a @click=${() => (this.settingsTab = "prefs")}>Preferences</a>
+            </li>
             <li
               class="${this.settingsTab === "browsertrix" ? "is-active" : ""}"
             >
@@ -1008,6 +1021,45 @@ class ArchiveWebApp extends ReplayWebApp {
           class="is-flex is-flex-direction-column is-size-7"
           @submit="${this.onSaveSettings}"
         >
+          ${this.settingsTab === "prefs"
+            ? html` <fieldset>
+                <div class="is-size-6">
+                  Below settings control if certain private data is archived.
+                </div>
+                <div class="field is-size-6 mt-4">
+                  <input
+                    name="prefArchiveCookies"
+                    id="archiveCookies"
+                    class="checkbox"
+                    type="checkbox"
+                    ?checked="${archiveCookies}"
+                  /><span class="ml-1"><b>Archive Cookies</b></span>
+                  <p class="is-size-7">
+                    Archiving Cookies may expose private information that is
+                    <i>normally only shared with the site</i>. When enabled,
+                    users should exercise caution about sharing these web
+                    archives publicly.
+                  </p>
+                </div>
+                <div class="field is-size-6 mt-4">
+                  <input
+                    name="prefArchiveStorage"
+                    id="archiveStorage"
+                    class="checkbox"
+                    type="checkbox"
+                    ?checked="${archiveStorage}"
+                  /><span class="ml-1"><b>Archive Local Storage</b></span>
+                  <p class="is-size-7">
+                    Archiving Local Storage will archive information that is
+                    generally <i>always private.</i> When enabled, archives
+                    created with this setting should be kept private. Sharing of
+                    paywalled content with this setting *could* result in
+                    compromise of logged in credentials. Archives created with
+                    this settings should generally be kept private.
+                  </p>
+                </div>
+              </fieldset>`
+            : ``}
           ${this.settingsTab === "ipfs"
             ? html` <p class="is-size-6 mb-3">
                   Configure settings for sharing archived items to IPFS.
@@ -1276,7 +1328,7 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
-  async onTitle(event) {
+  override async onTitle(event): void {
     super.onTitle(event);
 
     if (
@@ -1361,6 +1413,23 @@ class ArchiveWebApp extends ReplayWebApp {
         this.btrixOpts = null;
         localStorage.removeItem("btrixOpts");
       }
+    }
+
+    const archiveCookies = this.renderRoot.querySelector("#archiveCookies");
+    const archiveStorage = this.renderRoot.querySelector("#archiveStorage");
+
+    if (archiveCookies) {
+      self.localStorage.setItem(
+        "archiveCookies",
+        (archiveCookies as HTMLInputElement).checked ? "1" : "0",
+      );
+    }
+
+    if (archiveStorage) {
+      self.localStorage.setItem(
+        "archiveStorage",
+        (archiveStorage as HTMLInputElement).checked ? "1" : "0",
+      );
     }
 
     localStorage.setItem("settingsTab", this.settingsTab);

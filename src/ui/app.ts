@@ -1114,14 +1114,13 @@ class ArchiveWebApp extends ReplayWebApp {
             ? html`
                 <p class="is-size-6 mb-3">
                   Configure your credentials to upload archived items to
-                  Browsertrix.
+                  Browsertrix: Webrecorder's cloud-based crawling service.
                 </p>
                 <p class="is-size-7 p-4 has-background-info">
-                  Don't have a Browsertrix account? Visit
-                  <a target="_blank" href="https://browsertrix.com/"
-                    >https://browsertrix.com/</a
+                  Don't have a Browsertrix account?
+                  <a target="_blank" href="https://webrecorder.net/browsertrix/"
+                    >Sign up today!</a
                   >
-                  for more info.
                 </p>
                 <fieldset>
                   <div class="field has-addons">

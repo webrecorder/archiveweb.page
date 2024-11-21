@@ -75,13 +75,14 @@ class WrRecColl extends Item {
         display: inline-block;
       }
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 480px) {
         div.has-addons {
           flex-wrap: wrap;
         }
 
         div.has-addons form {
-          display: contents;
+          flex: 1;
+          margin-bottom: 8px;
         }
 
         .rec-controls {

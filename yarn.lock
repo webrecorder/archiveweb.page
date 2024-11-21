@@ -2303,14 +2303,14 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@webrecorder/awp-sw@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.5.2.tgz#3ed0b9f1de816a5d1f426c96ef3440527b35c982"
-  integrity sha512-q82K8P4Z0NRoOgDBB0reutLllUyh+H69RB1KM09GFN0wWDlZ1qmB8wXgM14MFilmWrQOEQEu9Muu7mhDT+FWsA==
+"@webrecorder/awp-sw@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/awp-sw/-/awp-sw-0.5.3.tgz#881699895e09517ac44fda2f37edf40118a7fa66"
+  integrity sha512-g8RuI6bF4ixmrurJI+V9hFBZHy1OtIFf6sMqSmJ+JfCQzCg+ZBNTqm8qdFNmiG7cy8Tf2CxXz9LduVKKldin5g==
   dependencies:
     "@ipld/car" "^5.3.2"
     "@ipld/unixfs" "^3.0.0"
-    "@webrecorder/wabac" "^2.20.5"
+    "@webrecorder/wabac" "^2.20.6"
     auto-js-ipfs "^2.3.0"
     client-zip "^2.3.0"
     hash-wasm "^4.9.0"
@@ -2349,10 +2349,47 @@
     stream-browserify "^3.0.0"
     warcio "^2.4.2"
 
+"@webrecorder/wabac@^2.20.6":
+  version "2.20.6"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.20.6.tgz#8b28b58d5ae900faebd7be30224eadc620838f9e"
+  integrity sha512-bCvHgfnKHFzEuwPkIxdYIVuBmVTzOgxf96DeDTdZkhPI99iP7AUrz/Y6+qgoD9Vjn4usozUff25vdViD5mtiUg==
+  dependencies:
+    "@peculiar/asn1-ecc" "^2.3.4"
+    "@peculiar/asn1-schema" "^2.3.3"
+    "@peculiar/x509" "^1.9.2"
+    "@types/js-levenshtein" "^1.1.3"
+    "@webrecorder/wombat" "^3.8.7"
+    acorn "^8.10.0"
+    auto-js-ipfs "^2.1.1"
+    base64-js "^1.5.1"
+    brotli "^1.3.3"
+    buffer "^6.0.3"
+    fast-xml-parser "^4.4.1"
+    hash-wasm "^4.9.0"
+    http-link-header "^1.1.3"
+    http-status-codes "^2.1.4"
+    idb "^7.1.1"
+    js-levenshtein "^1.1.6"
+    js-yaml "^4.1.0"
+    pako "^1.0.11"
+    parse5-html-rewriting-stream "^7.0.0"
+    parse5-sax-parser "^7.0.0"
+    path-parser "^6.1.0"
+    process "^0.11.10"
+    stream-browserify "^3.0.0"
+    warcio "^2.4.2"
+
 "@webrecorder/wombat@^3.8.6":
   version "3.8.6"
   resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.6.tgz#3aa99d9519f6263434a9e0b963f6ef86d3e0494a"
   integrity sha512-+IxV0bkoc6QdHYzwejsPFPC31dRjaxa6zGuR9F08aFb4Ooeekf9AK16ZIYweizs/wm7nvTG5E12ZwW0LUUzX8w==
+  dependencies:
+    warcio "^2.4.0"
+
+"@webrecorder/wombat@^3.8.7":
+  version "3.8.7"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.7.tgz#51c7465c589e0020be064121127c7c10a38ec21f"
+  integrity sha512-bW5V7cBweTkTazOIN8oZZGwHLevsGNv1luY3t0RYdEZhs5BDpTmUHN33zEbrXDOiPUlY3N3I8+73VA+PuxihoQ==
   dependencies:
     warcio "^2.4.0"
 

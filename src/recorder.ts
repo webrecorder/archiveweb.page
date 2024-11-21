@@ -1372,7 +1372,7 @@ class Recorder {
 
         if (rw) {
           string = payload.toString();
-          newString = rw.rewrite(string, { live: true, save: extraOpts });
+          newString = rw.rewrite(string, { save: extraOpts });
         }
       }
     }

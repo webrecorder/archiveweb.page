@@ -111,7 +111,7 @@ class ArchiveWebApp extends ReplayWebApp {
     const archiveCookies = await getLocalOption("archiveCookies");
 
     // default to true if unset to match existing behavior
-    if (archiveCookies === null) {
+    if (archiveCookies === null || archiveCookies === undefined) {
       await setLocalOption("archiveCookies", "1");
       this.archiveCookies = true;
     } else {

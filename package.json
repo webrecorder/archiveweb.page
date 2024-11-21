@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": {
@@ -13,8 +13,8 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.1",
-    "@webrecorder/awp-sw": "^0.5.2",
-    "@webrecorder/wabac": "^2.20.5",
+    "@webrecorder/awp-sw": "^0.5.3",
+    "@webrecorder/wabac": "^2.20.6",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.6.4",
     "btoa": "^1.2.1",
@@ -26,7 +26,7 @@
     "node-fetch": "2.6.7",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^2.2.2",
+    "replaywebpage": "^2.2.3",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
@@ -64,7 +64,7 @@
     "webpack-extension-reloader": "^1.1.4"
   },
   "resolutions": {
-    "@webrecorder/wabac": "^2.20.5"
+    "@webrecorder/wabac": "^2.20.6"
   },
   "files": [
     "src/",

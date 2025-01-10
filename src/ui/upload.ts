@@ -475,11 +475,14 @@ export class BtrixClient {
   static async login({ url, username, password, orgName }) {
     const loginUrl = url + "/api/auth/jwt/login";
 
-    const form = new FormData();
+    const form = new URLSearchParams();
     form.append("username", username);
     form.append("password", password);
 
-    const res = await fetch(loginUrl, { method: "POST", body: form });
+    const headers = new Headers();
+    headers.set("Content-Type", "application/x-www-form-urlencoded");
+
+    const res = await fetch(loginUrl, { method: "POST", body: form, headers });
     const auth = await res.json();
     const { token_type, access_token } = auth;
     if (!access_token || !token_type) {

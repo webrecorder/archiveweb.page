@@ -466,7 +466,7 @@ class RequestResponseInfo {
     const contentType = headers.get(CONTENT_TYPE);
     const contentLength = headers.get(CONTENT_LENGTH);
 
-    if (Number(contentLength) !== length) {
+    if (contentLength !== null && Number(contentLength) !== length) {
       return false;
     }
 

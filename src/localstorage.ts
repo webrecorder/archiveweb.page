@@ -19,7 +19,7 @@ export function setLocalOption(name, value) {
 }
 
 // ===========================================================================
-export function getLocalOption(name: string) : Promise<string | null> {
+export function getLocalOption(name: string): Promise<string | null> {
   // @ts-expect-error - TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'. | TS2339 - Property 'chrome' does not exist on type 'Window & typeof globalThis'.
   if (self.chrome?.storage) {
     return new Promise<string>((resolve) => {

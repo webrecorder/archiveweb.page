@@ -254,8 +254,8 @@ class BrowserRecorder extends Recorder {
       // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'BrowserRecorder'.
       if (this.behaviorState === BEHAVIOR_RUNNING) {
         title = "Archiving: Autopilot Running!";
-        color = "#0891b2";
-        text = "";
+        color = "#0096ff";
+        text = " ";
         // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'BrowserRecorder'.
       } else if (this.numPending === 0) {
         title = "Archiving: No URLs pending, can continue";

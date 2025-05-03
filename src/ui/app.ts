@@ -127,7 +127,15 @@ class ArchiveWebApp extends ReplayWebApp {
 
     this.archiveFlash = (await getLocalOption("archiveFlash")) === "1";
 
-    this.archiveScreenshots = (await getLocalOption("archiveScreenshots")) === "1";
+    const archiveScreenshots = await getLocalOption("archiveScreenshots");
+
+    // default to true if unset to enable screenshots!
+    if (archiveScreenshots === null || archiveScreenshots === undefined) {
+      await setLocalOption("archiveScreenshots", "1");
+      this.archiveScreenshots = true;
+    } else {
+      this.archiveScreenshots = archiveScreenshots === "1";
+    }
 
     this.archivePDF = (await getLocalOption("archivePDF")) === "1";
   }

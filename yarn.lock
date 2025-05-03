@@ -2324,7 +2324,7 @@
     uuid "^9.0.0"
     warcio "^2.3.1"
 
-"@webrecorder/wabac@^2.20.6", "@webrecorder/wabac@^2.22.15", "@webrecorder/wabac@^2.22.16":
+"@webrecorder/wabac@^2.20.6", "@webrecorder/wabac@^2.22.16":
   version "2.22.16"
   resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.22.16.tgz#8b9684569b373b8e930852bce4512e2bd2810d65"
   integrity sha512-n39kwNOD/bKpAFwQ8AXImFqOUhfqUYoz41E0baGfoXydnJc2LKiS7SMqg3wDHazZH3y2DVlUpPknrD7UM75g0A==
@@ -7082,14 +7082,14 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-replaywebpage@^2.3.6:
-  version "2.3.6"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.3.6.tgz#dbfc5790094162ce54331c37a9fd22d559b694b8"
-  integrity sha512-N7UzfBP6AluLSq4BwymFxacOk7jF7YF4v4IEUgEYhKUWAvr7Y6wQuEqSZWDczL+2HkllvNdGu4Kd6NllLR2W+w==
+replaywebpage@^2.3.7:
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.3.7.tgz#c3a6fadaaaf83220440a5a4e827a0b09255fa209"
+  integrity sha512-qQhAyClHi12ZZ2N3+UqeqFudYMF3IV5aDukioI8KYq1CXfZmUebNIzHLA7rfd5VXTsJnGMtta4L9aCqZS5vaow==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "~2.15.1"
-    "@webrecorder/wabac" "^2.22.15"
+    "@webrecorder/wabac" "^2.22.16"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^6.3.9"

@@ -205,7 +205,7 @@ class WrRecColl extends Item {
                 class="button is-primary-new"
                 role="button"
                 download="my-archive.wacz"
-                href="${this.downloadUrl}"
+                href="${this.getDownloadUrl()}"
                 target="_blank"
                 >Download</a
               >
@@ -251,7 +251,7 @@ class WrRecColl extends Item {
     if (window.parent !== window) {
       window.parent.postMessage({
         type: "awp-finish",
-        downloadUrl: this.downloadUrl,
+        downloadUrl: this.getDownloadUrl(),
       });
     }
   }
@@ -280,7 +280,7 @@ class WrRecColl extends Item {
     super.navigateTo(value);
   }
 
-  get downloadUrl() {
+  getDownloadUrl() {
     return new URL(
       `${apiPrefix}/c/${this.item}/dl?format=wacz&pages=all`,
       window.location.href,

@@ -22,8 +22,7 @@ import {
 } from "./consts";
 import { getLocalOption } from "./localstorage";
 
-// @ts-expect-error - TS2554 - Expected 0 arguments, but got 1.
-const encoder = new TextEncoder("utf-8");
+const encoder = new TextEncoder();
 
 const MAX_CONCURRENT_FETCH = 6;
 
@@ -58,6 +57,7 @@ type FetchEntry = {
 class Recorder {
   archiveStorage = false;
   archiveCookies = false;
+  archiveFlash = false;
 
   _fetchQueue: FetchEntry[] = [];
 
@@ -155,8 +155,9 @@ class Recorder {
   }
 
   async initOpts() {
-    this.archiveCookies = (await getLocalOption("archiveCookies") === "1");
-    this.archiveStorage = (await getLocalOption("archiveStorage") === "1");
+    this.archiveCookies = (await getLocalOption("archiveCookies")) === "1";
+    this.archiveStorage = (await getLocalOption("archiveStorage")) === "1";
+    this.archiveFlash = (await getLocalOption("archiveFlash")) === "1";
   }
 
   // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
@@ -190,8 +191,8 @@ class Recorder {
       this.behaviorInitStr
     });
 
-    window.addEventListener("beforeunload", () => {});` +
-      this.getFlashInjectScript()
+    window.addEventListener("beforeunload", () => {});\n` +
+      (this.archiveFlash ? this.getFlashInjectScript() : "")
     );
   }
 
@@ -550,8 +551,6 @@ class Recorder {
 
     await this.send("Page.enable");
 
-    await this.send("Runtime.enable");
-
     await this.send("DOMSnapshot.enable");
 
     await this.initPixRatio();
@@ -632,7 +631,6 @@ class Recorder {
 
   async sessionClose(sessions = []) {
     await this.send("Page.disable");
-    await this.send("Runtime.disable");
     await this.send("DOMSnapshot.disable");
 
     await this.send("Debugger.disable");

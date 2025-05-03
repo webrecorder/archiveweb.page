@@ -16,7 +16,7 @@
     "@webrecorder/awp-sw": "^0.5.3",
     "@webrecorder/wabac": "^2.22.16",
     "auto-js-ipfs": "^2.3.0",
-    "browsertrix-behaviors": "^0.8.4",
+    "browsertrix-behaviors": "^0.8.5",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
     "client-zip": "^2.2.2",

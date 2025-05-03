@@ -59,6 +59,8 @@ class ArchiveWebApp extends ReplayWebApp {
   archiveCookies: boolean | null = null;
   archiveStorage: boolean | null = null;
   archiveFlash: boolean | null = null;
+  archiveScreenshots: boolean | null = null;
+  archivePDF: boolean | null = null;
 
   showIpfsShareFailed = false;
 
@@ -124,6 +126,18 @@ class ArchiveWebApp extends ReplayWebApp {
     this.archiveStorage = (await getLocalOption("archiveStorage")) === "1";
 
     this.archiveFlash = (await getLocalOption("archiveFlash")) === "1";
+
+    const archiveScreenshots = await getLocalOption("archiveScreenshots");
+
+    // default to true if unset to enable screenshots!
+    if (archiveScreenshots === null || archiveScreenshots === undefined) {
+      await setLocalOption("archiveScreenshots", "1");
+      this.archiveScreenshots = true;
+    } else {
+      this.archiveScreenshots = archiveScreenshots === "1";
+    }
+
+    this.archivePDF = (await getLocalOption("archivePDF")) === "1";
   }
 
   async doBtrixLogin() {
@@ -1029,9 +1043,32 @@ class ArchiveWebApp extends ReplayWebApp {
         >
           ${this.settingsTab === "prefs"
             ? html`<fieldset>
-                <div class="is-size-6">
-                  Control archiving of optional extensions and sensitive browser
-                  data.
+                <div class="is-size-6 mt-4">
+                  Optional archiving features:
+                </div>
+                <div class="field is-size-6 mt-4">
+                  <input
+                    name="prefArchiveScreenshots"
+                    id="archiveScreenshots"
+                    class="checkbox"
+                    type="checkbox"
+                    ?checked="${this.archiveScreenshots}"
+                  /><span class="ml-1">Save Screenshots</span>
+                  <p class="is-size-7 mt-1">
+                    Save screenshot + thumbnail of every page on load. Screenshot will be saved as soon as page is done loading.
+                  </p>
+                </div>
+                <div class="field is-size-6 mt-4">
+                  <input
+                    name="prefArchivePDF"
+                    id="archivePDF"
+                    class="checkbox"
+                    type="checkbox"
+                    ?checked="${this.archivePDF}"
+                  /><span class="ml-1">Save PDFs</span>
+                  <p class="is-size-7 mt-1">
+                    Save PDF of each page after page loads (experimental).
+                  </p>
                 </div>
                 <div class="field is-size-6 mt-4">
                   <input
@@ -1046,6 +1083,10 @@ class ArchiveWebApp extends ReplayWebApp {
                     emulator into the page. May cause issues with some pages,
                     enable only when archiving websites that contain Flash.
                   </p>
+                </div>
+                <hr/>
+                <div class="is-size-6">
+                  Privacy related settings:
                 </div>
                 <div class="field is-size-6 mt-4">
                   <input
@@ -1441,23 +1482,18 @@ class ArchiveWebApp extends ReplayWebApp {
       }
     }
 
-    const archiveCookies = this.renderRoot.querySelector("#archiveCookies");
-    const archiveStorage = this.renderRoot.querySelector("#archiveStorage");
-    const archiveFlash = this.renderRoot.querySelector("#archiveFlash");
+    const options = ["Cookies", "Storage", "Flash", "Screenshots", "PDF"];
 
-    if (archiveCookies) {
-      this.archiveCookies = (archiveCookies as HTMLInputElement).checked;
-      await setLocalOption("archiveCookies", this.archiveCookies ? "1" : "0");
-    }
+    for (const option of options) {
+      const name = "archive" + option;
+      const elem = this.renderRoot.querySelector("#" + name);
 
-    if (archiveStorage) {
-      this.archiveStorage = (archiveStorage as HTMLInputElement).checked;
-      await setLocalOption("archiveStorage", this.archiveStorage ? "1" : "0");
-    }
-
-    if (archiveFlash) {
-      this.archiveFlash = (archiveFlash as HTMLInputElement).checked;
-      await setLocalOption("archiveFlash", this.archiveFlash ? "1" : "0");
+      if (elem) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (this as any)[name] = (elem as HTMLInputElement).checked;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await setLocalOption(name, (this as any)[name] ? "1" : "0");
+      }
     }
 
     localStorage.setItem("settingsTab", this.settingsTab);

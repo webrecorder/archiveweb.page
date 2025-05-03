@@ -1,6 +1,7 @@
 import { SWReplay, WorkerLoader } from "@webrecorder/wabac/swlib";
 
-import { ExtAPI, RecordingCollections } from "@webrecorder/awp-sw";
+import { ExtAPI } from "./api";
+import { RecordingCollections } from "./recproxy";
 
 import REC_INDEX_HTML from "@/static/index.html";
 import RWP_INDEX_HTML from "replaywebpage/index.html";

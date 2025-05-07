@@ -1,4 +1,4 @@
-import { SWReplay, WorkerLoader } from "@webrecorder/wabac/swlib";
+import { addProxyAllowPaths, SWReplay, WorkerLoader } from "@webrecorder/wabac/swlib";
 
 import { ExtAPI } from "./api";
 import { RecordingCollections } from "./recproxy";
@@ -18,6 +18,7 @@ if (self.registration) {
   if (self.location.origin.startsWith("chrome-extension://")) {
     defaultConfig["injectScripts"] = ["/ruffle/ruffle.js"];
   }
+  addProxyAllowPaths(["/ruffle/"]);
 
   const staticData = new Map();
 

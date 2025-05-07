@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": {
@@ -14,21 +14,21 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.2",
     "@ipld/unixfs": "^3.0.0",
-    "@webrecorder/wabac": "^2.22.16",
+    "@webrecorder/wabac": "^2.22.17",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.8.5",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
     "client-zip": "^2.3.0",
-    "idb": "^7.1.1",
     "hash-wasm": "^4.9.0",
     "http-status-codes": "^2.1.4",
+    "idb": "^7.1.1",
     "keyword-mark-element": "^0.1.2",
     "node-fetch": "2.6.7",
     "p-queue": "^8.0.1",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^2.3.7",
+    "replaywebpage": "^2.3.8",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
@@ -36,9 +36,9 @@
     "warcio": "^2.4.4"
   },
   "devDependencies": {
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
-    "@types/uuid": "^10.0.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
     "electron": "^32.2.0",
@@ -67,7 +67,7 @@
     "webpack-extension-reloader": "^1.1.4"
   },
   "resolutions": {
-    "@webrecorder/wabac": "^2.22.16"
+    "@webrecorder/wabac": "^2.22.17"
   },
   "files": [
     "src/",

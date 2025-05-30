@@ -4,7 +4,6 @@ import { Recorder } from "../recorder";
 
 import path from "path";
 import fs from "fs";
-// @ts-expect-error - TS7016 - Could not find a declaration file for module 'mime-types'. '/Users/emma/Work/Webrecorder/archiveweb.page/node_modules/mime-types/index.js' implicitly has an 'any' type.
 import mime from "mime-types";
 
 const DEBUG = false;

@@ -1,4 +1,8 @@
-import { addProxyAllowPaths, SWReplay, WorkerLoader } from "@webrecorder/wabac/swlib";
+import {
+  addProxyAllowPaths,
+  SWReplay,
+  WorkerLoader,
+} from "@webrecorder/wabac/swlib";
 
 import { ExtAPI } from "./api";
 import { RecordingCollections } from "./recproxy";

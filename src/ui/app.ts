@@ -1514,7 +1514,6 @@ class ArchiveWebApp extends ReplayWebApp {
   onUpdatePrefsOption(event: Event) {
     const target = event.currentTarget as HTMLInputElement;
     const name = target.id;
-    console.log("name", name);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this as any)[name] = target.checked;
     void setLocalOption(name, target.checked ? "1" : "0");

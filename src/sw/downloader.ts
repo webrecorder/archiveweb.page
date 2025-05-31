@@ -16,6 +16,7 @@ import {
   type Collection,
   type ArchiveDB,
   type ResourceEntry,
+  type ExtraOpts,
 } from "@webrecorder/wabac/swlib";
 import { type DataSignature, type Signer } from "./keystore";
 import { type ExtPageEntry } from "./recproxy";
@@ -650,7 +651,9 @@ class Downloader {
       data.method = resource.method;
     }
 
-    return `${getSurt(resource.url)} ${resource.timestamp} ${JSON.stringify(data)}\n`;
+    return `${getSurt(resource.url)} ${resource.timestamp} ${JSON.stringify(
+      data,
+    )}\n`;
   }
 
   *generateCDX() {
@@ -933,13 +936,33 @@ class Downloader {
       requestBody = new Uint8Array([]);
     }
 
+    const extraOpts = resource.extraOpts as
+    | (ExtraOpts & { resource?: boolean })
+    | null;
+
+    const isResource = extraOpts?.resource;
+
     if (!resource.digest && resource.payload) {
       resource.digest = await digestMessage(resource.payload, "sha-256");
     }
 
     const digestOriginal = this.digestsVisted[resource.digest];
 
-    if (resource.digest && digestOriginal) {
+    if (isResource) {
+      type = "resource";
+      delete extraOpts?.resource;
+      if (!payload) {
+        payload = (await this.db.loadPayload(
+          resource,
+          {},
+        )) as Uint8Array | null;
+      }
+
+      if (!payload) {
+        return null;
+      }
+
+    } else if (resource.digest && digestOriginal) {
       // if exact resource in a row, and same page, then just skip instead of writing revisit
       if (
         url === this.lastUrl &&
@@ -957,7 +980,7 @@ class Downloader {
       refersToUrl = digestOriginal.url;
       refersToDate = digestOriginal.date;
       refersToDigest = digestOriginal.payloadDigest || resource.digest;
-    } else if (resource.origURL && resource.origTS) {
+    } else if (resource.origURL && resource.origTS && !isResource) {
       if (!resource.digest || !digestOriginal) {
         //console.log("Skip fuzzy resource with no digest");
         return null;
@@ -1007,7 +1030,7 @@ class Downloader {
       warcHeaders["WARC-Page-ID"] = pageId;
     }
 
-    if (resource.extraOpts && Object.keys(resource.extraOpts).length) {
+    if (extraOpts && Object.keys(extraOpts).length) {
       warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(resource.extraOpts);
     }
 
@@ -1015,23 +1038,36 @@ class Downloader {
       warcHeaders["WARC-Payload-Digest"] = refersToDigest;
     }
 
-    // remove encoding, set content-length as encoding never preserved in browser-based capture
-    this.fixupHttpHeaders(httpHeaders, payload.length);
+    let record: WARCRecord;
 
-    const record = WARCRecord.create(
-      {
-        url,
-        date,
-        type,
-        warcVersion,
-        warcHeaders,
-        statusline,
-        httpHeaders,
-        refersToUrl,
-        refersToDate,
-      },
-      getPayload(payload),
-    );
+    if (isResource) {
+      if (resource.mime) {
+        warcHeaders["Content-Type"] = resource.mime;
+      }
+
+      record = WARCRecord.create(
+        { url, date, warcHeaders, warcVersion, type },
+        getPayload(payload),
+      );
+    } else {
+      // remove encoding, set content-length as encoding never preserved in browser-based capture
+      this.fixupHttpHeaders(httpHeaders, payload.length);
+
+      record = WARCRecord.create(
+        {
+          url,
+          date,
+          type,
+          warcVersion,
+          warcHeaders,
+          statusline,
+          httpHeaders,
+          refersToUrl,
+          refersToDate,
+        },
+        getPayload(payload),
+      );
+    }
 
     //const buffer = await WARCSerializer.serialize(record, {gzip: this.gzip, digest: this.digestOpts});
     if (!resource.digest && record.warcPayloadDigest) {
@@ -1046,7 +1082,7 @@ class Downloader {
 
     const records = [record];
 
-    if (resource.reqHeaders) {
+    if (type !== "resource" && resource.reqHeaders) {
       const type = "request";
       const reqWarcHeaders: Record<string, string> = {
         "WARC-Record-ID": this.getWARCRecordUUID(
@@ -1057,7 +1093,9 @@ class Downloader {
       };
 
       const urlParsed = new URL(url);
-      const statusline = `${method} ${url.slice(urlParsed.origin.length)} HTTP/1.1`;
+      const statusline = `${method} ${url.slice(
+        urlParsed.origin.length,
+      )} HTTP/1.1`;
 
       const reqRecord = WARCRecord.create(
         {

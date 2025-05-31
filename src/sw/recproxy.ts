@@ -97,7 +97,11 @@ export class RecProxy extends ArchiveDB {
     return await (this.db! as any).get("rec", "numPending");
   }
 
-  override async getResource(request: ArchiveRequest, prefix: string, event: FetchEvent) {
+  override async getResource(
+    request: ArchiveRequest,
+    prefix: string,
+    event: FetchEvent,
+  ) {
     if (!this.isRecording) {
       return await super.getResource(request, prefix, event);
     }
@@ -224,7 +228,13 @@ export class RecProxy extends ArchiveDB {
     }
   }
 
-  isPage(url: string, request: Request, status: number, referrer: string, mod: string) {
+  isPage(
+    url: string,
+    request: Request,
+    status: number,
+    referrer: string,
+    mod: string,
+  ) {
     if (!this.isNew) {
       return false;
     }
@@ -259,7 +269,9 @@ export class RecProxy extends ArchiveDB {
     if (!pageId) {
       return;
     }
-    const page = await this.db!.get("pages", pageId) as ExtPageEntry | undefined;
+    const page = (await this.db!.get("pages", pageId)) as
+      | ExtPageEntry
+      | undefined;
     if (!page) {
       return;
     }
@@ -310,7 +322,6 @@ export class RecordingCollections extends SWCollections {
           await coll.store.updateFavIcon(event.data.url, event.data.favIconUrl);
         }
         break;
-
 
       default:
         return await super._handleMessage(event);

@@ -61,8 +61,11 @@ class ArchiveWebApp extends ReplayWebApp {
   archiveFlash: boolean | null = null;
   archiveScreenshots: boolean | null = null;
   archivePDF: boolean | null = null;
+  disableMSE: boolean | null = null;
 
   showIpfsShareFailed = false;
+
+  showSettings = false;
 
   constructor() {
     super();
@@ -126,6 +129,8 @@ class ArchiveWebApp extends ReplayWebApp {
     this.archiveStorage = (await getLocalOption("archiveStorage")) === "1";
 
     this.archiveFlash = (await getLocalOption("archiveFlash")) === "1";
+
+    this.disableMSE = (await getLocalOption("disableMSE")) === "1";
 
     const archiveScreenshots = await getLocalOption("archiveScreenshots");
 
@@ -526,7 +531,6 @@ class ArchiveWebApp extends ReplayWebApp {
                 <button
                   class="button is-small"
                   @click="${
-                    // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
                     () => (this.showSettings = true)
                   }"
                 >
@@ -571,7 +575,6 @@ class ArchiveWebApp extends ReplayWebApp {
         : ""
     }
     ${
-      // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
       this.showSettings ? this.renderSettingsModal() : ""
     }
     ${this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""}
@@ -1043,9 +1046,7 @@ class ArchiveWebApp extends ReplayWebApp {
         >
           ${this.settingsTab === "prefs"
             ? html`<fieldset>
-                <div class="is-size-6 mt-4">
-                  Optional archiving features:
-                </div>
+                <div class="is-size-6 mt-4">Optional archiving features:</div>
                 <div class="field is-size-6 mt-4">
                   <input
                     name="prefArchiveScreenshots"
@@ -1053,9 +1054,11 @@ class ArchiveWebApp extends ReplayWebApp {
                     class="checkbox"
                     type="checkbox"
                     ?checked="${this.archiveScreenshots}"
+                    @change=${this.onUpdatePrefsOption}
                   /><span class="ml-1">Save Screenshots</span>
                   <p class="is-size-7 mt-1">
-                    Save screenshot + thumbnail of every page on load. Screenshot will be saved as soon as page is done loading.
+                    Save screenshot + thumbnail of every page on load.
+                    Screenshot will be saved as soon as page is done loading.
                   </p>
                 </div>
                 <div class="field is-size-6 mt-4">
@@ -1065,6 +1068,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     class="checkbox"
                     type="checkbox"
                     ?checked="${this.archivePDF}"
+                    @change=${this.onUpdatePrefsOption}
                   /><span class="ml-1">Save PDFs</span>
                   <p class="is-size-7 mt-1">
                     Save PDF of each page after page loads (experimental).
@@ -1077,6 +1081,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     class="checkbox"
                     type="checkbox"
                     ?checked="${this.archiveFlash}"
+                    @change=${this.onUpdatePrefsOption}
                   /><span class="ml-1">Enable Ruffle for Flash</span>
                   <p class="is-size-7 mt-1">
                     Enables archiving Flash content via injecting the Ruffle
@@ -1085,9 +1090,23 @@ class ArchiveWebApp extends ReplayWebApp {
                   </p>
                 </div>
                 <hr/>
-                <div class="is-size-6">
-                  Privacy related settings:
+                <div class="is-size-6">Page override settings:</div>
+                <div class="field is-size-6 mt-4">
+                  <input
+                    name="prefDisableMSE"
+                    id="disableMSE"
+                    class="checkbox"
+                    type="checkbox"
+                    ?checked="${this.disableMSE}"
+                    @change=${this.onUpdatePrefsOption}
+                  /><span class="ml-1">Disable Media Source Extensions</span>
+                  <p class="is-size-7 mt-1">
+                    If set, will likely disable dynamic streaming for many
+                    websites, but may result in better video/audio capture.
+                  </p>
                 </div>
+                <hr />
+                <div class="is-size-6">Privacy related settings:</div>
                 <div class="field is-size-6 mt-4">
                   <input
                     name="prefArchiveCookies"
@@ -1095,6 +1114,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     class="checkbox"
                     type="checkbox"
                     ?checked="${this.archiveCookies}"
+                    @change=${this.onUpdatePrefsOption}
                   /><span class="ml-1">Archive cookies</span>
                   <p class="is-size-7 mt-1">
                     Archiving cookies may expose private information that is
@@ -1110,6 +1130,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     class="checkbox"
                     type="checkbox"
                     ?checked="${this.archiveStorage}"
+                    @change=${this.onUpdatePrefsOption}
                   /><span class="ml-1">Archive local storage</span>
                   <p class="is-size-7 mt-1">
                     Archiving local storage will archive information that is
@@ -1241,7 +1262,8 @@ class ArchiveWebApp extends ReplayWebApp {
           <div class="has-text-centered has-text-danger">
             ${this.settingsError}
           </div>
-          <div class="has-text-centered mt-4">
+          ${this.settingsTab !== "prefs" ?
+          html`<div class="has-text-centered mt-4">
             <button class="button is-primary" type="submit">Save</button>
             <button
               class="button"
@@ -1250,7 +1272,7 @@ class ArchiveWebApp extends ReplayWebApp {
             >
               Cancel
             </button>
-          </div>
+          </div>` : ``}
         </form>
       </wr-modal>
     `;
@@ -1482,32 +1504,25 @@ class ArchiveWebApp extends ReplayWebApp {
       }
     }
 
-    const options = ["Cookies", "Storage", "Flash", "Screenshots", "PDF"];
-
-    for (const option of options) {
-      const name = "archive" + option;
-      const elem = this.renderRoot.querySelector("#" + name);
-
-      if (elem) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (this as any)[name] = (elem as HTMLInputElement).checked;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await setLocalOption(name, (this as any)[name] ? "1" : "0");
-      }
-    }
-
     localStorage.setItem("settingsTab", this.settingsTab);
 
-    // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
     this.showSettings = false;
 
     return false;
   }
 
+  onUpdatePrefsOption(event: Event) {
+    const target = event.currentTarget as HTMLInputElement;
+    const name = target.id;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this as any)[name] = target.checked;
+    void setLocalOption(name, target.checked ? "1" : "0");
+  }
+
   onCancelSettings() {
-    // @ts-expect-error - TS2339 - Property 'settingsError' does not exist on type 'ArchiveWebApp'.
-    this.settingsError = null;
-    // @ts-expect-error - TS2339 - Property 'showSettings' does not exist on type 'ArchiveWebApp'.
+    this.settingsError = "";
+
+    localStorage.setItem("settingsTab", this.settingsTab);
     this.showSettings = false;
   }
 

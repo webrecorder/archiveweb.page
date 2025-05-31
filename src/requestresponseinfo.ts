@@ -1,4 +1,5 @@
 import { getCustomRewriter, getStatusText } from "@webrecorder/wabac";
+import { type ExtraOpts } from "@webrecorder/wabac/swlib";
 
 import { postToGetUrl } from "warcio";
 
@@ -16,7 +17,7 @@ const encoder = new TextEncoder();
 
 // ===========================================================================
 class RequestResponseInfo {
-  extraOpts: Record<string, string>;
+  extraOpts: ExtraOpts;
 
   // @ts-expect-error - TS7006 - Parameter 'requestId' implicitly has an 'any' type.
   constructor(requestId) {
@@ -197,7 +198,6 @@ class RequestResponseInfo {
         "compliant"
           ? "1"
           : "0";
-      // @ts-expect-error - TS2339 - Property 'extraOpts' does not exist on type 'RequestResponseInfo'.
       this.extraOpts.cert = { issuer, ctc };
     }
   }

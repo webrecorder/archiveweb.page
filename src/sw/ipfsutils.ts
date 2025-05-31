@@ -511,7 +511,11 @@ function getReplayHtml(waczPath: string, replayOpts: ReplayOpts = {}) {
   <body>${
     showEmbed
       ? `
-    <replay-web-page ${deepLink ? 'deepLink="true" ' : ""} ${pageUrl ? `url="${pageUrl}"` : ""} loading="${loading || ""}" embed="replay-with-info" src="${waczPath}"></replay-web-page>`
+    <replay-web-page ${deepLink ? 'deepLink="true" ' : ""} ${
+      pageUrl ? `url="${pageUrl}"` : ""
+    } loading="${
+      loading || ""
+    }" embed="replay-with-info" src="${waczPath}"></replay-web-page>`
       : `
     <replay-app-main skipRuffle source="${waczPath}"></replay-app-main>`
   }

@@ -1473,7 +1473,7 @@ class Recorder {
     const ct = this._getContentType(params.responseHeaders);
 
     switch (ct) {
-      case "application/x-mpegURL":
+      case "application/x-mpegurl":
       case "application/vnd.apple.mpegurl":
         string = payload.toString("utf-8");
         newString = rewriteHLS(string, { save: reqresp.extraOpts });
@@ -1543,7 +1543,7 @@ class Recorder {
   _getContentType(headers) {
     for (const header of headers) {
       if (header.name.toLowerCase() === "content-type") {
-        return header.value.split(";")[0];
+        return header.value.split(";")[0].toLowerCase();
       }
     }
 

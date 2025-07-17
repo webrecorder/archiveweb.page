@@ -143,7 +143,7 @@
       ]
     },
     "win": {
-      "target": "nsis",
+      "target": "portable",
       "extraResources": [
         "plugins-win"
       ]

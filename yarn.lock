@@ -2401,16 +2401,16 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@webrecorder/wabac@^2.23.11":
-  version "2.23.11"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.23.11.tgz#945da06e08b6d093b525e6e5bfd6a8f17beb995b"
-  integrity sha512-rsBAkcYvgX+0HgwhgvSb3cBCBp0rVnHGQS/K5A9aJwOmfymHt0C2vInH/lmKV/5H38rJu29c2cvRX962h+lUiw==
+"@webrecorder/wabac@^2.24.0":
+  version "2.24.0"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.24.0.tgz#119cda1984158516874fa016939c660b055cc129"
+  integrity sha512-/3OZq61A+3hHvkXMj+UO3CbkYVm6285IhSHebgjWsuKlPeWzhUr9GFuamr3HLyiHHbCAWeM7cf+/8c6Phax90Q==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
     "@types/js-levenshtein" "^1.1.3"
-    "@webrecorder/wombat" "^3.8.14"
+    "@webrecorder/wombat" "^3.9.0"
     acorn "^8.10.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
@@ -2430,10 +2430,10 @@
     stream-browserify "^3.0.0"
     warcio "^2.4.5"
 
-"@webrecorder/wombat@^3.8.14":
-  version "3.8.14"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.8.14.tgz#fde951519ed9ab8271107a013fc1abd6a9997424"
-  integrity sha512-1CaL8Oel02V321SS+wOomV+cSDo279eVEAuiamO9jl9YoijRsGL9z/xZKE6sz6npLltE3YYziEBYO81xnaeTcA==
+"@webrecorder/wombat@^3.9.0":
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.9.0.tgz#a10116d01e1df66df791dc79c4ad58ee07de9308"
+  integrity sha512-o6ahV9DIi4/DkD13Qh4oGK0P+ZLn9ruu5sAUdqe51UXEdDsQNVuGbtf++bsOoKkLlsjL5QJZny2CEiJesLlsnw==
   dependencies:
     warcio "^2.4.0"
 
@@ -7493,14 +7493,14 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-replaywebpage@^2.3.17:
-  version "2.3.17"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.3.17.tgz#21dff8752ab2d1a9fed96d789ae6b7e81c57fe47"
-  integrity sha512-b42PxbZlVnNQc66c7nTbem0Z0E2J/IiMtgn+ddUgPRiqejvansiC0+geMDNNtp1MLF7n9DGcSkhNLsR0dPYihQ==
+replaywebpage@^2.3.18:
+  version "2.3.18"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.3.18.tgz#c5f8d8775050cd237d63b5b52a912c28d6373ae5"
+  integrity sha512-GQX4BYm91oHecncaBMGdUkkAtz7KbgWKOu3ztDgvqKdo999jHmuKaFpSUG6GHBg+qMB1YxVGMGSJW3CdpL6Uew==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "~2.15.1"
-    "@webrecorder/wabac" "^2.23.11"
+    "@webrecorder/wabac" "^2.24.0"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^6.6.2"

@@ -161,7 +161,6 @@ class ExtAPI extends API {
       const urlObj = new URL(url);
       urlObj.searchParams.set("filename", filename || "");
       urlObj.searchParams.set("name", dl.metadata["title"] || filename || "");
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const fetchPromise = fetch(urlObj.href, {
         method: "PUT",
         headers,
@@ -464,6 +463,7 @@ class CountingStream {
   }
 
   transformStream() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const counterStream = this;
 
     return new TransformStream({

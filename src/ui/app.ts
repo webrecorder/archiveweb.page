@@ -62,6 +62,7 @@ class ArchiveWebApp extends ReplayWebApp {
   archiveScreenshots: boolean | null = null;
   archivePDF: boolean | null = null;
   disableMSE: boolean | null = null;
+  disablePerf: boolean | null = null;
 
   showIpfsShareFailed = false;
 
@@ -131,6 +132,8 @@ class ArchiveWebApp extends ReplayWebApp {
     this.archiveFlash = (await getLocalOption("archiveFlash")) === "1";
 
     this.disableMSE = (await getLocalOption("disableMSE")) === "1";
+
+    this.disablePerf = (await getLocalOption("disablePerf")) === "1";
 
     const archiveScreenshots = await getLocalOption("archiveScreenshots");
 
@@ -1099,6 +1102,21 @@ class ArchiveWebApp extends ReplayWebApp {
                   <p class="is-size-7 mt-1">
                     If set, will likely disable dynamic streaming for many
                     websites, but may result in better video/audio capture.
+                  </p>
+                </div>
+                <div class="field is-size-6 mt-4">
+                  <input
+                    name="prefDisablePerf"
+                    id="disablePerf"
+                    class="checkbox"
+                    type="checkbox"
+                    ?checked="${this.disablePerf}"
+                    @change=${this.onUpdatePrefsOption}
+                  /><span class="ml-1">Disable Performance Detection</span>
+                  <p class="is-size-7 mt-1">
+                    If set, will disable performance detection features (such as
+                    current HTTP version), which can fix some replay issues,
+                    result in more accurate replay.
                   </p>
                 </div>
                 <hr />

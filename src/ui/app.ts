@@ -530,9 +530,7 @@ class ArchiveWebApp extends ReplayWebApp {
                 </div>
                 <button
                   class="button is-small"
-                  @click="${
-                    () => (this.showSettings = true)
-                  }"
+                  @click="${() => (this.showSettings = true)}"
                 >
                   <fa-icon .svg=${fasCog}></fa-icon>
                 </button>
@@ -574,9 +572,7 @@ class ArchiveWebApp extends ReplayWebApp {
         ? this.renderDownloadModal()
         : ""
     }
-    ${
-      this.showSettings ? this.renderSettingsModal() : ""
-    }
+    ${this.showSettings ? this.renderSettingsModal() : ""}
     ${this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""}
     ${
       // @ts-expect-error - TS2339 - Property 'uploadCollOpts' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
@@ -1089,7 +1085,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     enable only when archiving websites that contain Flash.
                   </p>
                 </div>
-                <hr/>
+                <hr />
                 <div class="is-size-6">Page override settings:</div>
                 <div class="field is-size-6 mt-4">
                   <input
@@ -1262,17 +1258,18 @@ class ArchiveWebApp extends ReplayWebApp {
           <div class="has-text-centered has-text-danger">
             ${this.settingsError}
           </div>
-          ${this.settingsTab !== "prefs" ?
-          html`<div class="has-text-centered mt-4">
-            <button class="button is-primary" type="submit">Save</button>
-            <button
-              class="button"
-              type="button"
-              @click="${this.onCancelSettings}"
-            >
-              Cancel
-            </button>
-          </div>` : ``}
+          ${this.settingsTab !== "prefs"
+            ? html`<div class="has-text-centered mt-4">
+                <button class="button is-primary" type="submit">Save</button>
+                <button
+                  class="button"
+                  type="button"
+                  @click="${this.onCancelSettings}"
+                >
+                  Cancel
+                </button>
+              </div>`
+            : ``}
         </form>
       </wr-modal>
     `;

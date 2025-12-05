@@ -33,6 +33,12 @@ const IFRAME_INJECT_URL = "__awp_iframe_inject__";
 
 const BEHAVIOR_LOG_FUNC = "__bx_log";
 
+const DISABLE_PERF_NHP = `;
+if (self.PerformanceResourceTiming) {
+  Object.defineProperty(self.PerformanceResourceTiming.prototype, "nextHopProtocol", {value: ""});
+}
+`;
+
 // ===========================================================================
 // @ts-expect-error - TS7006 - Parameter 'time' implicitly has an 'any' type.
 function sleep(time) {
@@ -62,6 +68,7 @@ class Recorder {
   archiveScreenshots = false;
   archivePDF = false;
   disableMSE = false;
+  disablePerf = false;
 
   _fetchQueue: FetchEntry[] = [];
 
@@ -166,6 +173,7 @@ class Recorder {
       (await getLocalOption("archiveScreenshots")) === "1";
     this.archivePDF = (await getLocalOption("archivePDF")) === "1";
     this.disableMSE = (await getLocalOption("disableMSE")) === "1";
+    this.disablePerf = (await getLocalOption("disablePerf")) === "1";
   }
 
   // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
@@ -201,7 +209,8 @@ class Recorder {
 
     window.addEventListener("beforeunload", () => {});\n` +
       (this.archiveFlash ? this.getFlashInjectScript() : "") +
-      (this.disableMSE ? DISABLE_MEDIASOURCE_SCRIPT : "")
+      (this.disableMSE ? DISABLE_MEDIASOURCE_SCRIPT : "") +
+      (this.disablePerf ? DISABLE_PERF_NHP : "")
     );
   }
 

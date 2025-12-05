@@ -2401,17 +2401,17 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@webrecorder/wabac@^2.24.5":
-  version "2.24.5"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.24.5.tgz#253b0d5a9b7691af475c7a158c6483df33f2d3ff"
-  integrity sha512-Wt9bdZMYrl+DYRkUdRfYAPSUfygHBQGIiZ9oMZ/DRLIeqsqeN36UBGuvbj6kmUawLNWRYVQj6kNl/ndtRZSa6w==
+"@webrecorder/wabac@^2.25.2":
+  version "2.25.2"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.25.2.tgz#545d29e00a82031333005f0cfa179a8b92f0f6f1"
+  integrity sha512-leu+GmHYlzNFeIjnOhuAi0dUYyYquaHFyUatve8oPGhQUHG4jmO9ijydq8t71i90Rs01aEsNV3N7+je4CFLIhg==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.4"
     "@peculiar/asn1-schema" "^2.3.3"
     "@peculiar/x509" "^1.9.2"
     "@types/js-levenshtein" "^1.1.3"
-    "@webrecorder/wombat" "^3.10.1"
-    acorn-loose "^8.5.2"
+    "@webrecorder/wombat" "^3.10.3"
+    acorn "^8.15.0"
     auto-js-ipfs "^2.1.1"
     base64-js "^1.5.1"
     brotli "^1.3.3"
@@ -2421,7 +2421,8 @@
     http-status-codes "^2.1.4"
     idb "^7.1.1"
     js-levenshtein "^1.1.6"
-    js-yaml "^4.1.0"
+    js-yaml "^4.1.1"
+    mime "^4.1.0"
     pako "^1.0.11"
     parse5-html-rewriting-stream "^7.0.0"
     parse5-sax-parser "^7.0.0"
@@ -2430,10 +2431,10 @@
     stream-browserify "^3.0.0"
     warcio "^2.4.7"
 
-"@webrecorder/wombat@^3.10.1":
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.10.1.tgz#d45417f9ef61c9f02357bacf1ba930f6e09dd7fa"
-  integrity sha512-OzYrv3iqC1AdgjG+QD/tNQi6+yv+1izzr2PoN+40AvleL+RLsIk/AwOmdYJpz9r+L7UIOdRrK4v/JrUWPwUDzw==
+"@webrecorder/wombat@^3.10.3":
+  version "3.10.3"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.10.3.tgz#f49fae3aedb54d75120de8286360b2fe40f42bda"
+  integrity sha512-tg1zRFlWUcYBsSMFCNf4zprCxlRfLmd7DnGsufRHS8fX0aJAMU3jNSE00Q9pWTcdIsxXQCNk4OT9FTlErCxRrg==
   dependencies:
     warcio "^2.4.7"
 
@@ -2477,13 +2478,6 @@ acorn-jsx@^5.3.1, acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
-
-acorn-loose@^8.5.2:
-  version "8.5.2"
-  resolved "https://registry.yarnpkg.com/acorn-loose/-/acorn-loose-8.5.2.tgz#a7cc7dfbb7c8f3c2e55b055db640dc657e278d26"
-  integrity sha512-PPvV6g8UGMGgjrMu+n/f9E/tCSkNQ2Y97eFvuVdJfG11+xdIeDcLyNdC8SHcrHbRqkfwLASdplyR6B6sKM1U4A==
-  dependencies:
-    acorn "^8.15.0"
 
 acorn@^7.4.0:
   version "7.4.1"
@@ -3003,10 +2997,10 @@ browserslist@^4.24.0:
     node-releases "^2.0.19"
     update-browserslist-db "^1.1.3"
 
-browsertrix-behaviors@^0.9.5:
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.9.5.tgz#abe089b8f188d452387bf7b2e3b93f58735ca331"
-  integrity sha512-vWHY4wx9kO4JkP/Lbvq23vyFJRMpPZTGNN/SotJsRxefAs7LE29moMhAWHLTeKusJ6AghP/PhsxV447yFX8CrA==
+browsertrix-behaviors@^0.9.7:
+  version "0.9.7"
+  resolved "https://registry.yarnpkg.com/browsertrix-behaviors/-/browsertrix-behaviors-0.9.7.tgz#4bc19c1bba4eba9227f076903f1964f5aa3ebb2e"
+  integrity sha512-agTjyk2wz/wLEWbkLE8PIVn6r4Xjkx+7nEm7kiwy4Y64ePFI6wlnNQJwgeBgeRmrnh46bE6XQ8ahHl3jv4qxNQ==
   dependencies:
     query-selector-shadow-dom "^1.0.1"
 
@@ -3939,10 +3933,10 @@ electron-updater@^6.6.2:
     semver "^7.6.3"
     tiny-typed-emitter "^2.1.0"
 
-electron@^38.2.1:
-  version "38.2.1"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-38.2.1.tgz#c018fa527253ecbe10ac04ea61aeec4d2b7baf62"
-  integrity sha512-P4pE2RpRg3kM8IeOK+heg6iAxR5wcXnNHrbVchn7M3GBnYAhjfJRkROusdOro5PlKzdtfKjesbbqaG4MqQXccg==
+electron@^39.2.6:
+  version "39.2.6"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-39.2.6.tgz#7e1fdc01020418ea6c5cc92a3dd05fe65ad94941"
+  integrity sha512-dHBgTodWBZd+tL1Dt0PSh/CFLHeDkFCTKCTXu1dgPhlE9Z3k2zzlBQ9B2oW55CFsKanBDHiUomHJNw0XaSdQpA==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^22.7.7"
@@ -5606,6 +5600,13 @@ js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
+js-yaml@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.1.tgz#854c292467705b699476e1a2decc0c8a3458806b"
+  integrity sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==
+  dependencies:
+    argparse "^2.0.1"
+
 jsbn@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-1.1.0.tgz#b01307cb29b618a1ed26ec79e911f803c4da0040"
@@ -6354,6 +6355,11 @@ mime@^2.5.2:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.6.0.tgz#a2a682a95cd4d0cb1d6257e28f83da7e35800367"
   integrity sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==
+
+mime@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-4.1.0.tgz#ec55df7aa21832a36d44f0bbee5c04639b27802f"
+  integrity sha512-X5ju04+cAzsojXKes0B/S4tcYtFAJ6tTMuSPBEn9CPGlrWr8Fiw7qYeLT0XyH80HSoAoqWCaz+MWKh22P7G1cw==
 
 mimic-fn@^1.0.0:
   version "1.2.0"
@@ -7500,14 +7506,14 @@ repeat-string@^1.6.1:
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==
 
-replaywebpage@^2.3.23:
-  version "2.3.23"
-  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.3.23.tgz#34523c1cbce5a669beb8980b6e00db36c5d2ca38"
-  integrity sha512-oyB+jGcPMx8nw1hWmOA+NI/5CEyL70JVrEiTqh0qn2OpdLUy/61rEL7PX//pbljbSgFRDmc+qn9rdLoJc558VA==
+replaywebpage@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/replaywebpage/-/replaywebpage-2.4.0.tgz#398dba7a435ce93de2825be9e6bc39fb7a4b6ba9"
+  integrity sha512-XdrI7PXBw60+Mj7w3YHL9xloqlJnfNarJGmWVf35VvXChTJZ4sOYzSr6vRrXrSoUu7040OLQGMustzVIeUiDEA==
   dependencies:
     "@fortawesome/fontawesome-free" "^5.15.4"
     "@shoelace-style/shoelace" "~2.15.1"
-    "@webrecorder/wabac" "^2.24.5"
+    "@webrecorder/wabac" "^2.25.2"
     bulma "^0.9.3"
     electron-log "^4.4.1"
     electron-updater "^6.6.2"

@@ -9,6 +9,7 @@ import {
   type HandlerDetails,
   type WindowOpenHandlerResponse,
 } from "electron";
+import * as electron from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
 import {
@@ -33,7 +34,13 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
     this.recorders = new Map();
+
+    // @ts-expect-error - TS2339 - Property 'certCache' does not exist on type 'ElectronRecorderApp'.
+    this.certCache = new Map();
+    this.opts = opts;
   }
+
+  opts: any;
 
   // @ts-expect-error - TS2416 - Property 'mainWindowWebPreferences' in type 'ElectronRecorderApp' is not assignable to the same property in base type 'ElectronReplayApp'.
   get mainWindowWebPreferences() {
@@ -50,6 +57,26 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     ipcMain.on("start-rec", (event, opts) => {
       this.createRecordWindow(opts);
+    });
+
+    ipcMain.handle("get-certificate", (event, webContentsId) => {
+      console.log(`IPC: get-certificate request for WebContents ID: ${webContentsId}`);
+      const wc = electron.webContents.fromId(webContentsId);
+      if (!wc) {
+        console.warn("WebContents not found for ID:", webContentsId);
+        return null;
+      }
+      try {
+        const url = wc.getURL();
+        const hostname = new URL(url).hostname;
+        // @ts-expect-error - TS2339 - Property 'certCache' does not exist on type 'ElectronRecorderApp'.
+        const cert = this.certCache.get(hostname);
+        console.log(`Looked up cert for ${hostname}:`, cert ? "Found" : "Not Found");
+        return cert || null;
+      } catch (e) {
+        console.warn("Failed to get certificate", e);
+        return null;
+      }
     });
 
     sesh.webRequest.onHeadersReceived((details, callback) => {
@@ -325,6 +352,33 @@ class ElectronRecorderApp extends ElectronReplayApp {
     } catch (e) {
       console.warn("Load Failed", e);
     }
+
+    this.setupCertHandler(recWebContents.session);
+  }
+
+  // @ts-expect-error - TS7006 - Parameter 'session' implicitly has an 'any' type.
+  setupCertHandler(session) {
+    if (session._certHandlerInstalled) {
+      return;
+    }
+    session._certHandlerInstalled = true;
+
+    console.log("Installing certificate handler for session");
+
+    // Capture certificates
+    session.setCertificateVerifyProc((request: any, callback: any) => {
+      const { hostname, certificate, verificationResult, errorCode } = request;
+      // console.log("CACHE SET for " + hostname); 
+      // @ts-expect-error - TS2339 - Property 'certCache' does not exist on type 'ElectronRecorderApp'.
+      this.certCache.set(hostname, { certificate, verificationResult });
+
+      // Default behavior fallback
+      if (verificationResult === "net::OK") {
+        callback(0);
+      } else {
+        callback(errorCode);
+      }
+    });
   }
 }
 

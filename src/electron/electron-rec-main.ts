@@ -13,4 +13,4 @@ const recorderApp = new ElectronRecorderApp({
   profileName: process.env.AWP_PROFILE_NAME || "archivewebpage",
 });
 
-recorderApp.init();
+//recorderApp.init();

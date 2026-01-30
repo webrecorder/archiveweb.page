@@ -17,7 +17,9 @@ import fasRight from "@fortawesome/fontawesome-free/svgs/solid/arrow-right.svg";
 import awpLogo from "../assets/brand/archivewebpage-icon-color.svg";
 
 import "./app-popup";
+import "./cert-popup";
 import { BEHAVIOR_RUNNING } from "../consts";
+import fasLock from "@fortawesome/fontawesome-free/svgs/solid/lock.svg";
 
 class RecWindowUI extends LitElement {
   constructor() {
@@ -38,6 +40,10 @@ class RecWindowUI extends LitElement {
 
     // @ts-expect-error - TS2339 - Property 'showPopup' does not exist on type 'RecWindowUI'.
     this.showPopup = false;
+    // @ts-expect-error - TS2339 - Property 'showCertPopup' does not exist on type 'RecWindowUI'.
+    this.showCertPopup = false;
+    // @ts-expect-error - TS2339 - Property 'certData' does not exist on type 'RecWindowUI'.
+    this.certData = null;
 
     this.initStats();
   }
@@ -77,6 +83,8 @@ class RecWindowUI extends LitElement {
       autorun: { type: Boolean },
 
       showPopup: { type: Boolean },
+      showCertPopup: { type: Boolean },
+      certData: { type: Object },
       wcId: { type: Number },
     };
   }
@@ -140,6 +148,55 @@ class RecWindowUI extends LitElement {
         margin: 0px 8px;
       }
 
+      .icons-left-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding-left: 8px;
+        pointer-events: none; /* Let clicks pass through, but re-enable for children */
+        z-index: 4;
+      }
+
+      .icons-left-container > * {
+        pointer-events: auto;
+        margin-right: 4px;
+        position: relative !important;
+        height: auto !important;
+        width: auto !important;
+        top: auto !important;
+        left: auto !important;
+      }
+
+      /* Override Bulma's padding if needed, assuming default is 2.5em (~40px) */
+      .control.has-icons-left .input {
+        padding-left: 4.5em !important; /* Make room for two icons */
+      }
+      
+      .icons-left-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding-left: 8px;
+        pointer-events: none; /* Let clicks pass through, but re-enable for children */
+        z-index: 4;
+      }
+      
+      .icons-left-container > * {
+        pointer-events: auto;
+        margin-right: 4px;
+      }
+
+      /* Override Bulma's padding if needed, assuming default is 2.5em (~40px) */
+      .control.has-icons-left .input {
+        padding-left: 4.5em !important; /* Make room for two icons */
+      }
+
       .grey-disabled {
         --fa-icon-fill-color: lightgrey;
         color: lightgrey;
@@ -199,9 +256,9 @@ class RecWindowUI extends LitElement {
               <fa-icon
                 size="1.0em"
                 class="${
-                  // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
-                  this.canGoBack ? "" : "grey-disabled"
-                }"
+      // @ts-expect-error - TS2551 - Property 'canGoBack' does not exist on type 'RecWindowUI'. Did you mean 'onGoBack'?
+      this.canGoBack ? "" : "grey-disabled"
+      }"
                 aria-hidden="true"
                 .svg="${fasLeft}"
               ></fa-icon>
@@ -220,9 +277,9 @@ class RecWindowUI extends LitElement {
               <fa-icon
                 size="1.0em"
                 class="${
-                  // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
-                  this.canGoForward ? "" : "grey-disabled"
-                }"
+      // @ts-expect-error - TS2551 - Property 'canGoForward' does not exist on type 'RecWindowUI'. Did you mean 'onGoForward'?
+      this.canGoForward ? "" : "grey-disabled"
+      }"
                 aria-hidden="true"
                 .svg="${fasRight}"
               ></fa-icon>
@@ -233,9 +290,9 @@ class RecWindowUI extends LitElement {
             role="button"
             id="refresh"
             class="button is-borderless ${
-              // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
-              this.isLoading ? "is-loading" : ""
-            }"
+      // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+      this.isLoading ? "is-loading" : ""
+      }"
             @click="${this.onRefresh}"
             @keyup="${clickOnSpacebarPress}"
             title="Reload"
@@ -243,9 +300,9 @@ class RecWindowUI extends LitElement {
           >
             <span class="icon is-small">
               ${
-                // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
-                !this.isLoading
-                  ? html`
+      // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+      !this.isLoading
+        ? html`
                       <fa-icon
                         size="1.0em"
                         class="has-text-grey"
@@ -253,44 +310,61 @@ class RecWindowUI extends LitElement {
                         .svg="${fasRefresh}"
                       ></fa-icon>
                     `
-                  : ""
-              }
+        : ""
+      }
             </span>
           </a>
           <form @submit="${this.onSubmit}">
             <div
               class="control is-expanded ${
-                // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
-                this.favIconUrl ? "has-icons-left" : "has-icons-left"
-              }"
+      // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
+      this.favIconUrl ? "has-icons-left" : "has-icons-left"
+      }"
             >
               <input
                 id="url"
                 class="input"
+                style="padding-left: 5em !important;"
                 type="url"
                 @keydown="${this.onKeyDown}"
                 @blur="${this.onLostFocus}"
                 .value="${
-                  // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
-                  this.url
-                }"
+      // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
+      this.url
+      }"
                 placeholder="Enter text to search or a URL to replay"
               />
+              <div class="icons-left-container">
 
               ${
-                // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
-                this.favIconUrl
-                  ? html` <span class="favicon icon is-small is-left">
+      // @ts-expect-error - TS2339 - Property 'url' does not exist on type 'RecWindowUI'.
+      this.url && this.url.startsWith("https://")
+        ? html`<span 
+                      class="icon is-small" 
+                      style="pointer-events: auto; cursor: pointer; z-index: 5;"
+                      @click="${this.onToggleCertPopup}"
+                      title="View Certificate"
+                    >
+                      <fa-icon .svg="${fasLock}" size="0.8em"></fa-icon>
+                    </span>`
+        : ""
+      }
+
+              ${
+      // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
+      this.favIconUrl
+        ? html` <span class="favicon icon is-small">
                       <img
                         src="${
-                          // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
-                          this.favIconUrl
-                        }"
+          // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
+          this.favIconUrl
+          }"
                         @error="${this.tryNextIcon}"
                       />
                     </span>`
-                  : html``
-              }
+        : html``
+      }
+              </div>
             </div>
           </form>
           <a
@@ -307,29 +381,29 @@ class RecWindowUI extends LitElement {
                 aria-hidden="true"
               ></fa-icon>
               ${
-                // @ts-expect-error - TS2339 - Property 'recording' does not exist on type 'RecWindowUI'.
-                this.recording
-                  ? // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'RecWindowUI'.
-                    html` ${this.autorun
-                      ? html`<span class="overlay overlay-auto"></span>`
-                      : // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
-                        !this.numPending
-                        ? html` <span class="overlay overlay-idle">✓</span>`
-                        : html`
+      // @ts-expect-error - TS2339 - Property 'recording' does not exist on type 'RecWindowUI'.
+      this.recording
+        ? // @ts-expect-error - TS2339 - Property 'autorun' does not exist on type 'RecWindowUI'.
+        html` ${this.autorun
+          ? html`<span class="overlay overlay-auto"></span>`
+          : // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
+          !this.numPending
+            ? html` <span class="overlay overlay-idle">✓</span>`
+            : html`
                             <span class="overlay overlay-waiting"
                               >${
-                                // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
-                                this.numPending
-                              }</span
+              // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'RecWindowUI'.
+              this.numPending
+              }</span
                             >
                           `}`
-                  : ""
-              }
+        : ""
+      }
             </span>
           </a>
         </div>
       </nav>
-      ${this.renderWebView()} ${this.renderPopup()}
+      ${this.renderWebView()} ${this.renderPopup()} ${this.renderCertPopup()}
     `;
   }
 
@@ -338,12 +412,12 @@ class RecWindowUI extends LitElement {
       allowpopups=""
       partition="persist:wr"
       @did-start-loading="${
-        // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
-        () => (this.isLoading = true)
+      // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+      () => (this.isLoading = true)
       }"
       @did-stop-loading="${
-        // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
-        () => (this.isLoading = false)
+      // @ts-expect-error - TS2339 - Property 'isLoading' does not exist on type 'RecWindowUI'.
+      () => (this.isLoading = false)
       }"
       @page-favicon-updated="${this.onFaviconUpdated}"
       @will-navigate="${this.onWillNavigate}"
@@ -363,13 +437,56 @@ class RecWindowUI extends LitElement {
     return html`
       <wr-app-popup
         .msg="${
-          // @ts-expect-error - TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
-          this.stats
-        }"
+      // @ts-expect-error - TS2339 - Property 'stats' does not exist on type 'RecWindowUI'.
+      this.stats
+      }"
         @send-msg="${this.onSendMsg}"
       >
       </wr-app-popup>
     `;
+  }
+
+  renderCertPopup() {
+    // @ts-expect-error - TS2339 - Property 'showCertPopup' does not exist on type 'RecWindowUI'.
+    if (!this.showCertPopup) {
+      return html``;
+    }
+    return html`
+      <wr-cert-popup
+        .cert="${
+      // @ts-expect-error - TS2339 - Property 'certData' does not exist on type 'RecWindowUI'.
+      this.certData
+      }"
+        .show="${true}"
+        @close="${() =>
+        // @ts-expect-error - TS2339 - Property 'showCertPopup' does not exist on type 'RecWindowUI'.
+        (this.showCertPopup = false)}"
+      ></wr-cert-popup>
+    `;
+  }
+
+  async onToggleCertPopup() {
+    console.log("Toggling cert popup");
+    // @ts-expect-error - TS2339 - Property 'showCertPopup' does not exist on type 'RecWindowUI'.
+    this.showCertPopup = !this.showCertPopup;
+    // @ts-expect-error - TS2339 - Property 'showCertPopup' does not exist on type 'RecWindowUI'.
+    if (this.showCertPopup) {
+      const webview = this.renderRoot.querySelector("webview");
+      if (webview) {
+        try {
+          // @ts-expect-error - TS2339 - Property 'getWebContentsId' does not exist on type 'Element'.
+          const id = webview.getWebContentsId();
+          console.log("Requesting cert for WC ID:", id);
+          // @ts-expect-error - TS2339 - Property 'archivewebpage' does not exist on type 'Window & typeof globalThis'.
+          const cert = await window.archivewebpage.getCertificate(id);
+          console.log("Cert data received:", cert);
+          // @ts-expect-error - TS2339 - Property 'certData' does not exist on type 'RecWindowUI'.
+          this.certData = cert;
+        } catch (e) {
+          console.error("Error getting cert:", e);
+        }
+      }
+    }
   }
 
   // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.

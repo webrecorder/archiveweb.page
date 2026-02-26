@@ -33,6 +33,12 @@ const IFRAME_INJECT_URL = "__awp_iframe_inject__";
 
 const BEHAVIOR_LOG_FUNC = "__bx_log";
 
+const DISABLE_PERF_NHP = `;
+if (self.PerformanceResourceTiming) {
+  Object.defineProperty(self.PerformanceResourceTiming.prototype, "nextHopProtocol", {value: ""});
+}
+`;
+
 // ===========================================================================
 // @ts-expect-error - TS7006 - Parameter 'time' implicitly has an 'any' type.
 function sleep(time) {
@@ -62,6 +68,7 @@ class Recorder {
   archiveScreenshots = false;
   archivePDF = false;
   disableMSE = false;
+  disablePerf = false;
 
   _fetchQueue: FetchEntry[] = [];
 
@@ -166,6 +173,7 @@ class Recorder {
       (await getLocalOption("archiveScreenshots")) === "1";
     this.archivePDF = (await getLocalOption("archivePDF")) === "1";
     this.disableMSE = (await getLocalOption("disableMSE")) === "1";
+    this.disablePerf = (await getLocalOption("disablePerf")) === "1";
   }
 
   // @ts-expect-error - TS7006 - Parameter 'autorun' implicitly has an 'any' type.
@@ -201,7 +209,8 @@ class Recorder {
 
     window.addEventListener("beforeunload", () => {});\n` +
       (this.archiveFlash ? this.getFlashInjectScript() : "") +
-      (this.disableMSE ? DISABLE_MEDIASOURCE_SCRIPT : "")
+      (this.disableMSE ? DISABLE_MEDIASOURCE_SCRIPT : "") +
+      (this.disablePerf ? DISABLE_PERF_NHP : "")
     );
   }
 
@@ -368,7 +377,7 @@ class Recorder {
       }
 
       // @ts-expect-error - TS2339 - Property '_cachePageInfo' does not exist on type 'Recorder'.
-      if (this._cachePageInfo) {
+      if (!this.isEmptyPage(this._cachePageInfo)) {
         // @ts-expect-error - TS2339 - Property '_doAddPage' does not exist on type 'Recorder'. | TS2339 - Property '_cachePageInfo' does not exist on type 'Recorder'.
         await this._doAddPage(this._cachePageInfo);
         // @ts-expect-error - TS2339 - Property '_cachePageInfo' does not exist on type 'Recorder'.
@@ -1107,10 +1116,9 @@ class Recorder {
 
   // @ts-expect-error - TS7006 - Parameter 'currPage' implicitly has an 'any' type. | TS7006 - Parameter 'domSnapshot' implicitly has an 'any' type. | TS7006 - Parameter 'finished' implicitly has an 'any' type.
   commitPage(currPage, domSnapshot, finished) {
-    if (!currPage?.url || !currPage.ts || currPage.url === "about:blank") {
+    if (this.isEmptyPage(currPage)) {
       return;
     }
-
     if (domSnapshot) {
       currPage.text = this.parseTextFromDOMSnapshot(domSnapshot);
     } else if (!currPage.text) {
@@ -1147,12 +1155,14 @@ class Recorder {
     // @ts-expect-error - TS2339 - Property 'sizeNew' does not exist on type 'Recorder'.
     this.sizeNew += writtenSize;
 
-    // @ts-expect-error - TS2339 - Property '_cachePageInfo' does not exist on type 'Recorder'.
-    this._cachePageInfo = pageInfo;
-    // @ts-expect-error - TS2339 - Property '_cacheSessionTotal' does not exist on type 'Recorder'.
-    this._cacheSessionTotal += payloadSize;
-    // @ts-expect-error - TS2339 - Property '_cacheSessionNew' does not exist on type 'Recorder'.
-    this._cacheSessionNew += writtenSize;
+    if (writtenSize) {
+      // @ts-expect-error - TS2339 - Property '_cachePageInfo' does not exist on type 'Recorder'.
+      this._cachePageInfo = pageInfo;
+      // @ts-expect-error - TS2339 - Property '_cacheSessionTotal' does not exist on type 'Recorder'.
+      this._cacheSessionTotal += payloadSize;
+      // @ts-expect-error - TS2339 - Property '_cacheSessionNew' does not exist on type 'Recorder'.
+      this._cacheSessionNew += writtenSize;
+    }
   }
 
   // @ts-expect-error - TS7006 - Parameter 'params' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
@@ -1225,6 +1235,14 @@ class Recorder {
     this.updateStatus();
     // @ts-expect-error - TS2339 - Property 'firstPageStarted' does not exist on type 'Recorder'.
     this.firstPageStarted = true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  isEmptyPage(pageInfo: any) {
+    if (!pageInfo?.url || !pageInfo.ts || pageInfo.url === "about:blank") {
+      return true;
+    }
+    return false;
   }
 
   // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type. | TS7006 - Parameter 'mime' implicitly has an 'any' type.

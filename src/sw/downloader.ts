@@ -937,8 +937,8 @@ class Downloader {
     }
 
     const extraOpts = resource.extraOpts as
-    | (ExtraOpts & { resource?: boolean })
-    | null;
+      | (ExtraOpts & { resource?: boolean })
+      | null;
 
     const isResource = extraOpts?.resource;
 
@@ -961,7 +961,6 @@ class Downloader {
       if (!payload) {
         return null;
       }
-
     } else if (resource.digest && digestOriginal) {
       // if exact resource in a row, and same page, then just skip instead of writing revisit
       if (

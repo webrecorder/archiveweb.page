@@ -62,6 +62,7 @@ class ArchiveWebApp extends ReplayWebApp {
   archiveScreenshots: boolean | null = null;
   archivePDF: boolean | null = null;
   disableMSE: boolean | null = null;
+  disablePerf: boolean | null = null;
 
   showIpfsShareFailed = false;
 
@@ -131,6 +132,8 @@ class ArchiveWebApp extends ReplayWebApp {
     this.archiveFlash = (await getLocalOption("archiveFlash")) === "1";
 
     this.disableMSE = (await getLocalOption("disableMSE")) === "1";
+
+    this.disablePerf = (await getLocalOption("disablePerf")) === "1";
 
     const archiveScreenshots = await getLocalOption("archiveScreenshots");
 
@@ -530,9 +533,7 @@ class ArchiveWebApp extends ReplayWebApp {
                 </div>
                 <button
                   class="button is-small"
-                  @click="${
-                    () => (this.showSettings = true)
-                  }"
+                  @click="${() => (this.showSettings = true)}"
                 >
                   <fa-icon .svg=${fasCog}></fa-icon>
                 </button>
@@ -574,9 +575,7 @@ class ArchiveWebApp extends ReplayWebApp {
         ? this.renderDownloadModal()
         : ""
     }
-    ${
-      this.showSettings ? this.renderSettingsModal() : ""
-    }
+    ${this.showSettings ? this.renderSettingsModal() : ""}
     ${this.showIpfsShareFailed ? this.renderIPFSShareFailedModal() : ""}
     ${
       // @ts-expect-error - TS2339 - Property 'uploadCollOpts' does not exist on type 'ArchiveWebApp'. | TS2339 - Property 'btrixOpts' does not exist on type 'ArchiveWebApp'.
@@ -1089,7 +1088,7 @@ class ArchiveWebApp extends ReplayWebApp {
                     enable only when archiving websites that contain Flash.
                   </p>
                 </div>
-                <hr/>
+                <hr />
                 <div class="is-size-6">Page override settings:</div>
                 <div class="field is-size-6 mt-4">
                   <input
@@ -1103,6 +1102,21 @@ class ArchiveWebApp extends ReplayWebApp {
                   <p class="is-size-7 mt-1">
                     If set, will likely disable dynamic streaming for many
                     websites, but may result in better video/audio capture.
+                  </p>
+                </div>
+                <div class="field is-size-6 mt-4">
+                  <input
+                    name="prefDisablePerf"
+                    id="disablePerf"
+                    class="checkbox"
+                    type="checkbox"
+                    ?checked="${this.disablePerf}"
+                    @change=${this.onUpdatePrefsOption}
+                  /><span class="ml-1">Disable Performance Detection</span>
+                  <p class="is-size-7 mt-1">
+                    If set, will disable performance detection features (such as
+                    current HTTP version), which can fix some replay issues,
+                    result in more accurate replay.
                   </p>
                 </div>
                 <hr />
@@ -1262,17 +1276,18 @@ class ArchiveWebApp extends ReplayWebApp {
           <div class="has-text-centered has-text-danger">
             ${this.settingsError}
           </div>
-          ${this.settingsTab !== "prefs" ?
-          html`<div class="has-text-centered mt-4">
-            <button class="button is-primary" type="submit">Save</button>
-            <button
-              class="button"
-              type="button"
-              @click="${this.onCancelSettings}"
-            >
-              Cancel
-            </button>
-          </div>` : ``}
+          ${this.settingsTab !== "prefs"
+            ? html`<div class="has-text-centered mt-4">
+                <button class="button is-primary" type="submit">Save</button>
+                <button
+                  class="button"
+                  type="button"
+                  @click="${this.onCancelSettings}"
+                >
+                  Cancel
+                </button>
+              </div>`
+            : ``}
         </form>
       </wr-modal>
     `;

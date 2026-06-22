@@ -46,7 +46,6 @@ export class RecProxy extends ArchiveDB {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(config: any, collLoader: CollectionLoader) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     super(config.dbname);
 
     this.name = config.dbname.slice(3);
@@ -55,7 +54,6 @@ export class RecProxy extends ArchiveDB {
 
     this.recordProxied = config.extraConfig.recordProxied || false;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this.liveProxy = new LiveProxy(config.extraConfig, {
       cloneResponse: true,
       allowBody: true,
@@ -86,15 +84,11 @@ export class RecProxy extends ArchiveDB {
   async decCounter() {
     this.counter--;
     //console.log("rec counter", this.counter);
-    //TODO: fix
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (this.db! as any).put("rec", this.counter, "numPending");
+    await this.db!.put("rec", this.counter, "numPending");
   }
 
   async getCounter(): Promise<number | undefined> {
-    //TODO: fix
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
-    return await (this.db! as any).get("rec", "numPending");
+    return await this.db!.get("rec", "numPending");
   }
 
   override async getResource(
@@ -131,7 +125,6 @@ export class RecProxy extends ArchiveDB {
     }
 
     // don't record content proxied from specified hosts
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!this.recordProxied && this.liveProxy.hostProxy) {
       const parsedUrl = new URL(response!.url);
       if (this.liveProxy.hostProxy[parsedUrl.host]) {
@@ -297,7 +290,6 @@ export class RecordingCollections extends SWCollections {
         return store;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return await super._initStore(type, config);
   }
 
@@ -306,7 +298,6 @@ export class RecordingCollections extends SWCollections {
 
     switch (event.data.msg_type) {
       case "toggle-record":
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         coll = await this.getColl(event.data.id);
         if (coll && coll.store instanceof RecProxy) {
           console.log("Recording Toggled!", event.data.isRecording);
@@ -314,11 +305,9 @@ export class RecordingCollections extends SWCollections {
         }
         break;
 
-      case "update-favicon":
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      case "update-favicon": 
         coll = await this.getColl(event.data.id);
         if (coll && coll.store instanceof RecProxy) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           await coll.store.updateFavIcon(event.data.url, event.data.favIconUrl);
         }
         break;

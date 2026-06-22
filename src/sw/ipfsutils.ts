@@ -217,8 +217,7 @@ async function ipfsWriteBuff(
 ) {
   const file = UnixFS.createFileWriter(writer);
   if (content instanceof Uint8Array) {
-    await file.write(content);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    await file.write(content); 
   } else if (content[Symbol.asyncIterator]) {
     for await (const chunk of content) {
       await file.write(chunk);
@@ -352,7 +351,6 @@ async function splitByWarcRecordGroup(
         links = [];
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       fileLinks.push(link);
 
       const [dirName, filename] = getDirAndName(currName);
@@ -369,7 +367,6 @@ async function splitByWarcRecordGroup(
         dir = dirs[dirName];
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       dir.set(filename, link);
 
       inZipFile = false;
@@ -383,8 +380,7 @@ async function splitByWarcRecordGroup(
         count = 0;
         file = UnixFS.createFileWriter(writer);
 
-        if (chunk === WARC_GROUP) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        if (chunk === WARC_GROUP) { 
           secondaryLinks.push(await concat(writer, links));
           links = [];
         }
@@ -421,7 +417,6 @@ async function splitByWarcRecordGroup(
 
   rootDir.set("webarchive", await waczDir.close());
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   rootDir.set(waczPath, await concat(writer, fileLinks));
 }
 
@@ -433,8 +428,7 @@ async function concat(
   //TODO: is this the right way to do this?
   const { fileEncoder, hasher, linker } = writer.settings;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const advanced = (fileEncoder as any).createAdvancedFile(links);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const advanced = (fileEncoder as any).createAdvancedFile(links); 
   const bytes = fileEncoder.encode(advanced);
   const hash = await hasher.digest(bytes);
   const cid = linker.createLink(fileEncoder.code, hash);
@@ -453,8 +447,7 @@ async function concat(
 }
 
 export const iterate = async function* (stream: ReadableStream<Uint8Array>) {
-  const reader = stream.getReader();
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const reader = stream.getReader(); 
   while (true) {
     const next = await reader.read();
     if (next.done) {
@@ -466,8 +459,7 @@ export const iterate = async function* (stream: ReadableStream<Uint8Array>) {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function encodeBlocks(blocks: UnixFS.Block[], root?: any) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+export async function encodeBlocks(blocks: UnixFS.Block[], root?: any) { 
   const { writer, out } = CarWriter.create(root);
   /** @type {Error?} */
   let error;
@@ -484,8 +476,7 @@ export async function encodeBlocks(blocks: UnixFS.Block[], root?: any) {
     }
   })();
   const chunks = [];
-  for await (const chunk of out) chunks.push(chunk);
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  for await (const chunk of out) chunks.push(chunk); 
   if (error != null) throw error;
   const roots = root != null ? [root] : [];
   console.log("chunks", chunks.length);
@@ -562,8 +553,7 @@ export class ShardingStream extends TransformStream {
           readySize = currSize;
           shard = [];
           currSize = 0;
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        } 
         shard.push(block);
         currSize += block.bytes.length;
       },

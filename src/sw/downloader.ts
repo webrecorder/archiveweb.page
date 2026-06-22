@@ -357,7 +357,7 @@ class Downloader {
     //let count = 0;
 
     while (resources.length) {
-      const last: ResourceEntry = resources[resources.length - 1]!;
+      const last: ResourceEntry = resources[resources.length - 1];
 
       if (this.pageList) {
         resources = resources.filter((res) =>
@@ -521,7 +521,7 @@ class Downloader {
 
         // response record
         const responseData: { length: number; digest?: string } = { length: 0 };
-        yield* this.emitRecord(records[0]!, digestRecordAndCDX, responseData);
+        yield* this.emitRecord(records[0], digestRecordAndCDX, responseData);
         offset += responseData.length;
         resource.length = responseData.length;
         if (digestRecordAndCDX && !resource.recordDigest) {
@@ -532,7 +532,7 @@ class Downloader {
         // request record, if any
         if (records.length > 1) {
           const requestData = { length: 0 };
-          yield* this.emitRecord(records[1]!, false, requestData);
+          yield* this.emitRecord(records[1], false, requestData);
           offset += requestData.length;
         }
 

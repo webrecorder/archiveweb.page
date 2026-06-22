@@ -158,6 +158,7 @@ const encoder = new TextEncoder();
 
 const EMPTY = new Uint8Array([]);
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function* getPayload(payload: Uint8Array) {
   yield payload;
 }
@@ -745,6 +746,7 @@ class Downloader {
     yield res;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *generateDataPackage() {
     const root: DataPackageJSON = {
       profile: "data-package",
@@ -837,6 +839,7 @@ class Downloader {
     }
   }
 */
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *generateIDX() {
     yield this.indexLines.join("\n");
   }

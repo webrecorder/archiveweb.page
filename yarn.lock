@@ -2420,6 +2420,36 @@
     stream-browserify "^3.0.0"
     warcio "^2.4.10"
 
+"@webrecorder/wabac@^2.26.5":
+  version "2.26.5"
+  resolved "https://registry.yarnpkg.com/@webrecorder/wabac/-/wabac-2.26.5.tgz#a551f3a9d11efae51e86e888307b0e34d2a8db0b"
+  integrity sha512-XThsHexCOXEaiXrvEXsBRAmT92YV+1IUDTBZvq3h7FTPw2Pr8b7E0d9LdXbYWfCtcEZ3i1JavSt5vfsj+xRDqw==
+  dependencies:
+    "@peculiar/asn1-ecc" "^2.3.4"
+    "@peculiar/asn1-schema" "^2.3.3"
+    "@peculiar/x509" "^1.9.2"
+    "@types/js-levenshtein" "^1.1.3"
+    "@webrecorder/wombat" "^3.10.5"
+    acorn "^8.15.0"
+    auto-js-ipfs "^2.1.1"
+    base64-js "^1.5.1"
+    brotli "^1.3.3"
+    buffer "^6.0.3"
+    fast-xml-parser "^4.5.4"
+    hash-wasm "^4.9.0"
+    http-status-codes "^2.1.4"
+    idb "^7.1.1"
+    js-levenshtein "^1.1.6"
+    js-yaml "^4.1.1"
+    mime "^4.1.0"
+    pako "^1.0.11"
+    parse5-html-rewriting-stream "^7.0.0"
+    parse5-sax-parser "^7.0.0"
+    path-parser "^6.1.0"
+    process "^0.11.10"
+    stream-browserify "^3.0.0"
+    warcio "^2.4.10"
+
 "@webrecorder/wombat@^3.10.5":
   version "3.10.5"
   resolved "https://registry.yarnpkg.com/@webrecorder/wombat/-/wombat-3.10.5.tgz#fdb7332b03ad8dd76103f546d7cbd443a61148fe"

@@ -256,7 +256,7 @@ class Downloader {
     uuidNamespace,
     markers,
   }: DownloaderOpts) {
-    this.db = coll.store;
+    this.db = coll.store as ArchiveDB;
     this.pageList = pageList || null;
     this.collId = coll.name;
     this.metadata = coll.config.metadata || {};

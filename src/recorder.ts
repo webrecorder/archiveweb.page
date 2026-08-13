@@ -189,9 +189,9 @@ class Recorder {
       window.addEventListener("DOMContentLoaded", () => {
         const e = document.createElement("script");
         e.src = "${
-          // @ts-expect-error - TS2339 - Property 'getExternalInjectURL' does not exist on type 'Recorder'.
-          this.getExternalInjectURL(path)
-        }";
+      // @ts-expect-error - TS2339 - Property 'getExternalInjectURL' does not exist on type 'Recorder'.
+      this.getExternalInjectURL(path)
+      }";
         document.head.appendChild(e);
       });
     })();
@@ -205,7 +205,7 @@ class Recorder {
     self.__bx_behaviors.init(${
       // @ts-expect-error - TS2339 - Property 'behaviorInitStr' does not exist on type 'Recorder'.
       this.behaviorInitStr
-    });
+      });
 
     window.addEventListener("beforeunload", () => {});\n` +
       (this.archiveFlash ? this.getFlashInjectScript() : "") +
@@ -729,11 +729,11 @@ class Recorder {
           if (allowAttach) {
             console.log(
               "Target Attached: " +
-                type +
-                " " +
-                params.targetInfo.url +
-                " " +
-                params.sessionId,
+              type +
+              " " +
+              params.targetInfo.url +
+              " " +
+              params.sessionId,
             );
 
             if (type === "page" || type === "iframe") {
@@ -742,11 +742,11 @@ class Recorder {
           } else {
             console.log(
               "Not allowed attach for: " +
-                type +
-                " " +
-                params.targetInfo.url +
-                " " +
-                params.sessionId,
+              type +
+              " " +
+              params.targetInfo.url +
+              " " +
+              params.sessionId,
             );
 
             // @ts-expect-error - TS2339 - Property 'flatMode' does not exist on type 'Recorder'.
@@ -764,9 +764,9 @@ class Recorder {
           console.log(e);
           console.warn(
             "Error attaching target: " +
-              params.targetInfo.type +
-              " " +
-              params.targetInfo.url,
+            params.targetInfo.type +
+            " " +
+            params.targetInfo.url,
           );
         }
         break;
@@ -892,6 +892,11 @@ class Recorder {
         }
         break;
 
+      case "Target.attachedToTarget":
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        await this.handleAttachedToTarget(params);
+        break;
+
       default:
         //if (method.startsWith("Target.")) {
         //  console.log(method, params);
@@ -900,6 +905,31 @@ class Recorder {
     }
 
     return true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async handleAttachedToTarget(params: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const sessionId = params.sessionId;
+
+    try {
+      await this.send(
+        "Network.setCacheDisabled",
+        // @ts-expect-error - TS2345
+        { cacheDisabled: true },
+        [sessionId]
+      );
+
+      await this.send(
+        "Network.setBypassServiceWorker",
+        // @ts-expect-error - TS2345
+        { bypass: true },
+        [sessionId]
+      );
+
+    } catch (e) {
+      console.log("Error disabling cache on new target", e);
+    }
   }
 
   // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type. | TS7006 - Parameter 'sessions' implicitly has an 'any' type.
@@ -928,10 +958,10 @@ class Recorder {
       extractPDF("${
         // @ts-expect-error - TS2339 - Property 'pdfLoadURL' does not exist on type 'Recorder'.
         this.pdfLoadURL
-      }", "${
+        }", "${
         // @ts-expect-error - TS2339 - Property 'getExternalInjectURL' does not exist on type 'Recorder'.
         this.getExternalInjectURL("")
-      }");
+        }");
       `,
       );
 
@@ -999,7 +1029,8 @@ class Recorder {
     const resp = await this.send("Page.captureScreenshot", { format: "png" });
 
     const payload = Buffer.from(resp.data, "base64");
-    const blob = new Blob([payload], { type: "image/png" });
+    //const blob = new Blob([payload], { type: "image/png" });
+    const blob = new Blob([new Uint8Array(payload)], { type: "image/png" });
 
     await this.send("Emulation.clearDeviceMetricsOverride");
 
@@ -2052,13 +2083,13 @@ class Recorder {
       } catch (e) {
         console.warn(
           "no buffer for: " +
-            reqresp.url +
-            " " +
-            reqresp.status +
-            " " +
-            reqresp.requestId +
-            " " +
-            method,
+          reqresp.url +
+          " " +
+          reqresp.status +
+          " " +
+          reqresp.requestId +
+          " " +
+          method,
         );
         console.warn(e);
         return null;

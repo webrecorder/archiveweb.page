@@ -9,6 +9,7 @@ import {
   type HandlerDetails,
   type WindowOpenHandlerResponse,
 } from "electron";
+import * as electron from "electron";
 import { ElectronRecorder } from "./electron-recorder";
 
 import {
@@ -33,7 +34,34 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
     this.recorders = new Map();
+
+    // @ts-expect-error - TS2339 - Property 'certCache' does not exist on type 'ElectronRecorderApp'.
+    this.certCache = new Map();
+    this.opts = opts;
+
+    // @ts-expect-error - TS2339 - Property 'downloadPath' does not exist on type 'ElectronRecorderApp'.
+    this.downloadPath = app.getPath("downloads");
+    // @ts-expect-error - TS2339 - Property 'startPage' does not exist on type 'ElectronRecorderApp'.
+    this.startPage = "";
+
+    for (let i = 0; i < process.argv.length; i++) {
+      if (process.argv[i].startsWith("--download-path=")) {
+        // @ts-expect-error - TS2339 - Property 'downloadPath' does not exist on type 'ElectronRecorderApp'.
+        this.downloadPath = process.argv[i].split("=")[1];
+      } else if (process.argv[i] === "--download-path" && i + 1 < process.argv.length) {
+        // @ts-expect-error - TS2339 - Property 'downloadPath' does not exist on type 'ElectronRecorderApp'.
+        this.downloadPath = process.argv[i + 1];
+      } else if (process.argv[i].startsWith("--start-page=")) {
+        // @ts-expect-error - TS2339 - Property 'startPage' does not exist on type 'ElectronRecorderApp'.
+        this.startPage = process.argv[i].split("=")[1];
+      } else if (process.argv[i] === "--start-page" && i + 1 < process.argv.length) {
+        // @ts-expect-error - TS2339 - Property 'startPage' does not exist on type 'ElectronRecorderApp'.
+        this.startPage = process.argv[i + 1];
+      }
+    }
   }
+
+  opts: any;
 
   // @ts-expect-error - TS2416 - Property 'mainWindowWebPreferences' in type 'ElectronRecorderApp' is not assignable to the same property in base type 'ElectronReplayApp'.
   get mainWindowWebPreferences() {
@@ -50,6 +78,26 @@ class ElectronRecorderApp extends ElectronReplayApp {
 
     ipcMain.on("start-rec", (event, opts) => {
       this.createRecordWindow(opts);
+    });
+
+    ipcMain.handle("get-certificate", (event, webContentsId) => {
+      console.log(`IPC: get-certificate request for WebContents ID: ${webContentsId}`);
+      const wc = electron.webContents.fromId(webContentsId);
+      if (!wc) {
+        console.warn("WebContents not found for ID:", webContentsId);
+        return null;
+      }
+      try {
+        const url = wc.getURL();
+        const hostname = new URL(url).hostname;
+        // @ts-expect-error - TS2339 - Property 'certCache' does not exist on type 'ElectronRecorderApp'.
+        const cert = this.certCache.get(hostname);
+        console.log(`Looked up cert for ${hostname}:`, cert ? "Found" : "Not Found");
+        return cert || null;
+      } catch (e) {
+        console.warn("Failed to get certificate", e);
+        return null;
+      }
     });
 
     sesh.webRequest.onHeadersReceived((details, callback) => {
@@ -74,12 +122,24 @@ class ElectronRecorderApp extends ElectronReplayApp {
     });
 
     sesh.on("will-download", (event, item, webContents) => {
-      const origFilename = item.getFilename();
+      let origFilename = item.getFilename();
+
+      const urlChain = item.getURLChain() || [];
+      const certUrl = urlChain.find(u => u.includes("cert://"));
+      if (certUrl) {
+         try {
+           const host = new URL(certUrl.substring(certUrl.indexOf("cert://"))).hostname;
+           if (host) {
+             origFilename = `${host}_cert.cer`;
+           }
+         } catch(e) {}
+      }
 
       console.log(`will-download: ${origFilename}`);
 
       item.setSavePath(
-        unusedFilenameSync(path.join(app.getPath("downloads"), origFilename)),
+        // @ts-expect-error - TS2339 - Property 'downloadPath' does not exist on type 'ElectronRecorderApp'.
+        unusedFilenameSync(path.join(this.downloadPath, origFilename)),
       );
 
       ipcMain.on("dlcancel:" + origFilename, () => {
@@ -131,7 +191,13 @@ class ElectronRecorderApp extends ElectronReplayApp {
   }
 
   get mainWindowUrl() {
-    return "index.html";
+    let url = "index.html";
+    // @ts-expect-error - TS2339 - Property 'startPage' does not exist on type 'ElectronRecorderApp'.
+    if (this.startPage) {
+      // @ts-expect-error - TS2339 - Property 'startPage' does not exist on type 'ElectronRecorderApp'.
+      url += "?startPage=" + encodeURIComponent(this.startPage);
+    }
+    return url;
   }
 
   // @ts-expect-error - TS7006 - Parameter 'argv' implicitly has an 'any' type.
@@ -283,20 +349,56 @@ class ElectronRecorderApp extends ElectronReplayApp {
     recWebContents.setWindowOpenHandler(
       (details: HandlerDetails): WindowOpenHandlerResponse => {
         const { url } = details;
-        return {
-          action: "allow",
-          outlivesOpener: true,
-          createWindow: () => {
-            const win = this.createRecordWindow({ url, collId, startRec });
-            return win.webContents;
-          },
-        };
+
+        // Asynchronously create our custom recording window
+        setTimeout(() => {
+          this.createRecordWindow({ url, collId, startRec });
+        }, 0);
+
+        return { action: "deny" };
       },
     );
 
     recWebContents.on("destroyed", () => {
       // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
       this.recorders.delete(id);
+    });
+
+    const archivedCerts = new Set();
+    // @ts-expect-error - TS7006 - Parameter 'event' implicitly has an 'any' type.
+    recWebContents.on("did-navigate", (event, navUrl: string) => {
+      try {
+        const hostname = new URL(navUrl).hostname;
+        // @ts-expect-error - TS2339 - Property 'certCache' does not exist on type 'ElectronRecorderApp'.
+        const certObj = this.certCache.get(hostname);
+        if (certObj && certObj.certificate && !archivedCerts.has(hostname)) {
+          archivedCerts.add(hostname);
+          const payload = Buffer.from(certObj.certificate.data, "utf8");
+          const data = {
+            url: `cert://${hostname}/`,
+            ts: Date.now(),
+            method: "GET",
+            status: 200,
+            statusText: "OK",
+            mime: "application/x-x509-ca-cert",
+            reqHeaders: {},
+            respHeaders: {
+              "Content-Type": "application/x-x509-ca-cert",
+              "Content-Length": payload.length.toString(),
+              "Content-Disposition": `attachment; filename="${hostname}_cert.cer"`,
+            },
+            payload: payload,
+            extraOpts: { resource: true },
+          };
+          // @ts-expect-error - TS2339 - Property 'recorders' does not exist on type 'ElectronRecorderApp'.
+          const rec = this.recorders.get(id);
+          if (rec && rec.running && rec.appWC) {
+            rec.appWC.send("add-resource", data, collId);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
     });
 
     //await recWebContents.loadURL("about:blank");
@@ -325,6 +427,33 @@ class ElectronRecorderApp extends ElectronReplayApp {
     } catch (e) {
       console.warn("Load Failed", e);
     }
+
+    this.setupCertHandler(recWebContents.session);
+  }
+
+  // @ts-expect-error - TS7006 - Parameter 'session' implicitly has an 'any' type.
+  setupCertHandler(session) {
+    if (session._certHandlerInstalled) {
+      return;
+    }
+    session._certHandlerInstalled = true;
+
+    console.log("Installing certificate handler for session");
+
+    // Capture certificates
+    session.setCertificateVerifyProc((request: any, callback: any) => {
+      const { hostname, certificate, verificationResult, errorCode } = request;
+      // console.log("CACHE SET for " + hostname); 
+      // @ts-expect-error - TS2339 - Property 'certCache' does not exist on type 'ElectronRecorderApp'.
+      this.certCache.set(hostname, { certificate, verificationResult });
+
+      // Default behavior fallback
+      if (verificationResult === "net::OK") {
+        callback(0);
+      } else {
+        callback(errorCode);
+      }
+    });
   }
 }
 

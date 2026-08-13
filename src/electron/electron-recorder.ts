@@ -81,6 +81,8 @@ class ElectronRecorder extends Recorder {
         this.sizeNew += size;
         // @ts-expect-error - TS2339 - Property '_cacheSessionNew' does not exist on type 'ElectronRecorder'.
         this._cacheSessionNew += size;
+        // @ts-expect-error - TS2339 - Property '_cacheSessionTotal' does not exist on type 'ElectronRecorder'.
+        this._cacheSessionTotal += size;
       }
     });
 

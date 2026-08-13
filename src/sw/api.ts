@@ -1,4 +1,68 @@
-import { API, type SWCollections, tsToDate } from "@webrecorder/wabac/swlib";
+import {
+  API,
+  type SWCollections,
+  tsToDate,
+  ArchiveDB,
+} from "@webrecorder/wabac/swlib";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const origResJson = ArchiveDB.prototype.resJson;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ArchiveDB.prototype.resJson = function (res: any) {
+  const ret = origResJson.call(this, res);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  (ret as any).digest = res.digest;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  (ret as any)._payload = res.payload;
+  return ret;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function calculateMsgDigest(payload: any) {
+  if (crypto.subtle) {
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      payload,
+    );
+    const hash = Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return "sha256:" + hash;
+  }
+  return "";
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function patchResults(results: any[]) {
+  for (const res of results) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!res.digest && res._payload) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+      res.digest = await calculateMsgDigest(res._payload);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    delete res._payload;
+  }
+  return results;
+}
+
+const origResourcesByMime = ArchiveDB.prototype.resourcesByMime;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ArchiveDB.prototype.resourcesByMime = async function (...args: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+  const results = await origResourcesByMime.apply(this, args as any);
+  return await patchResults(results);
+};
+
+const origResourcesByUrlAndMime = ArchiveDB.prototype.resourcesByUrlAndMime;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ArchiveDB.prototype.resourcesByUrlAndMime = async function (...args: any[]) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+  const results = await origResourcesByUrlAndMime.apply(this, args as any);
+  return await patchResults(results);
+};
 
 import { Downloader, type Metadata } from "./downloader";
 import { Signer } from "./keystore";

@@ -11,4 +11,8 @@ contextBridge.exposeInMainWorld("archivewebpage", {
   sendMsg: (id, msg) => {
     ipcRenderer.send("popup-msg-" + id, msg);
   },
+  // @ts-expect-error - TS7006 - Parameter 'id' implicitly has an 'any' type.
+  getCertificate: (id) => {
+    return ipcRenderer.invoke("get-certificate", id);
+  },
 });

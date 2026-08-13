@@ -1,3 +1,4 @@
+
 import {
   html,
   css,
@@ -11,12 +12,14 @@ import fasUnfullscreen from "@fortawesome/fontawesome-free/svgs/solid/compress-a
 
 import { type PropertyValues } from "lit";
 import { property, state } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 import prettyBytes from "pretty-bytes";
 
 import { Item } from "replaywebpage";
 
 import wrRec from "../assets/icons/recLogo.svg";
+import "./rec-resources";
 
 //============================================================================
 class WrRecColl extends Item {
@@ -145,8 +148,8 @@ class WrRecColl extends Item {
         href="#"
         role="button"
         class="${!isDropdown
-          ? "button narrow is-borderless"
-          : "dropdown-item is-hidden-tablet"}"
+        ? "button narrow is-borderless"
+        : "dropdown-item is-hidden-tablet"}"
         title="Start Archiving"
         aria-label="Start Archiving"
         aria-controls="record"
@@ -193,14 +196,14 @@ class WrRecColl extends Item {
           <span class="size-label">${prettyBytes(this.totalSize)}</span>
         </span>
         ${this.showFinish
-          ? html` <button
+        ? html` <button
               class="button is-primary-new"
               @click="${this.onEmbedFinish}"
               type="button"
             >
               Finish
             </button>`
-          : html`
+        : html`
               <a
                 class="button is-primary-new"
                 role="button"
@@ -211,6 +214,71 @@ class WrRecColl extends Item {
               >
             `}
       </div>
+    `;
+  }
+
+  // @ts-expect-error - TS7006 - Parameter 'isSidebar' implicitly has an 'any' type.
+  renderItemTabs(isSidebar) {
+    const isStory = this.hasStory && this.tabData.view === "story";
+    const isPages = this.tabData.view === "pages";
+    const isResources = this.tabData.view === "resources";
+
+    return html`
+      ${isStory
+        ? html` <wr-coll-story
+            .collInfo="${this.itemInfo || {}}"
+            .active="${isStory}"
+            currList="${this.tabData.currList || 0}"
+            @coll-tab-nav="${this.onItemTabNav}"
+            id="story"
+            .isSidebar="${isSidebar}"
+            class="${
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          isStory ? "" : "is-hidden"
+          } ${isSidebar ? "sidebar" : ""}"
+            role="${ifDefined(isSidebar ? undefined : "main")}"
+          >
+          </wr-coll-story>`
+        : ""}
+      ${isResources
+        ? html` <wr-rec-resources
+            .collInfo="${this.itemInfo || {}}"
+            .active="${isResources}"
+            query="${this.tabData.query || ""}"
+            urlSearchType="${this.tabData.urlSearchType || ""}"
+            .currMime="${this.tabData.currMime || ""}"
+            @coll-tab-nav="${this.onItemTabNav}"
+            id="resources"
+            .isSidebar="${isSidebar}"
+            class="is-paddingless ${
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          isResources ? "" : "is-hidden"
+          } ${isSidebar ? "sidebar" : ""}"
+            role="${ifDefined(isSidebar ? undefined : "main")}"
+          >
+          </wr-rec-resources>`
+        : ""}
+      ${isPages
+        ? html` <wr-page-view
+            .collInfo="${this.itemInfo}"
+            .active="${isPages}"
+            .editable="${this.editable}"
+            .isSidebar="${isSidebar}"
+            currList="${this.tabData.currList || 0}"
+            query="${this.tabData.query || ""}"
+            .url="${this.tabData.url || ""}"
+            .ts="${this.tabData.ts || ""}"
+            @coll-tab-nav="${this.onItemTabNav}"
+            id="pages"
+            @coll-update="${this.onItemUpdate}"
+            class="${
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          isPages ? "" : "is-hidden"
+          } ${isSidebar ? "sidebar" : ""}"
+            role="${ifDefined(isSidebar ? undefined : "main")}"
+          >
+          </wr-page-view>`
+        : ""}
     `;
   }
 

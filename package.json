@@ -94,7 +94,6 @@
   "build": {
     "afterSign": "build/notarize.js",
     "productName": "ArchiveWeb.page",
-    "asar": true,
     "appId": "net.webrecorder.archivewebpage",
     "artifactName": "${productName}-${version}.${ext}",
     "extraMetadata": {
@@ -122,17 +121,21 @@
         }
       ],
       "notarize": false,
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
       "electronLanguages": [
         "en"
       ],
       "extraResources": [
         "plugins-mac"
       ],
-      "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
+      "sign": {
+        "entitlements": "build/entitlements.mac.plist",
+        "entitlementsInherit": "build/entitlements.mac.plist",
+        "hardenedRuntime": true,
+        "gatekeeperAssess": false
+      },
+      "universal": {
+        "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
+      }
     },
     "linux": {
       "category": "Archiving;Utility;",

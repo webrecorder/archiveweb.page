@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.17.0",
+  "version": "0.17.0-beta.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": {
@@ -45,7 +45,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
     "electron": "^43.4.0",
-    "electron-builder": "^27.0.0-alpha.6",
+    "electron-builder": "^27.0.0-alpha.7",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^9.1.0",
@@ -144,10 +144,19 @@
       ]
     },
     "win": {
-      "target": "nsis",
+      "target": [
+        "nsis"
+      ],
       "extraResources": [
         "plugins-win"
-      ]
+      ],
+      "sign": {
+        "type": "azure",
+        "endpoint": "https://wus2.codesigning.azure.net/",
+        "codeSigningAccountName": "webrecorder",
+        "certificateProfileName": "webrecorder",
+        "publisherName": "CN=Webrecorer Software LLC"
+      }
     },
     "nsis": {
       "oneClick": false,

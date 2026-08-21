@@ -97,6 +97,7 @@
     "productName": "ArchiveWeb.page",
     "appId": "net.webrecorder.archivewebpage",
     "artifactName": "${productName}-${version}.${ext}",
+    "executableName": "archiveweb.page",
     "extraMetadata": {
       "main": "dist/electron/electron.js"
     },

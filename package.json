@@ -88,7 +88,7 @@
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
-    "release": "yarn run build && electron-builder",
+    "release": "yarn run build && electron-builder --publish always",
     "lint": "eslint ./src/ webpack.config.js",
     "format": "prettier --write ./"
   },

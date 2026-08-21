@@ -1,5 +1,10 @@
 import { type CollMetadata, type Collection } from "@webrecorder/wabac/swlib";
-import { Downloader, type DownloaderOpts, type Markers } from "./downloader";
+import {
+  Downloader,
+  type DownloaderOpts,
+  type DBCollection,
+  type Markers,
+} from "./downloader";
 
 // @ts-expect-error no types
 import { create as createAutoIPFS } from "auto-js-ipfs";
@@ -43,7 +48,7 @@ export async function setAutoIPFSUrl(url: string) {
 }
 
 export async function ipfsAdd(
-  coll: Collection,
+  coll: DBCollection,
   downloaderOpts: DownloaderOpts,
   replayOpts: ReplayOpts = {},
   progress: (incSize: number, totalSize: number) => void,

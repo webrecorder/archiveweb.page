@@ -2672,6 +2672,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react@npm:^19.2.18":
+  version: 19.2.18
+  resolution: "@types/react@npm:19.2.18"
+  dependencies:
+    csstype: "npm:^3.2.2"
+  checksum: 10c0/d04216172b4b4362b310017c210dfbe019fb4f4e7dffd0313e70b3acb3051d5c3e76e7e84e3cf4c6a3c824993ffadfe3949e589a6398a09d4200e7670e2962de
+  languageName: node
+  linkType: hard
+
 "@types/retry@npm:0.12.2":
   version: 0.12.2
   resolution: "@types/retry@npm:0.12.2"
@@ -3184,6 +3193,7 @@ __metadata:
     "@ipld/unixfs": "npm:^3.0.0"
     "@types/mime-types": "npm:^3.0.0"
     "@types/minimist": "npm:^1.2.5"
+    "@types/react": "npm:^19.2.18"
     "@types/uuid": "npm:^10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.15.0"
     "@typescript-eslint/parser": "npm:^6.15.0"
@@ -3196,7 +3206,7 @@ __metadata:
     copy-webpack-plugin: "npm:^9.0.1"
     css-loader: "npm:^6.2.0"
     electron: "npm:^43.4.0"
-    electron-builder: "npm:^27.0.0-alpha.6"
+    electron-builder: "npm:^27.0.0-alpha.7"
     electron-notarize: "npm:^1.2.2"
     electron-updater: "npm:^6.8.9"
     eslint: "npm:^8.28.0"
@@ -3574,9 +3584,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-builder-lib@npm:27.0.0-alpha.6":
-  version: 27.0.0-alpha.6
-  resolution: "app-builder-lib@npm:27.0.0-alpha.6"
+"app-builder-lib@npm:27.0.0-alpha.7":
+  version: 27.0.0-alpha.7
+  resolution: "app-builder-lib@npm:27.0.0-alpha.7"
   dependencies:
     "@electron/asar": "npm:4.1.1"
     "@electron/fuses": "npm:^2.1.1"
@@ -3591,15 +3601,15 @@ __metadata:
     "@types/fs-extra": "npm:9.0.13"
     ajv: "npm:^8.18.0"
     asn1js: "npm:^3.0.10"
-    builder-util: "npm:27.0.0-alpha.6"
-    builder-util-runtime: "npm:10.0.0-alpha.5"
+    builder-util: "npm:27.0.0-alpha.7"
+    builder-util-runtime: "npm:10.0.0-alpha.6"
     chromium-pickle-js: "npm:^0.2.0"
     ci-info: "npm:4.3.1"
     debug: "npm:^4.3.4"
     dotenv: "npm:^16.4.5"
     dotenv-expand: "npm:^11.0.6"
     ejs: "npm:^3.1.8"
-    electron-publish: "npm:27.0.0-alpha.6"
+    electron-publish: "npm:27.0.0-alpha.7"
     fs-extra: "npm:^11.3.0"
     hosted-git-info: "npm:^4.1.0"
     isbinaryfile: "npm:^5.0.0"
@@ -3620,9 +3630,9 @@ __metadata:
     unzipper: "npm:^0.12.3"
     which: "npm:^5.0.0"
   peerDependencies:
-    dmg-builder: 27.0.0-alpha.6
-    electron-builder-squirrel-windows: 27.0.0-alpha.6
-  checksum: 10c0/bca2661ab89caf9bd1a90309bc11e81e297ce394bc91e9240ca8fc1aedd397ef6dc7beb71595434761c4e960707e58ea1895c6a0a2113a7477a1da073a983cd3
+    dmg-builder: 27.0.0-alpha.7
+    electron-builder-squirrel-windows: 27.0.0-alpha.7
+  checksum: 10c0/11e324dbdc89ea5fe5b8d73bc0ced4242465361e77bcff7b32fe243f0f51d5b607fc04eb5bb0c4128cc3c2e3a73b49639c13633982c2f2f76024ce1ab1cf9b14
   languageName: node
   linkType: hard
 
@@ -4136,13 +4146,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builder-util-runtime@npm:10.0.0-alpha.5":
-  version: 10.0.0-alpha.5
-  resolution: "builder-util-runtime@npm:10.0.0-alpha.5"
+"builder-util-runtime@npm:10.0.0-alpha.6":
+  version: 10.0.0-alpha.6
+  resolution: "builder-util-runtime@npm:10.0.0-alpha.6"
   dependencies:
     debug: "npm:^4.3.4"
     sax: "npm:^1.2.4"
-  checksum: 10c0/3f84ed6d96b4024ba403a346684f5a30f8751dbcb8ed08ca113f38c577ac17a9d652d1283795af7880efbdd2b3c38143aaefe04ae7e472bf07f04b2a7e0bad21
+  checksum: 10c0/e380990d70e0464986b498730e788a3d3343db449583083cd460b2e28d9e898091c40b9cf040d2eccfec3211b3d1f76c70f725e6f8664269e84f0e016edbc5b1
   languageName: node
   linkType: hard
 
@@ -4156,12 +4166,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builder-util@npm:27.0.0-alpha.6":
-  version: 27.0.0-alpha.6
-  resolution: "builder-util@npm:27.0.0-alpha.6"
+"builder-util@npm:27.0.0-alpha.7":
+  version: 27.0.0-alpha.7
+  resolution: "builder-util@npm:27.0.0-alpha.7"
   dependencies:
     "@types/debug": "npm:^4.1.6"
-    builder-util-runtime: "npm:10.0.0-alpha.5"
+    builder-util-runtime: "npm:10.0.0-alpha.6"
     chalk: "npm:^4.1.2"
     cross-spawn: "npm:^7.0.6"
     debug: "npm:^4.3.4"
@@ -4174,7 +4184,7 @@ __metadata:
     stat-mode: "npm:^1.0.0"
     temp-file: "npm:^3.4.0"
     tiny-async-pool: "npm:1.3.0"
-  checksum: 10c0/347eaa0d51f0ceecfb0e8c68bcc1debf6b6408b579c87cb5205c8f52e9d7c8dad21fc12ab2c3bf156018a4109a453919943d706adbd1b81095a343ef319fdac3
+  checksum: 10c0/c09d77f8284aaaa2f0fa65bf029818bf2da3dc105c9f25d7cc393fa2d76ccf9794ed30f827a4f33eaefbb4d094ea81ab2c8701074a9ed3bdaa206905ccc447d9
   languageName: node
   linkType: hard
 
@@ -4763,6 +4773,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csstype@npm:^3.2.2":
+  version: 3.2.3
+  resolution: "csstype@npm:3.2.3"
+  checksum: 10c0/cd29c51e70fa822f1cecd8641a1445bed7063697469d35633b516e60fe8c1bde04b08f6c5b6022136bb669b64c63d4173af54864510fbb4ee23281801841a3ce
+  languageName: node
+  linkType: hard
+
 "dashdash@npm:^1.12.0":
   version: 1.14.1
   resolution: "dashdash@npm:1.14.1"
@@ -5013,16 +5030,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dmg-builder@npm:27.0.0-alpha.6":
-  version: 27.0.0-alpha.6
-  resolution: "dmg-builder@npm:27.0.0-alpha.6"
+"dmg-builder@npm:27.0.0-alpha.7":
+  version: 27.0.0-alpha.7
+  resolution: "dmg-builder@npm:27.0.0-alpha.7"
   dependencies:
-    app-builder-lib: "npm:27.0.0-alpha.6"
-    builder-util: "npm:27.0.0-alpha.6"
-    builder-util-runtime: "npm:10.0.0-alpha.5"
+    app-builder-lib: "npm:27.0.0-alpha.7"
+    builder-util: "npm:27.0.0-alpha.7"
+    builder-util-runtime: "npm:10.0.0-alpha.6"
     fs-extra: "npm:^11.3.0"
     js-yaml: "npm:^4.1.0"
-  checksum: 10c0/e15e0054afe7eac69d3b35788ba8d7b715006168329b6d89b5fa9f04c5fa5b2143346308c16f0e26154eb93c20385b1e28a4fa5865fd0bcb82f40292fbfd037d
+  checksum: 10c0/3577aca44e09a52cede8bc59f52771e93d1cce751d2f848e06849beb0d36215c51ff9942acde190a4f46224530613119b3c94c2f0bf3ae85c9ac54fecd6b102c
   languageName: node
   linkType: hard
 
@@ -5115,24 +5132,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:^27.0.0-alpha.6":
-  version: 27.0.0-alpha.6
-  resolution: "electron-builder@npm:27.0.0-alpha.6"
+"electron-builder@npm:^27.0.0-alpha.7":
+  version: 27.0.0-alpha.7
+  resolution: "electron-builder@npm:27.0.0-alpha.7"
   dependencies:
-    app-builder-lib: "npm:27.0.0-alpha.6"
-    builder-util: "npm:27.0.0-alpha.6"
-    builder-util-runtime: "npm:10.0.0-alpha.5"
+    app-builder-lib: "npm:27.0.0-alpha.7"
+    builder-util: "npm:27.0.0-alpha.7"
+    builder-util-runtime: "npm:10.0.0-alpha.6"
     chalk: "npm:^4.1.2"
     ci-info: "npm:^4.2.0"
-    dmg-builder: "npm:27.0.0-alpha.6"
-    electron-publish: "npm:27.0.0-alpha.6"
+    dmg-builder: "npm:27.0.0-alpha.7"
+    electron-publish: "npm:27.0.0-alpha.7"
     fs-extra: "npm:^11.3.0"
     simple-update-notifier: "npm:2.0.0"
     yargs: "npm:^17.6.2"
   bin:
     electron-builder: ./cli.js
     install-app-deps: ./install-app-deps.js
-  checksum: 10c0/64482474d86a8f1512e5ebecbc4e38699226394f90dff2e968c2325a9cba92eaa41d6899588a9d34678fe2a79d29db40ab1fb6d3394231e6a3c31e2c66d7082e
+  checksum: 10c0/4fa55ef8f5b0c3d547346f7a6c571860a6a69b5dc0ca813b81702997e7cc75b402b2e9475f97411336701f87da195fbc27138e1874edce7f49aeaabf6119c2d3
   languageName: node
   linkType: hard
 
@@ -5153,20 +5170,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-publish@npm:27.0.0-alpha.6":
-  version: 27.0.0-alpha.6
-  resolution: "electron-publish@npm:27.0.0-alpha.6"
+"electron-publish@npm:27.0.0-alpha.7":
+  version: 27.0.0-alpha.7
+  resolution: "electron-publish@npm:27.0.0-alpha.7"
   dependencies:
     "@types/fs-extra": "npm:^9.0.11"
     aws4: "npm:^1.13.2"
-    builder-util: "npm:27.0.0-alpha.6"
-    builder-util-runtime: "npm:10.0.0-alpha.5"
+    builder-util: "npm:27.0.0-alpha.7"
+    builder-util-runtime: "npm:10.0.0-alpha.6"
     chalk: "npm:^4.1.2"
     form-data: "npm:^4.0.5"
     fs-extra: "npm:^11.3.0"
     lazy-val: "npm:^1.0.5"
     mime: "npm:^2.5.2"
-  checksum: 10c0/049891f801d8e7632876f79f8105a7e712ab9618dfd689fe11ce20fa70a1497b0af7c6eb77032e5d36ce33adff33214672fd522e295291239094ad81bf377179
+  checksum: 10c0/fc0b6fba74c1ae9a55a2e51207aa7d1ff36cb92cf234f962ee2d8a28ea42c0a8fc0e3356e10975eb9e872ed4c4a6c8e41542b178196ea0fb7f3638798e83f8b9
   languageName: node
   linkType: hard
 

@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.17.0",
+  "version": "0.17.0-beta.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": {
@@ -39,13 +39,14 @@
   "devDependencies": {
     "@types/mime-types": "^3.0.0",
     "@types/minimist": "^1.2.5",
+    "@types/react": "^19.2.18",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
     "electron": "^43.4.0",
-    "electron-builder": "^27.0.0-alpha.6",
+    "electron-builder": "^27.0.0-alpha.7",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^9.1.0",
@@ -87,16 +88,16 @@
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
-    "release": "yarn run build && electron-builder",
+    "release": "yarn run build && electron-builder --publish always",
     "lint": "eslint ./src/ webpack.config.js",
     "format": "prettier --write ./"
   },
   "build": {
     "afterSign": "build/notarize.js",
     "productName": "ArchiveWeb.page",
-    "asar": true,
     "appId": "net.webrecorder.archivewebpage",
     "artifactName": "${productName}-${version}.${ext}",
+    "executableName": "archiveweb.page",
     "extraMetadata": {
       "main": "dist/electron/electron.js"
     },
@@ -122,17 +123,21 @@
         }
       ],
       "notarize": false,
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
       "electronLanguages": [
         "en"
       ],
       "extraResources": [
         "plugins-mac"
       ],
-      "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
+      "sign": {
+        "entitlements": "build/entitlements.mac.plist",
+        "entitlementsInherit": "build/entitlements.mac.plist",
+        "hardenedRuntime": true,
+        "gatekeeperAssess": false
+      },
+      "universal": {
+        "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
+      }
     },
     "linux": {
       "category": "Archiving;Utility;",
@@ -144,10 +149,19 @@
       ]
     },
     "win": {
-      "target": "nsis",
+      "target": [
+        "nsis"
+      ],
       "extraResources": [
         "plugins-win"
-      ]
+      ],
+      "sign": {
+        "type": "azure",
+        "endpoint": "https://wus2.codesigning.azure.net/",
+        "codeSigningAccountName": "webrecorder",
+        "certificateProfileName": "webrecorder",
+        "publisherName": "CN=Webrecorer Software LLC"
+      }
     },
     "nsis": {
       "oneClick": false,

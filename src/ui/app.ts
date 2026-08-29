@@ -942,78 +942,98 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   renderAbout() {
-    return html`
-      <div class="modal is-active">
-        <div class="modal-background" @click="${this.onAboutClose}"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">About ArchiveWeb.page ${this.getDeployType()}</p>
-              <button class="delete" aria-label="close" @click="${
-                this.onAboutClose
-              }"></button>
-            </header>
-            <section class="modal-card-body">
-              <div class="container">
-                <div class="content">
-                  <div class="is-flex">
-                    <div class="has-text-centered" style="width: 220px">
-                      <fa-icon class="logo" size="48px" .svg="${awpLogo}"></fa-icon>
-                      <div style="font-size: smaller; margin-bottom: 1em">${this.getDeployType()} v${VERSION}</div>
-                    </div>
-
-                    ${
-                      IS_APP
-                        ? html`
-                            <p>
-                              ArchiveWeb.page App is a standalone app for Mac,
-                              Windows and Linux that allows users to archive
-                              webpages as they browse
-                            </p>
-                          `
-                        : html` <p>
-                            ArchiveWeb.page allows users to archive webpages
-                            directly in your browser!
-                          </p>`
-                    }
-                  </div>
-
-                  <p>See the <a href="https://archiveweb.page/guide" target="_blank">ArchiveWeb.page Guide</a> for more info on how to use this tool.</p>
-
-                  <p>Full source code is available at:
-                    <a href="https://github.com/webrecorder/archiveweb.page" target="_blank">https://github.com/webrecorder/archiveweb.page</a>
-                  </p>
-
-                  <p>ArchiveWeb.page is part of the <a href="https://webrecorder.net/" target="_blank">Webrecorder Project</a>.</p>
-
-                  <h3>Privacy Policy</h3>
-                  <p class="is-size-7">ArchiveWeb.page allows users to archive what they browse, storing captured data directly in the browser.
-                  Users can downloaded this data as files to their hard drive. Users can also delete any and all archived data at any time.
-                  ArchiveWeb.page does not collect any usage or tracking data.</p>
-
-                  <p class="is-size-7">ArchiveWeb.page includes an experimental sharing option for each archive collection. Users can choose to share select archives on a peer-to-peer network (IPFS) via a unique id.
-                  Once shared on this network, the data may become accessible to others.
-                  All archived items are private and not shared by default, unless explicitly opted-in by the user. (A warning is displayed when sharing via IPFS.)</p>
-
-                  <h4>Disclaimer of Warranties</h4>
-                  <p class="is-size-7">The application is provided "as is" without any guarantees.</p>
-                  <details class="is-size-7">
-                    <summary>Legalese:</summary>
-                    <p style="font-size: 0.8rem">DISCLAIMER OF SOFTWARE WARRANTY. WEBRECORDER SOFTWARE PROVIDES THIS SOFTWARE TO YOU "AS AVAILABLE"
-                    AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,
-                    INCLUDING WITHOUT LIMITATION ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</p>
-                  </details>
-
-                  <div class="has-text-centered">
-                    <a class="button is-warning" href="#" @click="${
-                      this.onAboutClose
-                    }">Close</a>
-                  </div>
-                </div>
-              </div>
-            </section>
+   return html` <sl-dialog
+      class="about-dialog"
+      label=${`About ArchiveWeb.page ${this.getDeployType()}`}
+      ?open=${this.showAbout}
+      @sl-after-hide=${this.onAboutClose}
+    >
+      <div class="about-dialog-header">
+        <div class="has-text-centered" style="width: 220px">
+          <fa-icon
+            size="3rem"
+            .svg=${awpLogo}
+            aria-label="ArchiveWeb.page Logo"
+            role="img"
+          ></fa-icon>
+          <div style="font-size: smaller; margin-bottom: 1em">
+            ${this.getDeployType()} v${VERSION}
           </div>
         </div>
-      </div>`;
+        ${IS_APP
+          ? html`
+              <p>
+                ArchiveWeb.page App is a standalone app for Mac, Windows and
+                Linux that allows users to archive webpages as they browse
+              </p>
+            `
+          : html` <p>
+              ArchiveWeb.page allows users to archive webpages directly in your
+              browser!
+            </p>`}
+      </div>
+
+      <p>
+        See the
+        <a href="https://archiveweb.page/guide" target="_blank"
+          >ArchiveWeb.page Guide</a
+        >
+        for more info on how to use this tool.
+      </p>
+
+      <p>
+        Full source code is available at:
+        <a href="https://github.com/webrecorder/archiveweb.page" target="_blank"
+          >https://github.com/webrecorder/archiveweb.page</a
+        >
+      </p>
+
+      <p>
+        ArchiveWeb.page is part of the
+        <a href="https://webrecorder.net/" target="_blank"
+          >Webrecorder Project</a
+        >.
+      </p>
+      <sl-divider></sl-divider>
+
+      <h3>Privacy Policy</h3>
+      <p class="is-size-7">
+        ArchiveWeb.page allows users to archive what they browse, storing
+        captured data directly in the browser. Users can downloaded this data as
+        files to their hard drive. Users can also delete any and all archived
+        data at any time. ArchiveWeb.page does not collect any usage or tracking
+        data.
+      </p>
+
+      <p class="is-size-7">
+        ArchiveWeb.page includes an experimental sharing option for each archive
+        collection. Users can choose to share select archives on a peer-to-peer
+        network (IPFS) via a unique id. Once shared on this network, the data
+        may become accessible to others. All archived items are private and not
+        shared by default, unless explicitly opted-in by the user. (A warning is
+        displayed when sharing via IPFS.)
+      </p>
+      <sl-divider></sl-divider>
+
+      <h4>Disclaimer of Warranties</h4>
+      <p>The application is provided "as is" without any guarantees.</p>
+      <details>
+        <summary>Legal</summary>
+        <p>
+          DISCLAIMER OF SOFTWARE WARRANTY. WEBRECORDER SOFTWARE PROVIDES THIS
+          SOFTWARE TO YOU "AS AVAILABLE" AND WITHOUT WARRANTY OF ANY KIND,
+          EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION ANY
+          WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+        </p>
+      </details>
+      <sl-button
+        slot="footer"
+        variant="primary"
+        size="small"
+        @click="${this.onAboutClose}"
+        >Close</sl-button
+      >
+    </sl-dialog>`;
   }
 
   renderSettingsModal() {

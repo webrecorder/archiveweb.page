@@ -39,8 +39,12 @@ type FileStats = {
   hash?: string;
 };
 
+export type DBCollection = Collection & {
+  store: ArchiveDB;
+};
+
 export type DownloaderOpts = {
-  coll: Collection;
+  coll: DBCollection;
   format: string;
   filename?: string;
   pageList?: string[];

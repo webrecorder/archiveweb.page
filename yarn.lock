@@ -3226,7 +3226,7 @@ __metadata:
     prettier: "npm:^3.1.1"
     pretty-bytes: "npm:^5.6.0"
     raw-loader: "npm:^4.0.2"
-    replaywebpage: "npm:^2.5.1"
+    replaywebpage: "npm:^2.5.2"
     sass: "npm:^1.77.6"
     sass-loader: "npm:^12.1.0"
     stream-browserify: "npm:^3.0.0"
@@ -9816,9 +9816,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"replaywebpage@npm:^2.5.1":
-  version: 2.5.1
-  resolution: "replaywebpage@npm:2.5.1"
+"replaywebpage@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "replaywebpage@npm:2.5.2"
   dependencies:
     "@fortawesome/fontawesome-free": "npm:^5.15.4"
     "@shoelace-style/shoelace": "npm:~2.15.1"
@@ -9840,7 +9840,7 @@ __metadata:
     split.js: "npm:^1.6.4"
     stream-browserify: "npm:^3.0.0"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
-  checksum: 10c0/3f52b07cdf02e75631fbeef786f8c22c5af674378450104c27f9738b1289a11e977c839fb9bd4ffa8aa945a0b51858d234eddd5d23599de4acc1519167e31fc8
+  checksum: 10c0/f2f24b7bc5d049db41c25cb26c8004fae47541e7fe3ad646f76ba7490ab7c1b4435d9116b4803807cc85c8b081849896458bb5d57c1d67e031cc15df7fbb4672
   languageName: node
   linkType: hard
 

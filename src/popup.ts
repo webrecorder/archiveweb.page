@@ -1,4 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
+import { customElement } from "lit/decorators.js";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import bulma from "bulma/bulma.sass";
 
 import fasPlus from "@fortawesome/fontawesome-free/svgs/solid/plus.svg";
@@ -36,6 +38,7 @@ function wrapCss(custom) {
 }
 
 // ===========================================================================
+@customElement("wr-popup-viewer")
 class RecPopup extends LitElement {
   constructor() {
     super();
@@ -526,7 +529,7 @@ class RecPopup extends LitElement {
           <p class="is-size-7">
             This page is part of the extension. You can view existing archived
             items from here. To start a new archiving session, click the
-            <wr-icon .svg="${wrRec}"></wr-icon> Start Archiving button and enter
+            <wr-awp-icon .src="${wrRec}"></wr-awp-icon> Start Archiving button and enter
             a new URL.
           </p>
         `;
@@ -577,7 +580,7 @@ class RecPopup extends LitElement {
                 }</span
               >
               <span class="icon is-small">
-                <wr-icon .svg="${fasCaretDown}"></wr-icon>
+                <wr-awp-icon .src="${fasCaretDown}"></wr-awp-icon>
               </span>
             </button>
           </div>
@@ -597,7 +600,7 @@ class RecPopup extends LitElement {
                               class="dropdown-item"
                             >
                               <span class="icon is-small">
-                                <wr-icon .svg="${fasPlus}"></wr-icon> </span
+                                <wr-awp-icon .src="${fasPlus}"></wr-awp-icon> </span
                               >New Archiving Session
                             </a>
                             <hr class="dropdown-divider" />`
@@ -677,7 +680,7 @@ class RecPopup extends LitElement {
               />
             </div>
             <button class="button is-small is-outlined" type="submit">
-              <wr-icon .svg=${fasCheck}></wr-icon>
+              <wr-awp-icon .src=${fasCheck}></wr-awp-icon>
             </button>
             <button
               @click="${() =>
@@ -686,7 +689,7 @@ class RecPopup extends LitElement {
               class="button is-small is-outlined"
               type="button"
             >
-              <wr-icon .svg=${fasX}></wr-icon>
+              <wr-awp-icon .src=${fasX}></wr-awp-icon>
             </button>
           </div>
         </form>
@@ -705,7 +708,7 @@ class RecPopup extends LitElement {
             class="smallest button is-small is-inverted"
           >
             <span class="icon is-small">
-              <wr-icon size="1.0em" title="Guide" .svg="${fasQ}"></wr-icon>
+              <wr-awp-icon size="1.0em" title="Guide" .src="${fasQ}"></wr-awp-icon>
             </span>
           </a>
           <a
@@ -714,11 +717,11 @@ class RecPopup extends LitElement {
             class="smallest button is-small is-inverted"
           >
             <span class="icon is-small">
-              <wr-icon
+              <wr-awp-icon
                 size="1.0em"
                 title="Home - All Archives"
-                .svg="${fasHome}"
-              ></wr-icon>
+                .src="${fasHome}"
+              ></wr-awp-icon>
             </span>
           </a>
         </div>
@@ -741,8 +744,8 @@ class RecPopup extends LitElement {
                       ${
                         // @ts-expect-error - TS2339 - Property 'recording' does not exist on type 'RecPopup'.
                         !this.recording
-                          ? html` <wr-icon .svg=${wrRec}></wr-icon>`
-                          : html` <wr-icon .svg=${fasBox}></wr-icon>`
+                          ? html` <wr-awp-icon .src=${wrRec}></wr-awp-icon>`
+                          : html` <wr-awp-icon .src=${fasBox}></wr-awp-icon>`
                       }
                     </span>
                     <span
@@ -911,19 +914,19 @@ class RecPopup extends LitElement {
     // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'RecPopup'.
     switch (this.behaviorState) {
       case BEHAVIOR_READY_START:
-        return html` <wr-icon style="fill: white" .svg="${fasPlay}"></wr-icon>
+        return html` <wr-awp-icon style="fill: white" .src="${fasPlay}"></wr-awp-icon>
           &nbsp;Start Autopilot!`;
 
       case BEHAVIOR_RUNNING:
-        return html` <wr-icon style="fill: white" .svg="${fasPause}"></wr-icon>
+        return html` <wr-awp-icon style="fill: white" .src="${fasPause}"></wr-awp-icon>
           &nbsp;Pause Autopilot`;
 
       case BEHAVIOR_PAUSED:
-        return html` <wr-icon style="fill: white" .svg="${fasPlay}"></wr-icon>
+        return html` <wr-awp-icon style="fill: white" .src="${fasPlay}"></wr-awp-icon>
           &nbsp;Unpause Autopilot`;
 
       case BEHAVIOR_DONE:
-        return html` <wr-icon style="fill: white" .svg="${fasCheck}"></wr-icon>
+        return html` <wr-awp-icon style="fill: white" .src="${fasCheck}"></wr-awp-icon>
           &nbsp;Autopilot Done`;
 
       case BEHAVIOR_WAIT_LOAD:
@@ -1009,43 +1012,41 @@ class RecPopup extends LitElement {
 }
 
 // ===========================================================================
-// class WrIcon extends LitElement {
-//   constructor() {
-//     super();
-//     // @ts-expect-error - TS2339 - Property 'size' does not exist on type 'WrIcon'.
-//     this.size = "0.9em";
-//   }
+@customElement("wr-awp-icon")
+export class WrAwpIcon extends LitElement {
+  constructor() {
+    super();
+    // @ts-expect-error - TS2339 - Property 'size' does not exist on type 'WrIcon'.
+    this.size = "0.9em";
+  }
 
-//   static get properties() {
-//     return {
-//       src: { type: Object },
-//       size: { type: String },
-//     };
-//   }
+  static get properties() {
+    return {
+      src: { type: Object },
+      size: { type: String },
+    };
+  }
 
-//   render() {
-//     return html`
-//       <svg
-//         style="width: ${
-//           // @ts-expect-error - TS2339 - Property 'size' does not exist on type 'WrIcon'. | TS2339 - Property 'size' does not exist on type 'WrIcon'.
-//           this.size
-//         }; height: ${
-//           // @ts-expect-error - TS2339 - Property 'size' does not exist on type 'WrIcon'. | TS2339 - Property 'size' does not exist on type 'WrIcon'.
-//           this.size
-//         }"
-//       >
-//         <g>
-//           ${
-//             // @ts-expect-error - TS2339 - Property 'src' does not exist on type 'WrIcon'.
-//             unsafeSVG(this.src)
-//           }
-//         </g>
-//       </svg>
-//     `;
-//   }
-// }
-
-//customElements.define("wr-icon", WrIcon);
-customElements.define("wr-popup-viewer", RecPopup);
+  render() {
+    return html`
+      <svg
+        style="width: ${
+          // @ts-expect-error - TS2339 - Property 'size' does not exist on type 'WrIcon'. | TS2339 - Property 'size' does not exist on type 'WrIcon'.
+          this.size
+        }; height: ${
+          // @ts-expect-error - TS2339 - Property 'size' does not exist on type 'WrIcon'. | TS2339 - Property 'size' does not exist on type 'WrIcon'.
+          this.size
+        }"
+      >
+        <g>
+          ${
+            // @ts-expect-error - TS2339 - Property 'src' does not exist on type 'WrIcon'.
+            unsafeSVG(this.src)
+          }
+        </g>
+      </svg>
+    `;
+  }
+}
 
 export { RecPopup };

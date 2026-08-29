@@ -3187,7 +3187,7 @@ __metadata:
     "@types/uuid": "npm:^10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.15.0"
     "@typescript-eslint/parser": "npm:^6.15.0"
-    "@webrecorder/wabac": "npm:^2.27.1"
+    "@webrecorder/wabac": "npm:^2.27.2"
     auto-js-ipfs: "npm:^2.3.0"
     browsertrix-behaviors: "npm:^0.9.7"
     btoa: "npm:^1.2.1"
@@ -3216,7 +3216,7 @@ __metadata:
     prettier: "npm:^3.1.1"
     pretty-bytes: "npm:^5.6.0"
     raw-loader: "npm:^4.0.2"
-    replaywebpage: "npm:^2.5.0"
+    replaywebpage: "npm:^2.5.1"
     sass: "npm:^1.77.6"
     sass-loader: "npm:^12.1.0"
     stream-browserify: "npm:^3.0.0"
@@ -3237,15 +3237,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webrecorder/wabac@npm:^2.27.1":
-  version: 2.27.1
-  resolution: "@webrecorder/wabac@npm:2.27.1"
+"@webrecorder/wabac@npm:^2.27.2":
+  version: 2.27.2
+  resolution: "@webrecorder/wabac@npm:2.27.2"
   dependencies:
     "@peculiar/asn1-ecc": "npm:^2.3.4"
     "@peculiar/asn1-schema": "npm:^2.3.3"
     "@peculiar/x509": "npm:^1.9.2"
     "@types/js-levenshtein": "npm:^1.1.3"
-    "@webrecorder/wombat": "npm:^3.10.7"
+    "@webrecorder/wombat": "npm:^3.10.8"
     acorn: "npm:^8.15.0"
     auto-js-ipfs: "npm:^2.1.1"
     base64-js: "npm:^1.5.1"
@@ -3265,16 +3265,16 @@ __metadata:
     process: "npm:^0.11.10"
     stream-browserify: "npm:^3.0.0"
     warcio: "npm:^2.4.11"
-  checksum: 10c0/76c997fe9622baec11a715116e07368a4e8c13900659d48feaa46c8951ba4e1bce31e6c2d903b1adec2efd1082eda870eb6b2ea5c68314820b929b696c2bb2a7
+  checksum: 10c0/9c11b0ce5c05c4a8862c31b0469ea6437f657b1b740a50f78710085c7382ac21898a36684db7d3626c59f708d7d8f8ca08fa3c0b1270e048469b4112a5ef4348
   languageName: node
   linkType: hard
 
-"@webrecorder/wombat@npm:^3.10.7":
-  version: 3.10.7
-  resolution: "@webrecorder/wombat@npm:3.10.7"
+"@webrecorder/wombat@npm:^3.10.8":
+  version: 3.10.8
+  resolution: "@webrecorder/wombat@npm:3.10.8"
   dependencies:
-    warcio: "npm:^2.4.10"
-  checksum: 10c0/4b78baf1065a697352c83568d8bf0640304177e089af7fdba73c9686a4d04240ee2d59036d18f4b491977903d30931c401fad1ee5a1abbb750e2a56583738493
+    warcio: "npm:^2.4.11"
+  checksum: 10c0/33ad5dec07f9691162cfe0b38dc3626377497a82125acc4465f4af1ab27d2f7faf9bae36dd50c80f2370a7094dafda4a09be9d5ca4bd7eb95ba769ad31cdc9af
   languageName: node
   linkType: hard
 
@@ -9799,13 +9799,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"replaywebpage@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "replaywebpage@npm:2.5.0"
+"replaywebpage@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "replaywebpage@npm:2.5.1"
   dependencies:
     "@fortawesome/fontawesome-free": "npm:^5.15.4"
     "@shoelace-style/shoelace": "npm:~2.15.1"
-    "@webrecorder/wabac": "npm:^2.27.1"
+    "@webrecorder/wabac": "npm:^2.27.2"
     bulma: "npm:^0.9.3"
     electron-log: "npm:^4.4.1"
     electron-updater: "npm:^6.8.9"
@@ -9823,7 +9823,7 @@ __metadata:
     split.js: "npm:^1.6.4"
     stream-browserify: "npm:^3.0.0"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
-  checksum: 10c0/942707e895d101fbee7385e679d3e9c835c27722c6aa09b37a6ff1244b432958bb5ba2e01db22ab6f08efa99612535791e04874e907e9603cfdf20ef0c371164
+  checksum: 10c0/3f52b07cdf02e75631fbeef786f8c22c5af674378450104c27f9738b1289a11e977c839fb9bd4ffa8aa945a0b51858d234eddd5d23599de4acc1519167e31fc8
   languageName: node
   linkType: hard
 

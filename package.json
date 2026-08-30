@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.17.0-beta.0",
+  "version": "0.17.0",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": {
@@ -29,7 +29,7 @@
     "p-queue": "^8.0.1",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^2.5.1",
+    "replaywebpage": "^2.5.2",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
@@ -97,7 +97,7 @@
     "productName": "ArchiveWeb.page",
     "appId": "net.webrecorder.archivewebpage",
     "artifactName": "${productName}-${version}.${ext}",
-    "executableName": "archiveweb.page",
+    "executableName": "ArchiveWeb.page",
     "extraMetadata": {
       "main": "dist/electron/electron.js"
     },

@@ -1034,7 +1034,12 @@ class Downloader {
     }
 
     if (extraOpts && Object.keys(extraOpts).length) {
-      warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(resource.extraOpts);
+      if (extraOpts.detectedCT) {
+        warcHeaders["WARC-Identified-Payload-Type"] = extraOpts.detectedCT;
+        delete extraOpts.detectedCT;
+      }
+
+      warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(extraOpts);
     }
 
     if (refersToDigest) {

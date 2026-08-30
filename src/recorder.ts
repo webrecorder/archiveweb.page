@@ -1674,6 +1674,8 @@ class Recorder {
           if (storage) {
             data.extraOpts.storage = storage;
           }
+
+          await this.saveDetectedContentType(reqresp, sessions);
         }
       }
 
@@ -1687,6 +1689,27 @@ class Recorder {
 
     //doneResolve();
     //delete this._fetchPending[requestId];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async saveDetectedContentType(reqresp: RequestResponseInfo, sessions: any) {
+    try {
+      // @ts-expect-error: types not yet defined
+      const { result } = await this.send("Runtime.evaluate",  {
+        expression:
+          "`${document.contentType}; charset=${document.characterSet}`",
+        returnByValue: true,
+      }, sessions);
+
+      const contentType = result.value;
+
+      // only save charset if its not the default UTF-8
+      if (contentType && contentType !== "text/html; charset=UTF-8") {
+        reqresp.extraOpts.detectedCT = contentType;
+      }
+    } catch (e) {
+      console.warn("Error getting detected content-type", e);
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

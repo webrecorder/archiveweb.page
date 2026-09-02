@@ -84,11 +84,11 @@ export class RecProxy extends ArchiveDB {
   async decCounter() {
     this.counter--;
     //console.log("rec counter", this.counter);
-    await this.db!.put("rec", this.counter, "numPending");
+    await (this.db as unknown as IDBPDatabase<RecDBType>).put("rec", this.counter, "numPending");
   }
 
   async getCounter(): Promise<number | undefined> {
-    return await this.db!.get("rec", "numPending");
+    return await (this.db as unknown as IDBPDatabase<RecDBType>).get("rec", "numPending");
   }
 
   override async getResource(

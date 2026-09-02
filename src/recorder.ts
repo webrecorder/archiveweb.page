@@ -1694,9 +1694,9 @@ class Recorder {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async saveDetectedContentType(reqresp: RequestResponseInfo, sessions: any) {
     try {
-      // @ts-expect-error: types not yet defined
       const { result } = await this.send(
         "Runtime.evaluate",
+        // @ts-expect-error: types not yet defined
         {
           expression:
             "`${document.contentType}; charset=${document.characterSet}`",

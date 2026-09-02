@@ -305,7 +305,7 @@ export class RecordingCollections extends SWCollections {
         }
         break;
 
-      case "update-favicon": 
+      case "update-favicon":
         coll = await this.getColl(event.data.id);
         if (coll && coll.store instanceof RecProxy) {
           await coll.store.updateFavIcon(event.data.url, event.data.favIconUrl);

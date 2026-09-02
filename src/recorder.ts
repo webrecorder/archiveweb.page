@@ -1695,11 +1695,15 @@ class Recorder {
   async saveDetectedContentType(reqresp: RequestResponseInfo, sessions: any) {
     try {
       // @ts-expect-error: types not yet defined
-      const { result } = await this.send("Runtime.evaluate",  {
-        expression:
-          "`${document.contentType}; charset=${document.characterSet}`",
-        returnByValue: true,
-      }, sessions);
+      const { result } = await this.send(
+        "Runtime.evaluate",
+        {
+          expression:
+            "`${document.contentType}; charset=${document.characterSet}`",
+          returnByValue: true,
+        },
+        sessions,
+      );
 
       const contentType = result.value;
 

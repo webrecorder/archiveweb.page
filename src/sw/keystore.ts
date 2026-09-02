@@ -70,7 +70,7 @@ export class KeyStore {
   }
 
   async listAll() {
-    await this._ready; 
+    await this._ready;
     return await this.db!.getAll(this.mainStore);
   }
 

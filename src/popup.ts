@@ -529,8 +529,8 @@ class RecPopup extends LitElement {
           <p class="is-size-7">
             This page is part of the extension. You can view existing archived
             items from here. To start a new archiving session, click the
-            <wr-awp-icon .src="${wrRec}"></wr-awp-icon> Start Archiving button and enter
-            a new URL.
+            <wr-awp-icon .src="${wrRec}"></wr-awp-icon> Start Archiving button
+            and enter a new URL.
           </p>
         `;
       }
@@ -600,7 +600,9 @@ class RecPopup extends LitElement {
                               class="dropdown-item"
                             >
                               <span class="icon is-small">
-                                <wr-awp-icon .src="${fasPlus}"></wr-awp-icon> </span
+                                <wr-awp-icon
+                                  .src="${fasPlus}"
+                                ></wr-awp-icon> </span
                               >New Archiving Session
                             </a>
                             <hr class="dropdown-divider" />`
@@ -708,7 +710,11 @@ class RecPopup extends LitElement {
             class="smallest button is-small is-inverted"
           >
             <span class="icon is-small">
-              <wr-awp-icon size="1.0em" title="Guide" .src="${fasQ}"></wr-awp-icon>
+              <wr-awp-icon
+                size="1.0em"
+                title="Guide"
+                .src="${fasQ}"
+              ></wr-awp-icon>
             </span>
           </a>
           <a
@@ -914,19 +920,31 @@ class RecPopup extends LitElement {
     // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'RecPopup'.
     switch (this.behaviorState) {
       case BEHAVIOR_READY_START:
-        return html` <wr-awp-icon style="fill: white" .src="${fasPlay}"></wr-awp-icon>
+        return html` <wr-awp-icon
+            style="fill: white"
+            .src="${fasPlay}"
+          ></wr-awp-icon>
           &nbsp;Start Autopilot!`;
 
       case BEHAVIOR_RUNNING:
-        return html` <wr-awp-icon style="fill: white" .src="${fasPause}"></wr-awp-icon>
+        return html` <wr-awp-icon
+            style="fill: white"
+            .src="${fasPause}"
+          ></wr-awp-icon>
           &nbsp;Pause Autopilot`;
 
       case BEHAVIOR_PAUSED:
-        return html` <wr-awp-icon style="fill: white" .src="${fasPlay}"></wr-awp-icon>
+        return html` <wr-awp-icon
+            style="fill: white"
+            .src="${fasPlay}"
+          ></wr-awp-icon>
           &nbsp;Unpause Autopilot`;
 
       case BEHAVIOR_DONE:
-        return html` <wr-awp-icon style="fill: white" .src="${fasCheck}"></wr-awp-icon>
+        return html` <wr-awp-icon
+            style="fill: white"
+            .src="${fasCheck}"
+          ></wr-awp-icon>
           &nbsp;Autopilot Done`;
 
       case BEHAVIOR_WAIT_LOAD:

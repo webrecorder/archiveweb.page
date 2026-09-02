@@ -68,7 +68,7 @@ type DLResourceEntry = ResourceEntry & {
   skipped?: boolean;
   text?: string;
 
-  pageId: string;
+  pageId?: string;
   digest: string;
 };
 
@@ -1096,9 +1096,12 @@ class Downloader {
         "WARC-Record-ID": this.getWARCRecordUUID(
           type + ":" + resource.timestamp + "/" + resource.url,
         ),
-        "WARC-Page-ID": pageId,
         "WARC-Concurrent-To": responseRecordId,
       };
+
+      if (pageId) {
+        reqWarcHeaders["WARC-Page-ID"] = pageId;
+      }
 
       const urlParsed = new URL(url);
       const statusline = `${method} ${url.slice(

@@ -14,7 +14,7 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.2",
     "@ipld/unixfs": "^3.0.0",
-    "@webrecorder/wabac": "^2.27.2",
+    "@webrecorder/wabac": "^2.27.3",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.9.7",
     "btoa": "^1.2.1",
@@ -29,12 +29,12 @@
     "p-queue": "^8.0.1",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^2.5.2",
+    "replaywebpage": "^2.5.3",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
     "uuid": "^9.0.0",
-    "warcio": "^2.4.10"
+    "warcio": "^2.4.12"
   },
   "devDependencies": {
     "@types/mime-types": "^3.0.0",
@@ -71,7 +71,8 @@
     "webpack-extension-reloader": "^1.1.4"
   },
   "resolutions": {
-    "@webrecorder/wabac": "^2.27.2"
+    "@webrecorder/wabac": "^2.27.3",
+    "warcio": "^2.4.12"
   },
   "files": [
     "src/",

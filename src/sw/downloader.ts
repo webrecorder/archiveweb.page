@@ -158,6 +158,7 @@ const encoder = new TextEncoder();
 
 const EMPTY = new Uint8Array([]);
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function* getPayload(payload: Uint8Array) {
   yield payload;
 }
@@ -357,7 +358,7 @@ class Downloader {
     //let count = 0;
 
     while (resources.length) {
-      const last: ResourceEntry = resources[resources.length - 1]!;
+      const last: ResourceEntry = resources[resources.length - 1];
 
       if (this.pageList) {
         resources = resources.filter((res) =>
@@ -521,7 +522,7 @@ class Downloader {
 
         // response record
         const responseData: { length: number; digest?: string } = { length: 0 };
-        yield* this.emitRecord(records[0]!, digestRecordAndCDX, responseData);
+        yield* this.emitRecord(records[0], digestRecordAndCDX, responseData);
         offset += responseData.length;
         resource.length = responseData.length;
         if (digestRecordAndCDX && !resource.recordDigest) {
@@ -532,7 +533,7 @@ class Downloader {
         // request record, if any
         if (records.length > 1) {
           const requestData = { length: 0 };
-          yield* this.emitRecord(records[1]!, false, requestData);
+          yield* this.emitRecord(records[1], false, requestData);
           offset += requestData.length;
         }
 
@@ -745,6 +746,7 @@ class Downloader {
     yield res;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *generateDataPackage() {
     const root: DataPackageJSON = {
       profile: "data-package",
@@ -837,6 +839,7 @@ class Downloader {
     }
   }
 */
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *generateIDX() {
     yield this.indexLines.join("\n");
   }

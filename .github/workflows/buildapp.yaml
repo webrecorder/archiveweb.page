@@ -33,7 +33,7 @@ jobs:
 
       - name: Update Ruffle
         env:
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ruffle/download-latest-ruffle.sh
         shell: bash
 

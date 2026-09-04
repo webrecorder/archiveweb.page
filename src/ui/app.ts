@@ -942,7 +942,7 @@ class ArchiveWebApp extends ReplayWebApp {
   }
 
   renderAbout() {
-   return html` <sl-dialog
+    return html` <sl-dialog
       class="about-dialog"
       label=${`About ArchiveWeb.page ${this.getDeployType()}`}
       ?open=${this.showAbout}

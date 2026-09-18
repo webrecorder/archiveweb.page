@@ -84,6 +84,7 @@ type CDXJEntry = {
   method?: string;
   filename?: string;
   requestBody?: string;
+  "req.http:cookie"?: string;
 };
 
 type DLPageData = {
@@ -644,6 +645,11 @@ class Downloader {
 
     if (filename) {
       data.filename = filename;
+    }
+
+    const cookie = new Headers(resource.reqHeaders || {}).get("cookie");
+    if (cookie) {
+      data["req.http:cookie"] = cookie;
     }
 
     if (resource.method && resource.method !== "GET") {

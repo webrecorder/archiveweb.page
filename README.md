@@ -92,6 +92,18 @@ Currently, the dev workflow for the Electron app does not support automatically 
 
 After making changes, rerun `yarn run build-dev` and `yarn run start-electron` to view your changes in the app.
 
+### Using a local wabac.js
+
+If you're testing a local version of wabac.js, you can configure your local copy of archiveweb.page to use it.
+
+1. In the wabac.js repo, run `yarn link`.
+2. In the archiveweb.page repo, run `yarn link "@webrecorder/wabac"`
+
+When you want to switch back to a release build of wabac.js, run these steps from the archiveweb.page repo:
+
+1. `yarn unlink`
+2. `yarn install --force`
+
 ## Standalone Build
 
 To create a platform-specific binary, run:

@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.16.0",
+  "version": "0.17.1",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": {
@@ -14,12 +14,13 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.2",
     "@ipld/unixfs": "^3.0.0",
-    "@webrecorder/wabac": "^2.25.2",
+    "@webrecorder/wabac": "^2.27.3",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.9.7",
     "btoa": "^1.2.1",
     "bulma": "^0.9.3",
     "client-zip": "^2.3.0",
+    "electron-updater": "^6.8.9",
     "hash-wasm": "^4.9.0",
     "http-status-codes": "^2.1.4",
     "idb": "^7.1.1",
@@ -28,23 +29,24 @@
     "p-queue": "^8.0.1",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^2.4.0",
+    "replaywebpage": "^2.5.3",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
     "uuid": "^9.0.0",
-    "warcio": "^2.4.7"
+    "warcio": "^2.4.12"
   },
   "devDependencies": {
     "@types/mime-types": "^3.0.0",
     "@types/minimist": "^1.2.5",
+    "@types/react": "^19.2.18",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
-    "electron": "^39.2.6",
-    "electron-builder": "^26.0.12",
+    "electron": "^43.4.0",
+    "electron-builder": "^27.0.0-alpha.7",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^9.1.0",
@@ -69,7 +71,8 @@
     "webpack-extension-reloader": "^1.1.4"
   },
   "resolutions": {
-    "@webrecorder/wabac": "^2.25.2"
+    "@webrecorder/wabac": "^2.27.3",
+    "warcio": "^2.4.12"
   },
   "files": [
     "src/",
@@ -86,16 +89,16 @@
     "pack-signed": "electron-builder",
     "dist": "yarn run build && yarn run pack",
     "dist-dev": "yarn run build-dev && yarn run pack",
-    "release": "yarn run build && electron-builder",
+    "release": "yarn run build && electron-builder --publish always",
     "lint": "eslint ./src/ webpack.config.js",
     "format": "prettier --write ./"
   },
   "build": {
     "afterSign": "build/notarize.js",
     "productName": "ArchiveWeb.page",
-    "asar": true,
     "appId": "net.webrecorder.archivewebpage",
     "artifactName": "${productName}-${version}.${ext}",
+    "executableName": "ArchiveWeb.page",
     "extraMetadata": {
       "main": "dist/electron/electron.js"
     },
@@ -121,17 +124,21 @@
         }
       ],
       "notarize": false,
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
       "electronLanguages": [
         "en"
       ],
       "extraResources": [
         "plugins-mac"
       ],
-      "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
+      "sign": {
+        "entitlements": "build/entitlements.mac.plist",
+        "entitlementsInherit": "build/entitlements.mac.plist",
+        "hardenedRuntime": true,
+        "gatekeeperAssess": false
+      },
+      "universal": {
+        "singleArchFiles": "{dist/electron/prebuilds,dist/electron/prebuilds/**}"
+      }
     },
     "linux": {
       "category": "Archiving;Utility;",
@@ -143,10 +150,19 @@
       ]
     },
     "win": {
-      "target": "nsis",
+      "target": [
+        "nsis"
+      ],
       "extraResources": [
         "plugins-win"
-      ]
+      ],
+      "sign": {
+        "type": "azure",
+        "endpoint": "https://wus2.codesigning.azure.net/",
+        "codeSigningAccountName": "webrecorder",
+        "certificateProfileName": "webrecorder",
+        "publisherName": "CN=Webrecorer Software LLC"
+      }
     },
     "nsis": {
       "oneClick": false,
@@ -158,7 +174,7 @@
       "output": "dist/bin/"
     }
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "packageManager": "yarn@4.17.1",
   "engines": {
     "node": ">=12"
   }

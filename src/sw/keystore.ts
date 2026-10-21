@@ -71,13 +71,11 @@ export class KeyStore {
 
   async listAll() {
     await this._ready;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.db!.getAll(this.mainStore);
   }
 
   async get(name: string) {
     await this._ready;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.db!.get(this.mainStore, name);
   }
 
@@ -209,7 +207,6 @@ export class Signer {
 
   async loadSig(id: string): Promise<string> {
     const res = await this._store!.get(id);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return res?.sig;
   }
 
@@ -219,7 +216,6 @@ export class Signer {
 
   async loadKeys(id = "_userkey"): Promise<KeyPair | null> {
     const res = await this._store!.get(id);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return res?.keys;
   }
 }

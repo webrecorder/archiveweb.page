@@ -1,10 +1,9 @@
 import { API, type SWCollections, tsToDate } from "@webrecorder/wabac/swlib";
 
-import { Downloader, type Metadata } from "./downloader";
+import { type DBCollection, Downloader, type Metadata } from "./downloader";
 import { Signer } from "./keystore";
 import { ipfsAdd, ipfsRemove, setAutoIPFSUrl } from "./ipfsutils";
 import { RecProxy } from "./recproxy";
-import { type Collection } from "@webrecorder/wabac/swlib";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type RouteMatch = Record<string, any>;
@@ -161,7 +160,6 @@ class ExtAPI extends API {
       const urlObj = new URL(url);
       urlObj.searchParams.set("filename", filename || "");
       urlObj.searchParams.set("name", dl.metadata["title"] || filename || "");
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const fetchPromise = fetch(urlObj.href, {
         method: "PUT",
         headers,
@@ -396,7 +394,7 @@ class ExtAPI extends API {
 // ===========================================================================
 async function runIPFSAdd(
   collId: string,
-  coll: Collection,
+  coll: DBCollection,
   client: Client | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   opts: any,
@@ -464,6 +462,7 @@ class CountingStream {
   }
 
   transformStream() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const counterStream = this;
 
     return new TransformStream({

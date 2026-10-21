@@ -39,8 +39,12 @@ type FileStats = {
   hash?: string;
 };
 
+export type DBCollection = Collection & {
+  store: ArchiveDB;
+};
+
 export type DownloaderOpts = {
-  coll: Collection;
+  coll: DBCollection;
   format: string;
   filename?: string;
   pageList?: string[];
@@ -64,7 +68,7 @@ type DLResourceEntry = ResourceEntry & {
   skipped?: boolean;
   text?: string;
 
-  pageId: string;
+  pageId?: string;
   digest: string;
 };
 
@@ -154,6 +158,7 @@ const encoder = new TextEncoder();
 
 const EMPTY = new Uint8Array([]);
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function* getPayload(payload: Uint8Array) {
   yield payload;
 }
@@ -353,7 +358,7 @@ class Downloader {
     //let count = 0;
 
     while (resources.length) {
-      const last: ResourceEntry = resources[resources.length - 1]!;
+      const last: ResourceEntry = resources[resources.length - 1];
 
       if (this.pageList) {
         resources = resources.filter((res) =>
@@ -517,7 +522,7 @@ class Downloader {
 
         // response record
         const responseData: { length: number; digest?: string } = { length: 0 };
-        yield* this.emitRecord(records[0]!, digestRecordAndCDX, responseData);
+        yield* this.emitRecord(records[0], digestRecordAndCDX, responseData);
         offset += responseData.length;
         resource.length = responseData.length;
         if (digestRecordAndCDX && !resource.recordDigest) {
@@ -528,7 +533,7 @@ class Downloader {
         // request record, if any
         if (records.length > 1) {
           const requestData = { length: 0 };
-          yield* this.emitRecord(records[1]!, false, requestData);
+          yield* this.emitRecord(records[1], false, requestData);
           offset += requestData.length;
         }
 
@@ -741,6 +746,7 @@ class Downloader {
     yield res;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *generateDataPackage() {
     const root: DataPackageJSON = {
       profile: "data-package",
@@ -833,6 +839,7 @@ class Downloader {
     }
   }
 */
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *generateIDX() {
     yield this.indexLines.join("\n");
   }
@@ -1030,7 +1037,12 @@ class Downloader {
     }
 
     if (extraOpts && Object.keys(extraOpts).length) {
-      warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(resource.extraOpts);
+      if (extraOpts.detectedCT) {
+        warcHeaders["WARC-Identified-Payload-Type"] = extraOpts.detectedCT;
+        delete extraOpts.detectedCT;
+      }
+
+      warcHeaders["WARC-JSON-Metadata"] = JSON.stringify(extraOpts);
     }
 
     if (refersToDigest) {
@@ -1087,9 +1099,12 @@ class Downloader {
         "WARC-Record-ID": this.getWARCRecordUUID(
           type + ":" + resource.timestamp + "/" + resource.url,
         ),
-        "WARC-Page-ID": pageId,
         "WARC-Concurrent-To": responseRecordId,
       };
+
+      if (pageId) {
+        reqWarcHeaders["WARC-Page-ID"] = pageId;
+      }
 
       const urlParsed = new URL(url);
       const statusline = `${method} ${url.slice(

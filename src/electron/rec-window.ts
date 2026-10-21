@@ -280,7 +280,7 @@ class RecWindowUI extends LitElement {
               ${
                 // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.
                 this.favIconUrl
-                  ? html` <span class="favicon icon is-small is-left">
+                  ? html` <span class="favicon icon is-left">
                       <img
                         src="${
                           // @ts-expect-error - TS2339 - Property 'favIconUrl' does not exist on type 'RecWindowUI'.

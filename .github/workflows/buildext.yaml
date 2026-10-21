@@ -11,12 +11,15 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Set up corepack
+        run: corepack enable yarn
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: "24.x"
           cache: "yarn"
 
       - name: Yarn Install

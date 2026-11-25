@@ -1676,6 +1676,7 @@ class Recorder {
           }
 
           await this.saveDetectedContentType(reqresp, sessions);
+          await this.saveColorSchemeIsDark(reqresp, sessions);
         }
       }
 
@@ -1714,6 +1715,22 @@ class Recorder {
     } catch (e) {
       console.warn("Error getting detected content-type", e);
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async saveColorSchemeIsDark(reqresp: RequestResponseInfo, sessions: any) {
+    const { result } = await this.send(
+      "Runtime.evaluate",
+      // @ts-expect-error: types not yet defined
+      {
+        expression:
+          "window.matchMedia('(prefers-color-scheme: dark)').matches;",
+        returnByValue: true,
+      },
+      sessions,
+    );
+
+    reqresp.extraOpts.darkColorScheme = result.value;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

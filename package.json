@@ -1,7 +1,7 @@
 {
   "name": "@webrecorder/archivewebpage",
   "productName": "ArchiveWeb.page",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "main": "index.js",
   "description": "Create Web Archives directly in your browser",
   "repository": {
@@ -29,7 +29,7 @@
     "p-queue": "^8.0.1",
     "pdfjs-dist": "2.2.228",
     "pretty-bytes": "^5.6.0",
-    "replaywebpage": "^2.5.3",
+    "replaywebpage": "^2.5.5",
     "stream-browserify": "^3.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "unused-filename": "^4.0.1",
@@ -161,7 +161,7 @@
         "endpoint": "https://wus2.codesigning.azure.net/",
         "codeSigningAccountName": "webrecorder",
         "certificateProfileName": "webrecorder",
-        "publisherName": "CN=Webrecorer Software LLC"
+        "publisherName": "CN=Webrecorder Software LLC"
       }
     },
     "nsis": {

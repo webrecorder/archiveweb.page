@@ -14,7 +14,7 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@ipld/car": "^5.3.2",
     "@ipld/unixfs": "^3.0.0",
-    "@webrecorder/wabac": "^2.27.4",
+    "@webrecorder/wabac": "^2.28.0",
     "auto-js-ipfs": "^2.3.0",
     "browsertrix-behaviors": "^0.9.7",
     "btoa": "^1.2.1",
@@ -71,7 +71,7 @@
     "webpack-extension-reloader": "^1.1.4"
   },
   "resolutions": {
-    "@webrecorder/wabac": "^2.27.4",
+    "@webrecorder/wabac": "^2.28.0",
     "warcio": "^2.4.12"
   },
   "files": [

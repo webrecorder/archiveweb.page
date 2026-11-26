@@ -3204,7 +3204,7 @@ __metadata:
     "@types/uuid": "npm:^10.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.15.0"
     "@typescript-eslint/parser": "npm:^6.15.0"
-    "@webrecorder/wabac": "npm:^2.27.4"
+    "@webrecorder/wabac": "npm:^2.28.0"
     auto-js-ipfs: "npm:^2.3.0"
     browsertrix-behaviors: "npm:^0.9.7"
     btoa: "npm:^1.2.1"
@@ -3254,7 +3254,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webrecorder/wabac@npm:^2.27.4":
+"@webrecorder/wabac@npm:^2.28.0":
   version: 2.28.0
   resolution: "@webrecorder/wabac@npm:2.28.0"
   dependencies:

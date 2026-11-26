@@ -3206,7 +3206,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^6.15.0"
     "@webrecorder/wabac": "npm:^2.28.0"
     auto-js-ipfs: "npm:^2.3.0"
-    browsertrix-behaviors: "npm:^0.9.7"
+    browsertrix-behaviors: "npm:^0.16.0"
     btoa: "npm:^1.2.1"
     bulma: "npm:^0.9.3"
     client-zip: "npm:^2.3.0"
@@ -4118,12 +4118,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browsertrix-behaviors@npm:^0.9.7":
-  version: 0.9.7
-  resolution: "browsertrix-behaviors@npm:0.9.7"
+"browsertrix-behaviors@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "browsertrix-behaviors@npm:0.16.0"
   dependencies:
     query-selector-shadow-dom: "npm:^1.0.1"
-  checksum: 10c0/c24f79a31890f1d4460f3f7b27be3d96aa1475196460d2b610bd4e3a613e4a153e9b51138e80a968bdc522688f2eb53cd61a17f00c5588619e5aac419e0557d6
+  checksum: 10c0/7c2bd2bcd3fa091ce5a4e0a8155622f980723e01eb2c5a3853221a07e0ce3c5ffc032f82584be54aa94b82154c8fdbcd9c9a944a6e9f147446fea603b31a9a20
   languageName: node
   linkType: hard
 

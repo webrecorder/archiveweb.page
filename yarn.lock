@@ -3233,7 +3233,7 @@ __metadata:
     prettier: "npm:^3.1.1"
     pretty-bytes: "npm:^5.6.0"
     raw-loader: "npm:^4.0.2"
-    replaywebpage: "npm:^2.5.3"
+    replaywebpage: "npm:^2.5.5"
     sass: "npm:^1.77.6"
     sass-loader: "npm:^12.1.0"
     stream-browserify: "npm:^3.0.0"
@@ -9852,13 +9852,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"replaywebpage@npm:^2.5.3":
-  version: 2.5.3
-  resolution: "replaywebpage@npm:2.5.3"
+"replaywebpage@npm:^2.5.5":
+  version: 2.5.5
+  resolution: "replaywebpage@npm:2.5.5"
   dependencies:
     "@fortawesome/fontawesome-free": "npm:^5.15.4"
     "@shoelace-style/shoelace": "npm:~2.15.1"
-    "@webrecorder/wabac": "npm:^2.27.2"
+    "@webrecorder/wabac": "npm:^2.28.0"
     bulma: "npm:^0.9.3"
     electron-log: "npm:^4.4.1"
     electron-updater: "npm:^6.8.9"
@@ -9876,7 +9876,7 @@ __metadata:
     split.js: "npm:^1.6.4"
     stream-browserify: "npm:^3.0.0"
     tsconfig-paths-webpack-plugin: "npm:^4.1.0"
-  checksum: 10c0/6f99e6ed7208e24549de1e8336e9ae280e91c4f55d924bfea9bada5c849f5ec13beeeee84d8324a56b44852981d67247de8544cf52d41742ed427827faf0372e
+  checksum: 10c0/d706e08fa62fc9aff6fd5fd6e0e0a58bbaf2c48f0117bb5b243a32ff3fcb0afd24345879049ed221a6361b6679145e5e24ecb23826f3a3b3a7d83870daa5abb6
   languageName: node
   linkType: hard
 

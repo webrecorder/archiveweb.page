@@ -27,7 +27,9 @@ const openWinMap = new Map();
 
 const collLoader = new CollectionLoader();
 
-const disabledCSPTabs = new Set();
+// set used to lock a tab currently being attached for disabling csp,
+// to avoid double-attach debugger errors
+const disablingCSPTabLock = new Set();
 
 // ===========================================================================
 
@@ -146,7 +148,6 @@ chrome.tabs.onCreated.addListener((tab) => {
   } else if (
     tab.openerTabId &&
     (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
     self.recorders[tab.openerTabId]?.running
   ) {
     // @ts-expect-error - TS2339 - Property 'collId' does not exist on type 'BrowserRecorder'.
@@ -251,7 +252,6 @@ async function startRecorder(tabId, opts) {
 
   const { waitForTabUpdate } = opts;
 
-  // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
   if (!waitForTabUpdate && !self.recorders[tabId].running) {
     try {
       self.recorders[tabId].setCollId(opts.collId);
@@ -287,9 +287,7 @@ function toggleBehaviors(tabId) {
 }
 
 // ===========================================================================
-// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
-function isRecording(tabId) {
-  // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
+function isRecording(tabId: string) {
   return self.recorders[tabId]?.running;
 }
 
@@ -318,50 +316,57 @@ chrome.runtime.onMessage.addListener(
         break;
 
       case "disableCSP":
-        disableCSPForTab(message.tabId);
+        if (!disablingCSPTabLock.has(message.tabId)) {
+          const tabId = message.tabId;
+          disablingCSPTabLock.add(tabId);
+          await disableCSPForTab(tabId);
+          disablingCSPTabLock.delete(tabId);
+        }
         break;
     }
   },
 );
 
 // ===========================================================================
-// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
-async function disableCSPForTab(tabId) {
-  if (disabledCSPTabs.has(tabId)) {
-    return;
-  }
-
-  await new Promise((resolve) => {
+async function disableCSPForTab(tabId: string) {
+  await new Promise<void>((resolve) => {
     chrome.debugger.attach({ tabId }, "1.3", () => {
-      // @ts-expect-error - TS2794 - Expected 1 arguments, but got 0. Did you forget to include 'void' in your type argument to 'Promise'?
       resolve();
     });
   });
 
-  await new Promise((resolve) => {
+  if (chrome.runtime.lastError) {
+    console.warn("disableCSP attach:", chrome.runtime.lastError);
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
     chrome.debugger.sendCommand(
       { tabId },
       "Page.setBypassCSP",
       { enabled: true },
-      // @ts-expect-error - TS7006 - Parameter 'resp' implicitly has an 'any' type.
-      (resp) => resolve(resp),
+      () => resolve(),
     );
   });
 
-  disabledCSPTabs.add(tabId);
+  if (chrome.runtime.lastError) {
+    console.warn("disableCSP send:", chrome.runtime.lastError);
+    return;
+  }
 
-  // hacky: don't detach if any recorders are running, otherwise will disconnect
+  // don't detach if any recorders are running, otherwise will disconnect
   for (const rec of Object.values(self.recorders)) {
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
     if (rec.running) {
       return;
     }
   }
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     chrome.debugger.detach({ tabId }, () => {
-      // @ts-expect-error - TS2794 - Expected 1 arguments, but got 0. Did you forget to include 'void' in your type argument to 'Promise'?
       resolve();
+      if (chrome.runtime.lastError) {
+        console.warn("disableCSP detach:", chrome.runtime.lastError);
+      }
     });
   });
 }

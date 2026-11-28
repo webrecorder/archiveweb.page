@@ -70,6 +70,8 @@ class Recorder {
   disableMSE = false;
   disablePerf = false;
 
+  running = false;
+
   _fetchQueue: FetchEntry[] = [];
 
   constructor() {
@@ -84,8 +86,6 @@ class Recorder {
     // @ts-expect-error - TS2339 - Property 'numPending' does not exist on type 'Recorder'.
     this.numPending = 0;
 
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'Recorder'.
-    this.running = false;
     // @ts-expect-error - TS2339 - Property 'stopping' does not exist on type 'Recorder'.
     this.stopping = false;
 
@@ -236,7 +236,6 @@ class Recorder {
   }
 
   async detach() {
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'Recorder'.
     if (!this.running) {
       return;
     }
@@ -280,7 +279,6 @@ class Recorder {
     clearInterval(this._bgFetchId);
 
     this.flushPending();
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'Recorder'.
     this.running = false;
     // @ts-expect-error - TS2551 - Property 'pendingRequests' does not exist on type 'Recorder'. Did you mean 'pendingReqResp'?
     this.pendingRequests = {};
@@ -303,7 +301,6 @@ class Recorder {
   }
 
   async attach() {
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'Recorder'.
     if (this.running) {
       console.warn("Already Attached!");
       return;
@@ -312,7 +309,6 @@ class Recorder {
     // @ts-expect-error - TS2339 - Property '_doAttach' does not exist on type 'Recorder'.
     await this._doAttach();
 
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'Recorder'.
     this.running = true;
     // @ts-expect-error - TS2339 - Property 'stopping' does not exist on type 'Recorder'.
     this.stopping = false;
@@ -417,7 +413,6 @@ class Recorder {
 
   getStatusMsg() {
     return {
-      // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'Recorder'.
       recording: this.running,
       // @ts-expect-error - TS2339 - Property 'firstPageStarted' does not exist on type 'Recorder'.
       firstPageStarted: this.firstPageStarted,

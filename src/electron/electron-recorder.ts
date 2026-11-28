@@ -127,7 +127,6 @@ class ElectronRecorder extends Recorder {
   // Electron seems to not always pass through Page.frameNavigated events, so handle via 'did-navigate' instead
   // @ts-expect-error - TS7006 - Parameter 'url' implicitly has an 'any' type.
   didNavigateInitPage(url) {
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'ElectronRecorder'.
     if (!this.running || url === "about:blank") {
       return;
     }

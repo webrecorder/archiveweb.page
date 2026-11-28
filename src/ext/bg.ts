@@ -147,7 +147,6 @@ chrome.tabs.onCreated.addListener((tab) => {
   } else if (
     tab.openerTabId &&
     (!tab.pendingUrl || isValidUrl(tab.pendingUrl)) &&
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
     self.recorders[tab.openerTabId]?.running
   ) {
     // @ts-expect-error - TS2339 - Property 'collId' does not exist on type 'BrowserRecorder'.
@@ -252,7 +251,6 @@ async function startRecorder(tabId, opts) {
 
   const { waitForTabUpdate } = opts;
 
-  // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
   if (!waitForTabUpdate && !self.recorders[tabId].running) {
     try {
       self.recorders[tabId].setCollId(opts.collId);
@@ -288,9 +286,7 @@ function toggleBehaviors(tabId) {
 }
 
 // ===========================================================================
-// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
-function isRecording(tabId) {
-  // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
+function isRecording(tabId: string) {
   return self.recorders[tabId]?.running;
 }
 

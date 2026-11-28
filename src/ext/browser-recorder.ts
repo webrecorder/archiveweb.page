@@ -249,7 +249,6 @@ class BrowserRecorder extends Recorder {
     // @ts-expect-error - TS2339 - Property 'tabId' does not exist on type 'BrowserRecorder'.
     const tabId = this.tabId;
 
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
     if (this.running) {
       // @ts-expect-error - TS2339 - Property 'behaviorState' does not exist on type 'BrowserRecorder'.
       if (this.behaviorState === BEHAVIOR_RUNNING) {

@@ -32,6 +32,12 @@ class WrRecColl extends Item {
   @state()
   totalSize = 0;
 
+  @state()
+  isDownloadingResources = false;
+
+  @state()
+  currentHash = '';
+
   _sizeUpdater: Promise<void> | null = null;
 
   static get styles() {
@@ -73,6 +79,10 @@ class WrRecColl extends Item {
         background-color: #16a34a;
         border-radius: 50%;
         display: inline-block;
+      }
+
+      .download-resources-btn {
+        margin-left: 0.5em;
       }
 
       @media screen and (max-width: 480px) {
@@ -117,6 +127,226 @@ class WrRecColl extends Item {
         favIconUrl: this.favIconUrl.split("mp_/")[1],
       });
     }
+
+    // Add download button to resources tab after render
+    this.addDownloadButtonToResources();
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.currentHash = window.location.hash;
+    // Listen for hash changes to show/hide download button
+    this._hashChangeHandler = () => {
+      this.currentHash = window.location.hash;
+      this.requestUpdate();
+    };
+    window.addEventListener('hashchange', this._hashChangeHandler);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._hashChangeHandler) {
+      window.removeEventListener('hashchange', this._hashChangeHandler);
+    }
+  }
+
+  _hashChangeHandler?: () => void;
+
+  addDownloadButtonToResources() {
+    // Only add button if we're on the resources tab
+    if (!this.currentHash.includes('view=resources')) {
+      return;
+    }
+
+
+
+    // Try multiple times with increasing delays
+    const attempts = [0, 100, 500, 1000, 2000];
+    attempts.forEach(delay => {
+      setTimeout(() => {
+        const pageView = this.renderRoot.querySelector('wr-coll-resources');
+        
+        if (!pageView || pageView.hasAttribute('data-download-btn-added')) {
+          return;
+        }
+
+        const shadowRoot = pageView.shadowRoot;
+        if (!shadowRoot) {
+          return;
+        }
+
+        const toolbar = shadowRoot.querySelector('.notification.level.is-marginless');
+        if (!toolbar || toolbar.querySelector('.download-all-btn')) {
+          return;
+        }
+
+        const levelLeft = toolbar.querySelector('.level-left');
+        if (!levelLeft) {
+          return;
+        }
+
+        // Mark as processed before adding button
+        pageView.setAttribute('data-download-btn-added', 'true');
+
+        // Create a level-item wrapper for the button
+        const levelItem = document.createElement('div');
+        levelItem.className = 'level-item';
+        
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'button is-small is-primary download-all-btn';
+        downloadBtn.innerHTML = `
+          <span class="icon is-small">
+            <svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 1em; height: 1em;">
+              <path fill="currentColor" d="M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"></path>
+            </svg>
+          </span>
+          <span>Download All</span>
+        `;
+        downloadBtn.onclick = () => this.downloadDisplayedResources();
+
+        levelItem.appendChild(downloadBtn);
+        levelLeft.appendChild(levelItem);
+      }, delay);
+    });
+  }
+
+  async downloadDisplayedResources() {
+    if (this.isDownloadingResources) return;
+    
+    this.isDownloadingResources = true;
+    
+    try {
+      // Get resources from the wr-coll-resources component
+      const pageView = this.renderRoot.querySelector('wr-coll-resources');
+      
+      if (!pageView) {
+        alert('Could not find the Resources tab. Please make sure you are on the Resources tab.');
+        return;
+      }
+      
+      // Wait a moment for the component to fully initialize
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Access the results property which contains the resources
+      // @ts-expect-error - accessing internal property
+      const pages = pageView.results || [];
+      
+      if (pages.length === 0) {
+        alert('No resources found. Please make sure you are on the Resources tab and resources are displayed.');
+        return;
+      }
+
+      // Confirm download
+      const confirmed = confirm(
+        `Download ${pages.length} resource(s)?\n\n` +
+        `This will download all currently displayed resources to your default download folder.`
+      );
+      
+      if (!confirmed) {
+        return;
+      }
+
+      // Download each resource
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const page of pages) {
+        try {
+          await this.downloadResource(page);
+          successCount++;
+          // Small delay to avoid overwhelming the browser
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (e) {
+          console.error(`Failed to download ${(page as unknown).url}:`, e);
+          failCount++;
+        }
+      }
+
+      alert(
+        `Download complete!\n\n` +
+        `Successfully downloaded: ${successCount}\n` +
+        `Failed: ${failCount}`
+      );
+    } catch (error) {
+      alert('An error occurred while downloading resources.');
+    } finally {
+      this.isDownloadingResources = false;
+    }
+  }
+
+  async downloadResource(page: unknown) {
+    try {
+      // Construct the URL for the resource
+      const pageData = page;
+      const url = pageData.url;
+      const timestamp = pageData.ts; // Already in YYYYMMDDHHmmss format
+      
+      // Use the replay URL format: /w/{collId}/{timestamp}mp_/{url}
+      const replayUrl = `/w/${this.item}/${timestamp}mp_/${url}`;
+      
+      const response = await fetch(replayUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      
+      // Generate filename from URL
+      const urlObj = new URL(url);
+      let filename = urlObj.pathname.split('/').pop() || 'resource';
+      
+      // If no extension, try to get from content-type
+      if (!filename.includes('.')) {
+        const contentType = response.headers.get('content-type');
+        if (contentType) {
+          const ext = this.getExtensionFromMimeType(contentType);
+          if (ext) {
+            filename += ext;
+          }
+        }
+      }
+      
+      // Sanitize filename
+      filename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+      
+      // Create download link
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // Clean up
+      setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  getExtensionFromMimeType(mimeType: string): string {
+    const mimeMap: Record<string, string> = {
+      'text/html': '.html',
+      'text/css': '.css',
+      'text/javascript': '.js',
+      'application/javascript': '.js',
+      'application/json': '.json',
+      'image/jpeg': '.jpg',
+      'image/png': '.png',
+      'image/gif': '.gif',
+      'image/svg+xml': '.svg',
+      'image/webp': '.webp',
+      'application/pdf': '.pdf',
+      'video/mp4': '.mp4',
+      'video/webm': '.webm',
+      'audio/mpeg': '.mp3',
+      'audio/ogg': '.ogg',
+      'application/zip': '.zip',
+    };
+    
+    const baseType = mimeType.split(';')[0].trim();
+    return mimeMap[baseType] || '';
   }
 
   async runSizeUpdater() {

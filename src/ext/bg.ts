@@ -27,8 +27,9 @@ const openWinMap = new Map();
 
 const collLoader = new CollectionLoader();
 
-// currently disabling CSP, don't double-attach debugger to avoid errors
-const disablingCSPTabs = new Set();
+// set used to lock a tab currently being attached for disabling csp,
+// to avoid double-attach debugger errors
+const disablingCSPTabLock = new Set();
 
 // ===========================================================================
 
@@ -315,7 +316,12 @@ chrome.runtime.onMessage.addListener(
         break;
 
       case "disableCSP":
-        disableCSPForTab(message.tabId);
+        if (!disablingCSPTabLock.has(message.tabId)) {
+          const tabId = message.tabId;
+          disablingCSPTabLock.add(tabId);
+          await disableCSPForTab(tabId);
+          disablingCSPTabLock.delete(tabId);
+        }
         break;
     }
   },
@@ -323,12 +329,6 @@ chrome.runtime.onMessage.addListener(
 
 // ===========================================================================
 async function disableCSPForTab(tabId: string) {
-  if (disablingCSPTabs.has(tabId)) {
-    return;
-  }
-
-  disablingCSPTabs.add(tabId);
-
   await new Promise<void>((resolve) => {
     chrome.debugger.attach({ tabId }, "1.3", () => {
       resolve();
@@ -337,7 +337,6 @@ async function disableCSPForTab(tabId: string) {
 
   if (chrome.runtime.lastError) {
     console.warn("disableCSP attach:", chrome.runtime.lastError);
-    disablingCSPTabs.delete(tabId);
     return;
   }
 
@@ -352,14 +351,12 @@ async function disableCSPForTab(tabId: string) {
 
   if (chrome.runtime.lastError) {
     console.warn("disableCSP send:", chrome.runtime.lastError);
-    disablingCSPTabs.delete(tabId);
     return;
   }
 
   // don't detach if any recorders are running, otherwise will disconnect
   for (const rec of Object.values(self.recorders)) {
     if (rec.running) {
-      disablingCSPTabs.delete(tabId);
       return;
     }
   }
@@ -372,8 +369,6 @@ async function disableCSPForTab(tabId: string) {
       }
     });
   });
-
-  disablingCSPTabs.delete(tabId);
 }
 
 // ===========================================================================

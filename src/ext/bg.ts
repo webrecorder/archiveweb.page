@@ -27,7 +27,8 @@ const openWinMap = new Map();
 
 const collLoader = new CollectionLoader();
 
-const disabledCSPTabs = new Set();
+// currently disabling CSP, don't double-attach debugger to avoid errors
+const disablingCSPTabs = new Set();
 
 // ===========================================================================
 
@@ -325,45 +326,58 @@ chrome.runtime.onMessage.addListener(
 );
 
 // ===========================================================================
-// @ts-expect-error - TS7006 - Parameter 'tabId' implicitly has an 'any' type.
-async function disableCSPForTab(tabId) {
-  if (disabledCSPTabs.has(tabId)) {
+async function disableCSPForTab(tabId: string) {
+  if (disablingCSPTabs.has(tabId)) {
     return;
   }
 
-  await new Promise((resolve) => {
+  disablingCSPTabs.add(tabId);
+
+  await new Promise<void>((resolve) => {
     chrome.debugger.attach({ tabId }, "1.3", () => {
-      // @ts-expect-error - TS2794 - Expected 1 arguments, but got 0. Did you forget to include 'void' in your type argument to 'Promise'?
       resolve();
     });
   });
 
-  await new Promise((resolve) => {
+  if (chrome.runtime.lastError) {
+    console.warn("disableCSP attach:", chrome.runtime.lastError);
+    disablingCSPTabs.delete(tabId);
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
     chrome.debugger.sendCommand(
       { tabId },
       "Page.setBypassCSP",
       { enabled: true },
-      // @ts-expect-error - TS7006 - Parameter 'resp' implicitly has an 'any' type.
-      (resp) => resolve(resp),
+      () => resolve(),
     );
   });
 
-  disabledCSPTabs.add(tabId);
+  if (chrome.runtime.lastError) {
+    console.warn("disableCSP send:", chrome.runtime.lastError);
+    disablingCSPTabs.delete(tabId);
+    return;
+  }
 
-  // hacky: don't detach if any recorders are running, otherwise will disconnect
+  // don't detach if any recorders are running, otherwise will disconnect
   for (const rec of Object.values(self.recorders)) {
-    // @ts-expect-error - TS2339 - Property 'running' does not exist on type 'BrowserRecorder'.
     if (rec.running) {
+      disablingCSPTabs.delete(tabId);
       return;
     }
   }
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     chrome.debugger.detach({ tabId }, () => {
-      // @ts-expect-error - TS2794 - Expected 1 arguments, but got 0. Did you forget to include 'void' in your type argument to 'Promise'?
       resolve();
+      if (chrome.runtime.lastError) {
+        console.warn("disableCSP detach:", chrome.runtime.lastError);
+      }
     });
   });
+
+  disablingCSPTabs.delete(tabId);
 }
 
 // ===========================================================================
